@@ -26,9 +26,10 @@ const categoryItems = [
 ];
 
 export function AppSidebar() {
-  const { collapsed } = useSidebar();
+  const { state } = useSidebar();
   const location = useLocation();
   const currentPath = location.pathname;
+  const isCollapsed = state === "collapsed";
 
   const isActive = (path: string) => {
     if (path === "/") {
@@ -43,11 +44,11 @@ export function AppSidebar() {
       : "hover:bg-slate-100 text-slate-700";
 
   return (
-    <Sidebar className={collapsed ? "w-14" : "w-64"} collapsible>
+    <Sidebar className={isCollapsed ? "w-14" : "w-64"} collapsible="icon">
       <SidebarContent className="bg-white border-r border-slate-200">
         {/* Logo Section */}
         <div className="p-6 border-b border-slate-200">
-          {!collapsed ? (
+          {!isCollapsed ? (
             <div>
               <h2 className="text-xl font-bold text-slate-900">ArtiFurn</h2>
               <p className="text-sm text-slate-600">Inventory Manager</p>
@@ -64,7 +65,7 @@ export function AppSidebar() {
         {/* Main Navigation */}
         <SidebarGroup>
           <SidebarGroupLabel className="text-slate-500 uppercase tracking-wider text-xs font-semibold">
-            {!collapsed && "Main Menu"}
+            {!isCollapsed && "Main Menu"}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -77,7 +78,7 @@ export function AppSidebar() {
                       className={({ isActive }) => getNavCls({ isActive })}
                     >
                       <item.icon className="w-4 h-4" />
-                      {!collapsed && <span>{item.title}</span>}
+                      {!isCollapsed && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -89,7 +90,7 @@ export function AppSidebar() {
         {/* Categories */}
         <SidebarGroup>
           <SidebarGroupLabel className="text-slate-500 uppercase tracking-wider text-xs font-semibold">
-            {!collapsed && "Categories"}
+            {!isCollapsed && "Categories"}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -101,7 +102,7 @@ export function AppSidebar() {
                       className={({ isActive }) => getNavCls({ isActive })}
                     >
                       <item.icon className="w-4 h-4" />
-                      {!collapsed && <span>{item.title}</span>}
+                      {!isCollapsed && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -122,7 +123,7 @@ export function AppSidebar() {
                       className={({ isActive }) => getNavCls({ isActive })}
                     >
                       <Settings className="w-4 h-4" />
-                      {!collapsed && <span>Settings</span>}
+                      {!isCollapsed && <span>Settings</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
