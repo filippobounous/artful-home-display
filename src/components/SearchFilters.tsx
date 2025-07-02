@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CategoryFilter, StatusFilter, ViewMode } from "@/types/inventory";
+import { CategoryFilter, StatusFilter, ViewMode, HouseFilter, RoomFilter } from "@/types/inventory";
 
 interface SearchFiltersProps {
   searchTerm: string;
@@ -18,6 +18,10 @@ interface SearchFiltersProps {
   setSelectedCategory: (category: CategoryFilter) => void;
   selectedStatus: StatusFilter;
   setSelectedStatus: (status: StatusFilter) => void;
+  selectedHouse: HouseFilter;
+  setSelectedHouse: (house: HouseFilter) => void;
+  selectedRoom: RoomFilter;
+  setSelectedRoom: (room: RoomFilter) => void;
   viewMode: ViewMode;
   setViewMode: (mode: ViewMode) => void;
 }
@@ -29,6 +33,10 @@ export function SearchFilters({
   setSelectedCategory,
   selectedStatus,
   setSelectedStatus,
+  selectedHouse,
+  setSelectedHouse,
+  selectedRoom,
+  setSelectedRoom,
   viewMode,
   setViewMode,
 }: SearchFiltersProps) {
@@ -38,7 +46,7 @@ export function SearchFilters({
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
           <Input
-            placeholder="Search items..."
+            placeholder="Search your collection..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
@@ -49,7 +57,7 @@ export function SearchFilters({
             <SelectValue placeholder="Category" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Categories</SelectItem>
+            <SelectItem value="all">All Items</SelectItem>
             <SelectItem value="art">Art</SelectItem>
             <SelectItem value="furniture">Furniture</SelectItem>
           </SelectContent>
@@ -65,7 +73,36 @@ export function SearchFilters({
             <SelectItem value="reserved">Reserved</SelectItem>
           </SelectContent>
         </Select>
-        <div className="flex gap-2">
+      </div>
+      
+      <div className="flex flex-col sm:flex-row gap-4">
+        <Select value={selectedHouse} onValueChange={setSelectedHouse}>
+          <SelectTrigger className="w-full sm:w-48">
+            <SelectValue placeholder="House" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Houses</SelectItem>
+            <SelectItem value="main-house">Main House</SelectItem>
+            <SelectItem value="guest-house">Guest House</SelectItem>
+            <SelectItem value="studio">Studio</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={selectedRoom} onValueChange={setSelectedRoom}>
+          <SelectTrigger className="w-full sm:w-48">
+            <SelectValue placeholder="Room" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Rooms</SelectItem>
+            <SelectItem value="living-room">Living Room</SelectItem>
+            <SelectItem value="bedroom">Bedroom</SelectItem>
+            <SelectItem value="kitchen">Kitchen</SelectItem>
+            <SelectItem value="dining-room">Dining Room</SelectItem>
+            <SelectItem value="office">Office</SelectItem>
+            <SelectItem value="bathroom">Bathroom</SelectItem>
+            <SelectItem value="hallway">Hallway</SelectItem>
+          </SelectContent>
+        </Select>
+        <div className="flex gap-2 ml-auto">
           <Button
             variant={viewMode === "grid" ? "default" : "outline"}
             size="sm"

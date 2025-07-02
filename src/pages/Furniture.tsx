@@ -10,9 +10,9 @@ import { EmptyState } from "@/components/EmptyState";
 import { sampleItems } from "@/data/sampleData";
 import { CategoryFilter, StatusFilter, ViewMode, HouseFilter, RoomFilter } from "@/types/inventory";
 
-const Index = () => {
+const Furniture = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>("all");
+  const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>("furniture");
   const [selectedStatus, setSelectedStatus] = useState<StatusFilter>("all");
   const [selectedHouse, setSelectedHouse] = useState<HouseFilter>("all");
   const [selectedRoom, setSelectedRoom] = useState<RoomFilter>("all");
@@ -21,7 +21,7 @@ const Index = () => {
   const filteredItems = sampleItems.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === "all" || item.category === selectedCategory;
+    const matchesCategory = item.category === "furniture";
     const matchesStatus = selectedStatus === "all" || item.status === selectedStatus;
     const matchesHouse = selectedHouse === "all" || item.house === selectedHouse;
     const matchesRoom = selectedRoom === "all" || item.room === selectedRoom;
@@ -38,6 +38,11 @@ const Index = () => {
           <InventoryHeader />
 
           <main className="flex-1 p-6">
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold text-slate-900 mb-2">Furniture Collection</h2>
+              <p className="text-slate-600">Browse and manage your furniture pieces</p>
+            </div>
+
             <SearchFilters
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
@@ -55,7 +60,7 @@ const Index = () => {
 
             <div className="mb-6">
               <p className="text-slate-600">
-                {filteredItems.length} items in your collection
+                Showing {filteredItems.length} furniture pieces
               </p>
             </div>
 
@@ -73,4 +78,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Furniture;

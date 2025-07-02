@@ -10,11 +10,11 @@ export function InventoryHeader() {
         <div className="flex items-center gap-4">
           <SidebarTrigger />
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Inventory Management</h1>
-            <p className="text-slate-600">Manage your art and furniture collection</p>
+            <h1 className="text-2xl font-bold text-slate-900">Personal Collection</h1>
+            <p className="text-slate-600">Manage your art and furniture inventory</p>
           </div>
         </div>
-        <Button className="bg-blue-600 hover:bg-blue-700">
+        <Button className="bg-slate-800 hover:bg-slate-700">
           <Plus className="w-4 h-4 mr-2" />
           Add Item
         </Button>

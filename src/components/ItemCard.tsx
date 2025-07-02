@@ -11,7 +11,7 @@ export function ItemCard({ item }: ItemCardProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
       case "available": return "bg-green-100 text-green-800 border-green-200";
-      case "sold": return "bg-red-100 text-red-800 border-red-200";
+      case "sold": return "bg-gray-100 text-gray-800 border-gray-200";
       case "reserved": return "bg-yellow-100 text-yellow-800 border-yellow-200";
       default: return "bg-gray-100 text-gray-800 border-gray-200";
     }
@@ -35,13 +35,15 @@ export function ItemCard({ item }: ItemCardProps) {
             </Badge>
           </div>
           <p className="text-slate-600 text-sm mb-3 line-clamp-2">{item.description}</p>
-          <div className="flex items-center justify-between">
-            <span className="text-lg font-bold text-slate-900">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-slate-700 font-medium">
               ${item.price.toLocaleString()}
             </span>
-            <span className="text-xs text-slate-500 capitalize">
-              {item.category}
-            </span>
+            <div className="flex gap-2 text-xs text-slate-500">
+              <span className="capitalize">{item.category}</span>
+              {item.house && <span>• {item.house}</span>}
+              {item.room && <span>• {item.room}</span>}
+            </div>
           </div>
         </div>
       </CardContent>
