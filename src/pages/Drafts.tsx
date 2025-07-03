@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { InventoryHeader } from "@/components/InventoryHeader";
@@ -8,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Trash2, Edit, FileText } from "lucide-react";
 
 const Drafts = () => {
+  const navigate = useNavigate();
   const [drafts, setDrafts] = useState([
     {
       id: 1,
@@ -27,6 +29,11 @@ const Drafts = () => {
 
   const deleteDraft = (id: number) => {
     setDrafts(drafts.filter(draft => draft.id !== id));
+  };
+
+  const editDraft = (id: number) => {
+    // Navigate to add item page with draft data
+    navigate(`/add?draftId=${id}`);
   };
 
   return (
@@ -63,7 +70,11 @@ const Drafts = () => {
                           </p>
                         </div>
                         <div className="flex gap-2">
-                          <Button variant="outline" size="sm">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => editDraft(draft.id)}
+                          >
                             <Edit className="w-4 h-4 mr-1" />
                             Edit
                           </Button>

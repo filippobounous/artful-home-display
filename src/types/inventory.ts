@@ -43,6 +43,9 @@ export interface SubcategoryConfig {
 export interface HouseConfig {
   id: string;
   name: string;
+  country: string;
+  address?: string;
+  yearBuilt?: number;
   rooms: RoomConfig[];
   visible: boolean;
 }
@@ -95,6 +98,9 @@ export const houseConfigs: HouseConfig[] = [
   {
     id: "main-house",
     name: "Main House",
+    country: "United States",
+    address: "123 Main Street, Beverly Hills, CA",
+    yearBuilt: 1985,
     rooms: [
       { id: "living-room", name: "Living Room", visible: true },
       { id: "dining-room", name: "Dining Room", visible: true },
@@ -109,6 +115,9 @@ export const houseConfigs: HouseConfig[] = [
   {
     id: "guest-house",
     name: "Guest House",
+    country: "United States",
+    address: "125 Main Street, Beverly Hills, CA",
+    yearBuilt: 1990,
     rooms: [
       { id: "living-room", name: "Living Room", visible: true },
       { id: "bedroom", name: "Bedroom", visible: true },
@@ -120,6 +129,9 @@ export const houseConfigs: HouseConfig[] = [
   {
     id: "studio",
     name: "Studio",
+    country: "France",
+    address: "45 Rue de Rivoli, Paris",
+    yearBuilt: 2010,
     rooms: [
       { id: "main-area", name: "Main Area", visible: true },
       { id: "storage", name: "Storage", visible: true }

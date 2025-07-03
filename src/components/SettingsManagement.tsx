@@ -11,6 +11,9 @@ import { categoryConfigs, houseConfigs } from "@/types/inventory";
 
 export function SettingsManagement() {
   const [newHouseName, setNewHouseName] = useState("");
+  const [newHouseCountry, setNewHouseCountry] = useState("");
+  const [newHouseAddress, setNewHouseAddress] = useState("");
+  const [newHouseYear, setNewHouseYear] = useState("");
   const [newRoomName, setNewRoomName] = useState("");
   const [selectedHouse, setSelectedHouse] = useState("");
   const [newCategoryName, setNewCategoryName] = useState("");
@@ -18,10 +21,18 @@ export function SettingsManagement() {
   const [selectedCategory, setSelectedCategory] = useState("");
 
   const addHouse = () => {
-    if (newHouseName.trim()) {
-      console.log("Adding house:", newHouseName);
+    if (newHouseName.trim() && newHouseCountry.trim()) {
+      console.log("Adding house:", {
+        name: newHouseName,
+        country: newHouseCountry,
+        address: newHouseAddress,
+        yearBuilt: newHouseYear ? parseInt(newHouseYear) : undefined
+      });
       // In the future, this will connect to a database
       setNewHouseName("");
+      setNewHouseCountry("");
+      setNewHouseAddress("");
+      setNewHouseYear("");
     }
   };
 
@@ -64,29 +75,68 @@ export function SettingsManagement() {
               <CardTitle>Manage Houses</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex gap-2">
-                <Input
-                  placeholder="House name"
-                  value={newHouseName}
-                  onChange={(e) => setNewHouseName(e.target.value)}
-                  className="flex-1"
-                />
-                <Button onClick={addHouse}>
-                  <Plus className="w-4 h-4 mr-1" />
-                  Add House
-                </Button>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label>House Name *</Label>
+                  <Input
+                    placeholder="House name"
+                    value={newHouseName}
+                    onChange={(e) => setNewHouseName(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label>Country *</Label>
+                  <Input
+                    placeholder="Country"
+                    value={newHouseCountry}
+                    onChange={(e) => setNewHouseCountry(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label>Address</Label>
+                  <Input
+                    placeholder="Full address"
+                    value={newHouseAddress}
+                    onChange={(e) => setNewHouseAddress(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label>Year Built</Label>
+                  <Input
+                    placeholder="e.g., 1985"
+                    type="number"
+                    value={newHouseYear}
+                    onChange={(e) => setNewHouseYear(e.target.value)}
+                  />
+                </div>
               </div>
+              
+              <Button onClick={addHouse} className="w-full">
+                <Plus className="w-4 h-4 mr-1" />
+                Add House
+              </Button>
               
               <div className="space-y-2">
                 <Label>Current Houses</Label>
-                <div className="flex flex-wrap gap-2">
+                <div className="space-y-2">
                   {houseConfigs.map((house) => (
-                    <Badge key={house.id} variant="secondary" className="px-3 py-1">
-                      {house.name}
-                      <button className="ml-2 hover:text-destructive">
-                        <X className="w-3 h-3" />
-                      </button>
-                    </Badge>
+                    <div key={house.id} className="p-3 border rounded-lg">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h4 className="font-medium">{house.name}</h4>
+                          <p className="text-sm text-slate-600">{house.country}</p>
+                          {house.address && (
+                            <p className="text-xs text-slate-500">{house.address}</p>
+                          )}
+                          {house.yearBuilt && (
+                            <p className="text-xs text-slate-500">Built: {house.yearBuilt}</p>
+                          )}
+                        </div>
+                        <button className="text-slate-400 hover:text-destructive">
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>

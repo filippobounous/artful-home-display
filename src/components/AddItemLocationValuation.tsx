@@ -8,7 +8,7 @@ import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { houseConfigs } from "@/types/inventory";
+import { CombinedHouseRoomSelector } from "./CombinedHouseRoomSelector";
 
 interface AddItemLocationValuationProps {
   formData: any;
@@ -16,13 +16,8 @@ interface AddItemLocationValuationProps {
 }
 
 export function AddItemLocationValuation({ formData, setFormData }: AddItemLocationValuationProps) {
-  // Get rooms for selected house
-  const selectedHouseConfig = houseConfigs.find(house => house.id === formData.house);
-  const availableRooms = selectedHouseConfig?.rooms || [];
-
-  // Reset room when house changes
-  const handleHouseChange = (value: string) => {
-    setFormData(prev => ({ ...prev, house: value, room: "" }));
+  const handleLocationChange = (house: string, room: string) => {
+    setFormData(prev => ({ ...prev, house, room }));
   };
 
   const currencies = [
@@ -42,44 +37,11 @@ export function AddItemLocationValuation({ formData, setFormData }: AddItemLocat
 
   return (
     <div className="space-y-4">
-      <div>
-        <Label htmlFor="house">House</Label>
-        <Select
-          value={formData.house}
-          onValueChange={handleHouseChange}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select house" />
-          </SelectTrigger>
-          <SelectContent>
-            {houseConfigs.map(house => (
-              <SelectItem key={house.id} value={house.id}>
-                {house.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div>
-        <Label htmlFor="room">Room</Label>
-        <Select
-          value={formData.room}
-          onValueChange={(value) => setFormData(prev => ({ ...prev, room: value }))}
-          disabled={!formData.house}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder={formData.house ? "Select room" : "Select house first"} />
-          </SelectTrigger>
-          <SelectContent>
-            {availableRooms.map(room => (
-              <SelectItem key={room.id} value={room.id}>
-                {room.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      <CombinedHouseRoomSelector
+        selectedHouse={formData.house}
+        selectedRoom={formData.room}
+        onSelectionChange={handleLocationChange}
+      />
 
       <div>
         <Label htmlFor="valuation">Valuation</Label>

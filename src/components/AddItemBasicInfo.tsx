@@ -2,7 +2,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { categoryConfigs } from "@/types/inventory";
+import { CombinedCategorySelector } from "./CombinedCategorySelector";
 
 interface AddItemBasicInfoProps {
   formData: any;
@@ -10,13 +10,8 @@ interface AddItemBasicInfoProps {
 }
 
 export function AddItemBasicInfo({ formData, setFormData }: AddItemBasicInfoProps) {
-  // Get subcategories for selected category
-  const selectedCategoryConfig = categoryConfigs.find(cat => cat.id === formData.category);
-  const availableSubcategories = selectedCategoryConfig?.subcategories || [];
-
-  // Reset subcategory when category changes
-  const handleCategoryChange = (value: string) => {
-    setFormData(prev => ({ ...prev, category: value, subcategory: "" }));
+  const handleCategoryChange = (category: string, subcategory: string) => {
+    setFormData(prev => ({ ...prev, category, subcategory }));
   };
 
   return (
@@ -41,44 +36,11 @@ export function AddItemBasicInfo({ formData, setFormData }: AddItemBasicInfoProp
         />
       </div>
 
-      <div>
-        <Label htmlFor="category">Category *</Label>
-        <Select
-          value={formData.category}
-          onValueChange={handleCategoryChange}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select category" />
-          </SelectTrigger>
-          <SelectContent>
-            {categoryConfigs.map(category => (
-              <SelectItem key={category.id} value={category.id}>
-                {category.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div>
-        <Label htmlFor="subcategory">Subcategory</Label>
-        <Select
-          value={formData.subcategory}
-          onValueChange={(value) => setFormData(prev => ({ ...prev, subcategory: value }))}
-          disabled={!formData.category}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder={formData.category ? "Select subcategory" : "Select category first"} />
-          </SelectTrigger>
-          <SelectContent>
-            {availableSubcategories.map(subcategory => (
-              <SelectItem key={subcategory.id} value={subcategory.id}>
-                {subcategory.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      <CombinedCategorySelector
+        selectedCategory={formData.category}
+        selectedSubcategory={formData.subcategory}
+        onSelectionChange={handleCategoryChange}
+      />
 
       <div>
         <Label htmlFor="yearPeriod">Year/Period</Label>
