@@ -8,14 +8,16 @@ interface ItemsListProps {
 }
 
 export function ItemsList({ items }: ItemsListProps) {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "displayed":
+  const getConditionColor = (condition: string) => {
+    switch (condition) {
+      case "mint":
         return "bg-green-100 text-green-800 border-green-200";
-      case "stored":
-        return "bg-gray-100 text-gray-800 border-gray-200";
-      case "loaned":
+      case "excellent":
+        return "bg-blue-100 text-blue-800 border-blue-200";
+      case "very good":
         return "bg-yellow-100 text-yellow-800 border-yellow-200";
+      case "good":
+        return "bg-gray-100 text-gray-800 border-gray-200";
       default:
         return "bg-gray-100 text-gray-800 border-gray-200";
     }
@@ -30,28 +32,45 @@ export function ItemsList({ items }: ItemsListProps) {
               <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
                 <img
                   src={item.image}
-                  alt={item.name}
+                  alt={item.title}
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="flex-1">
                 <div className="flex items-start justify-between mb-2">
-                  <h3 className="text-lg font-semibold text-slate-900">{item.name}</h3>
-                  <Badge className={getStatusColor(item.status)}>
-                    {item.status}
+                  <h3 className="text-lg font-semibold text-slate-900">{item.title}</h3>
+                  <Badge className={getConditionColor(item.condition)}>
+                    {item.condition}
                   </Badge>
                 </div>
+                {item.artist && (
+                  <p className="text-slate-600 text-sm font-medium mb-1">by {item.artist}</p>
+                )}
                 <p className="text-slate-600 mb-2">{item.description}</p>
                 <div className="flex items-center gap-4 text-sm text-slate-500">
                   <span className="capitalize">{item.category}</span>
-                  <span>•</span>
-                  <span>{item.dimensions}</span>
+                  {item.subcategory && (
+                    <>
+                      <span>•</span>
+                      <span>{item.subcategory}</span>
+                    </>
+                  )}
+                  {item.size && (
+                    <>
+                      <span>•</span>
+                      <span>{item.size}</span>
+                    </>
+                  )}
                   <span>•</span>
                   <span className="capitalize">{item.condition}</span>
                 </div>
-              </div>
-              <div className="text-right hidden sm:block">
-                <span className="text-xs text-slate-500 capitalize">{item.status}</span>
+                {(item.house || item.room) && (
+                  <div className="mt-2 text-sm text-slate-500">
+                    {item.house && <span>{item.house}</span>}
+                    {item.house && item.room && <span> • </span>}
+                    {item.room && <span>{item.room}</span>}
+                  </div>
+                )}
               </div>
             </div>
           </CardContent>

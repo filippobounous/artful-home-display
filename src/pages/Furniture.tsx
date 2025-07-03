@@ -10,12 +10,11 @@ import { EmptyState } from "@/components/EmptyState";
 import { sampleItems } from "@/data/sampleData";
 import { fetchInventory } from "@/lib/api";
 import { InventoryItem } from "@/types/inventory";
-import { CategoryFilter, StatusFilter, ViewMode, HouseFilter, RoomFilter } from "@/types/inventory";
+import { CategoryFilter, ViewMode, HouseFilter, RoomFilter } from "@/types/inventory";
 
 const Furniture = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>("furniture");
-  const [selectedStatus, setSelectedStatus] = useState<StatusFilter>("all");
   const [selectedHouse, setSelectedHouse] = useState<HouseFilter>("all");
   const [selectedRoom, setSelectedRoom] = useState<RoomFilter>("all");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
@@ -28,14 +27,14 @@ const Furniture = () => {
   }, []);
 
   const filteredItems = items.filter(item => {
-    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (item.artist && item.artist.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesCategory = item.category === "furniture";
-    const matchesStatus = selectedStatus === "all" || item.status === selectedStatus;
     const matchesHouse = selectedHouse === "all" || item.house === selectedHouse;
     const matchesRoom = selectedRoom === "all" || item.room === selectedRoom;
     
-    return matchesSearch && matchesCategory && matchesStatus && matchesHouse && matchesRoom;
+    return matchesSearch && matchesCategory && matchesHouse && matchesRoom;
   });
 
   return (
@@ -57,8 +56,6 @@ const Furniture = () => {
               setSearchTerm={setSearchTerm}
               selectedCategory={selectedCategory}
               setSelectedCategory={setSelectedCategory}
-              selectedStatus={selectedStatus}
-              setSelectedStatus={setSelectedStatus}
               selectedHouse={selectedHouse}
               setSelectedHouse={setSelectedHouse}
               selectedRoom={selectedRoom}
