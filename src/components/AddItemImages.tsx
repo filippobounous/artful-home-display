@@ -1,9 +1,9 @@
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Upload, Image } from "lucide-react";
 
 interface AddItemImagesProps {
   formData: any;
@@ -12,14 +12,38 @@ interface AddItemImagesProps {
 
 export function AddItemImages({ formData, setFormData }: AddItemImagesProps) {
   const [newImageUrl, setNewImageUrl] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const addImage = () => {
+  const addImageUrl = () => {
     if (newImageUrl.trim()) {
       setFormData(prev => ({
         ...prev,
         images: [...prev.images, newImageUrl.trim()]
       }));
       setNewImageUrl("");
+    }
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      Array.from(files).forEach(file => {
+        if (file.type.startsWith('image/')) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const imageUrl = e.target?.result as string;
+            setFormData(prev => ({
+              ...prev,
+              images: [...prev.images, imageUrl]
+            }));
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -33,14 +57,37 @@ export function AddItemImages({ formData, setFormData }: AddItemImagesProps) {
   return (
     <div className="space-y-4">
       <Label>Images</Label>
+      
+      {/* File Upload */}
+      <div className="flex gap-2">
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          multiple
+          onChange={handleFileUpload}
+          className="hidden"
+        />
+        <Button 
+          type="button" 
+          variant="outline" 
+          onClick={() => fileInputRef.current?.click()}
+          className="flex-1"
+        >
+          <Upload className="w-4 h-4 mr-2" />
+          Upload Images
+        </Button>
+      </div>
+
+      {/* URL Input */}
       <div className="flex gap-2">
         <Input
-          placeholder="Image URL"
+          placeholder="Or enter image URL"
           value={newImageUrl}
           onChange={(e) => setNewImageUrl(e.target.value)}
           className="flex-1"
         />
-        <Button type="button" onClick={addImage}>
+        <Button type="button" onClick={addImageUrl}>
           <Plus className="w-4 h-4" />
         </Button>
       </div>
@@ -53,6 +100,10 @@ export function AddItemImages({ formData, setFormData }: AddItemImagesProps) {
                 src={url}
                 alt={`Preview ${index + 1}`}
                 className="w-full h-24 object-cover rounded border"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = '/placeholder.svg';
+                }}
               />
               <Button
                 type="button"
@@ -65,6 +116,13 @@ export function AddItemImages({ formData, setFormData }: AddItemImagesProps) {
               </Button>
             </div>
           ))}
+        </div>
+      )}
+
+      {formData.images.length === 0 && (
+        <div className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center">
+          <Image className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+          <p className="text-slate-500 text-sm">No images added yet</p>
         </div>
       )}
     </div>

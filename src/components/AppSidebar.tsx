@@ -1,5 +1,5 @@
 
-import { Home, Package, Plus, BarChart3, Settings, Palette, Sofa, MapPin } from "lucide-react";
+import { Home, Package, Plus, BarChart3, Settings, Palette, Sofa, MapPin, FileText } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -17,6 +17,7 @@ const mainItems = [
   { title: "Dashboard", url: "/", icon: Home },
   { title: "All Items", url: "/inventory", icon: Package },
   { title: "Add Item", url: "/add", icon: Plus },
+  { title: "Drafts", url: "/drafts", icon: FileText },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
 ];
 
