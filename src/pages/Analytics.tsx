@@ -7,11 +7,11 @@ import { sampleItems } from "@/data/sampleData";
 
 const Analytics = () => {
   const totalItems = sampleItems.length;
-  const availableItems = sampleItems.filter(item => item.status === "available").length;
-  const soldItems = sampleItems.filter(item => item.status === "sold").length;
+  const displayedItems = sampleItems.filter(item => item.status === "displayed").length;
+  const storedItems = sampleItems.filter(item => item.status === "stored").length;
+  const loanedItems = sampleItems.filter(item => item.status === "loaned").length;
   const artItems = sampleItems.filter(item => item.category === "art").length;
   const furnitureItems = sampleItems.filter(item => item.category === "furniture").length;
-  const totalValue = sampleItems.reduce((sum, item) => sum + item.price, 0);
 
   return (
     <SidebarProvider>
@@ -39,19 +39,28 @@ const Analytics = () => {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-sm font-medium text-slate-600">Available</CardTitle>
+                  <CardTitle className="text-sm font-medium text-slate-600">Displayed</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-green-600">{availableItems}</div>
+                  <div className="text-2xl font-bold text-green-600">{displayedItems}</div>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-sm font-medium text-slate-600">Sold</CardTitle>
+                  <CardTitle className="text-sm font-medium text-slate-600">Stored</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-blue-600">{soldItems}</div>
+                  <div className="text-2xl font-bold text-blue-600">{storedItems}</div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm font-medium text-slate-600">Loaned</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-yellow-600">{loanedItems}</div>
                 </CardContent>
               </Card>
 
@@ -70,15 +79,6 @@ const Analytics = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{furnitureItems}</div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm font-medium text-slate-600">Total Value</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">${totalValue.toLocaleString()}</div>
                 </CardContent>
               </Card>
             </div>

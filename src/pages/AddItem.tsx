@@ -25,7 +25,7 @@ const AddItem = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-slate-600">
-                  This form will be enhanced once you connect to Supabase for database storage.
+                  This form will be enhanced once you connect to a database for storage.
                 </p>
               </CardContent>
             </Card>

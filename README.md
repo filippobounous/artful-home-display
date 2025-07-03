@@ -71,3 +71,21 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+
+## Running locally
+
+1. Clone the repository and install dependencies:
+
+```bash
+git clone <YOUR_GIT_URL>
+cd artful-home-display
+npm install
+```
+
+2. Start the development server:
+
+```bash
+npm run dev
+```
+
+The app will be available at `http://localhost:5173` by default.

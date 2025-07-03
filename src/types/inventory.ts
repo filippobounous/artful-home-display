@@ -4,8 +4,7 @@ export interface InventoryItem {
   name: string;
   category: "art" | "furniture";
   type: string;
-  status: "available" | "sold" | "reserved";
-  price: number;
+  status: "displayed" | "stored" | "loaned";
   image: string;
   description: string;
   dimensions: string;
@@ -16,6 +15,6 @@ export interface InventoryItem {
 
 export type ViewMode = "grid" | "list";
 export type CategoryFilter = "all" | "art" | "furniture";
-export type StatusFilter = "all" | "available" | "sold" | "reserved";
+export type StatusFilter = "all" | "displayed" | "stored" | "loaned";
 export type HouseFilter = "all" | "main-house" | "guest-house" | "studio";
 export type RoomFilter = "all" | "living-room" | "bedroom" | "kitchen" | "dining-room" | "office" | "bathroom" | "hallway";
