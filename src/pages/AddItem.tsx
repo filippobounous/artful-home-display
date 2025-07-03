@@ -2,7 +2,7 @@
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { InventoryHeader } from "@/components/InventoryHeader";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AddItemForm } from "@/components/AddItemForm";
 
 const AddItem = () => {
   return (
@@ -19,16 +19,7 @@ const AddItem = () => {
               <p className="text-slate-600">Add a new piece to your collection</p>
             </div>
 
-            <Card className="max-w-2xl">
-              <CardHeader>
-                <CardTitle>Item Details</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-slate-600">
-                  This form will save items once you connect the app to your FastAPI backend or other database.
-                </p>
-              </CardContent>
-            </Card>
+            <AddItemForm />
           </main>
         </div>
       </div>

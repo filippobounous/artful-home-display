@@ -1,5 +1,5 @@
 
-import { Home, Package, Plus, BarChart3, Settings, Palette, Sofa } from "lucide-react";
+import { Home, Package, Plus, BarChart3, Settings, Palette, Sofa, MapPin } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -23,6 +23,12 @@ const mainItems = [
 const categoryItems = [
   { title: "Art & Paintings", url: "/art", icon: Palette },
   { title: "Furniture", url: "/furniture", icon: Sofa },
+];
+
+const houseItems = [
+  { title: "Main House", url: "/house/main-house", icon: MapPin },
+  { title: "Guest House", url: "/house/guest-house", icon: MapPin },
+  { title: "Studio", url: "/house/studio", icon: MapPin },
 ];
 
 export function AppSidebar() {
@@ -51,7 +57,7 @@ export function AppSidebar() {
           {!isCollapsed ? (
             <div>
               <h2 className="text-xl font-bold text-slate-900">ArtiFurn</h2>
-              <p className="text-sm text-slate-600">Inventory Manager</p>
+              <p className="text-sm text-slate-600">Collection Manager</p>
             </div>
           ) : (
             <div className="text-center">
@@ -95,6 +101,30 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {categoryItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <NavLink 
+                      to={item.url}
+                      className={({ isActive }) => getNavCls({ isActive })}
+                    >
+                      <item.icon className="w-4 h-4" />
+                      {!isCollapsed && <span>{item.title}</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Houses */}
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-slate-500 uppercase tracking-wider text-xs font-semibold">
+            {!isCollapsed && "Houses"}
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {houseItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <NavLink 

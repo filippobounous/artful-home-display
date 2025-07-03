@@ -9,15 +9,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CategoryFilter, StatusFilter, ViewMode, HouseFilter, RoomFilter } from "@/types/inventory";
+import { CategoryFilter, ViewMode, HouseFilter, RoomFilter } from "@/types/inventory";
 
 interface SearchFiltersProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
   selectedCategory: CategoryFilter;
   setSelectedCategory: (category: CategoryFilter) => void;
-  selectedStatus: StatusFilter;
-  setSelectedStatus: (status: StatusFilter) => void;
   selectedHouse: HouseFilter;
   setSelectedHouse: (house: HouseFilter) => void;
   selectedRoom: RoomFilter;
@@ -31,8 +29,6 @@ export function SearchFilters({
   setSearchTerm,
   selectedCategory,
   setSelectedCategory,
-  selectedStatus,
-  setSelectedStatus,
   selectedHouse,
   setSelectedHouse,
   selectedRoom,
@@ -57,20 +53,11 @@ export function SearchFilters({
             <SelectValue placeholder="Category" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Items</SelectItem>
+            <SelectItem value="all">All Categories</SelectItem>
             <SelectItem value="art">Art</SelectItem>
             <SelectItem value="furniture">Furniture</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-          <SelectTrigger className="w-full sm:w-48">
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="displayed">Displayed</SelectItem>
-            <SelectItem value="stored">Stored</SelectItem>
-            <SelectItem value="loaned">Loaned</SelectItem>
+            <SelectItem value="sculpture">Sculpture</SelectItem>
+            <SelectItem value="decorative">Decorative</SelectItem>
           </SelectContent>
         </Select>
       </div>

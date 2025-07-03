@@ -4,6 +4,7 @@ import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { InventoryHeader } from "@/components/InventoryHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { sampleItems } from "@/data/sampleData";
 import { fetchInventory } from "@/lib/api";
 import { InventoryItem } from "@/types/inventory";
@@ -17,12 +18,61 @@ const Analytics = () => {
       .catch(() => {});
   }, []);
 
+  // Basic statistics
   const totalItems = items.length;
-  const displayedItems = items.filter(item => item.status === "displayed").length;
-  const storedItems = items.filter(item => item.status === "stored").length;
-  const loanedItems = items.filter(item => item.status === "loaned").length;
+  const totalValuation = items.reduce((sum, item) => sum + (item.valuation || 0), 0);
+  const avgValuation = totalItems > 0 ? totalValuation / totalItems : 0;
   const artItems = items.filter(item => item.category === "art").length;
   const furnitureItems = items.filter(item => item.category === "furniture").length;
+
+  // Items by category
+  const categoryData = items.reduce((acc, item) => {
+    acc[item.category] = (acc[item.category] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const categoryChartData = Object.entries(categoryData).map(([category, count]) => ({
+    category: category.charAt(0).toUpperCase() + category.slice(1),
+    count
+  }));
+
+  // Items by house
+  const houseData = items.reduce((acc, item) => {
+    const house = item.house || "Unassigned";
+    acc[house] = (acc[house] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const houseChartData = Object.entries(houseData).map(([house, count]) => ({
+    house: house.replace("-", " ").replace(/\b\w/g, l => l.toUpperCase()),
+    count
+  }));
+
+  // Items by condition
+  const conditionData = items.reduce((acc, item) => {
+    acc[item.condition] = (acc[item.condition] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const conditionChartData = Object.entries(conditionData).map(([condition, count]) => ({
+    condition: condition.charAt(0).toUpperCase() + condition.slice(1),
+    count
+  }));
+
+  // Valuation by category
+  const valuationByCategory = items.reduce((acc, item) => {
+    if (item.valuation) {
+      acc[item.category] = (acc[item.category] || 0) + item.valuation;
+    }
+    return acc;
+  }, {} as Record<string, number>);
+
+  const valuationChartData = Object.entries(valuationByCategory).map(([category, value]) => ({
+    category: category.charAt(0).toUpperCase() + category.slice(1),
+    value
+  }));
+
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
   return (
     <SidebarProvider>
@@ -35,10 +85,11 @@ const Analytics = () => {
           <main className="flex-1 p-6">
             <div className="mb-6">
               <h2 className="text-xl font-semibold text-slate-900 mb-2">Collection Analytics</h2>
-              <p className="text-slate-600">Overview of your collection statistics</p>
+              <p className="text-slate-600">Comprehensive overview of your collection statistics</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Overview Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               <Card>
                 <CardHeader>
                   <CardTitle className="text-sm font-medium text-slate-600">Total Items</CardTitle>
@@ -50,28 +101,19 @@ const Analytics = () => {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-sm font-medium text-slate-600">Displayed</CardTitle>
+                  <CardTitle className="text-sm font-medium text-slate-600">Total Valuation</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-green-600">{displayedItems}</div>
+                  <div className="text-2xl font-bold">${totalValuation.toLocaleString()}</div>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-sm font-medium text-slate-600">Stored</CardTitle>
+                  <CardTitle className="text-sm font-medium text-slate-600">Average Value</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-blue-600">{storedItems}</div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm font-medium text-slate-600">Loaned</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold text-yellow-600">{loanedItems}</div>
+                  <div className="text-2xl font-bold">${Math.round(avgValuation).toLocaleString()}</div>
                 </CardContent>
               </Card>
 
@@ -80,16 +122,90 @@ const Analytics = () => {
                   <CardTitle className="text-sm font-medium text-slate-600">Art Pieces</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{artItems}</div>
+                  <div className="text-2xl font-bold text-blue-600">{artItems}</div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Items by Category</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={categoryChartData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="category" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar dataKey="count" fill="#3b82f6" />
+                    </BarChart>
+                  </ResponsiveContainer>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-sm font-medium text-slate-600">Furniture</CardTitle>
+                  <CardTitle>Items by House</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{furnitureItems}</div>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={houseChartData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ house, percent }) => `${house} (${(percent * 100).toFixed(0)}%)`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="count"
+                      >
+                        {houseChartData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Valuation by Category</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={valuationChartData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="category" />
+                      <YAxis />
+                      <Tooltip formatter={(value) => [`$${value.toLocaleString()}`, 'Value']} />
+                      <Bar dataKey="value" fill="#10b981" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Items by Condition</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={conditionChartData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="condition" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar dataKey="count" fill="#f59e0b" />
+                    </BarChart>
+                  </ResponsiveContainer>
                 </CardContent>
               </Card>
             </div>

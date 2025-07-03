@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -10,12 +9,11 @@ import { EmptyState } from "@/components/EmptyState";
 import { sampleItems } from "@/data/sampleData";
 import { fetchInventory } from "@/lib/api";
 import { InventoryItem } from "@/types/inventory";
-import { CategoryFilter, StatusFilter, ViewMode, HouseFilter, RoomFilter } from "@/types/inventory";
+import { CategoryFilter, ViewMode, HouseFilter, RoomFilter } from "@/types/inventory";
 
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>("all");
-  const [selectedStatus, setSelectedStatus] = useState<StatusFilter>("all");
   const [selectedHouse, setSelectedHouse] = useState<HouseFilter>("all");
   const [selectedRoom, setSelectedRoom] = useState<RoomFilter>("all");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
@@ -30,14 +28,14 @@ const Index = () => {
   }, []);
 
   const filteredItems = items.filter(item => {
-    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (item.artist && item.artist.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesCategory = selectedCategory === "all" || item.category === selectedCategory;
-    const matchesStatus = selectedStatus === "all" || item.status === selectedStatus;
     const matchesHouse = selectedHouse === "all" || item.house === selectedHouse;
     const matchesRoom = selectedRoom === "all" || item.room === selectedRoom;
     
-    return matchesSearch && matchesCategory && matchesStatus && matchesHouse && matchesRoom;
+    return matchesSearch && matchesCategory && matchesHouse && matchesRoom;
   });
 
   return (
@@ -54,8 +52,6 @@ const Index = () => {
               setSearchTerm={setSearchTerm}
               selectedCategory={selectedCategory}
               setSelectedCategory={setSelectedCategory}
-              selectedStatus={selectedStatus}
-              setSelectedStatus={setSelectedStatus}
               selectedHouse={selectedHouse}
               setSelectedHouse={setSelectedHouse}
               selectedRoom={selectedRoom}
