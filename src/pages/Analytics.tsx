@@ -1,17 +1,28 @@
 
+import { useEffect, useState } from "react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { InventoryHeader } from "@/components/InventoryHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { sampleItems } from "@/data/sampleData";
+import { fetchInventory } from "@/lib/api";
+import { InventoryItem } from "@/types/inventory";
 
 const Analytics = () => {
-  const totalItems = sampleItems.length;
-  const displayedItems = sampleItems.filter(item => item.status === "displayed").length;
-  const storedItems = sampleItems.filter(item => item.status === "stored").length;
-  const loanedItems = sampleItems.filter(item => item.status === "loaned").length;
-  const artItems = sampleItems.filter(item => item.category === "art").length;
-  const furnitureItems = sampleItems.filter(item => item.category === "furniture").length;
+  const [items, setItems] = useState<InventoryItem[]>(sampleItems);
+
+  useEffect(() => {
+    fetchInventory()
+      .then(data => setItems(data))
+      .catch(() => {});
+  }, []);
+
+  const totalItems = items.length;
+  const displayedItems = items.filter(item => item.status === "displayed").length;
+  const storedItems = items.filter(item => item.status === "stored").length;
+  const loanedItems = items.filter(item => item.status === "loaned").length;
+  const artItems = items.filter(item => item.category === "art").length;
+  const furnitureItems = items.filter(item => item.category === "furniture").length;
 
   return (
     <SidebarProvider>

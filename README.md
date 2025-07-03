@@ -89,3 +89,16 @@ npm run dev
 ```
 
 The app will be available at `http://localhost:5173` by default.
+
+## Connecting a FastAPI backend
+
+1. Create a `.env` file based on `.env.example` and set `VITE_API_URL` to the URL of your FastAPI server.
+2. Start your FastAPI app (for example `uvicorn your_package.main:app --reload`).
+3. The frontend will attempt to fetch inventory data from `${VITE_API_URL}/items`.
+4. If the request fails, the app falls back to sample data.
+
+### Using only a database
+
+If you prefer to expose just a database, create a small FastAPI layer that
+connects to your DB and provides the `/items` endpoints. Point `VITE_API_URL`
+to that service and the app will use it for data.

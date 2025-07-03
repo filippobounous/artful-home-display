@@ -25,7 +25,7 @@ const AddItem = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-slate-600">
-                  This form will be enhanced once you connect to a database for storage.
+                  This form will save items once you connect the app to your FastAPI backend or other database.
                 </p>
               </CardContent>
             </Card>
