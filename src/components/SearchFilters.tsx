@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CategoryFilter, ViewMode, HouseFilter, RoomFilter } from "@/types/inventory";
+import { houseConfigs } from "@/types/inventory";
 
 interface SearchFiltersProps {
   searchTerm: string;
@@ -36,6 +37,16 @@ export function SearchFilters({
   viewMode,
   setViewMode,
 }: SearchFiltersProps) {
+  // Get current house configuration for dynamic room filtering
+  const currentHouseConfig = houseConfigs.find(h => h.id === selectedHouse);
+  const availableRooms = currentHouseConfig?.rooms || [];
+
+  const handleHouseChange = (value: HouseFilter) => {
+    setSelectedHouse(value);
+    // Reset room selection when house changes
+    setSelectedRoom("all");
+  };
+
   return (
     <div className="mb-8 space-y-4">
       <div className="flex flex-col sm:flex-row gap-4">
@@ -63,15 +74,17 @@ export function SearchFilters({
       </div>
       
       <div className="flex flex-col sm:flex-row gap-4">
-        <Select value={selectedHouse} onValueChange={setSelectedHouse}>
+        <Select value={selectedHouse} onValueChange={handleHouseChange}>
           <SelectTrigger className="w-full sm:w-48">
             <SelectValue placeholder="House" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Houses</SelectItem>
-            <SelectItem value="main-house">Main House</SelectItem>
-            <SelectItem value="guest-house">Guest House</SelectItem>
-            <SelectItem value="studio">Studio</SelectItem>
+            {houseConfigs.map(house => (
+              <SelectItem key={house.id} value={house.id}>
+                {house.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
         <Select value={selectedRoom} onValueChange={setSelectedRoom}>
@@ -80,13 +93,23 @@ export function SearchFilters({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Rooms</SelectItem>
-            <SelectItem value="living-room">Living Room</SelectItem>
-            <SelectItem value="bedroom">Bedroom</SelectItem>
-            <SelectItem value="kitchen">Kitchen</SelectItem>
-            <SelectItem value="dining-room">Dining Room</SelectItem>
-            <SelectItem value="office">Office</SelectItem>
-            <SelectItem value="bathroom">Bathroom</SelectItem>
-            <SelectItem value="hallway">Hallway</SelectItem>
+            {selectedHouse === "all" ? (
+              <>
+                <SelectItem value="living-room">Living Room</SelectItem>
+                <SelectItem value="bedroom">Bedroom</SelectItem>
+                <SelectItem value="kitchen">Kitchen</SelectItem>
+                <SelectItem value="dining-room">Dining Room</SelectItem>
+                <SelectItem value="office">Office</SelectItem>
+                <SelectItem value="bathroom">Bathroom</SelectItem>
+                <SelectItem value="hallway">Hallway</SelectItem>
+              </>
+            ) : (
+              availableRooms.map(room => (
+                <SelectItem key={room.id} value={room.id}>
+                  {room.name}
+                </SelectItem>
+              ))
+            )}
           </SelectContent>
         </Select>
         <div className="flex gap-2 ml-auto">

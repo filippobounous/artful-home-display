@@ -34,24 +34,22 @@ export function ItemDetailDialog({ item, open, onOpenChange, onEdit }: ItemDetai
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <div className="flex items-start justify-between">
-            <DialogTitle className="text-xl font-semibold">{item.title}</DialogTitle>
-            <div className="flex gap-2">
-              <Badge className={getConditionColor(item.condition)}>
-                {item.condition}
-              </Badge>
-              {onEdit && (
-                <Button 
-                  size="sm" 
-                  variant="outline" 
-                  onClick={() => onEdit(item)}
-                  className="h-8 px-2"
-                >
-                  <Edit className="w-4 h-4 mr-1" />
-                  Edit
-                </Button>
-              )}
-            </div>
+          <DialogTitle className="text-xl font-semibold pr-16">{item.title}</DialogTitle>
+          <div className="flex items-center gap-2 mt-2">
+            <Badge className={getConditionColor(item.condition)}>
+              {item.condition}
+            </Badge>
+            {onEdit && (
+              <Button 
+                size="sm" 
+                variant="outline" 
+                onClick={() => onEdit(item)}
+                className="h-8 px-2"
+              >
+                <Edit className="w-4 h-4 mr-1" />
+                Edit
+              </Button>
+            )}
           </div>
         </DialogHeader>
 
