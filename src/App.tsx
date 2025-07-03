@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Art from "./pages/Art";
 import Furniture from "./pages/Furniture";
+import HousePage from "./pages/HousePage";
 import Analytics from "./pages/Analytics";
 import AddItem from "./pages/AddItem";
 import Settings from "./pages/Settings";
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/inventory" element={<Index />} />
           <Route path="/art" element={<Art />} />
           <Route path="/furniture" element={<Furniture />} />
+          <Route path="/house/:houseId" element={<HousePage />} />
           <Route path="/analytics" element={<Analytics />} />
           <Route path="/add" element={<AddItem />} />
           <Route path="/settings" element={<Settings />} />

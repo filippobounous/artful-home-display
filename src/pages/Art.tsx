@@ -6,6 +6,7 @@ import { InventoryHeader } from "@/components/InventoryHeader";
 import { SearchFilters } from "@/components/SearchFilters";
 import { ItemsGrid } from "@/components/ItemsGrid";
 import { ItemsList } from "@/components/ItemsList";
+import { ItemDetailDialog } from "@/components/ItemDetailDialog";
 import { EmptyState } from "@/components/EmptyState";
 import { sampleItems } from "@/data/sampleData";
 import { fetchInventory } from "@/lib/api";
@@ -19,6 +20,7 @@ const Art = () => {
   const [selectedRoom, setSelectedRoom] = useState<RoomFilter>("all");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [items, setItems] = useState<InventoryItem[]>(sampleItems);
+  const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
 
   useEffect(() => {
     fetchInventory()
@@ -73,10 +75,16 @@ const Art = () => {
             {filteredItems.length === 0 ? (
               <EmptyState />
             ) : viewMode === "grid" ? (
-              <ItemsGrid items={filteredItems} />
+              <ItemsGrid items={filteredItems} onItemClick={setSelectedItem} />
             ) : (
-              <ItemsList items={filteredItems} />
+              <ItemsList items={filteredItems} onItemClick={setSelectedItem} />
             )}
+
+            <ItemDetailDialog
+              item={selectedItem}
+              open={!!selectedItem}
+              onOpenChange={(open) => !open && setSelectedItem(null)}
+            />
           </main>
         </div>
       </div>

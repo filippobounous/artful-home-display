@@ -12,7 +12,9 @@ export const sampleItems: InventoryItem[] = [
     description: "Beautiful vintage oak dining table from the 1960s",
     condition: "excellent",
     house: "main-house",
-    room: "dining-room"
+    room: "dining-room",
+    yearPeriod: "1960s",
+    quantity: 1
   },
   {
     id: 2,
@@ -27,11 +29,16 @@ export const sampleItems: InventoryItem[] = [
     house: "main-house",
     room: "living-room",
     valuation: 1500,
-    valuationDate: "2024-01-15"
+    valuationDate: "2024-01-15",
+    valuationPerson: "Art Appraiser Co.",
+    valuationCurrency: "USD",
+    yearPeriod: "2020",
+    quantity: 1
   },
   {
     id: 3,
     title: "Mid-Century Modern Chair",
+    artist: "Charles Eames",
     category: "furniture",
     subcategory: "chair",
     size: "32\" x 30\" x 34\"",
@@ -39,7 +46,9 @@ export const sampleItems: InventoryItem[] = [
     description: "Iconic mid-century modern lounge chair",
     condition: "good",
     house: "guest-house",
-    room: "living-room"
+    room: "living-room",
+    yearPeriod: "1950s",
+    quantity: 1
   },
   {
     id: 4,
@@ -52,8 +61,13 @@ export const sampleItems: InventoryItem[] = [
     description: "Modern bronze sculpture by renowned artist",
     condition: "excellent",
     house: "studio",
+    room: "main-area",
     valuation: 3000,
-    valuationDate: "2023-12-01"
+    valuationDate: "2023-12-01",
+    valuationPerson: "Modern Art Valuations",
+    valuationCurrency: "USD",
+    yearPeriod: "2018",
+    quantity: 1
   },
   {
     id: 5,
@@ -65,7 +79,9 @@ export const sampleItems: InventoryItem[] = [
     description: "Authentic Persian rug with intricate patterns",
     condition: "very good",
     house: "main-house",
-    room: "living-room"
+    room: "living-room",
+    yearPeriod: "19th century",
+    quantity: 1
   },
   {
     id: 6,
@@ -80,6 +96,10 @@ export const sampleItems: InventoryItem[] = [
     house: "main-house",
     room: "office",
     valuation: 2200,
-    valuationDate: "2024-02-10"
+    valuationDate: "2024-02-10",
+    valuationPerson: "Fine Art Appraisers",
+    valuationCurrency: "USD",
+    yearPeriod: "1920s",
+    quantity: 1
   }
 ];

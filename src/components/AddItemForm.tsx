@@ -11,6 +11,7 @@ import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { categoryConfigs, houseConfigs } from "@/types/inventory";
 
 export function AddItemForm() {
   const [formData, setFormData] = useState({
@@ -21,6 +22,10 @@ export function AddItemForm() {
     size: "",
     valuation: "",
     valuationDate: undefined as Date | undefined,
+    valuationPerson: "",
+    valuationCurrency: "USD",
+    quantity: "1",
+    yearPeriod: "",
     house: "",
     room: "",
     description: "",
@@ -54,6 +59,24 @@ export function AddItemForm() {
     }));
   };
 
+  // Get subcategories for selected category
+  const selectedCategoryConfig = categoryConfigs.find(cat => cat.id === formData.category);
+  const availableSubcategories = selectedCategoryConfig?.subcategories || [];
+
+  // Get rooms for selected house
+  const selectedHouseConfig = houseConfigs.find(house => house.id === formData.house);
+  const availableRooms = selectedHouseConfig?.rooms || [];
+
+  // Reset subcategory when category changes
+  const handleCategoryChange = (value: string) => {
+    setFormData(prev => ({ ...prev, category: value, subcategory: "" }));
+  };
+
+  // Reset room when house changes
+  const handleHouseChange = (value: string) => {
+    setFormData(prev => ({ ...prev, house: value, room: "" }));
+  };
+
   return (
     <Card className="max-w-4xl">
       <CardHeader>
@@ -75,11 +98,12 @@ export function AddItemForm() {
               </div>
 
               <div>
-                <Label htmlFor="artist">Artist/Maker</Label>
+                <Label htmlFor="artist">Artist/Maker *</Label>
                 <Input
                   id="artist"
                   value={formData.artist}
                   onChange={(e) => setFormData(prev => ({ ...prev, artist: e.target.value }))}
+                  required
                 />
               </div>
 
@@ -87,26 +111,48 @@ export function AddItemForm() {
                 <Label htmlFor="category">Category *</Label>
                 <Select
                   value={formData.category}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, category: value }))}
+                  onValueChange={handleCategoryChange}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="art">Art</SelectItem>
-                    <SelectItem value="furniture">Furniture</SelectItem>
-                    <SelectItem value="sculpture">Sculpture</SelectItem>
-                    <SelectItem value="decorative">Decorative</SelectItem>
+                    {categoryConfigs.map(category => (
+                      <SelectItem key={category.id} value={category.id}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
 
               <div>
                 <Label htmlFor="subcategory">Subcategory</Label>
-                <Input
-                  id="subcategory"
+                <Select
                   value={formData.subcategory}
-                  onChange={(e) => setFormData(prev => ({ ...prev, subcategory: e.target.value }))}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, subcategory: value }))}
+                  disabled={!formData.category}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={formData.category ? "Select subcategory" : "Select category first"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableSubcategories.map(subcategory => (
+                      <SelectItem key={subcategory.id} value={subcategory.id}>
+                        {subcategory.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="yearPeriod">Year/Period</Label>
+                <Input
+                  id="yearPeriod"
+                  placeholder="e.g., 1960s, 2020, 19th century"
+                  value={formData.yearPeriod}
+                  onChange={(e) => setFormData(prev => ({ ...prev, yearPeriod: e.target.value }))}
                 />
               </div>
 
@@ -137,6 +183,17 @@ export function AddItemForm() {
                   </SelectContent>
                 </Select>
               </div>
+
+              <div>
+                <Label htmlFor="quantity">Quantity</Label>
+                <Input
+                  id="quantity"
+                  type="number"
+                  min="1"
+                  value={formData.quantity}
+                  onChange={(e) => setFormData(prev => ({ ...prev, quantity: e.target.value }))}
+                />
+              </div>
             </div>
 
             {/* Location and Valuation */}
@@ -145,15 +202,17 @@ export function AddItemForm() {
                 <Label htmlFor="house">House</Label>
                 <Select
                   value={formData.house}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, house: value }))}
+                  onValueChange={handleHouseChange}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select house" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="main-house">Main House</SelectItem>
-                    <SelectItem value="guest-house">Guest House</SelectItem>
-                    <SelectItem value="studio">Studio</SelectItem>
+                    {houseConfigs.map(house => (
+                      <SelectItem key={house.id} value={house.id}>
+                        {house.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -163,30 +222,48 @@ export function AddItemForm() {
                 <Select
                   value={formData.room}
                   onValueChange={(value) => setFormData(prev => ({ ...prev, room: value }))}
+                  disabled={!formData.house}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select room" />
+                    <SelectValue placeholder={formData.house ? "Select room" : "Select house first"} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="living-room">Living Room</SelectItem>
-                    <SelectItem value="bedroom">Bedroom</SelectItem>
-                    <SelectItem value="kitchen">Kitchen</SelectItem>
-                    <SelectItem value="dining-room">Dining Room</SelectItem>
-                    <SelectItem value="office">Office</SelectItem>
-                    <SelectItem value="bathroom">Bathroom</SelectItem>
-                    <SelectItem value="hallway">Hallway</SelectItem>
+                    {availableRooms.map(room => (
+                      <SelectItem key={room.id} value={room.id}>
+                        {room.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
 
               <div>
-                <Label htmlFor="valuation">Valuation ($)</Label>
+                <Label htmlFor="valuation">Valuation</Label>
                 <Input
                   id="valuation"
                   type="number"
+                  placeholder="0"
                   value={formData.valuation}
                   onChange={(e) => setFormData(prev => ({ ...prev, valuation: e.target.value }))}
                 />
+              </div>
+
+              <div>
+                <Label htmlFor="valuationCurrency">Valuation Currency</Label>
+                <Select
+                  value={formData.valuationCurrency}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, valuationCurrency: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select currency" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="USD">USD</SelectItem>
+                    <SelectItem value="EUR">EUR</SelectItem>
+                    <SelectItem value="GBP">GBP</SelectItem>
+                    <SelectItem value="CAD">CAD</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>
@@ -213,6 +290,16 @@ export function AddItemForm() {
                     />
                   </PopoverContent>
                 </Popover>
+              </div>
+
+              <div>
+                <Label htmlFor="valuationPerson">Valuation Person/Company</Label>
+                <Input
+                  id="valuationPerson"
+                  placeholder="e.g., Art Appraisers Inc."
+                  value={formData.valuationPerson}
+                  onChange={(e) => setFormData(prev => ({ ...prev, valuationPerson: e.target.value }))}
+                />
               </div>
             </div>
           </div>

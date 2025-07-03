@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { InventoryHeader } from "@/components/InventoryHeader";
@@ -12,11 +13,13 @@ import { sampleItems } from "@/data/sampleData";
 import { fetchInventory } from "@/lib/api";
 import { InventoryItem } from "@/types/inventory";
 import { CategoryFilter, ViewMode, HouseFilter, RoomFilter } from "@/types/inventory";
+import { houseConfigs } from "@/types/inventory";
 
-const Furniture = () => {
+const HousePage = () => {
+  const { houseId } = useParams<{ houseId: string }>();
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>("furniture");
-  const [selectedHouse, setSelectedHouse] = useState<HouseFilter>("all");
+  const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>("all");
+  const [selectedHouse, setSelectedHouse] = useState<HouseFilter>(houseId as HouseFilter || "all");
   const [selectedRoom, setSelectedRoom] = useState<RoomFilter>("all");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [items, setItems] = useState<InventoryItem[]>(sampleItems);
@@ -28,12 +31,15 @@ const Furniture = () => {
       .catch(() => {});
   }, []);
 
+  const houseConfig = houseConfigs.find(h => h.id === houseId);
+  const houseName = houseConfig?.name || "Unknown House";
+
   const filteredItems = items.filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (item.artist && item.artist.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesCategory = item.category === "furniture";
-    const matchesHouse = selectedHouse === "all" || item.house === selectedHouse;
+    const matchesCategory = selectedCategory === "all" || item.category === selectedCategory;
+    const matchesHouse = item.house === houseId;
     const matchesRoom = selectedRoom === "all" || item.room === selectedRoom;
     
     return matchesSearch && matchesCategory && matchesHouse && matchesRoom;
@@ -49,8 +55,8 @@ const Furniture = () => {
 
           <main className="flex-1 p-6">
             <div className="mb-6">
-              <h2 className="text-xl font-semibold text-slate-900 mb-2">Furniture Collection</h2>
-              <p className="text-slate-600">Browse and manage your furniture pieces</p>
+              <h2 className="text-xl font-semibold text-slate-900 mb-2">{houseName}</h2>
+              <p className="text-slate-600">Items located in {houseName.toLowerCase()}</p>
             </div>
 
             <SearchFilters
@@ -68,7 +74,7 @@ const Furniture = () => {
 
             <div className="mb-6">
               <p className="text-slate-600">
-                Showing {filteredItems.length} furniture pieces
+                Showing {filteredItems.length} items in {houseName.toLowerCase()}
               </p>
             </div>
 
@@ -92,4 +98,4 @@ const Furniture = () => {
   );
 };
 
-export default Furniture;
+export default HousePage;

@@ -5,9 +5,10 @@ import { InventoryItem } from "@/types/inventory";
 
 interface ItemsListProps {
   items: InventoryItem[];
+  onItemClick?: (item: InventoryItem) => void;
 }
 
-export function ItemsList({ items }: ItemsListProps) {
+export function ItemsList({ items, onItemClick }: ItemsListProps) {
   const getConditionColor = (condition: string) => {
     switch (condition) {
       case "mint":
@@ -26,7 +27,11 @@ export function ItemsList({ items }: ItemsListProps) {
   return (
     <div className="space-y-4">
       {items.map((item) => (
-        <Card key={item.id} className="hover:shadow-md transition-shadow cursor-pointer">
+        <Card 
+          key={item.id} 
+          className="hover:shadow-md transition-shadow cursor-pointer"
+          onClick={() => onItemClick?.(item)}
+        >
           <CardContent className="p-6">
             <div className="flex gap-4">
               <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
@@ -46,7 +51,9 @@ export function ItemsList({ items }: ItemsListProps) {
                 {item.artist && (
                   <p className="text-slate-600 text-sm font-medium mb-1">by {item.artist}</p>
                 )}
-                <p className="text-slate-600 mb-2">{item.description}</p>
+                {item.yearPeriod && (
+                  <p className="text-slate-600 text-sm mb-2">{item.yearPeriod}</p>
+                )}
                 <div className="flex items-center gap-4 text-sm text-slate-500">
                   <span className="capitalize">{item.category}</span>
                   {item.subcategory && (
@@ -55,20 +62,12 @@ export function ItemsList({ items }: ItemsListProps) {
                       <span>{item.subcategory}</span>
                     </>
                   )}
-                  {item.size && (
-                    <>
-                      <span>•</span>
-                      <span>{item.size}</span>
-                    </>
-                  )}
-                  <span>•</span>
-                  <span className="capitalize">{item.condition}</span>
                 </div>
                 {(item.house || item.room) && (
                   <div className="mt-2 text-sm text-slate-500">
-                    {item.house && <span>{item.house}</span>}
+                    {item.house && <span className="capitalize">{item.house.replace('-', ' ')}</span>}
                     {item.house && item.room && <span> • </span>}
-                    {item.room && <span>{item.room}</span>}
+                    {item.room && <span className="capitalize">{item.room.replace('-', ' ')}</span>}
                   </div>
                 )}
               </div>
