@@ -10,10 +10,14 @@ interface ItemsListProps {
 export function ItemsList({ items }: ItemsListProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "available": return "bg-green-100 text-green-800 border-green-200";
-      case "sold": return "bg-red-100 text-red-800 border-red-200";
-      case "reserved": return "bg-yellow-100 text-yellow-800 border-yellow-200";
-      default: return "bg-gray-100 text-gray-800 border-gray-200";
+      case "displayed":
+        return "bg-green-100 text-green-800 border-green-200";
+      case "stored":
+        return "bg-gray-100 text-gray-800 border-gray-200";
+      case "loaned":
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
 
@@ -46,10 +50,8 @@ export function ItemsList({ items }: ItemsListProps) {
                   <span className="capitalize">{item.condition}</span>
                 </div>
               </div>
-              <div className="text-right">
-                <span className="text-xl font-bold text-slate-900">
-                  ${item.price.toLocaleString()}
-                </span>
+              <div className="text-right hidden sm:block">
+                <span className="text-xs text-slate-500 capitalize">{item.status}</span>
               </div>
             </div>
           </CardContent>

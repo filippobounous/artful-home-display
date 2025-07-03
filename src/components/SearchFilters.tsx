@@ -68,9 +68,9 @@ export function SearchFilters({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Status</SelectItem>
-            <SelectItem value="available">Available</SelectItem>
-            <SelectItem value="sold">Sold</SelectItem>
-            <SelectItem value="reserved">Reserved</SelectItem>
+            <SelectItem value="displayed">Displayed</SelectItem>
+            <SelectItem value="stored">Stored</SelectItem>
+            <SelectItem value="loaned">Loaned</SelectItem>
           </SelectContent>
         </Select>
       </div>

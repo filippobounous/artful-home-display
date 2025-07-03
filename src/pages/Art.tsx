@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { InventoryHeader } from "@/components/InventoryHeader";
@@ -8,6 +8,8 @@ import { ItemsGrid } from "@/components/ItemsGrid";
 import { ItemsList } from "@/components/ItemsList";
 import { EmptyState } from "@/components/EmptyState";
 import { sampleItems } from "@/data/sampleData";
+import { fetchInventory } from "@/lib/api";
+import { InventoryItem } from "@/types/inventory";
 import { CategoryFilter, StatusFilter, ViewMode, HouseFilter, RoomFilter } from "@/types/inventory";
 
 const Art = () => {
@@ -17,8 +19,15 @@ const Art = () => {
   const [selectedHouse, setSelectedHouse] = useState<HouseFilter>("all");
   const [selectedRoom, setSelectedRoom] = useState<RoomFilter>("all");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  const [items, setItems] = useState<InventoryItem[]>(sampleItems);
 
-  const filteredItems = sampleItems.filter(item => {
+  useEffect(() => {
+    fetchInventory()
+      .then(data => setItems(data))
+      .catch(() => {});
+  }, []);
+
+  const filteredItems = items.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = item.category === "art";
