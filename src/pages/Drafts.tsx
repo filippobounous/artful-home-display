@@ -16,14 +16,32 @@ const Drafts = () => {
       title: "Untitled Draft",
       lastModified: "2024-01-15",
       category: "art",
-      description: "Modern abstract painting..."
+      description: "Modern abstract painting...",
+      data: {
+        title: "Untitled Draft",
+        category: "art",
+        subcategory: "painting",
+        description: "Modern abstract painting with vibrant colors",
+        condition: "excellent",
+        house: "main-house",
+        room: "living-room"
+      }
     },
     {
       id: 2,
       title: "Vintage Chair",
       lastModified: "2024-01-14",
       category: "furniture",
-      description: "Antique wooden chair from..."
+      description: "Antique wooden chair from...",
+      data: {
+        title: "Vintage Chair",
+        category: "furniture",
+        subcategory: "chair",
+        description: "Antique wooden chair from the 1920s",
+        condition: "good",
+        house: "guest-house",
+        room: "bedroom"
+      }
     }
   ]);
 
@@ -34,8 +52,12 @@ const Drafts = () => {
 
   const editDraft = (id: number, event: React.MouseEvent) => {
     event.stopPropagation();
-    // Navigate to add item page with draft data
-    navigate(`/add?draftId=${id}`);
+    const draft = drafts.find(d => d.id === id);
+    if (draft) {
+      // Store draft data in localStorage for the AddItem page to pick up
+      localStorage.setItem('editingDraft', JSON.stringify(draft));
+      navigate(`/add?draftId=${id}`);
+    }
   };
 
   return (

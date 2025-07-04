@@ -1,5 +1,5 @@
 
-import { Search, Grid, List } from "lucide-react";
+import { Search, Grid, List, Table } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,8 +9,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CategoryFilter, ViewMode, HouseFilter, RoomFilter } from "@/types/inventory";
+import { CategoryFilter, HouseFilter, RoomFilter } from "@/types/inventory";
 import { houseConfigs, categoryConfigs } from "@/types/inventory";
+
+// Extended ViewMode type to include table
+type ExtendedViewMode = "grid" | "list" | "table";
 
 interface SearchFiltersProps {
   searchTerm: string;
@@ -21,8 +24,8 @@ interface SearchFiltersProps {
   setSelectedHouse: (house: HouseFilter) => void;
   selectedRoom: RoomFilter;
   setSelectedRoom: (room: RoomFilter) => void;
-  viewMode: ViewMode;
-  setViewMode: (mode: ViewMode) => void;
+  viewMode: ExtendedViewMode;
+  setViewMode: (mode: ExtendedViewMode) => void;
   onDownloadCSV?: () => void;
 }
 
@@ -134,6 +137,13 @@ export function SearchFilters({
             onClick={() => setViewMode("list")}
           >
             <List className="w-4 h-4" />
+          </Button>
+          <Button
+            variant={viewMode === "table" ? "default" : "outline"}
+            size="sm"
+            onClick={() => setViewMode("table")}
+          >
+            <Table className="w-4 h-4" />
           </Button>
         </div>
       </div>

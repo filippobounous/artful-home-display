@@ -6,12 +6,15 @@ import { InventoryHeader } from "@/components/InventoryHeader";
 import { SearchFilters } from "@/components/SearchFilters";
 import { ItemsGrid } from "@/components/ItemsGrid";
 import { ItemsList } from "@/components/ItemsList";
+import { ItemsTable } from "@/components/ItemsTable";
 import { ItemDetailDialog } from "@/components/ItemDetailDialog";
 import { EmptyState } from "@/components/EmptyState";
 import { sampleItems } from "@/data/sampleData";
 import { fetchInventory } from "@/lib/api";
 import { InventoryItem } from "@/types/inventory";
-import { CategoryFilter, ViewMode, HouseFilter, RoomFilter } from "@/types/inventory";
+import { CategoryFilter, HouseFilter, RoomFilter } from "@/types/inventory";
+
+type ViewMode = "grid" | "list" | "table";
 
 const Art = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -76,8 +79,10 @@ const Art = () => {
               <EmptyState />
             ) : viewMode === "grid" ? (
               <ItemsGrid items={filteredItems} onItemClick={setSelectedItem} />
-            ) : (
+            ) : viewMode === "list" ? (
               <ItemsList items={filteredItems} onItemClick={setSelectedItem} />
+            ) : (
+              <ItemsTable items={filteredItems} onItemClick={setSelectedItem} />
             )}
 
             <ItemDetailDialog

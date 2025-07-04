@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import AllItems from "./pages/AllItems";
 import Art from "./pages/Art";
 import Furniture from "./pages/Furniture";
+import Decorative from "./pages/Decorative";
 import HousePage from "./pages/HousePage";
 import Analytics from "./pages/Analytics";
 import AddItem from "./pages/AddItem";
@@ -31,7 +32,7 @@ const App = () => (
           <Route path="/inventory" element={<ProtectedRoute><AllItems /></ProtectedRoute>} />
           <Route path="/art" element={<ProtectedRoute><Art /></ProtectedRoute>} />
           <Route path="/furniture" element={<ProtectedRoute><Furniture /></ProtectedRoute>} />
-          <Route path="/decorative" element={<ProtectedRoute><Art /></ProtectedRoute>} />
+          <Route path="/decorative" element={<ProtectedRoute><Decorative /></ProtectedRoute>} />
           <Route path="/house/:houseId" element={<ProtectedRoute><HousePage /></ProtectedRoute>} />
           <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
           <Route path="/add" element={<ProtectedRoute><AddItem /></ProtectedRoute>} />
