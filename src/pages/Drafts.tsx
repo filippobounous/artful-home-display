@@ -27,11 +27,13 @@ const Drafts = () => {
     }
   ]);
 
-  const deleteDraft = (id: number) => {
-    setDrafts(drafts.filter(draft => draft.id !== id));
+  const deleteDraft = (id: number, event: React.MouseEvent) => {
+    event.stopPropagation();
+    setDrafts(prev => prev.filter(draft => draft.id !== id));
   };
 
-  const editDraft = (id: number) => {
+  const editDraft = (id: number, event: React.MouseEvent) => {
+    event.stopPropagation();
     // Navigate to add item page with draft data
     navigate(`/add?draftId=${id}`);
   };
@@ -73,7 +75,7 @@ const Drafts = () => {
                           <Button 
                             variant="outline" 
                             size="sm"
-                            onClick={() => editDraft(draft.id)}
+                            onClick={(e) => editDraft(draft.id, e)}
                           >
                             <Edit className="w-4 h-4 mr-1" />
                             Edit
@@ -81,7 +83,7 @@ const Drafts = () => {
                           <Button 
                             variant="destructive" 
                             size="sm"
-                            onClick={() => deleteDraft(draft.id)}
+                            onClick={(e) => deleteDraft(draft.id, e)}
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>

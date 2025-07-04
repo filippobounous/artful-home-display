@@ -1,5 +1,5 @@
 
-import { Home, Package, Plus, BarChart3, Settings, Palette, Sofa, MapPin, FileText } from "lucide-react";
+import { Home, Package, Plus, BarChart3, Settings, Palette, Sofa, MapPin, FileText, Lamp, Shapes } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -12,6 +12,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { categoryConfigs, houseConfigs } from "@/types/inventory";
 
 const mainItems = [
   { title: "Dashboard", url: "/", icon: Home },
@@ -21,22 +22,49 @@ const mainItems = [
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
 ];
 
-const categoryItems = [
-  { title: "Art & Paintings", url: "/art", icon: Palette },
-  { title: "Furniture", url: "/furniture", icon: Sofa },
-];
+// Dynamic category items based on configuration
+const getCategoryItems = () => {
+  return categoryConfigs.map(category => {
+    let icon = Palette; // default icon
+    switch(category.id) {
+      case 'art':
+        icon = Palette;
+        break;
+      case 'furniture':
+        icon = Sofa;
+        break;
+      case 'decorative':
+        icon = Lamp;
+        break;
+      default:
+        icon = Shapes;
+    }
+    
+    return {
+      title: category.name,
+      url: `/${category.id}`,
+      icon: icon
+    };
+  });
+};
 
-const houseItems = [
-  { title: "Main House", url: "/house/main-house", icon: MapPin },
-  { title: "Guest House", url: "/house/guest-house", icon: MapPin },
-  { title: "Studio", url: "/house/studio", icon: MapPin },
-];
+// Dynamic house items based on configuration
+const getHouseItems = () => {
+  return houseConfigs.map(house => ({
+    title: house.name,
+    url: `/house/${house.id}`,
+    icon: MapPin
+  }));
+};
 
 export function AppSidebar() {
   const { state } = useSidebar();
   const location = useLocation();
   const currentPath = location.pathname;
   const isCollapsed = state === "collapsed";
+
+  const categoryItems = getCategoryItems();
+  const houseItems = getHouseItems();
 
   const isActive = (path: string) => {
     if (path === "/") {

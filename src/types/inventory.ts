@@ -46,6 +46,7 @@ export interface HouseConfig {
   country: string;
   address?: string;
   yearBuilt?: number;
+  code?: string;
   rooms: RoomConfig[];
   visible: boolean;
 }
@@ -101,6 +102,7 @@ export const houseConfigs: HouseConfig[] = [
     country: "United States",
     address: "123 Main Street, Beverly Hills, CA",
     yearBuilt: 1985,
+    code: "MH01",
     rooms: [
       { id: "living-room", name: "Living Room", visible: true },
       { id: "dining-room", name: "Dining Room", visible: true },
@@ -118,6 +120,7 @@ export const houseConfigs: HouseConfig[] = [
     country: "United States",
     address: "125 Main Street, Beverly Hills, CA",
     yearBuilt: 1990,
+    code: "GH01",
     rooms: [
       { id: "living-room", name: "Living Room", visible: true },
       { id: "bedroom", name: "Bedroom", visible: true },
@@ -132,6 +135,7 @@ export const houseConfigs: HouseConfig[] = [
     country: "France",
     address: "45 Rue de Rivoli, Paris",
     yearBuilt: 2010,
+    code: "ST01",
     rooms: [
       { id: "main-area", name: "Main Area", visible: true },
       { id: "storage", name: "Storage", visible: true }

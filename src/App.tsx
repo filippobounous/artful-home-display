@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import AllItems from "./pages/AllItems";
 import Art from "./pages/Art";
@@ -13,6 +14,7 @@ import Analytics from "./pages/Analytics";
 import AddItem from "./pages/AddItem";
 import Drafts from "./pages/Drafts";
 import Settings from "./pages/Settings";
+import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,15 +26,17 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/inventory" element={<AllItems />} />
-          <Route path="/art" element={<Art />} />
-          <Route path="/furniture" element={<Furniture />} />
-          <Route path="/house/:houseId" element={<HousePage />} />
-          <Route path="/analytics" element={<Analytics />} />
-          <Route path="/add" element={<AddItem />} />
-          <Route path="/drafts" element={<Drafts />} />
-          <Route path="/settings" element={<Settings />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+          <Route path="/inventory" element={<ProtectedRoute><AllItems /></ProtectedRoute>} />
+          <Route path="/art" element={<ProtectedRoute><Art /></ProtectedRoute>} />
+          <Route path="/furniture" element={<ProtectedRoute><Furniture /></ProtectedRoute>} />
+          <Route path="/decorative" element={<ProtectedRoute><Art /></ProtectedRoute>} />
+          <Route path="/house/:houseId" element={<ProtectedRoute><HousePage /></ProtectedRoute>} />
+          <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+          <Route path="/add" element={<ProtectedRoute><AddItem /></ProtectedRoute>} />
+          <Route path="/drafts" element={<ProtectedRoute><Drafts /></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

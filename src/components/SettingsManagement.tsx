@@ -14,6 +14,7 @@ export function SettingsManagement() {
   const [newHouseCountry, setNewHouseCountry] = useState("");
   const [newHouseAddress, setNewHouseAddress] = useState("");
   const [newHouseYear, setNewHouseYear] = useState("");
+  const [newHouseCode, setNewHouseCode] = useState("");
   const [newRoomName, setNewRoomName] = useState("");
   const [selectedHouse, setSelectedHouse] = useState("");
   const [newCategoryName, setNewCategoryName] = useState("");
@@ -21,18 +22,24 @@ export function SettingsManagement() {
   const [selectedCategory, setSelectedCategory] = useState("");
 
   const addHouse = () => {
-    if (newHouseName.trim() && newHouseCountry.trim()) {
+    if (newHouseName.trim() && newHouseCountry.trim() && newHouseCode.trim()) {
+      if (newHouseCode.length !== 4) {
+        alert("House code must be exactly 4 characters long");
+        return;
+      }
       console.log("Adding house:", {
         name: newHouseName,
         country: newHouseCountry,
         address: newHouseAddress,
-        yearBuilt: newHouseYear ? parseInt(newHouseYear) : undefined
+        yearBuilt: newHouseYear ? parseInt(newHouseYear) : undefined,
+        code: newHouseCode.toUpperCase()
       });
       // In the future, this will connect to a database
       setNewHouseName("");
       setNewHouseCountry("");
       setNewHouseAddress("");
       setNewHouseYear("");
+      setNewHouseCode("");
     }
   };
 
@@ -93,11 +100,12 @@ export function SettingsManagement() {
                   />
                 </div>
                 <div>
-                  <Label>Address</Label>
+                  <Label>House Code * (4 characters)</Label>
                   <Input
-                    placeholder="Full address"
-                    value={newHouseAddress}
-                    onChange={(e) => setNewHouseAddress(e.target.value)}
+                    placeholder="e.g., MH01"
+                    value={newHouseCode}
+                    onChange={(e) => setNewHouseCode(e.target.value.slice(0, 4))}
+                    maxLength={4}
                   />
                 </div>
                 <div>
@@ -107,6 +115,14 @@ export function SettingsManagement() {
                     type="number"
                     value={newHouseYear}
                     onChange={(e) => setNewHouseYear(e.target.value)}
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <Label>Address</Label>
+                  <Input
+                    placeholder="Full address"
+                    value={newHouseAddress}
+                    onChange={(e) => setNewHouseAddress(e.target.value)}
                   />
                 </div>
               </div>

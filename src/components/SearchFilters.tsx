@@ -23,6 +23,7 @@ interface SearchFiltersProps {
   setSelectedRoom: (room: RoomFilter) => void;
   viewMode: ViewMode;
   setViewMode: (mode: ViewMode) => void;
+  onDownloadCSV?: () => void;
 }
 
 export function SearchFilters({
@@ -36,6 +37,7 @@ export function SearchFilters({
   setSelectedRoom,
   viewMode,
   setViewMode,
+  onDownloadCSV,
 }: SearchFiltersProps) {
   // Get current house configuration for dynamic room filtering
   const currentHouseConfig = houseConfigs.find(h => h.id === selectedHouse);
@@ -114,6 +116,11 @@ export function SearchFilters({
           </SelectContent>
         </Select>
         <div className="flex gap-2 ml-auto">
+          {onDownloadCSV && (
+            <Button variant="outline" size="sm" onClick={onDownloadCSV}>
+              Download CSV
+            </Button>
+          )}
           <Button
             variant={viewMode === "grid" ? "default" : "outline"}
             size="sm"
