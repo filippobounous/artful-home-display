@@ -102,3 +102,14 @@ The app will be available at `http://localhost:5173` by default.
 If you prefer to expose just a database, create a small FastAPI layer that
 connects to your DB and provides the `/items` endpoints. Point `VITE_API_URL`
 to that service and the app will use it for data.
+
+## Running with Docker
+
+1. Create a `.env` file based on `.env.example` and adjust `VITE_API_URL` if needed.
+2. Build the image and start the container:
+
+```bash
+docker compose up --build
+```
+
+The application will be available at `http://localhost:3000`.
