@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { CategoryFilter, ViewMode, HouseFilter, RoomFilter } from "@/types/inventory";
-import { houseConfigs } from "@/types/inventory";
+import { houseConfigs, categoryConfigs } from "@/types/inventory";
 
 interface SearchFiltersProps {
   searchTerm: string;
@@ -65,10 +65,11 @@ export function SearchFilters({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Categories</SelectItem>
-            <SelectItem value="art">Art</SelectItem>
-            <SelectItem value="furniture">Furniture</SelectItem>
-            <SelectItem value="sculpture">Sculpture</SelectItem>
-            <SelectItem value="decorative">Decorative</SelectItem>
+            {categoryConfigs.map((category) => (
+              <SelectItem key={category.id} value={category.id}>
+                {category.name}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
