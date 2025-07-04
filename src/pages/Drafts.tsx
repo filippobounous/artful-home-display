@@ -7,9 +7,11 @@ import { InventoryHeader } from "@/components/InventoryHeader";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trash2, Edit, FileText } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const Drafts = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [drafts, setDrafts] = useState([
     {
       id: 1,
@@ -24,7 +26,13 @@ const Drafts = () => {
         description: "Modern abstract painting with vibrant colors",
         condition: "excellent",
         house: "main-house",
-        room: "living-room"
+        room: "living-room",
+        artist: "Unknown Artist",
+        yearPeriod: "2023",
+        size: "24x36 inches",
+        valuation: 5000,
+        valuationCurrency: "USD",
+        notes: "Beautiful abstract piece with vibrant colors"
       }
     },
     {
@@ -40,7 +48,12 @@ const Drafts = () => {
         description: "Antique wooden chair from the 1920s",
         condition: "good",
         house: "guest-house",
-        room: "bedroom"
+        room: "bedroom",
+        yearPeriod: "1920s",
+        size: "Standard dining chair",
+        valuation: 800,
+        valuationCurrency: "USD",
+        notes: "Needs minor restoration on the seat"
       }
     }
   ]);
@@ -48,14 +61,28 @@ const Drafts = () => {
   const deleteDraft = (id: number, event: React.MouseEvent) => {
     event.stopPropagation();
     setDrafts(prev => prev.filter(draft => draft.id !== id));
+    toast({
+      title: "Draft deleted",
+      description: "The draft has been removed successfully"
+    });
   };
 
   const editDraft = (id: number, event: React.MouseEvent) => {
     event.stopPropagation();
     const draft = drafts.find(d => d.id === id);
     if (draft) {
-      // Store draft data in localStorage for the AddItem page to pick up
-      localStorage.setItem('editingDraft', JSON.stringify(draft));
+      // Store complete draft data in localStorage for the AddItem page to pick up
+      localStorage.setItem('editingDraft', JSON.stringify({
+        id: draft.id,
+        ...draft.data,
+        lastModified: draft.lastModified
+      }));
+      
+      toast({
+        title: "Loading draft",
+        description: "Redirecting to edit mode..."
+      });
+      
       navigate(`/add?draftId=${id}`);
     }
   };
@@ -89,9 +116,12 @@ const Drafts = () => {
                         <div className="flex-1">
                           <h3 className="font-medium text-slate-900">{draft.title}</h3>
                           <p className="text-sm text-slate-600 mt-1">{draft.description}</p>
-                          <p className="text-xs text-slate-500 mt-2">
-                            Last modified: {draft.lastModified} • Category: {draft.category}
-                          </p>
+                          <div className="flex gap-4 text-xs text-slate-500 mt-2">
+                            <span>Last modified: {draft.lastModified}</span>
+                            <span>Category: {draft.category}</span>
+                            {draft.data.house && <span>House: {draft.data.house}</span>}
+                            {draft.data.room && <span>Room: {draft.data.room}</span>}
+                          </div>
                         </div>
                         <div className="flex gap-2">
                           <Button 

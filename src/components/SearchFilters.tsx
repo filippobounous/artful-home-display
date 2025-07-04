@@ -9,11 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CategoryFilter, HouseFilter, RoomFilter } from "@/types/inventory";
+import { CategoryFilter, HouseFilter, RoomFilter, ViewMode } from "@/types/inventory";
 import { houseConfigs, categoryConfigs } from "@/types/inventory";
-
-// Extended ViewMode type to include table
-type ExtendedViewMode = "grid" | "list" | "table";
 
 interface SearchFiltersProps {
   searchTerm: string;
@@ -24,8 +21,8 @@ interface SearchFiltersProps {
   setSelectedHouse: (house: HouseFilter) => void;
   selectedRoom: RoomFilter;
   setSelectedRoom: (room: RoomFilter) => void;
-  viewMode: ExtendedViewMode;
-  setViewMode: (mode: ExtendedViewMode) => void;
+  viewMode: ViewMode;
+  setViewMode: (mode: ViewMode) => void;
   onDownloadCSV?: () => void;
 }
 

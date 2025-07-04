@@ -1,5 +1,5 @@
 
-import { Home, Package, Plus, BarChart3, Settings, Palette, Sofa, MapPin, FileText, Lamp, Shapes } from "lucide-react";
+import { Home, Package, Plus, BarChart3, Settings, Palette, Sofa, MapPin, FileText, Lamp, Shapes, House } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -12,7 +12,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { categoryConfigs, houseConfigs } from "@/types/inventory";
+import { useSettingsState } from "@/hooks/useSettingsState";
 
 const mainItems = [
   { title: "Dashboard", url: "/", icon: Home },
@@ -22,39 +22,15 @@ const mainItems = [
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
 ];
 
-// Dynamic category items based on configuration
-const getCategoryItems = () => {
-  return categoryConfigs.map(category => {
-    let icon = Palette; // default icon
-    switch(category.id) {
-      case 'art':
-        icon = Palette;
-        break;
-      case 'furniture':
-        icon = Sofa;
-        break;
-      case 'decorative':
-        icon = Lamp;
-        break;
-      default:
-        icon = Shapes;
-    }
-    
-    return {
-      title: category.name,
-      url: `/${category.id}`,
-      icon: icon
-    };
-  });
-};
-
-// Dynamic house items based on configuration
-const getHouseItems = () => {
-  return houseConfigs.map(house => ({
-    title: house.name,
-    url: `/house/${house.id}`,
-    icon: MapPin
-  }));
+const getIconComponent = (iconName: string) => {
+  switch(iconName) {
+    case 'palette': return Palette;
+    case 'sofa': return Sofa;
+    case 'lamp': return Lamp;
+    case 'house': return House;
+    case 'map-pin': return MapPin;
+    default: return Shapes;
+  }
 };
 
 export function AppSidebar() {
@@ -62,9 +38,21 @@ export function AppSidebar() {
   const location = useLocation();
   const currentPath = location.pathname;
   const isCollapsed = state === "collapsed";
+  const { categories, houses } = useSettingsState();
 
-  const categoryItems = getCategoryItems();
-  const houseItems = getHouseItems();
+  // Dynamic category items based on configuration
+  const categoryItems = categories.map(category => ({
+    title: category.name,
+    url: `/${category.id}`,
+    icon: getIconComponent(category.icon)
+  }));
+
+  // Dynamic house items based on configuration
+  const houseItems = houses.map(house => ({
+    title: house.name,
+    url: `/house/${house.id}`,
+    icon: getIconComponent(house.icon)
+  }));
 
   const isActive = (path: string) => {
     if (path === "/") {

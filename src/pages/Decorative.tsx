@@ -11,8 +11,8 @@ import { ItemDetailDialog } from "@/components/ItemDetailDialog";
 import { EmptyState } from "@/components/EmptyState";
 import { sampleItems } from "@/data/sampleData";
 import { fetchInventory } from "@/lib/api";
-import { InventoryItem } from "@/types/inventory";
-import { CategoryFilter, ViewMode, HouseFilter, RoomFilter } from "@/types/inventory";
+import { InventoryItem, ViewMode } from "@/types/inventory";
+import { CategoryFilter, HouseFilter, RoomFilter } from "@/types/inventory";
 
 const Decorative = () => {
   const [searchTerm, setSearchTerm] = useState("");

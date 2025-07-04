@@ -6,8 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Plus, X, Edit } from "lucide-react";
-import { categoryConfigs, houseConfigs } from "@/types/inventory";
+import { Plus, X, Download } from "lucide-react";
+import { useSettingsState } from "@/hooks/useSettingsState";
+import { IconSelector } from "@/components/IconSelector";
+import { CsvUploader } from "@/components/CsvUploader";
+import { useToast } from "@/hooks/use-toast";
 
 export function SettingsManagement() {
   const [newHouseName, setNewHouseName] = useState("");
@@ -15,64 +18,129 @@ export function SettingsManagement() {
   const [newHouseAddress, setNewHouseAddress] = useState("");
   const [newHouseYear, setNewHouseYear] = useState("");
   const [newHouseCode, setNewHouseCode] = useState("");
+  const [newHouseIcon, setNewHouseIcon] = useState("house");
   const [newRoomName, setNewRoomName] = useState("");
   const [selectedHouse, setSelectedHouse] = useState("");
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [newCategoryIcon, setNewCategoryIcon] = useState("palette");
   const [newSubcategoryName, setNewSubcategoryName] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
 
-  const addHouse = () => {
+  const { categories, houses, addCategory, addHouse, addRoom, addSubcategory, downloadMappings } = useSettingsState();
+  const { toast } = useToast();
+
+  const handleAddHouse = () => {
     if (newHouseName.trim() && newHouseCountry.trim() && newHouseCode.trim()) {
       if (newHouseCode.length !== 4) {
-        alert("House code must be exactly 4 characters long");
+        toast({
+          title: "Invalid house code",
+          description: "House code must be exactly 4 characters long",
+          variant: "destructive"
+        });
         return;
       }
-      console.log("Adding house:", {
-        name: newHouseName,
-        country: newHouseCountry,
-        address: newHouseAddress,
-        yearBuilt: newHouseYear ? parseInt(newHouseYear) : undefined,
-        code: newHouseCode.toUpperCase()
+      
+      addHouse(newHouseName, newHouseCountry, newHouseAddress, newHouseYear ? parseInt(newHouseYear) : undefined, newHouseCode, newHouseIcon);
+      
+      toast({
+        title: "House added",
+        description: `${newHouseName} has been added successfully`
       });
-      // In the future, this will connect to a database
+      
       setNewHouseName("");
       setNewHouseCountry("");
       setNewHouseAddress("");
       setNewHouseYear("");
       setNewHouseCode("");
+      setNewHouseIcon("house");
+    } else {
+      toast({
+        title: "Missing required fields",
+        description: "Please fill in house name, country, and code",
+        variant: "destructive"
+      });
     }
   };
 
-  const addRoom = () => {
+  const handleAddRoom = () => {
     if (newRoomName.trim() && selectedHouse) {
-      console.log("Adding room:", newRoomName, "to house:", selectedHouse);
-      // In the future, this will connect to a database
+      addRoom(selectedHouse, newRoomName);
+      
+      toast({
+        title: "Room added",
+        description: `${newRoomName} has been added successfully`
+      });
+      
       setNewRoomName("");
+    } else {
+      toast({
+        title: "Missing information",
+        description: "Please select a house and enter room name",
+        variant: "destructive"
+      });
     }
   };
 
-  const addCategory = () => {
+  const handleAddCategory = () => {
     if (newCategoryName.trim()) {
-      console.log("Adding category:", newCategoryName);
-      // In the future, this will connect to a database
+      addCategory(newCategoryName, newCategoryIcon);
+      
+      toast({
+        title: "Category added",
+        description: `${newCategoryName} has been added successfully`
+      });
+      
       setNewCategoryName("");
+      setNewCategoryIcon("palette");
+    } else {
+      toast({
+        title: "Missing information",
+        description: "Please enter a category name",
+        variant: "destructive"
+      });
     }
   };
 
-  const addSubcategory = () => {
+  const handleAddSubcategory = () => {
     if (newSubcategoryName.trim() && selectedCategory) {
-      console.log("Adding subcategory:", newSubcategoryName, "to category:", selectedCategory);
-      // In the future, this will connect to a database
+      addSubcategory(selectedCategory, newSubcategoryName);
+      
+      toast({
+        title: "Subcategory added",
+        description: `${newSubcategoryName} has been added successfully`
+      });
+      
       setNewSubcategoryName("");
+    } else {
+      toast({
+        title: "Missing information",
+        description: "Please select a category and enter subcategory name",
+        variant: "destructive"
+      });
     }
+  };
+
+  const handleCsvUpload = (data: any[], type: string) => {
+    console.log(`Processing ${type} upload:`, data);
+    // Here you would process the CSV data and add to your state
+    // This is a placeholder for the actual implementation
   };
 
   return (
     <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-medium">Settings Management</h3>
+        <Button onClick={downloadMappings} variant="outline">
+          <Download className="w-4 h-4 mr-2" />
+          Download Mappings
+        </Button>
+      </div>
+
       <Tabs defaultValue="houses" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="houses">Houses & Rooms</TabsTrigger>
           <TabsTrigger value="categories">Categories</TabsTrigger>
+          <TabsTrigger value="upload">Bulk Upload</TabsTrigger>
         </TabsList>
         
         <TabsContent value="houses" className="space-y-6">
@@ -117,6 +185,13 @@ export function SettingsManagement() {
                     onChange={(e) => setNewHouseYear(e.target.value)}
                   />
                 </div>
+                <div>
+                  <Label>Icon</Label>
+                  <IconSelector
+                    selectedIcon={newHouseIcon}
+                    onIconSelect={setNewHouseIcon}
+                  />
+                </div>
                 <div className="md:col-span-2">
                   <Label>Address</Label>
                   <Input
@@ -127,7 +202,7 @@ export function SettingsManagement() {
                 </div>
               </div>
               
-              <Button onClick={addHouse} className="w-full">
+              <Button onClick={handleAddHouse} className="w-full">
                 <Plus className="w-4 h-4 mr-1" />
                 Add House
               </Button>
@@ -135,7 +210,7 @@ export function SettingsManagement() {
               <div className="space-y-2">
                 <Label>Current Houses</Label>
                 <div className="space-y-2">
-                  {houseConfigs.map((house) => (
+                  {houses.map((house) => (
                     <div key={house.id} className="p-3 border rounded-lg">
                       <div className="flex items-start justify-between">
                         <div>
@@ -147,6 +222,7 @@ export function SettingsManagement() {
                           {house.yearBuilt && (
                             <p className="text-xs text-slate-500">Built: {house.yearBuilt}</p>
                           )}
+                          <p className="text-xs text-slate-500">Code: {house.code}</p>
                         </div>
                         <button className="text-slate-400 hover:text-destructive">
                           <X className="w-4 h-4" />
@@ -173,7 +249,7 @@ export function SettingsManagement() {
                   className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md"
                 >
                   <option value="">Select a house</option>
-                  {houseConfigs.map((house) => (
+                  {houses.map((house) => (
                     <option key={house.id} value={house.id}>
                       {house.name}
                     </option>
@@ -189,7 +265,7 @@ export function SettingsManagement() {
                   className="flex-1"
                   disabled={!selectedHouse}
                 />
-                <Button onClick={addRoom} disabled={!selectedHouse}>
+                <Button onClick={handleAddRoom} disabled={!selectedHouse}>
                   <Plus className="w-4 h-4 mr-1" />
                   Add Room
                 </Button>
@@ -197,9 +273,9 @@ export function SettingsManagement() {
               
               {selectedHouse && (
                 <div className="space-y-2">
-                  <Label>Rooms in {houseConfigs.find(h => h.id === selectedHouse)?.name}</Label>
+                  <Label>Rooms in {houses.find(h => h.id === selectedHouse)?.name}</Label>
                   <div className="flex flex-wrap gap-2">
-                    {houseConfigs
+                    {houses
                       .find(h => h.id === selectedHouse)
                       ?.rooms.map((room) => (
                         <Badge key={room.id} variant="secondary" className="px-3 py-1">
@@ -223,14 +299,23 @@ export function SettingsManagement() {
               <CardTitle>Manage Categories</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Category name"
-                  value={newCategoryName}
-                  onChange={(e) => setNewCategoryName(e.target.value)}
-                  className="flex-1"
-                />
-                <Button onClick={addCategory}>
+              <div className="flex gap-2 items-end">
+                <div className="flex-1">
+                  <Label>Category Name</Label>
+                  <Input
+                    placeholder="Category name"
+                    value={newCategoryName}
+                    onChange={(e) => setNewCategoryName(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label>Icon</Label>
+                  <IconSelector
+                    selectedIcon={newCategoryIcon}
+                    onIconSelect={setNewCategoryIcon}
+                  />
+                </div>
+                <Button onClick={handleAddCategory}>
                   <Plus className="w-4 h-4 mr-1" />
                   Add Category
                 </Button>
@@ -239,7 +324,7 @@ export function SettingsManagement() {
               <div className="space-y-2">
                 <Label>Current Categories</Label>
                 <div className="flex flex-wrap gap-2">
-                  {categoryConfigs.map((category) => (
+                  {categories.map((category) => (
                     <Badge key={category.id} variant="secondary" className="px-3 py-1">
                       {category.name}
                       <button className="ml-2 hover:text-destructive">
@@ -266,7 +351,7 @@ export function SettingsManagement() {
                   className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md"
                 >
                   <option value="">Select a category</option>
-                  {categoryConfigs.map((category) => (
+                  {categories.map((category) => (
                     <option key={category.id} value={category.id}>
                       {category.name}
                     </option>
@@ -282,7 +367,7 @@ export function SettingsManagement() {
                   className="flex-1"
                   disabled={!selectedCategory}
                 />
-                <Button onClick={addSubcategory} disabled={!selectedCategory}>
+                <Button onClick={handleAddSubcategory} disabled={!selectedCategory}>
                   <Plus className="w-4 h-4 mr-1" />
                   Add Subcategory
                 </Button>
@@ -290,9 +375,9 @@ export function SettingsManagement() {
               
               {selectedCategory && (
                 <div className="space-y-2">
-                  <Label>Subcategories in {categoryConfigs.find(c => c.id === selectedCategory)?.name}</Label>
+                  <Label>Subcategories in {categories.find(c => c.id === selectedCategory)?.name}</Label>
                   <div className="flex flex-wrap gap-2">
-                    {categoryConfigs
+                    {categories
                       .find(c => c.id === selectedCategory)
                       ?.subcategories.map((subcategory) => (
                         <Badge key={subcategory.id} variant="secondary" className="px-3 py-1">
@@ -307,6 +392,10 @@ export function SettingsManagement() {
               )}
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="upload" className="space-y-6">
+          <CsvUploader onUpload={handleCsvUpload} />
         </TabsContent>
       </Tabs>
     </div>
