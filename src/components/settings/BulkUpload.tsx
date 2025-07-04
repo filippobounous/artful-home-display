@@ -30,19 +30,41 @@ export function BulkUpload({ onUpload }: BulkUploadProps) {
   };
 
   const parseCsv = (text: string) => {
-    const lines = text.split('\n');
-    const headers = lines[0].split(',').map(h => h.trim());
-    const data = [];
-
-    for (let i = 1; i < lines.length; i++) {
-      if (lines[i].trim()) {
-        const values = lines[i].split(',').map(v => v.trim());
-        const row: any = {};
-        headers.forEach((header, index) => {
-          row[header] = values[index] || '';
-        });
-        data.push(row);
+    const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
+    if (lines.length === 0) return [];
+    const parseLine = (line: string) => {
+      const values: string[] = [];
+      let current = '';
+      let inQuotes = false;
+      for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (char === '"') {
+          if (inQuotes && line[i + 1] === '"') {
+            current += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (char === ',' && !inQuotes) {
+          values.push(current);
+          current = '';
+        } else {
+          current += char;
+        }
       }
+      values.push(current);
+      return values.map(v => v.trim());
+    };
+
+    const headers = parseLine(lines[0]);
+    const data: any[] = [];
+    for (let i = 1; i < lines.length; i++) {
+      const values = parseLine(lines[i]);
+      const row: any = {};
+      headers.forEach((header, index) => {
+        row[header] = values[index] || '';
+      });
+      data.push(row);
     }
     return data;
   };

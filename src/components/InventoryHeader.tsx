@@ -3,23 +3,30 @@ import { Button } from "@/components/ui/button";
 import { Plus, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import { sampleItems } from "@/data/sampleData";
+import { fetchInventory } from "@/lib/api";
 
 export function InventoryHeader() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const downloadCSV = () => {
-    // Convert items to CSV format
+  const downloadCSV = async () => {
     const headers = [
       'ID', 'Title', 'Artist', 'Category', 'Subcategory', 'Size', 'Valuation',
       'Valuation Currency', 'Quantity', 'Year/Period', 'Description', 'Condition',
       'House', 'Room', 'Notes'
     ];
-    
+
+    let items;
+    try {
+      items = await fetchInventory();
+    } catch (err) {
+      console.error('Failed to fetch items for CSV', err);
+      items = [];
+    }
+
     const csvContent = [
       headers.join(','),
-      ...sampleItems.map(item => [
+      ...items.map(item => [
         item.id,
         `"${item.title || ''}"`,
         `"${item.artist || ''}"`,
