@@ -2,25 +2,21 @@
 import { Search, Grid, List, Table } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { CategoryFilter, HouseFilter, RoomFilter, ViewMode } from "@/types/inventory";
-import { houseConfigs, categoryConfigs } from "@/types/inventory";
+import { useSettingsState } from "@/hooks/useSettingsState";
+import { MultiSelectFilter } from "@/components/MultiSelectFilter";
 
 interface SearchFiltersProps {
   searchTerm: string;
   setSearchTerm: (term: string) => void;
-  selectedCategory: CategoryFilter;
-  setSelectedCategory: (category: CategoryFilter) => void;
-  selectedHouse: HouseFilter;
-  setSelectedHouse: (house: HouseFilter) => void;
-  selectedRoom: RoomFilter;
-  setSelectedRoom: (room: RoomFilter) => void;
+  selectedCategory: string[];
+  setSelectedCategory: (categories: string[]) => void;
+  selectedSubcategory: string[];
+  setSelectedSubcategory: (subcategories: string[]) => void;
+  selectedHouse: string[];
+  setSelectedHouse: (houses: string[]) => void;
+  selectedRoom: string[];
+  setSelectedRoom: (rooms: string[]) => void;
   viewMode: ViewMode;
   setViewMode: (mode: ViewMode) => void;
   onDownloadCSV?: () => void;
@@ -31,6 +27,8 @@ export function SearchFilters({
   setSearchTerm,
   selectedCategory,
   setSelectedCategory,
+  selectedSubcategory,
+  setSelectedSubcategory,
   selectedHouse,
   setSelectedHouse,
   selectedRoom,
@@ -39,15 +37,19 @@ export function SearchFilters({
   setViewMode,
   onDownloadCSV,
 }: SearchFiltersProps) {
-  // Get current house configuration for dynamic room filtering
-  const currentHouseConfig = houseConfigs.find(h => h.id === selectedHouse);
-  const availableRooms = currentHouseConfig?.rooms || [];
+  const { houses, categories } = useSettingsState();
 
-  const handleHouseChange = (value: HouseFilter) => {
-    setSelectedHouse(value);
-    // Reset room selection when house changes
-    setSelectedRoom("all");
-  };
+  // Get all available subcategories from selected categories
+  const availableSubcategories = categories
+    .filter(cat => selectedCategory.length === 0 || selectedCategory.includes(cat.id))
+    .flatMap(cat => cat.subcategories)
+    .filter((sub, index, arr) => arr.findIndex(s => s.id === sub.id) === index); // Remove duplicates
+
+  // Get all available rooms from selected houses
+  const availableRooms = houses
+    .filter(house => selectedHouse.length === 0 || selectedHouse.includes(house.id))
+    .flatMap(house => house.rooms)
+    .filter((room, index, arr) => arr.findIndex(r => r.id === room.id) === index); // Remove duplicates
 
   return (
     <div className="mb-8 space-y-4">
@@ -61,60 +63,41 @@ export function SearchFilters({
             className="pl-10"
           />
         </div>
-        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-          <SelectTrigger className="w-full sm:w-48">
-            <SelectValue placeholder="Category" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Categories</SelectItem>
-            {categoryConfigs.map((category) => (
-              <SelectItem key={category.id} value={category.id}>
-                {category.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="w-full sm:w-48">
+          <MultiSelectFilter
+            placeholder="All Categories"
+            options={categories.map(cat => ({ id: cat.id, name: cat.name }))}
+            selectedValues={selectedCategory}
+            onSelectionChange={setSelectedCategory}
+          />
+        </div>
       </div>
       
       <div className="flex flex-col sm:flex-row gap-4">
-        <Select value={selectedHouse} onValueChange={handleHouseChange}>
-          <SelectTrigger className="w-full sm:w-48">
-            <SelectValue placeholder="House" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Houses</SelectItem>
-            {houseConfigs.map(house => (
-              <SelectItem key={house.id} value={house.id}>
-                {house.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select value={selectedRoom} onValueChange={setSelectedRoom}>
-          <SelectTrigger className="w-full sm:w-48">
-            <SelectValue placeholder="Room" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Rooms</SelectItem>
-            {selectedHouse === "all" ? (
-              <>
-                <SelectItem value="living-room">Living Room</SelectItem>
-                <SelectItem value="bedroom">Bedroom</SelectItem>
-                <SelectItem value="kitchen">Kitchen</SelectItem>
-                <SelectItem value="dining-room">Dining Room</SelectItem>
-                <SelectItem value="office">Office</SelectItem>
-                <SelectItem value="bathroom">Bathroom</SelectItem>
-                <SelectItem value="hallway">Hallway</SelectItem>
-              </>
-            ) : (
-              availableRooms.map(room => (
-                <SelectItem key={room.id} value={room.id}>
-                  {room.name}
-                </SelectItem>
-              ))
-            )}
-          </SelectContent>
-        </Select>
+        <div className="w-full sm:w-48">
+          <MultiSelectFilter
+            placeholder="All Subcategories"
+            options={availableSubcategories.map(sub => ({ id: sub.id, name: sub.name }))}
+            selectedValues={selectedSubcategory}
+            onSelectionChange={setSelectedSubcategory}
+          />
+        </div>
+        <div className="w-full sm:w-48">
+          <MultiSelectFilter
+            placeholder="All Houses"
+            options={houses.map(house => ({ id: house.id, name: house.name }))}
+            selectedValues={selectedHouse}
+            onSelectionChange={setSelectedHouse}
+          />
+        </div>
+        <div className="w-full sm:w-48">
+          <MultiSelectFilter
+            placeholder="All Rooms"
+            options={availableRooms.map(room => ({ id: room.id, name: room.name }))}
+            selectedValues={selectedRoom}
+            onSelectionChange={setSelectedRoom}
+          />
+        </div>
         <div className="flex gap-2 ml-auto">
           {onDownloadCSV && (
             <Button variant="outline" size="sm" onClick={onDownloadCSV}>

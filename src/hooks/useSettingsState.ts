@@ -1,10 +1,34 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { categoryConfigs, houseConfigs, CategoryConfig, HouseConfig } from "@/types/inventory";
 
+// Create a global state management solution
+let globalCategories: CategoryConfig[] = categoryConfigs;
+let globalHouses: HouseConfig[] = houseConfigs;
+let listeners: (() => void)[] = [];
+
+const notifyListeners = () => {
+  listeners.forEach(listener => listener());
+};
+
 export function useSettingsState() {
-  const [categories, setCategories] = useState<CategoryConfig[]>(categoryConfigs);
-  const [houses, setHouses] = useState<HouseConfig[]>(houseConfigs);
+  const [categories, setCategories] = useState<CategoryConfig[]>(globalCategories);
+  const [houses, setHouses] = useState<HouseConfig[]>(globalHouses);
+  const [, forceUpdate] = useState({});
+
+  useEffect(() => {
+    const listener = () => {
+      setCategories([...globalCategories]);
+      setHouses([...globalHouses]);
+      forceUpdate({});
+    };
+    
+    listeners.push(listener);
+    
+    return () => {
+      listeners = listeners.filter(l => l !== listener);
+    };
+  }, []);
 
   const addCategory = (name: string, icon: string) => {
     const newCategory: CategoryConfig = {
@@ -14,7 +38,8 @@ export function useSettingsState() {
       subcategories: [],
       visible: true
     };
-    setCategories(prev => [...prev, newCategory]);
+    globalCategories = [...globalCategories, newCategory];
+    notifyListeners();
     return newCategory;
   };
 
@@ -30,12 +55,13 @@ export function useSettingsState() {
       rooms: [],
       visible: true
     };
-    setHouses(prev => [...prev, newHouse]);
+    globalHouses = [...globalHouses, newHouse];
+    notifyListeners();
     return newHouse;
   };
 
   const addRoom = (houseId: string, roomName: string) => {
-    setHouses(prev => prev.map(house => {
+    globalHouses = globalHouses.map(house => {
       if (house.id === houseId) {
         const newRoom = {
           id: roomName.toLowerCase().replace(/\s+/g, '-'),
@@ -48,11 +74,12 @@ export function useSettingsState() {
         };
       }
       return house;
-    }));
+    });
+    notifyListeners();
   };
 
   const addSubcategory = (categoryId: string, subcategoryName: string) => {
-    setCategories(prev => prev.map(category => {
+    globalCategories = globalCategories.map(category => {
       if (category.id === categoryId) {
         const newSubcategory = {
           id: subcategoryName.toLowerCase().replace(/\s+/g, '-'),
@@ -65,7 +92,8 @@ export function useSettingsState() {
         };
       }
       return category;
-    }));
+    });
+    notifyListeners();
   };
 
   const downloadMappings = () => {

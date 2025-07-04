@@ -1,0 +1,88 @@
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Badge } from "@/components/ui/badge";
+import { Check, ChevronDown, X } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+
+interface MultiSelectFilterProps {
+  placeholder: string;
+  options: { id: string; name: string }[];
+  selectedValues: string[];
+  onSelectionChange: (values: string[]) => void;
+}
+
+export function MultiSelectFilter({ placeholder, options, selectedValues, onSelectionChange }: MultiSelectFilterProps) {
+  const [open, setOpen] = useState(false);
+
+  const handleToggle = (value: string) => {
+    const newSelection = selectedValues.includes(value)
+      ? selectedValues.filter(v => v !== value)
+      : [...selectedValues, value];
+    onSelectionChange(newSelection);
+  };
+
+  const handleClear = () => {
+    onSelectionChange([]);
+  };
+
+  const selectedLabels = options
+    .filter(option => selectedValues.includes(option.id))
+    .map(option => option.name);
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button variant="outline" className="w-full justify-between text-left font-normal">
+          <div className="flex flex-wrap gap-1">
+            {selectedLabels.length > 0 ? (
+              selectedLabels.length <= 2 ? (
+                selectedLabels.map((label) => (
+                  <Badge key={label} variant="secondary" className="text-xs">
+                    {label}
+                  </Badge>
+                ))
+              ) : (
+                <Badge variant="secondary" className="text-xs">
+                  {selectedLabels.length} selected
+                </Badge>
+              )
+            ) : (
+              <span className="text-muted-foreground">{placeholder}</span>
+            )}
+          </div>
+          <div className="flex items-center gap-1">
+            {selectedValues.length > 0 && (
+              <X 
+                className="w-4 h-4 hover:text-destructive cursor-pointer" 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleClear();
+                }}
+              />
+            )}
+            <ChevronDown className="w-4 h-4" />
+          </div>
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-full p-2" align="start">
+        <div className="space-y-2 max-h-60 overflow-y-auto">
+          {options.map((option) => (
+            <div
+              key={option.id}
+              className="flex items-center space-x-2 p-2 hover:bg-muted rounded cursor-pointer"
+              onClick={() => handleToggle(option.id)}
+            >
+              <Checkbox 
+                checked={selectedValues.includes(option.id)}
+                onChange={() => handleToggle(option.id)}
+              />
+              <span className="text-sm">{option.name}</span>
+            </div>
+          ))}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
