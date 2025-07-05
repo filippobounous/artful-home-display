@@ -1,83 +1,46 @@
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CombinedCategorySelector } from "./CombinedCategorySelector";
 
 interface AddItemBasicInfoProps {
   formData: any;
-  setFormData: (updater: (prev: any) => any) => void;
+  setFormData: (data: any) => void;
 }
 
 export function AddItemBasicInfo({ formData, setFormData }: AddItemBasicInfoProps) {
-  const handleCategoryChange = (category: string, subcategory: string) => {
-    setFormData(prev => ({ ...prev, category, subcategory }));
-  };
-
   return (
     <div className="space-y-4">
+      <h3 className="text-lg font-medium text-slate-900">Basic Information</h3>
+      
       <div>
         <Label htmlFor="title">Title *</Label>
         <Input
           id="title"
+          placeholder="Enter item title"
           value={formData.title}
-          onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           required
         />
       </div>
 
       <div>
-        <Label htmlFor="artist">Artist/Maker *</Label>
+        <Label htmlFor="artist">Artist/Maker</Label>
         <Input
           id="artist"
+          placeholder="Artist or maker name"
           value={formData.artist}
-          onChange={(e) => setFormData(prev => ({ ...prev, artist: e.target.value }))}
-          required
-        />
-      </div>
-
-      <CombinedCategorySelector
-        selectedCategory={formData.category}
-        selectedSubcategory={formData.subcategory}
-        onSelectionChange={handleCategoryChange}
-      />
-
-      <div>
-        <Label htmlFor="yearPeriod">Year/Period</Label>
-        <Input
-          id="yearPeriod"
-          placeholder="e.g., 1960s, 2020, 19th century"
-          value={formData.yearPeriod}
-          onChange={(e) => setFormData(prev => ({ ...prev, yearPeriod: e.target.value }))}
+          onChange={(e) => setFormData({ ...formData, artist: e.target.value })}
         />
       </div>
 
       <div>
-        <Label htmlFor="size">Size/Dimensions</Label>
+        <Label htmlFor="size">Dimensions</Label>
         <Input
           id="size"
-          placeholder="e.g., 24x36 inches, 6 feet"
+          placeholder="e.g., 24x36 inches"
           value={formData.size}
-          onChange={(e) => setFormData(prev => ({ ...prev, size: e.target.value }))}
+          onChange={(e) => setFormData({ ...formData, size: e.target.value })}
         />
-      </div>
-
-      <div>
-        <Label htmlFor="condition">Condition</Label>
-        <Select
-          value={formData.condition}
-          onValueChange={(value) => setFormData(prev => ({ ...prev, condition: value }))}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select condition" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="mint">Mint</SelectItem>
-            <SelectItem value="excellent">Excellent</SelectItem>
-            <SelectItem value="very good">Very Good</SelectItem>
-            <SelectItem value="good">Good</SelectItem>
-          </SelectContent>
-        </Select>
       </div>
 
       <div>
@@ -87,7 +50,17 @@ export function AddItemBasicInfo({ formData, setFormData }: AddItemBasicInfoProp
           type="number"
           min="1"
           value={formData.quantity}
-          onChange={(e) => setFormData(prev => ({ ...prev, quantity: e.target.value }))}
+          onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+        />
+      </div>
+
+      <div>
+        <Label htmlFor="yearPeriod">Year/Period</Label>
+        <Input
+          id="yearPeriod"
+          placeholder="e.g., 1920s, 2023"
+          value={formData.yearPeriod}
+          onChange={(e) => setFormData({ ...formData, yearPeriod: e.target.value })}
         />
       </div>
     </div>

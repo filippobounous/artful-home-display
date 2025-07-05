@@ -41,12 +41,16 @@ export function AddItemForm() {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Basic Information */}
-            <AddItemBasicInfo formData={formData} setFormData={setFormData} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+            {/* Basic Information - Left Column */}
+            <div className="h-full">
+              <AddItemBasicInfo formData={formData} setFormData={setFormData} />
+            </div>
 
-            {/* Location and Valuation */}
-            <AddItemLocationValuation formData={formData} setFormData={setFormData} />
+            {/* Category, Location and Valuation - Right Column */}
+            <div className="h-full">
+              <AddItemLocationValuation formData={formData} setFormData={setFormData} />
+            </div>
           </div>
 
           {/* Description and Notes */}

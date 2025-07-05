@@ -13,20 +13,21 @@ import { EmptyState } from "@/components/EmptyState";
 import { sampleItems } from "@/data/sampleData";
 import { fetchInventory } from "@/lib/api";
 import { InventoryItem } from "@/types/inventory";
-import { CategoryFilter, HouseFilter, RoomFilter } from "@/types/inventory";
-import { houseConfigs } from "@/types/inventory";
+import { useSettingsState } from "@/hooks/useSettingsState";
 
 type ViewMode = "grid" | "list" | "table";
 
 const HousePage = () => {
   const { houseId } = useParams<{ houseId: string }>();
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>("all");
-  const [selectedHouse, setSelectedHouse] = useState<HouseFilter>(houseId as HouseFilter || "all");
-  const [selectedRoom, setSelectedRoom] = useState<RoomFilter>("all");
+  const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string[]>([]);
+  const [selectedHouse, setSelectedHouse] = useState<string[]>(houseId ? [houseId] : []);
+  const [selectedRoom, setSelectedRoom] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [items, setItems] = useState<InventoryItem[]>(sampleItems);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
+  const { houses } = useSettingsState();
 
   useEffect(() => {
     fetchInventory()
@@ -34,18 +35,19 @@ const HousePage = () => {
       .catch(() => {});
   }, []);
 
-  const houseConfig = houseConfigs.find(h => h.id === houseId);
+  const houseConfig = houses.find(h => h.id === houseId);
   const houseName = houseConfig?.name || "Unknown House";
 
   const filteredItems = items.filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (item.artist && item.artist.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesCategory = selectedCategory === "all" || item.category === selectedCategory;
+    const matchesCategory = selectedCategory.length === 0 || selectedCategory.includes(item.category);
+    const matchesSubcategory = selectedSubcategory.length === 0 || (item.subcategory && selectedSubcategory.includes(item.subcategory));
     const matchesHouse = item.house === houseId;
-    const matchesRoom = selectedRoom === "all" || item.room === selectedRoom;
+    const matchesRoom = selectedRoom.length === 0 || (item.room && selectedRoom.includes(item.room));
     
-    return matchesSearch && matchesCategory && matchesHouse && matchesRoom;
+    return matchesSearch && matchesCategory && matchesSubcategory && matchesHouse && matchesRoom;
   });
 
   return (
@@ -67,6 +69,8 @@ const HousePage = () => {
               setSearchTerm={setSearchTerm}
               selectedCategory={selectedCategory}
               setSelectedCategory={setSelectedCategory}
+              selectedSubcategory={selectedSubcategory}
+              setSelectedSubcategory={setSelectedSubcategory}
               selectedHouse={selectedHouse}
               setSelectedHouse={setSelectedHouse}
               selectedRoom={selectedRoom}

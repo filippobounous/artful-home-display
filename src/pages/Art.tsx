@@ -12,15 +12,15 @@ import { EmptyState } from "@/components/EmptyState";
 import { sampleItems } from "@/data/sampleData";
 import { fetchInventory } from "@/lib/api";
 import { InventoryItem } from "@/types/inventory";
-import { CategoryFilter, HouseFilter, RoomFilter } from "@/types/inventory";
 
 type ViewMode = "grid" | "list" | "table";
 
 const Art = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>("art");
-  const [selectedHouse, setSelectedHouse] = useState<HouseFilter>("all");
-  const [selectedRoom, setSelectedRoom] = useState<RoomFilter>("all");
+  const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string[]>([]);
+  const [selectedHouse, setSelectedHouse] = useState<string[]>([]);
+  const [selectedRoom, setSelectedRoom] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [items, setItems] = useState<InventoryItem[]>(sampleItems);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
@@ -35,11 +35,12 @@ const Art = () => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (item.artist && item.artist.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesCategory = item.category === "art";
-    const matchesHouse = selectedHouse === "all" || item.house === selectedHouse;
-    const matchesRoom = selectedRoom === "all" || item.room === selectedRoom;
+    const matchesCategory = selectedCategory.length === 0 || selectedCategory.includes(item.category);
+    const matchesSubcategory = selectedSubcategory.length === 0 || (item.subcategory && selectedSubcategory.includes(item.subcategory));
+    const matchesHouse = selectedHouse.length === 0 || (item.house && selectedHouse.includes(item.house));
+    const matchesRoom = selectedRoom.length === 0 || (item.room && selectedRoom.includes(item.room));
     
-    return matchesSearch && matchesCategory && matchesHouse && matchesRoom;
+    return matchesSearch && matchesCategory && matchesSubcategory && matchesHouse && matchesRoom;
   });
 
   return (
@@ -61,6 +62,8 @@ const Art = () => {
               setSearchTerm={setSearchTerm}
               selectedCategory={selectedCategory}
               setSelectedCategory={setSelectedCategory}
+              selectedSubcategory={selectedSubcategory}
+              setSelectedSubcategory={setSelectedSubcategory}
               selectedHouse={selectedHouse}
               setSelectedHouse={setSelectedHouse}
               selectedRoom={selectedRoom}
