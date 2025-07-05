@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,9 +12,10 @@ interface CategoriesManagementProps {
   categories: any[];
   onAddCategory: (name: string, icon: string) => void;
   onAddSubcategory: (categoryId: string, subcategoryName: string) => void;
+  onDeleteSubcategory?: (categoryId: string, subcategoryId: string) => void;
 }
 
-export function CategoriesManagement({ categories, onAddCategory, onAddSubcategory }: CategoriesManagementProps) {
+export function CategoriesManagement({ categories, onAddCategory, onAddSubcategory, onDeleteSubcategory }: CategoriesManagementProps) {
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newCategoryIcon, setNewCategoryIcon] = useState("palette");
   const [newSubcategoryName, setNewSubcategoryName] = useState("");
@@ -58,6 +58,16 @@ export function CategoriesManagement({ categories, onAddCategory, onAddSubcatego
         title: "Missing information",
         description: "Please select a category and enter subcategory name",
         variant: "destructive"
+      });
+    }
+  };
+
+  const handleDeleteSubcategory = (categoryId: string, subcategoryId: string) => {
+    if (onDeleteSubcategory) {
+      onDeleteSubcategory(categoryId, subcategoryId);
+      toast({
+        title: "Subcategory deleted",
+        description: "Subcategory has been removed successfully"
       });
     }
   };
@@ -171,7 +181,10 @@ export function CategoriesManagement({ categories, onAddCategory, onAddSubcatego
                   ?.subcategories.map((subcategory) => (
                     <Badge key={subcategory.id} variant="secondary" className="px-3 py-1">
                       {subcategory.name}
-                      <button className="ml-2 hover:text-destructive">
+                      <button 
+                        className="ml-2 hover:text-destructive"
+                        onClick={() => handleDeleteSubcategory(selectedCategory, subcategory.id)}
+                      >
                         <X className="w-3 h-3" />
                       </button>
                     </Badge>

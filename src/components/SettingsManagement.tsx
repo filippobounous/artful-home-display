@@ -10,7 +10,18 @@ import { CategoriesManagement } from "@/components/settings/CategoriesManagement
 import { BulkUpload } from "@/components/settings/BulkUpload";
 
 export function SettingsManagement() {
-  const { categories, houses, addCategory, addHouse, addRoom, addSubcategory, downloadMappings } = useSettingsState();
+  const { 
+    categories, 
+    houses, 
+    addCategory, 
+    addHouse, 
+    editHouse,
+    addRoom, 
+    deleteRoom,
+    addSubcategory, 
+    deleteSubcategory,
+    downloadMappings 
+  } = useSettingsState();
 
   const handleCsvUpload = (data: any[], type: string) => {
     console.log(`Processing ${type} upload:`, data);
@@ -70,7 +81,9 @@ export function SettingsManagement() {
           <HousesManagement 
             houses={houses} 
             onAddHouse={addHouse} 
-            onAddRoom={addRoom} 
+            onAddRoom={addRoom}
+            onEditHouse={editHouse}
+            onDeleteRoom={deleteRoom}
           />
         </TabsContent>
         
@@ -78,7 +91,8 @@ export function SettingsManagement() {
           <CategoriesManagement 
             categories={categories} 
             onAddCategory={addCategory} 
-            onAddSubcategory={addSubcategory} 
+            onAddSubcategory={addSubcategory}
+            onDeleteSubcategory={deleteSubcategory}
           />
         </TabsContent>
 

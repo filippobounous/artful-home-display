@@ -86,6 +86,17 @@ export function useSettingsState() {
     return newHouse;
   };
 
+  const editHouse = (houseId: string, updates: Partial<HouseConfig>) => {
+    globalHouses = globalHouses.map(house => {
+      if (house.id === houseId) {
+        return { ...house, ...updates };
+      }
+      return house;
+    });
+    saveState();
+    notifyListeners();
+  };
+
   const addRoom = (houseId: string, roomName: string) => {
     globalHouses = globalHouses.map(house => {
       if (house.id === houseId) {
@@ -105,6 +116,20 @@ export function useSettingsState() {
     notifyListeners();
   };
 
+  const deleteRoom = (houseId: string, roomId: string) => {
+    globalHouses = globalHouses.map(house => {
+      if (house.id === houseId) {
+        return {
+          ...house,
+          rooms: house.rooms.filter(room => room.id !== roomId)
+        };
+      }
+      return house;
+    });
+    saveState();
+    notifyListeners();
+  };
+
   const addSubcategory = (categoryId: string, subcategoryName: string) => {
     globalCategories = globalCategories.map(category => {
       if (category.id === categoryId) {
@@ -116,6 +141,20 @@ export function useSettingsState() {
         return {
           ...category,
           subcategories: [...category.subcategories, newSubcategory]
+        };
+      }
+      return category;
+    });
+    saveState();
+    notifyListeners();
+  };
+
+  const deleteSubcategory = (categoryId: string, subcategoryId: string) => {
+    globalCategories = globalCategories.map(category => {
+      if (category.id === categoryId) {
+        return {
+          ...category,
+          subcategories: category.subcategories.filter(sub => sub.id !== subcategoryId)
         };
       }
       return category;
@@ -160,8 +199,11 @@ export function useSettingsState() {
     houses,
     addCategory,
     addHouse,
+    editHouse,
     addRoom,
+    deleteRoom,
     addSubcategory,
+    deleteSubcategory,
     downloadMappings
   };
 }
