@@ -7,6 +7,13 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, X, Download } from "lucide-react";
 import { IconSelector } from "@/components/IconSelector";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
 
 interface CategoriesManagementProps {
   categories: any[];
@@ -144,18 +151,21 @@ export function CategoriesManagement({ categories, onAddCategory, onAddSubcatego
         <CardContent className="space-y-4">
           <div>
             <Label>Select Category</Label>
-            <select
+            <Select
               value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md"
+              onValueChange={setSelectedCategory}
             >
-              <option value="">Select a category</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((category) => (
+                  <SelectItem key={category.id} value={category.id}>
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           
           <div className="flex gap-2">
