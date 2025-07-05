@@ -98,8 +98,8 @@ export function AppliedFilters({
             <Badge key={categoryId} variant="secondary" className="px-3 py-1">
               Category: {category?.name}
               {!permanentCategory && (
-                <X 
-                  className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive" 
+                <X
+                  className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
                   onClick={() => clearFilter('category', categoryId)}
                 />
               )}
@@ -123,7 +123,7 @@ export function AppliedFilters({
         {selectedHouse.map((houseId) => {
           const house = houses.find(h => h.id === houseId);
           return (
-            <Badge key={houseId} variant="secondary" className="px-3 py-1">
+            <Badge key={houseId} variant={permanentHouse ? "default" : "secondary"} className="px-3 py-1">
               House: {house?.name}
               {!permanentHouse && (
                 <X
