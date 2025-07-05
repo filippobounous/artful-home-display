@@ -21,11 +21,14 @@ const AllItems = () => {
   const [selectedSubcategory, setSelectedSubcategory] = useState<string[]>([]);
   const [selectedHouse, setSelectedHouse] = useState<string[]>([]);
   const [selectedRoom, setSelectedRoom] = useState<string[]>([]);
+  const [selectedCondition, setSelectedCondition] = useState<string[]>([]);
+  const [selectedYear, setSelectedYear] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [items, setItems] = useState<InventoryItem[]>(sampleItems);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [sortField, setSortField] = useState<string>("");
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const yearOptions = Array.from(new Set(items.map(i => i.yearPeriod).filter(Boolean))) as string[];
 
   useEffect(() => {
     fetchInventory()
@@ -42,15 +45,19 @@ const AllItems = () => {
     const matchesSubcategory = selectedSubcategory.length === 0 || (item.subcategory && selectedSubcategory.includes(item.subcategory));
     const matchesHouse = selectedHouse.length === 0 || (item.house && selectedHouse.includes(item.house));
     const matchesRoom = selectedRoom.length === 0 || (item.room && selectedRoom.includes(item.room));
-    
-    return matchesSearch && matchesCategory && matchesSubcategory && matchesHouse && matchesRoom;
+    const matchesCondition = selectedCondition.length === 0 || selectedCondition.includes(item.condition);
+    const matchesYear = selectedYear.length === 0 || (item.yearPeriod && selectedYear.includes(item.yearPeriod));
+
+    return matchesSearch && matchesCategory && matchesSubcategory && matchesHouse && matchesRoom && matchesCondition && matchesYear;
   });
 
   // Sort filtered items
   const sortedItems = [...filteredItems].sort((a, b) => {
     if (!sortField) return 0;
     
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let aValue: any = a[sortField as keyof InventoryItem];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let bValue: any = b[sortField as keyof InventoryItem];
     
     // Handle special cases
@@ -138,6 +145,11 @@ const AllItems = () => {
               setSelectedHouse={setSelectedHouse}
               selectedRoom={selectedRoom}
               setSelectedRoom={setSelectedRoom}
+              selectedCondition={selectedCondition}
+              setSelectedCondition={setSelectedCondition}
+              selectedYear={selectedYear}
+              setSelectedYear={setSelectedYear}
+              yearOptions={yearOptions}
               viewMode={viewMode}
               setViewMode={setViewMode}
               onDownloadCSV={downloadCSV}
