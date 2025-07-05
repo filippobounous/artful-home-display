@@ -90,10 +90,12 @@ export function InventoryHeader() {
             </>
           )}
           
-          <Button onClick={() => navigate('/add')}>
-            <Plus className="w-4 h-4 mr-2" />
-            Add Item
-          </Button>
+          {location.pathname !== '/add' && (
+            <Button onClick={() => navigate('/add')}>
+              <Plus className="w-4 h-4 mr-2" />
+              Add Item
+            </Button>
+          )}
         </div>
       </div>
     </header>
