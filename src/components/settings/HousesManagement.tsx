@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Plus, X, Download, Edit, Save, Cancel } from "lucide-react";
+import { Plus, X, Download, Edit, Save } from "lucide-react";
 import { IconSelector } from "@/components/IconSelector";
 import { useToast } from "@/hooks/use-toast";
 
@@ -312,7 +312,7 @@ export function HousesManagement({ houses, onAddHouse, onAddRoom, onEditHouse, o
                         </div>
                         <div className="flex gap-2">
                           <Button variant="outline" size="sm" onClick={handleCancelEdit}>
-                            <Cancel className="w-4 h-4 mr-1" />
+                            <X className="w-4 h-4 mr-1" />
                             Cancel
                           </Button>
                           <Button size="sm" onClick={handleSaveEdit}>
