@@ -43,7 +43,7 @@ export function AppSidebar() {
   // Dynamic category items based on configuration
   const categoryItems = categories.map(category => ({
     title: category.name,
-    url: `/${category.id}`,
+    url: `/category/${category.id}`,
     icon: getIconComponent(category.icon)
   }));
 
