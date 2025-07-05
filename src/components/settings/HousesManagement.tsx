@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Plus, X, Download } from "lucide-react";
+import { Plus, X, Download, Edit } from "lucide-react";
 import { IconSelector } from "@/components/IconSelector";
 import { useToast } from "@/hooks/use-toast";
 
@@ -29,6 +29,7 @@ export function HousesManagement({ houses, onAddHouse, onAddRoom }: HousesManage
   const [newHouseIcon, setNewHouseIcon] = useState("house");
   const [newRoomName, setNewRoomName] = useState("");
   const [selectedHouse, setSelectedHouse] = useState("");
+  const [editingHouse, setEditingHouse] = useState<string | null>(null);
 
   const { toast } = useToast();
 
@@ -95,6 +96,14 @@ export function HousesManagement({ houses, onAddHouse, onAddRoom }: HousesManage
     URL.revokeObjectURL(url);
   };
 
+  const handleEditHouse = (houseId: string) => {
+    setEditingHouse(houseId);
+    toast({
+      title: "Edit mode",
+      description: "House editing functionality will be implemented"
+    });
+  };
+
   return (
     <div className="space-y-6">
       {/* Houses Management */}
@@ -149,15 +158,6 @@ export function HousesManagement({ houses, onAddHouse, onAddRoom }: HousesManage
                 onChange={(e) => setNewHouseYear(e.target.value)}
               />
             </div>
-            <div>
-              <Label>Icon</Label>
-              <div className="mt-1">
-                <IconSelector
-                  selectedIcon={newHouseIcon}
-                  onIconSelect={setNewHouseIcon}
-                />
-              </div>
-            </div>
             <div className="md:col-span-2">
               <Label>Address</Label>
               <Input
@@ -168,10 +168,23 @@ export function HousesManagement({ houses, onAddHouse, onAddRoom }: HousesManage
             </div>
           </div>
           
-          <Button onClick={handleAddHouse} className="w-full">
-            <Plus className="w-4 h-4 mr-1" />
-            Add House
-          </Button>
+          <div className="flex items-center gap-4">
+            <div className="flex-1">
+              <Label>Icon</Label>
+              <div className="mt-1">
+                <IconSelector
+                  selectedIcon={newHouseIcon}
+                  onIconSelect={setNewHouseIcon}
+                />
+              </div>
+            </div>
+            <div className="pt-6">
+              <Button onClick={handleAddHouse}>
+                <Plus className="w-4 h-4 mr-1" />
+                Add House
+              </Button>
+            </div>
+          </div>
           
           <div className="space-y-2">
             <Label>Current Houses</Label>
@@ -179,7 +192,7 @@ export function HousesManagement({ houses, onAddHouse, onAddRoom }: HousesManage
               {houses.map((house) => (
                 <div key={house.id} className="p-3 border rounded-lg">
                   <div className="flex items-start justify-between">
-                    <div>
+                    <div className="flex-1">
                       <h4 className="font-medium">{house.name}</h4>
                       <p className="text-sm text-slate-600">{house.country}</p>
                       {house.address && (
@@ -190,9 +203,18 @@ export function HousesManagement({ houses, onAddHouse, onAddRoom }: HousesManage
                       )}
                       <p className="text-xs text-slate-500">Code: {house.code}</p>
                     </div>
-                    <button className="text-slate-400 hover:text-destructive">
-                      <X className="w-4 h-4" />
-                    </button>
+                    <div className="flex gap-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleEditHouse(house.id)}
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <button className="text-slate-400 hover:text-destructive p-1">
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}

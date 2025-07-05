@@ -85,8 +85,8 @@ export function CategoriesManagement({ categories, onAddCategory, onAddSubcatego
           </Button>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex gap-2 items-end">
-            <div className="flex-1">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div className="md:col-span-2">
               <Label>Category Name</Label>
               <Input
                 placeholder="Category name"
@@ -103,11 +103,12 @@ export function CategoriesManagement({ categories, onAddCategory, onAddSubcatego
                 />
               </div>
             </div>
-            <Button onClick={handleAddCategory}>
-              <Plus className="w-4 h-4 mr-1" />
-              Add Category
-            </Button>
           </div>
+          
+          <Button onClick={handleAddCategory} className="w-full">
+            <Plus className="w-4 h-4 mr-1" />
+            Add Category
+          </Button>
           
           <div className="space-y-2">
             <Label>Current Categories</Label>

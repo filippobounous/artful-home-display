@@ -1,4 +1,3 @@
-
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -10,7 +9,7 @@ interface AddItemBasicInfoProps {
 export function AddItemBasicInfo({ formData, setFormData }: AddItemBasicInfoProps) {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium text-slate-900">Basic Information</h3>
+      <h3 className="text-lg font-medium text-slate-900">Core Information</h3>
       
       <div>
         <Label htmlFor="title">Title *</Label>

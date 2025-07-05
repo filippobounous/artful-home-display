@@ -1,10 +1,11 @@
 
-import { Search, Grid, List, Table, Download } from "lucide-react";
+import { Search, Grid, List, Table, Download, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { ViewMode } from "@/types/inventory";
-import { HierarchicalCategorySelector } from "@/components/HierarchicalCategorySelector";
-import { HierarchicalHouseRoomSelector } from "@/components/HierarchicalHouseRoomSelector";
+import { MultiSelectFilter } from "@/components/MultiSelectFilter";
+import { categoryConfigs, houseConfigs } from "@/types/inventory";
 
 interface SearchFiltersProps {
   searchTerm: string;
@@ -37,21 +38,37 @@ export function SearchFilters({
   setViewMode,
   onDownloadCSV,
 }: SearchFiltersProps) {
-  // Convert array selections to single values for hierarchical selectors
-  const singleCategory = selectedCategory[0] || "";
-  const singleSubcategory = selectedSubcategory[0] || "";
-  const singleHouse = selectedHouse[0] || "";
-  const singleRoom = selectedRoom[0] || "";
+  const categoryOptions = categoryConfigs.map(cat => ({ id: cat.id, name: cat.name }));
+  const houseOptions = houseConfigs.map(house => ({ id: house.id, name: house.name }));
 
-  const handleCategoryChange = (category: string, subcategory: string) => {
-    setSelectedCategory(category ? [category] : []);
-    setSelectedSubcategory(subcategory ? [subcategory] : []);
+  const clearFilter = (type: string, value: string) => {
+    switch (type) {
+      case 'category':
+        setSelectedCategory(selectedCategory.filter(c => c !== value));
+        break;
+      case 'house':
+        setSelectedHouse(selectedHouse.filter(h => h !== value));
+        break;
+      case 'subcategory':
+        setSelectedSubcategory(selectedSubcategory.filter(s => s !== value));
+        break;
+      case 'room':
+        setSelectedRoom(selectedRoom.filter(r => r !== value));
+        break;
+    }
   };
 
-  const handleLocationChange = (house: string, room: string) => {
-    setSelectedHouse(house ? [house] : []);
-    setSelectedRoom(room ? [room] : []);
+  const clearAllFilters = () => {
+    setSelectedCategory([]);
+    setSelectedSubcategory([]);
+    setSelectedHouse([]);
+    setSelectedRoom([]);
+    setSearchTerm("");
   };
+
+  const hasActiveFilters = selectedCategory.length > 0 || selectedHouse.length > 0 || 
+                          selectedSubcategory.length > 0 || selectedRoom.length > 0 || 
+                          searchTerm.length > 0;
 
   return (
     <div className="mb-8 space-y-6">
@@ -111,25 +128,94 @@ export function SearchFilters({
             </div>
           </div>
 
-          {/* Category selector */}
+          {/* Category multi-selector */}
           <div>
-            <HierarchicalCategorySelector
-              selectedCategory={singleCategory}
-              selectedSubcategory={singleSubcategory}
-              onSelectionChange={handleCategoryChange}
+            <label className="block text-sm font-medium text-slate-700 mb-2">Categories</label>
+            <MultiSelectFilter
+              placeholder="Select categories"
+              options={categoryOptions}
+              selectedValues={selectedCategory}
+              onSelectionChange={setSelectedCategory}
             />
           </div>
 
-          {/* Location selector */}
+          {/* House multi-selector */}
           <div>
-            <HierarchicalHouseRoomSelector
-              selectedHouse={singleHouse}
-              selectedRoom={singleRoom}
-              onSelectionChange={handleLocationChange}
+            <label className="block text-sm font-medium text-slate-700 mb-2">Houses</label>
+            <MultiSelectFilter
+              placeholder="Select houses"
+              options={houseOptions}
+              selectedValues={selectedHouse}
+              onSelectionChange={setSelectedHouse}
             />
           </div>
         </div>
       </div>
+
+      {/* Applied Filters */}
+      {hasActiveFilters && (
+        <div className="bg-white p-4 rounded-lg border shadow-sm">
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-sm font-medium text-slate-700">Applied Filters</h4>
+            <Button variant="ghost" size="sm" onClick={clearAllFilters}>
+              Clear All
+            </Button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {searchTerm && (
+              <Badge variant="secondary" className="px-3 py-1">
+                Search: {searchTerm}
+                <X 
+                  className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive" 
+                  onClick={() => setSearchTerm("")}
+                />
+              </Badge>
+            )}
+            {selectedCategory.map((categoryId) => {
+              const category = categoryConfigs.find(c => c.id === categoryId);
+              return (
+                <Badge key={categoryId} variant="secondary" className="px-3 py-1">
+                  Category: {category?.name}
+                  <X 
+                    className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive" 
+                    onClick={() => clearFilter('category', categoryId)}
+                  />
+                </Badge>
+              );
+            })}
+            {selectedHouse.map((houseId) => {
+              const house = houseConfigs.find(h => h.id === houseId);
+              return (
+                <Badge key={houseId} variant="secondary" className="px-3 py-1">
+                  House: {house?.name}
+                  <X 
+                    className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive" 
+                    onClick={() => clearFilter('house', houseId)}
+                  />
+                </Badge>
+              );
+            })}
+            {selectedSubcategory.map((subcategoryId) => (
+              <Badge key={subcategoryId} variant="secondary" className="px-3 py-1">
+                Subcategory: {subcategoryId}
+                <X 
+                  className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive" 
+                  onClick={() => clearFilter('subcategory', subcategoryId)}
+                />
+              </Badge>
+            ))}
+            {selectedRoom.map((roomId) => (
+              <Badge key={roomId} variant="secondary" className="px-3 py-1">
+                Room: {roomId}
+                <X 
+                  className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive" 
+                  onClick={() => clearFilter('room', roomId)}
+                />
+              </Badge>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
