@@ -7,6 +7,13 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, X, Download, Edit, Save } from "lucide-react";
 import { IconSelector } from "@/components/IconSelector";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
 
 const countries = [
   "United States", "Canada", "United Kingdom", "France", "Germany", "Italy", "Spain", 
@@ -188,18 +195,21 @@ export function HousesManagement({ houses, onAddHouse, onAddRoom, onEditHouse, o
             </div>
             <div>
               <Label>Country *</Label>
-              <select
+              <Select
                 value={newHouseCountry}
-                onChange={(e) => setNewHouseCountry(e.target.value)}
-                className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md"
+                onValueChange={setNewHouseCountry}
               >
-                <option value="">Select country</option>
-                {countries.map((country) => (
-                  <option key={country} value={country}>
-                    {country}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select country" />
+                </SelectTrigger>
+                <SelectContent>
+                  {countries.map((country) => (
+                    <SelectItem key={country} value={country}>
+                      {country}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label>House Code * (4 characters)</Label>
@@ -264,17 +274,21 @@ export function HousesManagement({ houses, onAddHouse, onAddRoom, onEditHouse, o
                         </div>
                         <div>
                           <Label>Country *</Label>
-                          <select
+                          <Select
                             value={editData.country}
-                            onChange={(e) => setEditData({...editData, country: e.target.value})}
-                            className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md"
+                            onValueChange={(value) => setEditData({ ...editData, country: value })}
                           >
-                            {countries.map((country) => (
-                              <option key={country} value={country}>
-                                {country}
-                              </option>
-                            ))}
-                          </select>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select country" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {countries.map((country) => (
+                                <SelectItem key={country} value={country}>
+                                  {country}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </div>
                         <div>
                           <Label>House Code * (4 characters)</Label>
@@ -364,18 +378,21 @@ export function HousesManagement({ houses, onAddHouse, onAddRoom, onEditHouse, o
         <CardContent className="space-y-4">
           <div>
             <Label>Select House</Label>
-            <select
+            <Select
               value={selectedHouse}
-              onChange={(e) => setSelectedHouse(e.target.value)}
-              className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md"
+              onValueChange={setSelectedHouse}
             >
-              <option value="">Select a house</option>
-              {houses.map((house) => (
-                <option key={house.id} value={house.id}>
-                  {house.name}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a house" />
+              </SelectTrigger>
+              <SelectContent>
+                {houses.map((house) => (
+                  <SelectItem key={house.id} value={house.id}>
+                    {house.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           
           <div className="flex gap-2">

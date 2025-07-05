@@ -6,6 +6,13 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Upload, FileText, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
 
 interface BulkUploadProps {
   onUpload: (data: any[], type: string) => void;
@@ -145,17 +152,20 @@ export function BulkUpload({ onUpload }: BulkUploadProps) {
       <CardContent className="space-y-4">
         <div>
           <Label>Upload Type</Label>
-          <select
+          <Select
             value={uploadType}
-            onChange={(e) => setUploadType(e.target.value)}
-            className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md"
+            onValueChange={setUploadType}
           >
-            <option value="">Select upload type</option>
-            <option value="houses">Houses</option>
-            <option value="rooms">Rooms</option>
-            <option value="categories">Categories</option>
-            <option value="items">Items</option>
-          </select>
+            <SelectTrigger>
+              <SelectValue placeholder="Select upload type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="houses">Houses</SelectItem>
+              <SelectItem value="rooms">Rooms</SelectItem>
+              <SelectItem value="categories">Categories</SelectItem>
+              <SelectItem value="items">Items</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {uploadType && (
