@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AddItemBasicInfo } from "./AddItemBasicInfo";
 import { AddItemLocationValuation } from "./AddItemLocationValuation";
@@ -94,12 +94,9 @@ export function AddItemForm() {
   };
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="text-center">Add New Item to Collection</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+    <Card className="w-full border-0 shadow-lg">
+      <CardContent className="p-8">
+        <form onSubmit={handleSubmit} className="space-y-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
             {/* Basic Information - Left Column */}
             <div className="h-full">
@@ -118,11 +115,11 @@ export function AddItemForm() {
           {/* Images */}
           <AddItemImages formData={formData} setFormData={setFormData} />
 
-          <div className="flex gap-4 pt-4 max-w-2xl mx-auto">
-            <Button type="submit" className="flex-1">
+          <div className="flex gap-4 pt-6 max-w-2xl mx-auto">
+            <Button type="submit" className="flex-1 h-12 text-lg font-semibold">
               Add to Collection
             </Button>
-            <Button type="button" variant="outline" className="flex-1">
+            <Button type="button" variant="outline" className="flex-1 h-12 text-lg font-semibold">
               Save as Draft
             </Button>
           </div>

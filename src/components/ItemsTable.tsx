@@ -1,14 +1,19 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { ArrowUpDown, ChevronUp, ChevronDown } from "lucide-react";
 import { InventoryItem } from "@/types/inventory";
 
 interface ItemsTableProps {
   items: InventoryItem[];
   onItemClick?: (item: InventoryItem) => void;
+  onSort?: (field: string, direction: 'asc' | 'desc') => void;
+  sortField?: string;
+  sortDirection?: 'asc' | 'desc';
 }
 
-export function ItemsTable({ items, onItemClick }: ItemsTableProps) {
+export function ItemsTable({ items, onItemClick, onSort, sortField, sortDirection }: ItemsTableProps) {
   const getConditionColor = (condition: string) => {
     switch (condition) {
       case "mint":
@@ -33,18 +38,49 @@ export function ItemsTable({ items, onItemClick }: ItemsTableProps) {
     return formatter.format(value);
   };
 
+  const handleSort = (field: string) => {
+    if (onSort) {
+      const newDirection = sortField === field && sortDirection === 'asc' ? 'desc' : 'asc';
+      onSort(field, newDirection);
+    }
+  };
+
+  const getSortIcon = (field: string) => {
+    if (sortField !== field) return <ArrowUpDown className="w-4 h-4" />;
+    return sortDirection === 'asc' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />;
+  };
+
+  const SortableHeader = ({ field, children }: { field: string; children: React.ReactNode }) => (
+    <TableHead>
+      {onSort ? (
+        <Button
+          variant="ghost"
+          className="h-auto p-0 font-semibold hover:bg-transparent"
+          onClick={() => handleSort(field)}
+        >
+          {children}
+          {getSortIcon(field)}
+        </Button>
+      ) : (
+        children
+      )}
+    </TableHead>
+  );
+
   return (
     <div className="rounded-md border">
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead className="w-16"></TableHead>
-            <TableHead>Title</TableHead>
-            <TableHead>Artist</TableHead>
-            <TableHead>Category</TableHead>
+            <SortableHeader field="title">Title</SortableHeader>
+            <SortableHeader field="artist">Artist</SortableHeader>
+            <SortableHeader field="category">Category</SortableHeader>
             <TableHead>Location</TableHead>
             <TableHead>Condition</TableHead>
-            <TableHead className="text-right">Valuation</TableHead>
+            <SortableHeader field="valuation">
+              <div className="text-right">Valuation</div>
+            </SortableHeader>
           </TableRow>
         </TableHeader>
         <TableBody>

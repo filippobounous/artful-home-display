@@ -141,9 +141,6 @@ const AllItems = () => {
               viewMode={viewMode}
               setViewMode={setViewMode}
               onDownloadCSV={downloadCSV}
-              onSort={handleSort}
-              sortField={sortField}
-              sortDirection={sortDirection}
             />
 
             <div className="mb-6">
@@ -159,7 +156,13 @@ const AllItems = () => {
             ) : viewMode === "list" ? (
               <ItemsList items={sortedItems} onItemClick={setSelectedItem} />
             ) : (
-              <ItemsTable items={sortedItems} onItemClick={setSelectedItem} />
+              <ItemsTable 
+                items={sortedItems} 
+                onItemClick={setSelectedItem}
+                onSort={handleSort}
+                sortField={sortField}
+                sortDirection={sortDirection}
+              />
             )}
 
             <ItemDetailDialog

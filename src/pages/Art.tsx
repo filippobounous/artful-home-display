@@ -17,13 +17,15 @@ type ViewMode = "grid" | "list" | "table";
 
 const Art = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string[]>(["art"]);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string[]>([]);
   const [selectedHouse, setSelectedHouse] = useState<string[]>([]);
   const [selectedRoom, setSelectedRoom] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [items, setItems] = useState<InventoryItem[]>(sampleItems);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
+  const [sortField, setSortField] = useState<string>("");
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   useEffect(() => {
     fetchInventory()
@@ -35,13 +37,39 @@ const Art = () => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (item.artist && item.artist.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesCategory = selectedCategory.length === 0 || selectedCategory.includes(item.category);
+    const matchesCategory = item.category === "art"; // Always filter to art category
     const matchesSubcategory = selectedSubcategory.length === 0 || (item.subcategory && selectedSubcategory.includes(item.subcategory));
     const matchesHouse = selectedHouse.length === 0 || (item.house && selectedHouse.includes(item.house));
     const matchesRoom = selectedRoom.length === 0 || (item.room && selectedRoom.includes(item.room));
     
     return matchesSearch && matchesCategory && matchesSubcategory && matchesHouse && matchesRoom;
   });
+
+  // Sort filtered items
+  const sortedItems = [...filteredItems].sort((a, b) => {
+    if (!sortField) return 0;
+    
+    let aValue: any = a[sortField as keyof InventoryItem];
+    let bValue: any = b[sortField as keyof InventoryItem];
+    
+    // Handle special cases
+    if (sortField === 'valuation') {
+      aValue = Number(aValue) || 0;
+      bValue = Number(bValue) || 0;
+    } else {
+      aValue = String(aValue || '').toLowerCase();
+      bValue = String(bValue || '').toLowerCase();
+    }
+    
+    if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+    if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  const handleSort = (field: string, direction: 'asc' | 'desc') => {
+    setSortField(field);
+    setSortDirection(direction);
+  };
 
   return (
     <SidebarProvider>
@@ -70,22 +98,29 @@ const Art = () => {
               setSelectedRoom={setSelectedRoom}
               viewMode={viewMode}
               setViewMode={setViewMode}
+              permanentCategory="art"
             />
 
             <div className="mb-6">
               <p className="text-slate-600">
-                Showing {filteredItems.length} art pieces
+                Showing {sortedItems.length} art pieces
               </p>
             </div>
 
-            {filteredItems.length === 0 ? (
+            {sortedItems.length === 0 ? (
               <EmptyState />
             ) : viewMode === "grid" ? (
-              <ItemsGrid items={filteredItems} onItemClick={setSelectedItem} />
+              <ItemsGrid items={sortedItems} onItemClick={setSelectedItem} />
             ) : viewMode === "list" ? (
-              <ItemsList items={filteredItems} onItemClick={setSelectedItem} />
+              <ItemsList items={sortedItems} onItemClick={setSelectedItem} />
             ) : (
-              <ItemsTable items={filteredItems} onItemClick={setSelectedItem} />
+              <ItemsTable 
+                items={sortedItems} 
+                onItemClick={setSelectedItem}
+                onSort={handleSort}
+                sortField={sortField}
+                sortDirection={sortDirection}
+              />
             )}
 
             <ItemDetailDialog
