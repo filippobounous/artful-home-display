@@ -95,7 +95,7 @@ export function AppliedFilters({
         {selectedCategory.map((categoryId) => {
           const category = categories.find(c => c.id === categoryId);
           return (
-            <Badge key={categoryId} variant={permanentCategory ? "default" : "secondary"} className="px-3 py-1">
+            <Badge key={categoryId} variant="secondary" className="px-3 py-1">
               Category: {category?.name}
               {!permanentCategory && (
                 <X 
