@@ -17,7 +17,7 @@ type ViewMode = "grid" | "list" | "table";
 
 const Decorative = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string[]>(["decorative"]);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string[]>([]);
   const [selectedHouse, setSelectedHouse] = useState<string[]>([]);
   const [selectedRoom, setSelectedRoom] = useState<string[]>([]);
@@ -35,7 +35,7 @@ const Decorative = () => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (item.artist && item.artist.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesCategory = selectedCategory.length === 0 || selectedCategory.includes(item.category);
+    const matchesCategory = item.category === "decorative";
     const matchesSubcategory = selectedSubcategory.length === 0 || (item.subcategory && selectedSubcategory.includes(item.subcategory));
     const matchesHouse = selectedHouse.length === 0 || (item.house && selectedHouse.includes(item.house));
     const matchesRoom = selectedRoom.length === 0 || (item.room && selectedRoom.includes(item.room));
@@ -70,6 +70,7 @@ const Decorative = () => {
               setSelectedRoom={setSelectedRoom}
               viewMode={viewMode}
               setViewMode={setViewMode}
+              permanentCategory="decorative"
             />
 
             <div className="mb-6">

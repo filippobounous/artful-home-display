@@ -21,6 +21,7 @@ interface SearchFiltersProps {
   setViewMode: (mode: ViewMode) => void;
   onDownloadCSV?: () => void;
   permanentCategory?: string;
+  permanentHouse?: string;
 }
 
 export function SearchFilters({
@@ -38,6 +39,7 @@ export function SearchFilters({
   setViewMode,
   onDownloadCSV,
   permanentCategory,
+  permanentHouse,
 }: SearchFiltersProps) {
   return (
     <div className="mb-8 space-y-6">
@@ -69,6 +71,7 @@ export function SearchFilters({
             setSelectedHouse={setSelectedHouse}
             selectedRoom={selectedRoom}
             setSelectedRoom={setSelectedRoom}
+            permanentHouse={permanentHouse}
           />
         </div>
       </div>
@@ -86,6 +89,7 @@ export function SearchFilters({
         selectedRoom={selectedRoom}
         setSelectedRoom={setSelectedRoom}
         permanentCategory={permanentCategory}
+        permanentHouse={permanentHouse}
       />
     </div>
   );

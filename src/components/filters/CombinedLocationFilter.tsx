@@ -7,6 +7,7 @@ interface CombinedLocationFilterProps {
   setSelectedHouse: (houses: string[]) => void;
   selectedRoom: string[];
   setSelectedRoom: (rooms: string[]) => void;
+  permanentHouse?: string;
 }
 
 export function CombinedLocationFilter({
@@ -14,8 +15,27 @@ export function CombinedLocationFilter({
   setSelectedHouse,
   selectedRoom,
   setSelectedRoom,
+  permanentHouse,
 }: CombinedLocationFilterProps) {
   const { houses } = useSettingsState();
+
+  if (permanentHouse) {
+    const house = houses.find(h => h.id === permanentHouse);
+    if (!house) return null;
+    const roomOptions = house.rooms.map(room => ({ id: room.id, name: room.name }));
+
+    return (
+      <div>
+        <label className="block text-sm font-medium text-slate-700 mb-2">Rooms</label>
+        <MultiSelectFilter
+          placeholder="Select rooms"
+          options={roomOptions}
+          selectedValues={selectedRoom}
+          onSelectionChange={setSelectedRoom}
+        />
+      </div>
+    );
+  }
 
   // Create combined options with format "House - Room"
   const combinedOptions = houses.flatMap(house => [

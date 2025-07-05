@@ -35,6 +35,12 @@ const HousePage = () => {
       .catch(() => {});
   }, []);
 
+  useEffect(() => {
+    if (houseId) {
+      setSelectedHouse([houseId]);
+    }
+  }, [houseId]);
+
   const houseConfig = houses.find(h => h.id === houseId);
   const houseName = houseConfig?.name || "Unknown House";
 
@@ -77,6 +83,7 @@ const HousePage = () => {
               setSelectedRoom={setSelectedRoom}
               viewMode={viewMode}
               setViewMode={setViewMode}
+              permanentHouse={houseId}
             />
 
             <div className="mb-6">

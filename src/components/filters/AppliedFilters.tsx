@@ -16,6 +16,7 @@ interface AppliedFiltersProps {
   selectedRoom: string[];
   setSelectedRoom: (rooms: string[]) => void;
   permanentCategory?: string;
+  permanentHouse?: string;
 }
 
 export function AppliedFilters({
@@ -30,6 +31,7 @@ export function AppliedFilters({
   selectedRoom,
   setSelectedRoom,
   permanentCategory,
+  permanentHouse,
 }: AppliedFiltersProps) {
   const { categories, houses } = useSettingsState();
 
@@ -41,7 +43,9 @@ export function AppliedFilters({
         }
         break;
       case 'house':
-        setSelectedHouse(selectedHouse.filter(h => h !== value));
+        if (!permanentHouse) {
+          setSelectedHouse(selectedHouse.filter(h => h !== value));
+        }
         break;
       case 'subcategory':
         setSelectedSubcategory(selectedSubcategory.filter(s => s !== value));
@@ -57,7 +61,9 @@ export function AppliedFilters({
       setSelectedCategory([]);
     }
     setSelectedSubcategory([]);
-    setSelectedHouse([]);
+    if (!permanentHouse) {
+      setSelectedHouse([]);
+    }
     setSelectedRoom([]);
     setSearchTerm("");
   };
@@ -88,12 +94,13 @@ export function AppliedFilters({
         )}
         {selectedCategory.map((categoryId) => {
           const category = categories.find(c => c.id === categoryId);
+          const locked = permanentCategory && categoryId === permanentCategory;
           return (
-            <Badge key={categoryId} variant={permanentCategory ? "default" : "secondary"} className="px-3 py-1">
+            <Badge key={categoryId} variant={locked ? "default" : "secondary"} className="px-3 py-1">
               Category: {category?.name}
               {!permanentCategory && (
-                <X 
-                  className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive" 
+                <X
+                  className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
                   onClick={() => clearFilter('category', categoryId)}
                 />
               )}
@@ -116,13 +123,16 @@ export function AppliedFilters({
         })}
         {selectedHouse.map((houseId) => {
           const house = houses.find(h => h.id === houseId);
+          const locked = permanentHouse && houseId === permanentHouse;
           return (
-            <Badge key={houseId} variant="secondary" className="px-3 py-1">
+            <Badge key={houseId} variant={locked ? "default" : "secondary"} className="px-3 py-1">
               House: {house?.name}
-              <X 
-                className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive" 
-                onClick={() => clearFilter('house', houseId)}
-              />
+              {!permanentHouse && (
+                <X
+                  className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
+                  onClick={() => clearFilter('house', houseId)}
+                />
+              )}
             </Badge>
           );
         })}
