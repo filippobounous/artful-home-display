@@ -44,7 +44,8 @@ export function CombinedLocationFilter({
     // Add specific room options
     ...house.rooms.map(room => ({
       id: room.id,
-      name: `${house.name} - ${room.name}`
+      name: `${house.name} - ${room.name}`,
+      indent: true
     }))
   ]);
 

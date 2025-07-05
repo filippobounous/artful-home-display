@@ -6,9 +6,15 @@ import { Badge } from "@/components/ui/badge";
 import { Check, ChevronDown, X } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
+interface MultiSelectOption {
+  id: string;
+  name: string;
+  indent?: boolean;
+}
+
 interface MultiSelectFilterProps {
   placeholder: string;
-  options: { id: string; name: string }[];
+  options: MultiSelectOption[];
   selectedValues: string[];
   onSelectionChange: (values: string[]) => void;
 }
@@ -71,10 +77,10 @@ export function MultiSelectFilter({ placeholder, options, selectedValues, onSele
           {options.map((option) => (
             <div
               key={option.id}
-              className="flex items-center space-x-2 p-2 hover:bg-muted rounded cursor-pointer"
+              className={`flex items-center space-x-2 p-2 hover:bg-muted rounded cursor-pointer ${option.indent ? 'pl-4' : ''}`}
               onClick={() => handleToggle(option.id)}
             >
-              <Checkbox 
+              <Checkbox
                 checked={selectedValues.includes(option.id)}
                 onChange={() => handleToggle(option.id)}
               />

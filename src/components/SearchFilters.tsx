@@ -4,8 +4,6 @@ import { FilterHeader } from "@/components/filters/FilterHeader";
 import { SearchInput } from "@/components/filters/SearchInput";
 import { CombinedCategoryFilter } from "@/components/filters/CombinedCategoryFilter";
 import { CombinedLocationFilter } from "@/components/filters/CombinedLocationFilter";
-import { ConditionFilter } from "@/components/filters/ConditionFilter";
-import { YearFilter } from "@/components/filters/YearFilter";
 import { AppliedFilters } from "@/components/filters/AppliedFilters";
 
 interface SearchFiltersProps {
@@ -19,11 +17,6 @@ interface SearchFiltersProps {
   setSelectedHouse: (houses: string[]) => void;
   selectedRoom: string[];
   setSelectedRoom: (rooms: string[]) => void;
-  selectedCondition: string[];
-  setSelectedCondition: (conditions: string[]) => void;
-  selectedYear: string[];
-  setSelectedYear: (years: string[]) => void;
-  yearOptions: string[];
   viewMode: ViewMode;
   setViewMode: (mode: ViewMode) => void;
   onDownloadCSV?: () => void;
@@ -42,11 +35,6 @@ export function SearchFilters({
   setSelectedHouse,
   selectedRoom,
   setSelectedRoom,
-  selectedCondition,
-  setSelectedCondition,
-  selectedYear,
-  setSelectedYear,
-  yearOptions,
   viewMode,
   setViewMode,
   onDownloadCSV,
@@ -86,18 +74,6 @@ export function SearchFilters({
             permanentHouse={permanentHouse}
           />
 
-          {/* Condition Filter */}
-          <ConditionFilter
-            selectedCondition={selectedCondition}
-            setSelectedCondition={setSelectedCondition}
-          />
-
-          {/* Year Filter */}
-          <YearFilter
-            yearOptions={yearOptions}
-            selectedYear={selectedYear}
-            setSelectedYear={setSelectedYear}
-          />
         </div>
       </div>
 
@@ -113,11 +89,6 @@ export function SearchFilters({
         setSelectedHouse={setSelectedHouse}
         selectedRoom={selectedRoom}
         setSelectedRoom={setSelectedRoom}
-        selectedCondition={selectedCondition}
-        setSelectedCondition={setSelectedCondition}
-        selectedYear={selectedYear}
-        setSelectedYear={setSelectedYear}
-        yearOptions={yearOptions}
         permanentCategory={permanentCategory}
         permanentHouse={permanentHouse}
       />

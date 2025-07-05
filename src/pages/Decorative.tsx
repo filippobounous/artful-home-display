@@ -21,12 +21,9 @@ const Decorative = () => {
   const [selectedSubcategory, setSelectedSubcategory] = useState<string[]>([]);
   const [selectedHouse, setSelectedHouse] = useState<string[]>([]);
   const [selectedRoom, setSelectedRoom] = useState<string[]>([]);
-  const [selectedCondition, setSelectedCondition] = useState<string[]>([]);
-  const [selectedYear, setSelectedYear] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [items, setItems] = useState<InventoryItem[]>(sampleItems);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
-  const yearOptions = Array.from(new Set(items.map(i => i.yearPeriod).filter(Boolean))) as string[];
 
   useEffect(() => {
     fetchInventory()
@@ -42,10 +39,8 @@ const Decorative = () => {
     const matchesSubcategory = selectedSubcategory.length === 0 || (item.subcategory && selectedSubcategory.includes(item.subcategory));
     const matchesHouse = selectedHouse.length === 0 || (item.house && selectedHouse.includes(item.house));
     const matchesRoom = selectedRoom.length === 0 || (item.room && selectedRoom.includes(item.room));
-    const matchesCondition = selectedCondition.length === 0 || selectedCondition.includes(item.condition);
-    const matchesYear = selectedYear.length === 0 || (item.yearPeriod && selectedYear.includes(item.yearPeriod));
 
-    return matchesSearch && matchesCategory && matchesSubcategory && matchesHouse && matchesRoom && matchesCondition && matchesYear;
+    return matchesSearch && matchesCategory && matchesSubcategory && matchesHouse && matchesRoom;
   });
 
   return (
@@ -73,11 +68,6 @@ const Decorative = () => {
               setSelectedHouse={setSelectedHouse}
               selectedRoom={selectedRoom}
               setSelectedRoom={setSelectedRoom}
-              selectedCondition={selectedCondition}
-              setSelectedCondition={setSelectedCondition}
-              selectedYear={selectedYear}
-              setSelectedYear={setSelectedYear}
-              yearOptions={yearOptions}
               viewMode={viewMode}
               setViewMode={setViewMode}
               permanentCategory="decorative"
