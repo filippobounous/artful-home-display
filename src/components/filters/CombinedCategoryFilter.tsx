@@ -26,7 +26,8 @@ export function CombinedCategoryFilter({
     // Add specific subcategory options
     ...category.subcategories.map(sub => ({
       id: sub.id,
-      name: `${category.name} - ${sub.name}`
+      name: `${category.name} - ${sub.name}`,
+      indent: true
     }))
   ]);
 

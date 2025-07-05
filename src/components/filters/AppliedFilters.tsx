@@ -15,10 +15,6 @@ interface AppliedFiltersProps {
   setSelectedHouse: (houses: string[]) => void;
   selectedRoom: string[];
   setSelectedRoom: (rooms: string[]) => void;
-  selectedCondition: string[];
-  setSelectedCondition: (conditions: string[]) => void;
-  selectedYear: string[];
-  setSelectedYear: (years: string[]) => void;
   permanentCategory?: string;
   permanentHouse?: string;
 }
@@ -34,10 +30,6 @@ export function AppliedFilters({
   setSelectedHouse,
   selectedRoom,
   setSelectedRoom,
-  selectedCondition,
-  setSelectedCondition,
-  selectedYear,
-  setSelectedYear,
   permanentCategory,
   permanentHouse,
 }: AppliedFiltersProps) {
@@ -61,13 +53,7 @@ export function AppliedFilters({
       case 'room':
         setSelectedRoom(selectedRoom.filter(r => r !== value));
         break;
-      case 'condition':
-        setSelectedCondition(selectedCondition.filter(c => c !== value));
-        break;
-      case 'year':
-        setSelectedYear(selectedYear.filter(y => y !== value));
-        break;
-    }
+      }
   };
 
   const clearAllFilters = () => {
@@ -79,14 +65,11 @@ export function AppliedFilters({
       setSelectedHouse([]);
     }
     setSelectedRoom([]);
-    setSelectedCondition([]);
-    setSelectedYear([]);
     setSearchTerm("");
   };
 
   const hasActiveFilters = selectedCategory.length > 0 || selectedHouse.length > 0 ||
                           selectedSubcategory.length > 0 || selectedRoom.length > 0 ||
-                          selectedCondition.length > 0 || selectedYear.length > 0 ||
                           searchTerm.length > 0;
 
   if (!hasActiveFilters) return null;
@@ -167,24 +150,6 @@ export function AppliedFilters({
             </Badge>
           );
         })}
-        {selectedCondition.map((cond) => (
-          <Badge key={cond} variant="secondary" className="px-3 py-1">
-            Condition: {cond}
-            <X
-              className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
-              onClick={() => clearFilter('condition', cond)}
-            />
-          </Badge>
-        ))}
-        {selectedYear.map((yr) => (
-          <Badge key={yr} variant="secondary" className="px-3 py-1">
-            Year: {yr}
-            <X
-              className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
-              onClick={() => clearFilter('year', yr)}
-            />
-          </Badge>
-        ))}
       </div>
     </div>
   );
