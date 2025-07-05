@@ -67,7 +67,7 @@ const HousePage = () => {
           <main className="flex-1 p-6">
             <div className="mb-6">
               <h2 className="text-xl font-semibold text-slate-900 mb-2">{houseName}</h2>
-              <p className="text-slate-600">Items located in {houseName.toLowerCase()}</p>
+              <p className="text-slate-600">Items located in {houseName}</p>
             </div>
 
             <SearchFilters
@@ -88,7 +88,7 @@ const HousePage = () => {
 
             <div className="mb-6">
               <p className="text-slate-600">
-                Showing {filteredItems.length} items in {houseName.toLowerCase()}
+                Showing {filteredItems.length} items in {houseName}
               </p>
             </div>
 

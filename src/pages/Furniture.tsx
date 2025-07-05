@@ -11,7 +11,7 @@ import { ItemDetailDialog } from "@/components/ItemDetailDialog";
 import { EmptyState } from "@/components/EmptyState";
 import { sampleItems } from "@/data/sampleData";
 import { fetchInventory } from "@/lib/api";
-import { InventoryItem } from "@/types/inventory";
+import { InventoryItem, categoryConfigs } from "@/types/inventory";
 
 type ViewMode = "grid" | "list" | "table";
 
@@ -24,6 +24,8 @@ const Furniture = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [items, setItems] = useState<InventoryItem[]>(sampleItems);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
+  const yearOptions = Array.from(new Set(items.map(i => i.yearPeriod).filter(Boolean))) as string[];
+  const categoryName = categoryConfigs.find(c => c.id === 'furniture')?.name || 'Furniture';
 
   useEffect(() => {
     fetchInventory()
@@ -53,8 +55,8 @@ const Furniture = () => {
 
           <main className="flex-1 p-6">
             <div className="mb-6">
-              <h2 className="text-xl font-semibold text-slate-900 mb-2">Furniture Collection</h2>
-              <p className="text-slate-600">Browse and manage your furniture pieces</p>
+              <h2 className="text-xl font-semibold text-slate-900 mb-2">{categoryName} Collection</h2>
+              <p className="text-slate-600">Browse and manage your {categoryName} pieces</p>
             </div>
 
             <SearchFilters
@@ -75,7 +77,7 @@ const Furniture = () => {
 
             <div className="mb-6">
               <p className="text-slate-600">
-                Showing {filteredItems.length} furniture pieces
+                Showing {filteredItems.length} {categoryName} pieces
               </p>
             </div>
 
