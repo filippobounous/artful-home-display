@@ -7,9 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import AllItems from "./pages/AllItems";
-import Art from "./pages/Art";
-import Furniture from "./pages/Furniture";
-import Decorative from "./pages/Decorative";
+import CategoryPage from "./pages/CategoryPage";
 import HousePage from "./pages/HousePage";
 import Analytics from "./pages/Analytics";
 import AddItem from "./pages/AddItem";
@@ -30,9 +28,7 @@ const App = () => (
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
           <Route path="/inventory" element={<ProtectedRoute><AllItems /></ProtectedRoute>} />
-          <Route path="/art" element={<ProtectedRoute><Art /></ProtectedRoute>} />
-          <Route path="/furniture" element={<ProtectedRoute><Furniture /></ProtectedRoute>} />
-          <Route path="/decorative" element={<ProtectedRoute><Decorative /></ProtectedRoute>} />
+          <Route path="/category/:categoryId" element={<ProtectedRoute><CategoryPage /></ProtectedRoute>} />
           <Route path="/house/:houseId" element={<ProtectedRoute><HousePage /></ProtectedRoute>} />
           <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
           <Route path="/add" element={<ProtectedRoute><AddItem /></ProtectedRoute>} />

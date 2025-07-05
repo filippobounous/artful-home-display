@@ -1,5 +1,5 @@
-
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { InventoryHeader } from "@/components/InventoryHeader";
@@ -11,21 +11,24 @@ import { ItemDetailDialog } from "@/components/ItemDetailDialog";
 import { EmptyState } from "@/components/EmptyState";
 import { sampleItems } from "@/data/sampleData";
 import { fetchInventory } from "@/lib/api";
-import { InventoryItem, categoryConfigs } from "@/types/inventory";
+import { InventoryItem } from "@/types/inventory";
+import { useSettingsState } from "@/hooks/useSettingsState";
 
-type ViewMode = "grid" | "list" | "table";
+export type ViewMode = "grid" | "list" | "table";
 
-const Furniture = () => {
+const CategoryPage = () => {
+  const { categoryId } = useParams<{ categoryId: string }>();
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string[]>(["furniture"]);
+  const [selectedCategory, setSelectedCategory] = useState<string[]>(categoryId ? [categoryId] : []);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string[]>([]);
   const [selectedHouse, setSelectedHouse] = useState<string[]>([]);
   const [selectedRoom, setSelectedRoom] = useState<string[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [items, setItems] = useState<InventoryItem[]>(sampleItems);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
-  const yearOptions = Array.from(new Set(items.map(i => i.yearPeriod).filter(Boolean))) as string[];
-  const categoryName = categoryConfigs.find(c => c.id === 'furniture')?.name || 'Furniture';
+  const [sortField, setSortField] = useState<string>("");
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const { categories } = useSettingsState();
 
   useEffect(() => {
     fetchInventory()
@@ -33,11 +36,20 @@ const Furniture = () => {
       .catch(() => {});
   }, []);
 
+  useEffect(() => {
+    if (categoryId) {
+      setSelectedCategory([categoryId]);
+    }
+  }, [categoryId]);
+
+  const categoryConfig = categories.find(c => c.id === categoryId);
+  const categoryName = categoryConfig?.name || "Items";
+
   const filteredItems = items.filter(item => {
     const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (item.artist && item.artist.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesCategory = item.category === "furniture";
+    const matchesCategory = item.category === categoryId;
     const matchesSubcategory = selectedSubcategory.length === 0 || (item.subcategory && selectedSubcategory.includes(item.subcategory));
     const matchesHouse = selectedHouse.length === 0 || (item.house && selectedHouse.includes(item.house));
     const matchesRoom = selectedRoom.length === 0 || (item.room && selectedRoom.includes(item.room));
@@ -45,11 +57,37 @@ const Furniture = () => {
     return matchesSearch && matchesCategory && matchesSubcategory && matchesHouse && matchesRoom;
   });
 
+  const sortedItems = [...filteredItems].sort((a, b) => {
+    if (!sortField) return 0;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let aValue: any = a[sortField as keyof InventoryItem];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let bValue: any = b[sortField as keyof InventoryItem];
+
+    if (sortField === 'valuation') {
+      aValue = Number(aValue) || 0;
+      bValue = Number(bValue) || 0;
+    } else {
+      aValue = String(aValue || '').toLowerCase();
+      bValue = String(bValue || '').toLowerCase();
+    }
+
+    if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+    if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  const handleSort = (field: string, direction: 'asc' | 'desc') => {
+    setSortField(field);
+    setSortDirection(direction);
+  };
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-slate-50">
         <AppSidebar />
-        
+
         <div className="flex-1 flex flex-col">
           <InventoryHeader />
 
@@ -72,23 +110,29 @@ const Furniture = () => {
               setSelectedRoom={setSelectedRoom}
               viewMode={viewMode}
               setViewMode={setViewMode}
-              permanentCategory="furniture"
+              permanentCategory={categoryId}
             />
 
             <div className="mb-6">
               <p className="text-slate-600">
-                Showing {filteredItems.length} {categoryName} pieces
+                Showing {sortedItems.length} {categoryName} pieces
               </p>
             </div>
 
-            {filteredItems.length === 0 ? (
+            {sortedItems.length === 0 ? (
               <EmptyState />
             ) : viewMode === "grid" ? (
-              <ItemsGrid items={filteredItems} onItemClick={setSelectedItem} />
+              <ItemsGrid items={sortedItems} onItemClick={setSelectedItem} />
             ) : viewMode === "list" ? (
-              <ItemsList items={filteredItems} onItemClick={setSelectedItem} />
+              <ItemsList items={sortedItems} onItemClick={setSelectedItem} />
             ) : (
-              <ItemsTable items={filteredItems} onItemClick={setSelectedItem} />
+              <ItemsTable
+                items={sortedItems}
+                onItemClick={setSelectedItem}
+                onSort={handleSort}
+                sortField={sortField}
+                sortDirection={sortDirection}
+              />
             )}
 
             <ItemDetailDialog
@@ -103,4 +147,4 @@ const Furniture = () => {
   );
 };
 
-export default Furniture;
+export default CategoryPage;
