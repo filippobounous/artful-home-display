@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import { fetchInventory } from "@/lib/api";
+import { sampleItems } from "@/data/sampleData";
 
 export function InventoryHeader() {
   const navigate = useNavigate();
@@ -16,18 +16,19 @@ export function InventoryHeader() {
       'House', 'Room', 'Notes'
     ];
 
-    let items;
+    // Use sample items as fallback if API fails
+    let items = sampleItems;
     try {
+      const { fetchInventory } = await import("@/lib/api");
       items = await fetchInventory();
     } catch (err) {
-      console.error('Failed to fetch items for CSV', err);
-      items = [];
+      console.error('Failed to fetch items for CSV, using sample data:', err);
     }
 
     const csvContent = [
       headers.join(','),
       ...items.map(item => [
-        item.id,
+        item.id || '',
         `"${item.title || ''}"`,
         `"${item.artist || ''}"`,
         `"${item.category || ''}"`,
@@ -50,11 +51,12 @@ export function InventoryHeader() {
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
-    link.setAttribute('download', 'inventory_data.csv');
+    link.setAttribute('download', `inventory_${new Date().toISOString().split('T')[0]}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   const downloadImages = async () => {
@@ -75,7 +77,7 @@ export function InventoryHeader() {
         
         <div className="flex items-center gap-3">
           {/* Only show download buttons on pages that make sense */}
-          {(location.pathname === '/inventory' || location.pathname === '/') && (
+          {(location.pathname === '/inventory' || location.pathname === '/' || location.pathname === '/all-items') && (
             <>
               <Button variant="outline" onClick={downloadCSV}>
                 <Download className="w-4 h-4 mr-2" />

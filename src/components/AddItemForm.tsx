@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -93,13 +94,13 @@ export function AddItemForm() {
   };
 
   return (
-    <Card className="max-w-4xl">
+    <Card className="w-full">
       <CardHeader>
-        <CardTitle>Add New Item to Collection</CardTitle>
+        <CardTitle className="text-center">Add New Item to Collection</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
             {/* Basic Information - Left Column */}
             <div className="h-full">
               <AddItemBasicInfo formData={formData} setFormData={setFormData} />
@@ -117,7 +118,7 @@ export function AddItemForm() {
           {/* Images */}
           <AddItemImages formData={formData} setFormData={setFormData} />
 
-          <div className="flex gap-4 pt-4">
+          <div className="flex gap-4 pt-4 max-w-2xl mx-auto">
             <Button type="submit" className="flex-1">
               Add to Collection
             </Button>

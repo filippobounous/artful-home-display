@@ -14,12 +14,16 @@ const AddItem = () => {
           <InventoryHeader />
 
           <main className="flex-1 p-6">
-            <div className="mb-6">
+            <div className="mb-6 text-center">
               <h2 className="text-xl font-semibold text-slate-900 mb-2">Add New Item</h2>
               <p className="text-slate-600">Add a new piece to your collection</p>
             </div>
 
-            <AddItemForm />
+            <div className="flex justify-center">
+              <div className="w-full max-w-6xl">
+                <AddItemForm />
+              </div>
+            </div>
           </main>
         </div>
       </div>

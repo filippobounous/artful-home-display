@@ -101,6 +101,11 @@ export function SearchFilters({
     }
   };
 
+  const getSortIcon = (field: string) => {
+    if (sortField !== field) return <ArrowUpDown className="w-4 h-4" />;
+    return sortDirection === 'asc' ? '↑' : '↓';
+  };
+
   return (
     <div className="mb-8 space-y-6">
       {/* Header with title and view controls */}
@@ -115,17 +120,37 @@ export function SearchFilters({
           )}
           {onSort && viewMode === "table" && (
             <div className="flex gap-1">
-              <Button variant="outline" size="sm" onClick={() => handleSort('title')}>
-                <ArrowUpDown className="w-4 h-4 mr-1" />
-                Title
+              <Button 
+                variant={sortField === 'title' ? "default" : "outline"} 
+                size="sm" 
+                onClick={() => handleSort('title')}
+              >
+                {getSortIcon('title')}
+                <span className="ml-1">Title</span>
               </Button>
-              <Button variant="outline" size="sm" onClick={() => handleSort('artist')}>
-                <ArrowUpDown className="w-4 h-4 mr-1" />
-                Artist
+              <Button 
+                variant={sortField === 'artist' ? "default" : "outline"} 
+                size="sm" 
+                onClick={() => handleSort('artist')}
+              >
+                {getSortIcon('artist')}
+                <span className="ml-1">Artist</span>
               </Button>
-              <Button variant="outline" size="sm" onClick={() => handleSort('valuation')}>
-                <ArrowUpDown className="w-4 h-4 mr-1" />
-                Value
+              <Button 
+                variant={sortField === 'valuation' ? "default" : "outline"} 
+                size="sm" 
+                onClick={() => handleSort('valuation')}
+              >
+                {getSortIcon('valuation')}
+                <span className="ml-1">Value</span>
+              </Button>
+              <Button 
+                variant={sortField === 'category' ? "default" : "outline"} 
+                size="sm" 
+                onClick={() => handleSort('category')}
+              >
+                {getSortIcon('category')}
+                <span className="ml-1">Category</span>
               </Button>
             </div>
           )}

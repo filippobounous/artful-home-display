@@ -24,6 +24,8 @@ const AllItems = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [items, setItems] = useState<InventoryItem[]>(sampleItems);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
+  const [sortField, setSortField] = useState<string>("");
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   useEffect(() => {
     fetchInventory()
@@ -43,6 +45,73 @@ const AllItems = () => {
     
     return matchesSearch && matchesCategory && matchesSubcategory && matchesHouse && matchesRoom;
   });
+
+  // Sort filtered items
+  const sortedItems = [...filteredItems].sort((a, b) => {
+    if (!sortField) return 0;
+    
+    let aValue: any = a[sortField as keyof InventoryItem];
+    let bValue: any = b[sortField as keyof InventoryItem];
+    
+    // Handle special cases
+    if (sortField === 'valuation') {
+      aValue = Number(aValue) || 0;
+      bValue = Number(bValue) || 0;
+    } else {
+      aValue = String(aValue || '').toLowerCase();
+      bValue = String(bValue || '').toLowerCase();
+    }
+    
+    if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+    if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  const handleSort = (field: string, direction: 'asc' | 'desc') => {
+    setSortField(field);
+    setSortDirection(direction);
+  };
+
+  const downloadCSV = () => {
+    const headers = [
+      'ID', 'Title', 'Artist', 'Category', 'Subcategory', 'Size', 'Valuation',
+      'Valuation Currency', 'Quantity', 'Year/Period', 'Description', 'Condition',
+      'House', 'Room', 'Notes'
+    ];
+
+    const csvContent = [
+      headers.join(','),
+      ...sortedItems.map(item => [
+        item.id || '',
+        `"${item.title || ''}"`,
+        `"${item.artist || ''}"`,
+        `"${item.category || ''}"`,
+        `"${item.subcategory || ''}"`,
+        `"${item.size || ''}"`,
+        item.valuation || '',
+        `"${item.valuationCurrency || ''}"`,
+        item.quantity || '',
+        `"${item.yearPeriod || ''}"`,
+        `"${item.description || ''}"`,
+        `"${item.condition || ''}"`,
+        `"${item.house || ''}"`,
+        `"${item.room || ''}"`,
+        `"${item.notes || ''}"`
+      ].join(','))
+    ].join('\n');
+
+    // Create and download the CSV file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `inventory_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <SidebarProvider>
@@ -71,22 +140,26 @@ const AllItems = () => {
               setSelectedRoom={setSelectedRoom}
               viewMode={viewMode}
               setViewMode={setViewMode}
+              onDownloadCSV={downloadCSV}
+              onSort={handleSort}
+              sortField={sortField}
+              sortDirection={sortDirection}
             />
 
             <div className="mb-6">
               <p className="text-slate-600">
-                Showing {filteredItems.length} of {items.length} items
+                Showing {sortedItems.length} of {items.length} items
               </p>
             </div>
 
-            {filteredItems.length === 0 ? (
+            {sortedItems.length === 0 ? (
               <EmptyState />
             ) : viewMode === "grid" ? (
-              <ItemsGrid items={filteredItems} onItemClick={setSelectedItem} />
+              <ItemsGrid items={sortedItems} onItemClick={setSelectedItem} />
             ) : viewMode === "list" ? (
-              <ItemsList items={filteredItems} onItemClick={setSelectedItem} />
+              <ItemsList items={sortedItems} onItemClick={setSelectedItem} />
             ) : (
-              <ItemsTable items={filteredItems} onItemClick={setSelectedItem} />
+              <ItemsTable items={sortedItems} onItemClick={setSelectedItem} />
             )}
 
             <ItemDetailDialog
