@@ -94,8 +94,9 @@ export function AppliedFilters({
         )}
         {selectedCategory.map((categoryId) => {
           const category = categories.find(c => c.id === categoryId);
+          const locked = permanentCategory && categoryId === permanentCategory;
           return (
-            <Badge key={categoryId} variant="secondary" className="px-3 py-1">
+            <Badge key={categoryId} variant={locked ? "default" : "secondary"} className="px-3 py-1">
               Category: {category?.name}
               {!permanentCategory && (
                 <X
@@ -122,8 +123,9 @@ export function AppliedFilters({
         })}
         {selectedHouse.map((houseId) => {
           const house = houses.find(h => h.id === houseId);
+          const locked = permanentHouse && houseId === permanentHouse;
           return (
-            <Badge key={houseId} variant={permanentHouse ? "default" : "secondary"} className="px-3 py-1">
+            <Badge key={houseId} variant={locked ? "default" : "secondary"} className="px-3 py-1">
               House: {house?.name}
               {!permanentHouse && (
                 <X
