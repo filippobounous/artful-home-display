@@ -76,8 +76,9 @@ export function ItemsTable({ items, onItemClick, onSort, sortField, sortDirectio
             <SortableHeader field="title">Title</SortableHeader>
             <SortableHeader field="artist">Artist</SortableHeader>
             <SortableHeader field="category">Category</SortableHeader>
+            <SortableHeader field="yearPeriod">Year</SortableHeader>
             <TableHead>Location</TableHead>
-            <TableHead>Condition</TableHead>
+            <SortableHeader field="condition">Condition</SortableHeader>
             <SortableHeader field="valuation">
               <div className="text-right">Valuation</div>
             </SortableHeader>
@@ -100,12 +101,7 @@ export function ItemsTable({ items, onItemClick, onSort, sortField, sortDirectio
                 </div>
               </TableCell>
               <TableCell className="font-medium">
-                <div>
-                  <p className="font-semibold">{item.title}</p>
-                  {item.yearPeriod && (
-                    <p className="text-sm text-muted-foreground">{item.yearPeriod}</p>
-                  )}
-                </div>
+                {item.title}
               </TableCell>
               <TableCell>{item.artist || "-"}</TableCell>
               <TableCell>
@@ -116,6 +112,7 @@ export function ItemsTable({ items, onItemClick, onSort, sortField, sortDirectio
                   )}
                 </div>
               </TableCell>
+              <TableCell>{item.yearPeriod || "-"}</TableCell>
               <TableCell>
                 <div className="text-sm">
                   {item.house && (
