@@ -16,6 +16,7 @@ interface AppliedFiltersProps {
   selectedRoom: string[];
   setSelectedRoom: (rooms: string[]) => void;
   permanentCategory?: string;
+  permanentHouse?: string;
 }
 
 export function AppliedFilters({
@@ -30,6 +31,7 @@ export function AppliedFilters({
   selectedRoom,
   setSelectedRoom,
   permanentCategory,
+  permanentHouse,
 }: AppliedFiltersProps) {
   const { categories, houses } = useSettingsState();
 
@@ -41,7 +43,9 @@ export function AppliedFilters({
         }
         break;
       case 'house':
-        setSelectedHouse(selectedHouse.filter(h => h !== value));
+        if (!permanentHouse) {
+          setSelectedHouse(selectedHouse.filter(h => h !== value));
+        }
         break;
       case 'subcategory':
         setSelectedSubcategory(selectedSubcategory.filter(s => s !== value));
@@ -57,7 +61,9 @@ export function AppliedFilters({
       setSelectedCategory([]);
     }
     setSelectedSubcategory([]);
-    setSelectedHouse([]);
+    if (!permanentHouse) {
+      setSelectedHouse([]);
+    }
     setSelectedRoom([]);
     setSearchTerm("");
   };
@@ -119,10 +125,12 @@ export function AppliedFilters({
           return (
             <Badge key={houseId} variant="secondary" className="px-3 py-1">
               House: {house?.name}
-              <X 
-                className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive" 
-                onClick={() => clearFilter('house', houseId)}
-              />
+              {!permanentHouse && (
+                <X
+                  className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
+                  onClick={() => clearFilter('house', houseId)}
+                />
+              )}
             </Badge>
           );
         })}
