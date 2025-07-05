@@ -2,13 +2,37 @@
 import { useState, useEffect } from "react";
 import { categoryConfigs, houseConfigs, CategoryConfig, HouseConfig } from "@/types/inventory";
 
+// Load persisted settings from localStorage if available
+let storedCategories: CategoryConfig[] | null = null;
+let storedHouses: HouseConfig[] | null = null;
+if (typeof window !== 'undefined') {
+  try {
+    storedCategories = JSON.parse(localStorage.getItem('categories') || 'null');
+    storedHouses = JSON.parse(localStorage.getItem('houses') || 'null');
+  } catch {
+    storedCategories = null;
+    storedHouses = null;
+  }
+}
+
 // Create a global state management solution
-let globalCategories: CategoryConfig[] = categoryConfigs;
-let globalHouses: HouseConfig[] = houseConfigs;
+let globalCategories: CategoryConfig[] = storedCategories || categoryConfigs;
+let globalHouses: HouseConfig[] = storedHouses || houseConfigs;
 let listeners: (() => void)[] = [];
 
 const notifyListeners = () => {
   listeners.forEach(listener => listener());
+};
+
+const saveState = () => {
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem('categories', JSON.stringify(globalCategories));
+      localStorage.setItem('houses', JSON.stringify(globalHouses));
+    } catch {
+      // Ignore write errors (e.g., storage quota)
+    }
+  }
 };
 
 export function useSettingsState() {
@@ -39,6 +63,7 @@ export function useSettingsState() {
       visible: true
     };
     globalCategories = [...globalCategories, newCategory];
+    saveState();
     notifyListeners();
     return newCategory;
   };
@@ -56,6 +81,7 @@ export function useSettingsState() {
       visible: true
     };
     globalHouses = [...globalHouses, newHouse];
+    saveState();
     notifyListeners();
     return newHouse;
   };
@@ -75,6 +101,7 @@ export function useSettingsState() {
       }
       return house;
     });
+    saveState();
     notifyListeners();
   };
 
@@ -93,6 +120,7 @@ export function useSettingsState() {
       }
       return category;
     });
+    saveState();
     notifyListeners();
   };
 
