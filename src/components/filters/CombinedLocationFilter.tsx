@@ -1,6 +1,7 @@
 
 import { MultiSelectFilter } from "@/components/MultiSelectFilter";
 import { useSettingsState } from "@/hooks/useSettingsState";
+import type { CheckboxCheckedState } from "@radix-ui/react-checkbox";
 
 interface CombinedLocationFilterProps {
   selectedHouse: string[];
@@ -40,16 +41,40 @@ export function CombinedLocationFilter({
     );
   }
 
-  // Create combined options with headers similar to the Add Item form
-  const combinedOptions = houses.flatMap(house => [
-    { id: `header-${house.id}`, name: house.name, header: true },
-    { id: house.id, name: `General ${house.name}`, indent: true },
-    ...house.rooms.map(room => ({
-      id: `${house.id}|${room.id}`,
-      name: `${room.name} (${house.name})`,
-      indent: true
-    }))
-  ]);
+  // Create combined options with headers as tri-state checkboxes
+  const combinedOptions = houses.flatMap(house => {
+    const roomIds = house.rooms.map(r => `${house.id}|${r.id}`);
+    const selectedRooms = selectedRoom.filter(id => roomIds.includes(id));
+    const checkState: CheckboxCheckedState = selectedHouse.includes(house.id)
+      ? true
+      : selectedRooms.length > 0
+        ? "indeterminate"
+        : false;
+    return [
+      {
+        id: house.id,
+        name: house.name,
+        header: true,
+        checkState,
+        onCheckChange: (checked: CheckboxCheckedState) => {
+          if (!permanentHouse) {
+            if (checked) {
+              if (!selectedHouse.includes(house.id)) {
+                setSelectedHouse([...selectedHouse, house.id]);
+              }
+            } else {
+              setSelectedHouse(selectedHouse.filter(h => h !== house.id));
+            }
+          }
+        }
+      },
+      ...house.rooms.map(room => ({
+        id: `${house.id}|${room.id}`,
+        name: `${room.name} (${house.name})`,
+        indent: true
+      }))
+    ];
+  });
 
   // Combine selected values for display
   const allSelectedValues = [...selectedHouse, ...selectedRoom];
