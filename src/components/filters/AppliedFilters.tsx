@@ -136,15 +136,16 @@ export function AppliedFilters({
             </Badge>
           );
         })}
-        {selectedRoom.map((roomId) => {
-          const house = houses.find(h => h.rooms.some(r => r.id === roomId));
+        {selectedRoom.map((roomPair) => {
+          const [houseId, roomId] = roomPair.split('|');
+          const house = houses.find(h => h.id === houseId);
           const room = house?.rooms.find(r => r.id === roomId);
           return (
-            <Badge key={roomId} variant="secondary" className="px-3 py-1">
+            <Badge key={roomPair} variant="secondary" className="px-3 py-1">
               Room: {room?.name} ({house?.name})
               <X
                 className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
-                onClick={() => clearFilter('room', roomId)}
+                onClick={() => clearFilter('room', roomPair)}
               />
             </Badge>
           );
