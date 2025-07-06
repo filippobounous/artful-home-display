@@ -2,8 +2,8 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { InventoryItem } from "@/types/inventory";
-import { categoryConfigs, houseConfigs } from "@/types/inventory";
-import { Palette, Sofa, Package, MapPin, Home } from "lucide-react";
+import { useSettingsState } from "@/hooks/useSettingsState";
+import { Palette, Sofa, Package, Home } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface DashboardProps {
@@ -11,16 +11,18 @@ interface DashboardProps {
 }
 
 export function Dashboard({ items }: DashboardProps) {
-  // Count items by category
-  const categoryStats = categoryConfigs.map(category => ({
+  const { categories, houses } = useSettingsState();
+
+  // Count items by category using current settings
+  const categoryStats = categories.map(category => ({
     ...category,
-    count: items.filter(item => item.category === category.id).length
+    count: items.filter(item => item.category === category.id).length,
   }));
 
-  // Count items by house
-  const houseStats = houseConfigs.map(house => ({
+  // Count items by house using current settings
+  const houseStats = houses.map(house => ({
     ...house,
-    count: items.filter(item => item.house === house.id).length
+    count: items.filter(item => item.house === house.id).length,
   }));
 
   const totalItems = items.length;
@@ -74,7 +76,7 @@ export function Dashboard({ items }: DashboardProps) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-600">Categories</p>
-                <p className="text-2xl font-bold text-slate-900">{categoryConfigs.length}</p>
+                <p className="text-2xl font-bold text-slate-900">{categories.length}</p>
               </div>
               <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
                 <span className="text-purple-600 font-bold">#</span>
