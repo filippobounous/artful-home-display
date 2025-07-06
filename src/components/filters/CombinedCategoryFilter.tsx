@@ -19,14 +19,13 @@ export function CombinedCategoryFilter({
 }: CombinedCategoryFilterProps) {
   const { categories } = useSettingsState();
 
-  // Create combined options with format "Category - Subcategory"
+  // Create combined options with headers similar to the Add Item form
   const combinedOptions = categories.flatMap(category => [
-    // Add general category option
-    { id: category.id, name: category.name },
-    // Add specific subcategory options
+    { id: `header-${category.id}`, name: category.name, header: true },
+    { id: category.id, name: `General ${category.name}`, indent: true },
     ...category.subcategories.map(sub => ({
       id: sub.id,
-      name: `${category.name} - ${sub.name}`,
+      name: sub.name,
       indent: true
     }))
   ]);
@@ -69,7 +68,7 @@ export function CombinedCategoryFilter({
     }));
 
     return (
-      <div>
+      <div className="md:col-span-2">
         <label className="block text-sm font-medium text-slate-700 mb-2">Subcategories</label>
         <MultiSelectFilter
           placeholder="Select subcategories"
@@ -82,7 +81,7 @@ export function CombinedCategoryFilter({
   }
 
   return (
-    <div>
+    <div className="md:col-span-2">
       <label className="block text-sm font-medium text-slate-700 mb-2">Categories & Subcategories</label>
       <MultiSelectFilter
         placeholder="Select categories or subcategories"
