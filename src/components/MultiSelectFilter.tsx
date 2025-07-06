@@ -5,6 +5,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Badge } from "@/components/ui/badge";
 import { Check, ChevronDown, X } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { cn } from "@/lib/utils";
 
 interface MultiSelectOption {
   id: string;
@@ -41,7 +42,13 @@ export function MultiSelectFilter({ placeholder, options, selectedValues, onSele
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="w-full justify-between text-left font-normal">
+        <Button
+          variant="outline"
+          className={cn(
+            "w-full justify-between text-left font-normal",
+            selectedValues.length > 0 && "border-primary"
+          )}
+        >
           <div className="flex flex-wrap gap-1">
             {selectedLabels.length > 0 ? (
               selectedLabels.length <= 2 ? (
@@ -61,8 +68,11 @@ export function MultiSelectFilter({ placeholder, options, selectedValues, onSele
           </div>
           <div className="flex items-center gap-1">
             {selectedValues.length > 0 && (
-              <X 
-                className="w-4 h-4 hover:text-destructive cursor-pointer" 
+              <span className="text-xs font-semibold">{selectedValues.length}</span>
+            )}
+            {selectedValues.length > 0 && (
+              <X
+                className="w-4 h-4 hover:text-destructive cursor-pointer"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleClear();
