@@ -73,7 +73,7 @@ export function AppSidebar() {
         <div className="p-6 border-b border-slate-200">
           {!isCollapsed ? (
             <div>
-              <h2 className="text-xl font-bold text-slate-900">ArtiFurn</h2>
+              <h2 className="text-xl font-bold text-slate-900">Murgenere</h2>
               <p className="text-sm text-slate-600">Collection Manager</p>
             </div>
           ) : (
