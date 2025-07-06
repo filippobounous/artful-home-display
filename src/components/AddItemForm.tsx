@@ -91,8 +91,8 @@ export function AddItemForm() {
         : "Your item has been added to the collection successfully"
     });
 
-    // Navigate back to all items or appropriate page
-    navigate('/all-items');
+    // Navigate back to the inventory list after saving
+    navigate('/inventory');
   };
 
   return (
