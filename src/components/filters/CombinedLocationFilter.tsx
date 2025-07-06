@@ -22,7 +22,10 @@ export function CombinedLocationFilter({
   if (permanentHouse) {
     const house = houses.find(h => h.id === permanentHouse);
     if (!house) return null;
-    const roomOptions = house.rooms.map(room => ({ id: room.id, name: `${room.name} (${house.name})` }));
+    const roomOptions = house.rooms.map(room => ({
+      id: `${house.id}|${room.id}`,
+      name: `${room.name} (${house.name})`
+    }));
 
     return (
       <div className="md:col-span-2">
@@ -42,7 +45,7 @@ export function CombinedLocationFilter({
     { id: `header-${house.id}`, name: house.name, header: true },
     { id: house.id, name: `General ${house.name}`, indent: true },
     ...house.rooms.map(room => ({
-      id: room.id,
+      id: `${house.id}|${room.id}`,
       name: `${room.name} (${house.name})`,
       indent: true
     }))
@@ -54,21 +57,22 @@ export function CombinedLocationFilter({
   const handleSelectionChange = (values: string[]) => {
     const houseIds: string[] = [];
     const roomIds: string[] = [];
-    
+
     values.forEach(value => {
       const house = houses.find(h => h.id === value);
       if (house) {
         houseIds.push(value);
       } else {
-        const room = houses
-          .flatMap(h => h.rooms)
-          .find(r => r.id === value);
-        if (room) {
-          roomIds.push(value);
+        const [houseId, roomId] = value.split('|');
+        if (houseId && roomId) {
+          if (!houseIds.includes(houseId)) {
+            houseIds.push(houseId);
+          }
+          roomIds.push(`${houseId}|${roomId}`);
         }
       }
     });
-    
+
     setSelectedHouse(houseIds);
     setSelectedRoom(roomIds);
   };
