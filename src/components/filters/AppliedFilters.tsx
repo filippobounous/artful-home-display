@@ -137,12 +137,11 @@ export function AppliedFilters({
           );
         })}
         {selectedRoom.map((roomId) => {
-          const room = houses
-            .flatMap(h => h.rooms)
-            .find(r => r.id === roomId);
+          const house = houses.find(h => h.rooms.some(r => r.id === roomId));
+          const room = house?.rooms.find(r => r.id === roomId);
           return (
             <Badge key={roomId} variant="secondary" className="px-3 py-1">
-              Room: {room?.name}
+              Room: {room?.name} ({house?.name})
               <X
                 className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
                 onClick={() => clearFilter('room', roomId)}

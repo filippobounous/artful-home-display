@@ -68,7 +68,7 @@ export function CombinedCategoryFilter({
     }));
 
     return (
-      <div>
+      <div className="md:col-span-2">
         <label className="block text-sm font-medium text-slate-700 mb-2">Subcategories</label>
         <MultiSelectFilter
           placeholder="Select subcategories"
@@ -81,7 +81,7 @@ export function CombinedCategoryFilter({
   }
 
   return (
-    <div>
+    <div className="md:col-span-2">
       <label className="block text-sm font-medium text-slate-700 mb-2">Categories & Subcategories</label>
       <MultiSelectFilter
         placeholder="Select categories or subcategories"
