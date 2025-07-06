@@ -83,12 +83,14 @@ export function AddItemForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Form submitted:", formData);
-    
+
     toast({
-      title: "Item added",
-      description: "Your item has been added to the collection successfully"
+      title: draftId ? "Item updated" : "Item added",
+      description: draftId
+        ? "Your item has been updated successfully"
+        : "Your item has been added to the collection successfully"
     });
-    
+
     // Navigate back to all items or appropriate page
     navigate('/all-items');
   };
@@ -117,7 +119,7 @@ export function AddItemForm() {
 
           <div className="flex gap-4 pt-6 max-w-2xl mx-auto">
             <Button type="submit" className="flex-1 h-12 text-lg font-semibold">
-              Add to Collection
+              {draftId ? 'Save Changes' : 'Add to Collection'}
             </Button>
             <Button type="button" variant="outline" className="flex-1 h-12 text-lg font-semibold">
               Save as Draft
