@@ -89,7 +89,10 @@ export function Dashboard({ items }: DashboardProps) {
         <h2 className="text-xl font-semibold text-slate-900 mb-4">Browse by Category</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {categoryStats.map((category) => (
-            <Link key={category.id} to={`/${category.id}`}>
+            <Link
+              key={category.id}
+              to={`/category/${encodeURIComponent(category.id)}`}
+            >
               <Card className="hover:shadow-md transition-shadow cursor-pointer">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
@@ -114,7 +117,10 @@ export function Dashboard({ items }: DashboardProps) {
         <h2 className="text-xl font-semibold text-slate-900 mb-4">Browse by Location</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {houseStats.map((house) => (
-            <Link key={house.id} to={`/house/${house.id}`}>
+            <Link
+              key={house.id}
+              to={`/house/${encodeURIComponent(house.id)}`}
+            >
               <Card className="hover:shadow-md transition-shadow cursor-pointer">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
