@@ -21,3 +21,15 @@ export async function createInventoryItem(item: InventoryItem) {
   }
   return response.json();
 }
+
+export async function updateInventoryItem(id: number | string, updates: InventoryItem) {
+  const response = await fetch(`${API_URL}/items/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(updates)
+  });
+  if (!response.ok) {
+    throw new Error('Failed to update item');
+  }
+  return response.json();
+}
