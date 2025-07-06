@@ -8,6 +8,8 @@ import { AddItemLocationValuation } from "./AddItemLocationValuation";
 import { AddItemImages } from "./AddItemImages";
 import { AddItemDescriptionNotes } from "./AddItemDescriptionNotes";
 import { useToast } from "@/hooks/use-toast";
+import { createInventoryItem, updateInventoryItem } from "@/lib/api";
+import type { InventoryItem } from "@/types/inventory";
 
 export function AddItemForm() {
   const [searchParams] = useSearchParams();
@@ -84,15 +86,29 @@ export function AddItemForm() {
     e.preventDefault();
     console.log("Form submitted:", formData);
 
-    toast({
-      title: draftId ? "Item updated" : "Item added",
-      description: draftId
-        ? "Your item has been updated successfully"
-        : "Your item has been added to the collection successfully"
-    });
+    const saveAction = draftId
+      ? updateInventoryItem(draftId, { id: Number(draftId), ...formData })
+      : createInventoryItem(formData as unknown as InventoryItem);
 
-    // Navigate back to the inventory list after saving
-    navigate('/inventory');
+    saveAction
+      .then(() => {
+        toast({
+          title: draftId ? "Item updated" : "Item added",
+          description: draftId
+            ? "Your item has been updated successfully"
+            : "Your item has been added to the collection successfully"
+        });
+
+        navigate('/inventory');
+      })
+      .catch((error) => {
+        console.error('Error saving item:', error);
+        toast({
+          title: 'Error saving item',
+          description: 'There was a problem saving your changes',
+          variant: 'destructive'
+        });
+      });
   };
 
   return (
