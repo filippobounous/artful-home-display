@@ -23,7 +23,7 @@ const HousePage = () => {
   const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string[]>([]);
   const [selectedHouse, setSelectedHouse] = useState<string[]>(houseId ? [houseId] : []);
-  const [selectedRoom, setSelectedRoom] = useState<string[]>([]);
+  const [selectedRoom, setSelectedRoom] = useState<string[]>([]); // stores "houseId|roomId"
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [items, setItems] = useState<InventoryItem[]>(sampleItems);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
@@ -51,7 +51,7 @@ const HousePage = () => {
     const matchesCategory = selectedCategory.length === 0 || selectedCategory.includes(item.category);
     const matchesSubcategory = selectedSubcategory.length === 0 || (item.subcategory && selectedSubcategory.includes(item.subcategory));
     const matchesHouse = item.house === houseId;
-    const matchesRoom = selectedRoom.length === 0 || (item.room && selectedRoom.includes(item.room));
+    const matchesRoom = selectedRoom.length === 0 || (item.room && selectedRoom.includes(`${item.house}|${item.room}`));
 
     return matchesSearch && matchesCategory && matchesSubcategory && matchesHouse && matchesRoom;
   });
