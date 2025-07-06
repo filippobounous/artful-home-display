@@ -37,14 +37,13 @@ export function CombinedLocationFilter({
     );
   }
 
-  // Create combined options with format "House - Room"
+  // Create combined options with headers similar to the Add Item form
   const combinedOptions = houses.flatMap(house => [
-    // Add general house option
-    { id: house.id, name: house.name },
-    // Add specific room options
+    { id: `header-${house.id}`, name: house.name, header: true },
+    { id: house.id, name: `General ${house.name}`, indent: true },
     ...house.rooms.map(room => ({
       id: room.id,
-      name: `${house.name} - ${room.name}`,
+      name: room.name,
       indent: true
     }))
   ]);
