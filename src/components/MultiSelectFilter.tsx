@@ -10,6 +10,7 @@ interface MultiSelectOption {
   id: string;
   name: string;
   indent?: boolean;
+  header?: boolean;
 }
 
 interface MultiSelectFilterProps {
@@ -34,7 +35,7 @@ export function MultiSelectFilter({ placeholder, options, selectedValues, onSele
   };
 
   const selectedLabels = options
-    .filter(option => selectedValues.includes(option.id))
+    .filter(option => !option.header && selectedValues.includes(option.id))
     .map(option => option.name);
 
   return (
@@ -75,17 +76,26 @@ export function MultiSelectFilter({ placeholder, options, selectedValues, onSele
       <PopoverContent className="w-full p-2" align="start">
         <div className="space-y-2 max-h-60 overflow-y-auto">
           {options.map((option) => (
-            <div
-              key={option.id}
-              className={`flex items-center space-x-2 p-2 hover:bg-muted rounded cursor-pointer ${option.indent ? 'pl-4' : ''}`}
-              onClick={() => handleToggle(option.id)}
-            >
-              <Checkbox
-                checked={selectedValues.includes(option.id)}
-                onChange={() => handleToggle(option.id)}
-              />
-              <span className="text-sm">{option.name}</span>
-            </div>
+            option.header ? (
+              <div
+                key={option.id}
+                className="px-2 py-1 text-sm font-medium text-slate-600 bg-slate-50"
+              >
+                {option.name}
+              </div>
+            ) : (
+              <div
+                key={option.id}
+                className={`flex items-center space-x-2 p-2 hover:bg-muted rounded cursor-pointer ${option.indent ? 'pl-4' : ''}`}
+                onClick={() => handleToggle(option.id)}
+              >
+                <Checkbox
+                  checked={selectedValues.includes(option.id)}
+                  onChange={() => handleToggle(option.id)}
+                />
+                <span className="text-sm">{option.name}</span>
+              </div>
+            )
           ))}
         </div>
       </PopoverContent>

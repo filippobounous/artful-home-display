@@ -22,10 +22,10 @@ export function CombinedLocationFilter({
   if (permanentHouse) {
     const house = houses.find(h => h.id === permanentHouse);
     if (!house) return null;
-    const roomOptions = house.rooms.map(room => ({ id: room.id, name: room.name }));
+    const roomOptions = house.rooms.map(room => ({ id: room.id, name: `${room.name} (${house.name})` }));
 
     return (
-      <div>
+      <div className="md:col-span-2">
         <label className="block text-sm font-medium text-slate-700 mb-2">Rooms</label>
         <MultiSelectFilter
           placeholder="Select rooms"
@@ -37,14 +37,13 @@ export function CombinedLocationFilter({
     );
   }
 
-  // Create combined options with format "House - Room"
+  // Create combined options with headers similar to the Add Item form
   const combinedOptions = houses.flatMap(house => [
-    // Add general house option
-    { id: house.id, name: house.name },
-    // Add specific room options
+    { id: `header-${house.id}`, name: house.name, header: true },
+    { id: house.id, name: `General ${house.name}`, indent: true },
     ...house.rooms.map(room => ({
       id: room.id,
-      name: `${house.name} - ${room.name}`,
+      name: `${room.name} (${house.name})`,
       indent: true
     }))
   ]);
@@ -75,7 +74,7 @@ export function CombinedLocationFilter({
   };
 
   return (
-    <div>
+    <div className="md:col-span-2">
       <label className="block text-sm font-medium text-slate-700 mb-2">Houses & Rooms</label>
       <MultiSelectFilter
         placeholder="Select houses or rooms"

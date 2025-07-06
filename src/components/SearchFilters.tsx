@@ -52,7 +52,7 @@ export function SearchFilters({
 
       {/* Search and filters in aligned grid */}
       <div className="bg-white p-4 rounded-lg border shadow-sm">
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-6 items-end">
           {/* Search - spans 2 columns */}
           <SearchInput searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
 
