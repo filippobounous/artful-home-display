@@ -14,6 +14,8 @@ import { MultiSelectFilter } from "@/components/MultiSelectFilter";
 import { sampleItems } from "@/data/sampleData";
 import { fetchInventory, deleteInventoryItem } from "@/lib/api";
 import { InventoryItem } from "@/types/inventory";
+import { useSettingsState } from "@/hooks/useSettingsState";
+import { sortInventoryItems } from "@/lib/sortUtils";
 import { useToast } from "@/hooks/use-toast";
 
 type ViewMode = "grid" | "list" | "table";
@@ -31,6 +33,7 @@ const AllItems = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [sortField, setSortField] = useState<string>("");
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const { houses, categories } = useSettingsState();
   const { toast } = useToast();
 
   const handleEdit = (item: InventoryItem) => {
@@ -78,37 +81,13 @@ const AllItems = () => {
   });
 
   // Sort filtered items
-  const sortedItems = [...filteredItems].sort((a, b) => {
-    if (!sortField) return 0;
-    
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let aValue: any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let bValue: any;
-
-    if (sortField === 'location') {
-      aValue = `${a.house || ''} ${a.room || ''}`.trim();
-      bValue = `${b.house || ''} ${b.room || ''}`.trim();
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      aValue = a[sortField as keyof InventoryItem];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      bValue = b[sortField as keyof InventoryItem];
-    }
-    
-    // Handle special cases
-    if (sortField === 'valuation') {
-      aValue = Number(aValue) || 0;
-      bValue = Number(bValue) || 0;
-    } else {
-      aValue = String(aValue || '').toLowerCase();
-      bValue = String(bValue || '').toLowerCase();
-    }
-    
-    if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
-    if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
-    return 0;
-  });
+  const sortedItems = sortInventoryItems(
+    filteredItems,
+    sortField,
+    sortDirection,
+    houses,
+    categories
+  );
 
   const handleSort = (field: string, direction: 'asc' | 'desc') => {
     setSortField(field);
