@@ -7,11 +7,15 @@ import { Check, ChevronDown, X } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 
+import type { CheckboxCheckedState } from "@radix-ui/react-checkbox";
+
 interface MultiSelectOption {
   id: string;
   name: string;
   indent?: boolean;
   header?: boolean;
+  checkState?: CheckboxCheckedState;
+  onCheckChange?: (checked: CheckboxCheckedState) => void;
 }
 
 interface MultiSelectFilterProps {
@@ -19,9 +23,15 @@ interface MultiSelectFilterProps {
   options: MultiSelectOption[];
   selectedValues: string[];
   onSelectionChange: (values: string[]) => void;
+  /**
+   * Optional count override used for the badge. Allows parents
+   * to display a count that differs from the raw number of
+   * selected option ids.
+   */
+  selectedCount?: number;
 }
 
-export function MultiSelectFilter({ placeholder, options, selectedValues, onSelectionChange }: MultiSelectFilterProps) {
+export function MultiSelectFilter({ placeholder, options, selectedValues, onSelectionChange, selectedCount }: MultiSelectFilterProps) {
   const [open, setOpen] = useState(false);
 
   const handleToggle = (value: string) => {
@@ -39,6 +49,8 @@ export function MultiSelectFilter({ placeholder, options, selectedValues, onSele
     .filter(option => !option.header && selectedValues.includes(option.id))
     .map(option => option.name);
 
+  const selectionCount = selectedCount ?? selectedLabels.length;
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -50,63 +62,68 @@ export function MultiSelectFilter({ placeholder, options, selectedValues, onSele
           )}
         >
           <div className="flex flex-wrap gap-1">
-            {selectedLabels.length > 0 ? (
-              selectedLabels.length <= 2 ? (
-                selectedLabels.map((label) => (
-                  <Badge key={label} variant="secondary" className="text-xs">
-                    {label}
-                  </Badge>
-                ))
-              ) : (
-                <Badge variant="secondary" className="text-xs">
-                  {selectedLabels.length} selected
-                </Badge>
-              )
+            {selectionCount > 0 ? (
+              <Badge variant="secondary" className="text-xs">
+                {selectionCount} item{selectionCount === 1 ? '' : 's'}
+              </Badge>
             ) : (
               <span className="text-muted-foreground">{placeholder}</span>
             )}
           </div>
-          <div className="flex items-center gap-1">
-            {selectedValues.length > 0 && (
-              <span className="text-xs font-semibold">{selectedValues.length}</span>
-            )}
-            {selectedValues.length > 0 && (
-              <X
-                className="w-4 h-4 hover:text-destructive cursor-pointer"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleClear();
-                }}
-              />
-            )}
-            <ChevronDown className="w-4 h-4" />
+            <div className="flex items-center gap-1">
+              {selectedValues.length > 0 && (
+                <X
+                  className="w-4 h-4 hover:text-destructive cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleClear();
+                  }}
+                />
+              )}
+              <ChevronDown className="w-4 h-4" />
           </div>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-2" align="start">
         <div className="space-y-2 max-h-60 overflow-y-auto">
-          {options.map((option) => (
-            option.header ? (
-              <div
-                key={option.id}
-                className="px-2 py-1 text-sm font-medium text-slate-600 bg-slate-50"
-              >
-                {option.name}
-              </div>
-            ) : (
+          {options.map((option) => {
+            const isTri = option.header && option.checkState !== undefined;
+            if (option.header && !isTri) {
+              return (
+                <div
+                  key={option.id}
+                  className="px-2 py-1 text-sm font-medium text-slate-600 bg-slate-50"
+                >
+                  {option.name}
+                </div>
+              );
+            }
+            return (
               <div
                 key={option.id}
                 className={`flex items-center space-x-2 p-2 hover:bg-muted rounded cursor-pointer ${option.indent ? 'pl-4' : ''}`}
-                onClick={() => handleToggle(option.id)}
+                onClick={() => {
+                  if (isTri && option.onCheckChange) {
+                    option.onCheckChange(option.checkState === true ? false : true);
+                  } else {
+                    handleToggle(option.id);
+                  }
+                }}
               >
                 <Checkbox
-                  checked={selectedValues.includes(option.id)}
-                  onChange={() => handleToggle(option.id)}
+                  checked={isTri ? option.checkState : selectedValues.includes(option.id)}
+                  onCheckedChange={(val) => {
+                    if (isTri && option.onCheckChange) {
+                      option.onCheckChange(val as CheckboxCheckedState);
+                    } else {
+                      handleToggle(option.id);
+                    }
+                  }}
                 />
-                <span className="text-sm">{option.name}</span>
+                <span className={`text-sm ${option.header ? 'font-medium text-slate-600' : ''}`}>{option.name}</span>
               </div>
-            )
-          ))}
+            );
+          })}
         </div>
       </PopoverContent>
     </Popover>

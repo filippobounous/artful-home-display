@@ -96,7 +96,7 @@ export function AppliedFilters({
           const category = categories.find(c => c.id === categoryId);
           const locked = permanentCategory && categoryId === permanentCategory;
           return (
-            <Badge key={categoryId} variant={locked ? "default" : "secondary"} className="px-3 py-1">
+            <Badge key={categoryId} variant="default" className="px-3 py-1">
               Category: {category?.name}
               {!permanentCategory && (
                 <X
@@ -108,14 +108,17 @@ export function AppliedFilters({
           );
         })}
         {selectedSubcategory.map((subcategoryId) => {
-          const subcategory = categories
-            .flatMap(c => c.subcategories)
-            .find(s => s.id === subcategoryId);
+          const category = categories.find(c =>
+            c.subcategories.some(sub => sub.id === subcategoryId)
+          );
+          const subcategory = category?.subcategories.find(s => s.id === subcategoryId);
+          if (!subcategory || !category) return null;
+          if (selectedCategory.includes(category.id)) return null;
           return (
             <Badge key={subcategoryId} variant="secondary" className="px-3 py-1">
-              Subcategory: {subcategory?.name}
-              <X 
-                className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive" 
+              Subcategory: {subcategory.name}
+              <X
+                className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
                 onClick={() => clearFilter('subcategory', subcategoryId)}
               />
             </Badge>
@@ -125,7 +128,7 @@ export function AppliedFilters({
           const house = houses.find(h => h.id === houseId);
           const locked = permanentHouse && houseId === permanentHouse;
           return (
-            <Badge key={houseId} variant={locked ? "default" : "secondary"} className="px-3 py-1">
+            <Badge key={houseId} variant="default" className="px-3 py-1">
               House: {house?.name}
               {!permanentHouse && (
                 <X
@@ -138,6 +141,7 @@ export function AppliedFilters({
         })}
         {selectedRoom.map((roomPair) => {
           const [houseId, roomId] = roomPair.split('|');
+          if (selectedHouse.includes(houseId)) return null;
           const house = houses.find(h => h.id === houseId);
           const room = house?.rooms.find(r => r.id === roomId);
           return (
