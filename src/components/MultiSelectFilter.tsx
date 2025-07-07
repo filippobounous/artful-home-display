@@ -72,13 +72,15 @@ export function MultiSelectFilter({ placeholder, options, selectedValues, onSele
           </div>
             <div className="flex items-center gap-1">
               {selectedValues.length > 0 && (
-                <X
-                  className="w-4 h-4 hover:text-destructive cursor-pointer pointer-events-auto"
+                <span
+                  className="pointer-events-auto"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleClear();
                   }}
-                />
+                >
+                  <X className="w-4 h-4 hover:text-destructive cursor-pointer" />
+                </span>
               )}
               <ChevronDown className="w-4 h-4" />
           </div>
