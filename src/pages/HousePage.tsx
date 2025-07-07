@@ -28,6 +28,8 @@ const HousePage = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [items, setItems] = useState<InventoryItem[]>(sampleItems);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
+  const [sortField, setSortField] = useState<string>("");
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const { houses } = useSettingsState();
 
   const handleEdit = (item: InventoryItem) => {
@@ -67,6 +69,32 @@ const HousePage = () => {
     return matchesSearch && matchesCategory && matchesSubcategory && matchesHouse && matchesRoom;
   });
 
+  const sortedItems = [...filteredItems].sort((a, b) => {
+    if (!sortField) return 0;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let aValue: any = a[sortField as keyof InventoryItem];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let bValue: any = b[sortField as keyof InventoryItem];
+
+    if (sortField === 'valuation') {
+      aValue = Number(aValue) || 0;
+      bValue = Number(bValue) || 0;
+    } else {
+      aValue = String(aValue || '').toLowerCase();
+      bValue = String(bValue || '').toLowerCase();
+    }
+
+    if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+    if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  const handleSort = (field: string, direction: 'asc' | 'desc') => {
+    setSortField(field);
+    setSortDirection(direction);
+  };
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-slate-50">
@@ -99,18 +127,24 @@ const HousePage = () => {
 
             <div className="mb-6">
               <p className="text-slate-600">
-                Showing {filteredItems.length} items in {houseName}
+                Showing {sortedItems.length} items in {houseName}
               </p>
             </div>
 
-            {filteredItems.length === 0 ? (
+            {sortedItems.length === 0 ? (
               <EmptyState />
             ) : viewMode === "grid" ? (
-              <ItemsGrid items={filteredItems} onItemClick={setSelectedItem} />
+              <ItemsGrid items={sortedItems} onItemClick={setSelectedItem} />
             ) : viewMode === "list" ? (
-              <ItemsList items={filteredItems} onItemClick={setSelectedItem} />
+              <ItemsList items={sortedItems} onItemClick={setSelectedItem} />
             ) : (
-              <ItemsTable items={filteredItems} onItemClick={setSelectedItem} />
+              <ItemsTable
+                items={sortedItems}
+                onItemClick={setSelectedItem}
+                onSort={handleSort}
+                sortField={sortField}
+                sortDirection={sortDirection}
+              />
             )}
 
             <ItemDetailDialog
