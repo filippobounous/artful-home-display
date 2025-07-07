@@ -38,7 +38,7 @@ const Login = () => {
           <div className="mx-auto w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mb-4">
             <Package className="w-6 h-6 text-white" />
           </div>
-          <CardTitle className="text-2xl font-bold">ArtiFurn</CardTitle>
+          <CardTitle className="text-2xl font-bold">Murgenere</CardTitle>
           <p className="text-slate-600">Collection Manager</p>
         </CardHeader>
         <CardContent>

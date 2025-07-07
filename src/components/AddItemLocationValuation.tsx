@@ -43,7 +43,9 @@ export function AddItemLocationValuation({ formData, setFormData }: AddItemLocat
       <div>
         <Label htmlFor="condition">Condition *</Label>
         <Select value={formData.condition} onValueChange={(value) => setFormData({ ...formData, condition: value })}>
-          <SelectTrigger>
+          <SelectTrigger
+            className={formData.condition ? undefined : "text-muted-foreground"}
+          >
             <SelectValue placeholder="Select condition" />
           </SelectTrigger>
           <SelectContent>
@@ -92,7 +94,10 @@ export function AddItemLocationValuation({ formData, setFormData }: AddItemLocat
           <Label>Valuation Date</Label>
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="outline" className="w-full justify-start text-left font-normal">
+              <Button
+                variant="outline"
+                className={`w-full justify-start text-left font-normal ${formData.valuationDate ? "" : "text-muted-foreground"}`}
+              >
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {formData.valuationDate ? format(formData.valuationDate, "PPP") : "Select date"}
               </Button>

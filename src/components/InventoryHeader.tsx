@@ -77,7 +77,7 @@ export function InventoryHeader() {
         
         <div className="flex items-center gap-3">
           {/* Only show download buttons on pages that make sense */}
-          {(location.pathname === '/inventory' || location.pathname === '/' || location.pathname === '/all-items') && (
+          {(location.pathname === '/inventory' || location.pathname === '/') && (
             <>
               <Button variant="outline" onClick={downloadCSV}>
                 <Download className="w-4 h-4 mr-2" />

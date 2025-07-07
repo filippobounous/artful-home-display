@@ -8,6 +8,8 @@ import { AddItemLocationValuation } from "./AddItemLocationValuation";
 import { AddItemImages } from "./AddItemImages";
 import { AddItemDescriptionNotes } from "./AddItemDescriptionNotes";
 import { useToast } from "@/hooks/use-toast";
+import { createInventoryItem, updateInventoryItem } from "@/lib/api";
+import type { InventoryItem } from "@/types/inventory";
 
 export function AddItemForm() {
   const [searchParams] = useSearchParams();
@@ -24,7 +26,7 @@ export function AddItemForm() {
     valuation: "",
     valuationDate: undefined as Date | undefined,
     valuationPerson: "",
-    valuationCurrency: "USD",
+    valuationCurrency: "EUR",
     quantity: "1",
     yearPeriod: "",
     house: "",
@@ -50,7 +52,7 @@ export function AddItemForm() {
             valuation: draft.valuation || "",
             valuationDate: draft.valuationDate || undefined,
             valuationPerson: draft.valuationPerson || "",
-            valuationCurrency: draft.valuationCurrency || "USD",
+            valuationCurrency: draft.valuationCurrency || "EUR",
             quantity: draft.quantity || "1",
             yearPeriod: draft.yearPeriod || "",
             house: draft.house || "",
@@ -83,14 +85,50 @@ export function AddItemForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Form submitted:", formData);
-    
+
+    const saveAction = draftId
+      ? updateInventoryItem(draftId, { id: Number(draftId), ...formData })
+      : createInventoryItem(formData as unknown as InventoryItem);
+
+    saveAction
+      .then(() => {
+        toast({
+          title: draftId ? "Item updated" : "Item added",
+          description: draftId
+            ? "Your item has been updated successfully"
+            : "Your item has been added to the collection successfully"
+        });
+
+        navigate('/inventory');
+      })
+      .catch((error) => {
+        console.error('Error saving item:', error);
+        toast({
+          title: 'Error saving item',
+          description: 'There was a problem saving your changes',
+          variant: 'destructive'
+        });
+      });
+  };
+
+  const handleSaveDraft = () => {
+    const drafts = JSON.parse(localStorage.getItem('drafts') || '[]');
+    const id = draftId ? Number(draftId) : Date.now();
+    const newDraft = {
+      id,
+      lastModified: new Date().toISOString().split('T')[0],
+      data: formData,
+      title: formData.title || 'Untitled Draft',
+      category: formData.category,
+      description: formData.description || '',
+    };
+    const filtered = drafts.filter((d: { id: number }) => d.id !== id);
+    localStorage.setItem('drafts', JSON.stringify([...filtered, newDraft]));
     toast({
-      title: "Item added",
-      description: "Your item has been added to the collection successfully"
+      title: 'Draft saved',
+      description: 'You can continue editing this draft later',
     });
-    
-    // Navigate back to all items or appropriate page
-    navigate('/all-items');
+    navigate('/drafts');
   };
 
   return (
@@ -117,9 +155,14 @@ export function AddItemForm() {
 
           <div className="flex gap-4 pt-6 max-w-2xl mx-auto">
             <Button type="submit" className="flex-1 h-12 text-lg font-semibold">
-              Add to Collection
+              {draftId ? 'Save Changes' : 'Add to Collection'}
             </Button>
-            <Button type="button" variant="outline" className="flex-1 h-12 text-lg font-semibold">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleSaveDraft}
+              className="flex-1 h-12 text-lg font-semibold"
+            >
               Save as Draft
             </Button>
           </div>

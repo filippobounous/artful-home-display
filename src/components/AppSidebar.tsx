@@ -43,14 +43,14 @@ export function AppSidebar() {
   // Dynamic category items based on configuration
   const categoryItems = categories.map(category => ({
     title: category.name,
-    url: `/category/${category.id}`,
+    url: `/category/${encodeURIComponent(category.id)}`,
     icon: getIconComponent(category.icon)
   }));
 
   // Dynamic house items based on configuration
   const houseItems = houses.map(house => ({
     title: house.name,
-    url: `/house/${house.id}`,
+    url: `/house/${encodeURIComponent(house.id)}`,
     icon: getIconComponent(house.icon)
   }));
 
@@ -73,7 +73,7 @@ export function AppSidebar() {
         <div className="p-6 border-b border-slate-200">
           {!isCollapsed ? (
             <div>
-              <h2 className="text-xl font-bold text-slate-900">ArtiFurn</h2>
+              <h2 className="text-xl font-bold text-slate-900">Murgenere</h2>
               <p className="text-sm text-slate-600">Collection Manager</p>
             </div>
           ) : (
