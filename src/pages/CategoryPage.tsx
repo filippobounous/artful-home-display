@@ -72,9 +72,19 @@ const CategoryPage = () => {
     if (!sortField) return 0;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let aValue: any = a[sortField as keyof InventoryItem];
+    let aValue: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let bValue: any = b[sortField as keyof InventoryItem];
+    let bValue: any;
+
+    if (sortField === 'location') {
+      aValue = `${a.house || ''} ${a.room || ''}`.trim();
+      bValue = `${b.house || ''} ${b.room || ''}`.trim();
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      aValue = a[sortField as keyof InventoryItem];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      bValue = b[sortField as keyof InventoryItem];
+    }
 
     if (sortField === 'valuation') {
       aValue = Number(aValue) || 0;

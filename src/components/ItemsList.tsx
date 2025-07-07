@@ -11,7 +11,14 @@ interface ItemsListProps {
   onItemClick?: (item: InventoryItem) => void;
 }
 
-type SortField = 'title' | 'artist' | 'category' | 'valuation' | 'yearPeriod' | 'condition';
+type SortField =
+  | 'title'
+  | 'artist'
+  | 'category'
+  | 'valuation'
+  | 'yearPeriod'
+  | 'condition'
+  | 'location';
 type SortDirection = 'asc' | 'desc';
 
 export function ItemsList({ items, onItemClick }: ItemsListProps) {
@@ -52,8 +59,18 @@ export function ItemsList({ items, onItemClick }: ItemsListProps) {
   };
 
   const sortedItems = [...items].sort((a, b) => {
-    let aValue: any = a[sortField];
-    let bValue: any = b[sortField];
+    let aValue: any;
+    let bValue: any;
+
+    if (sortField === 'location') {
+      aValue = `${a.house || ''} ${a.room || ''}`.trim();
+      bValue = `${b.house || ''} ${b.room || ''}`.trim();
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      aValue = a[sortField as keyof InventoryItem];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      bValue = b[sortField as keyof InventoryItem];
+    }
     
     // Handle null/undefined values
     if (!aValue && !bValue) return 0;
@@ -93,6 +110,7 @@ export function ItemsList({ items, onItemClick }: ItemsListProps) {
         <SortButton field="category">Category</SortButton>
         <SortButton field="valuation">Valuation</SortButton>
         <SortButton field="yearPeriod">Year</SortButton>
+        <SortButton field="location">Location</SortButton>
         <SortButton field="condition">Condition</SortButton>
       </div>
 
