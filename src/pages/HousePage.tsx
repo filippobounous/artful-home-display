@@ -130,6 +130,8 @@ const HousePage = () => {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 
+  };
+
   const sortedItems = [...filteredItems].sort((a, b) => {
     if (!sortField) return 0;
 
