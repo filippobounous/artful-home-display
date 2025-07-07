@@ -80,3 +80,19 @@ export async function updateInventoryItem(id: number | string, updates: Inventor
     return updatedItem as InventoryItem;
   }
 }
+
+export async function deleteInventoryItem(id: number | string) {
+  try {
+    const response = await fetch(`${API_URL}/items/${id}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) throw new Error('Failed to delete item');
+    const items = getLocalInventory().filter(item => item.id !== Number(id));
+    saveLocalInventory(items);
+    return true;
+  } catch {
+    const items = getLocalInventory().filter(item => item.id !== Number(id));
+    saveLocalInventory(items);
+    return true;
+  }
+}

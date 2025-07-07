@@ -2,7 +2,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { InventoryItem } from "@/types/inventory";
-import { Edit, MapPin, Calendar, DollarSign, Hash } from "lucide-react";
+import { Edit, MapPin, Calendar, DollarSign, Hash, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ItemDetailDialogProps {
@@ -10,9 +10,10 @@ interface ItemDetailDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onEdit?: (item: InventoryItem) => void;
+  onDelete?: (item: InventoryItem) => void;
 }
 
-export function ItemDetailDialog({ item, open, onOpenChange, onEdit }: ItemDetailDialogProps) {
+export function ItemDetailDialog({ item, open, onOpenChange, onEdit, onDelete }: ItemDetailDialogProps) {
   if (!item) return null;
 
   const getConditionColor = (condition: string) => {
@@ -40,14 +41,25 @@ export function ItemDetailDialog({ item, open, onOpenChange, onEdit }: ItemDetai
               {item.condition}
             </Badge>
             {onEdit && (
-              <Button 
-                size="sm" 
-                variant="outline" 
+              <Button
+                size="sm"
+                variant="outline"
                 onClick={() => onEdit(item)}
                 className="h-8 px-2"
               >
                 <Edit className="w-4 h-4 mr-1" />
                 Edit
+              </Button>
+            )}
+            {onDelete && (
+              <Button
+                size="sm"
+                variant="destructive"
+                onClick={() => onDelete(item)}
+                className="h-8 px-2"
+              >
+                <Trash2 className="w-4 h-4 mr-1" />
+                Delete
               </Button>
             )}
           </div>
