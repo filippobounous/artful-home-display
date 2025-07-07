@@ -56,7 +56,7 @@ export function ItemDetailDialog({ item, open, onOpenChange, onEdit, onDelete }:
                 size="sm"
                 variant="destructive"
                 onClick={() => onDelete(item)}
-                className="h-8 px-2"
+                className="h-8 px-2 bg-red-600 hover:bg-red-700 text-white"
               >
                 <Trash2 className="w-4 h-4 mr-1" />
                 Delete

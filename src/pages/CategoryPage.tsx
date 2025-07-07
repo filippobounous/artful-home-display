@@ -10,9 +10,10 @@ import { ItemsTable } from "@/components/ItemsTable";
 import { ItemDetailDialog } from "@/components/ItemDetailDialog";
 import { EmptyState } from "@/components/EmptyState";
 import { sampleItems } from "@/data/sampleData";
-import { fetchInventory } from "@/lib/api";
+import { fetchInventory, deleteInventoryItem } from "@/lib/api";
 import { InventoryItem } from "@/types/inventory";
 import { useSettingsState } from "@/hooks/useSettingsState";
+import { useToast } from "@/hooks/use-toast";
 
 export type ViewMode = "grid" | "list" | "table";
 
@@ -30,10 +31,31 @@ const CategoryPage = () => {
   const [sortField, setSortField] = useState<string>("");
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const { categories } = useSettingsState();
+  const { toast } = useToast();
 
   const handleEdit = (item: InventoryItem) => {
     localStorage.setItem('editingDraft', JSON.stringify(item));
     navigate(`/add?draftId=${item.id}`);
+  };
+
+  const handleDelete = (item: InventoryItem) => {
+    if (!window.confirm(`Delete "${item.title}"?`)) return;
+    deleteInventoryItem(item.id)
+      .then(() => {
+        setItems(prev => prev.filter(i => i.id !== item.id));
+        toast({
+          title: 'Item deleted',
+          description: 'The item has been removed successfully',
+        });
+        setSelectedItem(null);
+      })
+      .catch(() => {
+        toast({
+          title: 'Error deleting item',
+          description: 'There was a problem deleting the item',
+          variant: 'destructive',
+        });
+      });
   };
 
   useEffect(() => {
@@ -151,6 +173,7 @@ const CategoryPage = () => {
               open={!!selectedItem}
               onOpenChange={(open) => !open && setSelectedItem(null)}
               onEdit={handleEdit}
+              onDelete={handleDelete}
             />
           </main>
         </div>
