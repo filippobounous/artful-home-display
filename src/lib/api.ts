@@ -1,35 +1,75 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 import { InventoryItem } from '@/types/inventory';
+import { sampleItems } from '@/data/sampleData';
+
+function getLocalInventory(): InventoryItem[] {
+  const stored = localStorage.getItem('inventoryData');
+  if (stored) {
+    try {
+      return JSON.parse(stored) as InventoryItem[];
+    } catch {
+      // fall through to sample items
+    }
+  }
+  localStorage.setItem('inventoryData', JSON.stringify(sampleItems));
+  return [...sampleItems];
+}
+
+function saveLocalInventory(items: InventoryItem[]) {
+  localStorage.setItem('inventoryData', JSON.stringify(items));
+}
 
 export async function fetchInventory(): Promise<InventoryItem[]> {
-  const response = await fetch(`${API_URL}/items`);
-  if (!response.ok) {
-    throw new Error('Failed to fetch items');
+  try {
+    const response = await fetch(`${API_URL}/items`);
+    if (!response.ok) throw new Error('Failed to fetch items');
+    const data = await response.json();
+    saveLocalInventory(data);
+    return data;
+  } catch {
+    return getLocalInventory();
   }
-  return response.json();
 }
 
 export async function createInventoryItem(item: InventoryItem) {
-  const response = await fetch(`${API_URL}/items`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(item)
-  });
-  if (!response.ok) {
-    throw new Error('Failed to create item');
+  try {
+    const response = await fetch(`${API_URL}/items`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(item)
+    });
+    if (!response.ok) throw new Error('Failed to create item');
+    const data = await response.json();
+    const items = getLocalInventory();
+    // ensure local storage stays in sync
+    saveLocalInventory([...items, data]);
+    return data;
+  } catch {
+    const items = getLocalInventory();
+    const newId = Math.max(0, ...items.map(i => i.id || 0)) + 1;
+    const newItem = { ...item, id: newId };
+    saveLocalInventory([...items, newItem]);
+    return newItem;
   }
-  return response.json();
 }
 
 export async function updateInventoryItem(id: number | string, updates: InventoryItem) {
-  const response = await fetch(`${API_URL}/items/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(updates)
-  });
-  if (!response.ok) {
-    throw new Error('Failed to update item');
+  try {
+    const response = await fetch(`${API_URL}/items/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updates)
+    });
+    if (!response.ok) throw new Error('Failed to update item');
+    const data = await response.json();
+    const items = getLocalInventory().map(item => item.id === data.id ? data : item);
+    saveLocalInventory(items);
+    return data;
+  } catch {
+    const items = getLocalInventory();
+    const updated = items.map(item => item.id === Number(id) ? { ...item, ...updates, id: Number(id) } : item);
+    saveLocalInventory(updated);
+    return updates;
   }
-  return response.json();
 }

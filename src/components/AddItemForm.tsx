@@ -111,6 +111,26 @@ export function AddItemForm() {
       });
   };
 
+  const handleSaveDraft = () => {
+    const drafts = JSON.parse(localStorage.getItem('drafts') || '[]');
+    const id = draftId ? Number(draftId) : Date.now();
+    const newDraft = {
+      id,
+      lastModified: new Date().toISOString().split('T')[0],
+      data: formData,
+      title: formData.title || 'Untitled Draft',
+      category: formData.category,
+      description: formData.description || '',
+    };
+    const filtered = drafts.filter((d: { id: number }) => d.id !== id);
+    localStorage.setItem('drafts', JSON.stringify([...filtered, newDraft]));
+    toast({
+      title: 'Draft saved',
+      description: 'You can continue editing this draft later',
+    });
+    navigate('/drafts');
+  };
+
   return (
     <Card className="w-full border-0 shadow-lg">
       <CardContent className="p-8">
@@ -137,7 +157,12 @@ export function AddItemForm() {
             <Button type="submit" className="flex-1 h-12 text-lg font-semibold">
               {draftId ? 'Save Changes' : 'Add to Collection'}
             </Button>
-            <Button type="button" variant="outline" className="flex-1 h-12 text-lg font-semibold">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleSaveDraft}
+              className="flex-1 h-12 text-lg font-semibold"
+            >
               Save as Draft
             </Button>
           </div>
