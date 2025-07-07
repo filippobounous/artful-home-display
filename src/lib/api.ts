@@ -68,8 +68,15 @@ export async function updateInventoryItem(id: number | string, updates: Inventor
     return data;
   } catch {
     const items = getLocalInventory();
-    const updated = items.map(item => item.id === Number(id) ? { ...item, ...updates, id: Number(id) } : item);
+    let updatedItem: InventoryItem | null = null;
+    const updated = items.map(item => {
+      if (item.id === Number(id)) {
+        updatedItem = { ...item, ...updates, id: Number(id) };
+        return updatedItem;
+      }
+      return item;
+    });
     saveLocalInventory(updated);
-    return updates;
+    return updatedItem as InventoryItem;
   }
 }
