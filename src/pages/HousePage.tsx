@@ -45,6 +45,11 @@ const HousePage = () => {
     if (houseId) {
       setSelectedHouse([houseId]);
     }
+    // Reset other filters when navigating between houses
+    setSelectedCategory([]);
+    setSelectedSubcategory([]);
+    setSelectedRoom([]);
+    setSearchTerm("");
   }, [houseId]);
 
   const houseConfig = houses.find(h => h.id === houseId);
