@@ -23,12 +23,13 @@ export function AddItemBasicInfo({ formData, setFormData }: AddItemBasicInfoProp
       </div>
 
       <div>
-        <Label htmlFor="artist">Artist/Maker</Label>
+        <Label htmlFor="artist">Artist/Maker *</Label>
         <Input
           id="artist"
           placeholder="Artist or maker name"
           value={formData.artist}
           onChange={(e) => setFormData({ ...formData, artist: e.target.value })}
+          required
         />
       </div>
 
@@ -43,23 +44,25 @@ export function AddItemBasicInfo({ formData, setFormData }: AddItemBasicInfoProp
       </div>
 
       <div>
-        <Label htmlFor="quantity">Quantity</Label>
+        <Label htmlFor="quantity">Quantity *</Label>
         <Input
           id="quantity"
           type="number"
           min="1"
           value={formData.quantity}
           onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+          required
         />
       </div>
 
       <div>
-        <Label htmlFor="yearPeriod">Year/Period</Label>
+        <Label htmlFor="yearPeriod">Year/Period *</Label>
         <Input
           id="yearPeriod"
           placeholder="e.g., 1920s, 2023"
           value={formData.yearPeriod}
           onChange={(e) => setFormData({ ...formData, yearPeriod: e.target.value })}
+          required
         />
       </div>
     </div>
