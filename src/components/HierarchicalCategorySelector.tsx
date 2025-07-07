@@ -35,7 +35,9 @@ export function HierarchicalCategorySelector({
         value={currentValue}
         onValueChange={handleSelectionChange}
       >
-        <SelectTrigger>
+        <SelectTrigger
+          className={currentValue ? undefined : "text-muted-foreground"}
+        >
           <SelectValue placeholder="Select category and subcategory" />
         </SelectTrigger>
         <SelectContent>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { InventoryHeader } from "@/components/InventoryHeader";
@@ -18,6 +18,7 @@ export type ViewMode = "grid" | "list" | "table";
 
 const CategoryPage = () => {
   const { categoryId } = useParams<{ categoryId: string }>();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string[]>(categoryId ? [categoryId] : []);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string[]>([]);
@@ -29,6 +30,11 @@ const CategoryPage = () => {
   const [sortField, setSortField] = useState<string>("");
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const { categories } = useSettingsState();
+
+  const handleEdit = (item: InventoryItem) => {
+    localStorage.setItem('editingDraft', JSON.stringify(item));
+    navigate(`/add?draftId=${item.id}`);
+  };
 
   useEffect(() => {
     fetchInventory()
@@ -139,6 +145,7 @@ const CategoryPage = () => {
               item={selectedItem}
               open={!!selectedItem}
               onOpenChange={(open) => !open && setSelectedItem(null)}
+              onEdit={handleEdit}
             />
           </main>
         </div>
