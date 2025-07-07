@@ -11,7 +11,14 @@ interface ItemsListProps {
   onItemClick?: (item: InventoryItem) => void;
 }
 
-type SortField = 'title' | 'artist' | 'category' | 'valuation' | 'yearPeriod' | 'condition';
+type SortField =
+  | 'title'
+  | 'artist'
+  | 'category'
+  | 'valuation'
+  | 'yearPeriod'
+  | 'condition'
+  | 'location';
 type SortDirection = 'asc' | 'desc';
 
 export function ItemsList({ items, onItemClick }: ItemsListProps) {
@@ -51,19 +58,41 @@ export function ItemsList({ items, onItemClick }: ItemsListProps) {
     }
   };
 
+  const compareStrings = (x?: string, y?: string) => {
+    const aStr = (x || '').toLowerCase();
+    const bStr = (y || '').toLowerCase();
+    if (aStr < bStr) return -1;
+    if (aStr > bStr) return 1;
+    return 0;
+  };
+
   const sortedItems = [...items].sort((a, b) => {
-    let aValue: any = a[sortField];
-    let bValue: any = b[sortField];
-    
-    // Handle null/undefined values
+    if (sortField === 'location') {
+      const houseComp = compareStrings(a.house, b.house);
+      if (houseComp !== 0) return sortDirection === 'asc' ? houseComp : -houseComp;
+      const roomComp = compareStrings(a.room, b.room);
+      return sortDirection === 'asc' ? roomComp : -roomComp;
+    }
+
+    if (sortField === 'category') {
+      const catComp = compareStrings(a.category, b.category);
+      if (catComp !== 0) return sortDirection === 'asc' ? catComp : -catComp;
+      const subComp = compareStrings(a.subcategory, b.subcategory);
+      return sortDirection === 'asc' ? subComp : -subComp;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let aValue: any = a[sortField as keyof InventoryItem];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let bValue: any = b[sortField as keyof InventoryItem];
+
     if (!aValue && !bValue) return 0;
-    if (!aValue) return 1;
-    if (!bValue) return -1;
-    
-    // Convert to string for comparison
+    if (!aValue) return sortDirection === 'asc' ? 1 : -1;
+    if (!bValue) return sortDirection === 'asc' ? -1 : 1;
+
     if (typeof aValue === 'string') aValue = aValue.toLowerCase();
     if (typeof bValue === 'string') bValue = bValue.toLowerCase();
-    
+
     const comparison = aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
     return sortDirection === 'asc' ? comparison : -comparison;
   });
@@ -93,6 +122,7 @@ export function ItemsList({ items, onItemClick }: ItemsListProps) {
         <SortButton field="category">Category</SortButton>
         <SortButton field="valuation">Valuation</SortButton>
         <SortButton field="yearPeriod">Year</SortButton>
+        <SortButton field="location">Location</SortButton>
         <SortButton field="condition">Condition</SortButton>
       </div>
 
