@@ -78,15 +78,36 @@ const AllItems = () => {
   });
 
   // Sort filtered items
+  const compareStrings = (x?: string, y?: string) => {
+    const aStr = (x || '').toLowerCase();
+    const bStr = (y || '').toLowerCase();
+    if (aStr < bStr) return -1;
+    if (aStr > bStr) return 1;
+    return 0;
+  };
+
   const sortedItems = [...filteredItems].sort((a, b) => {
     if (!sortField) return 0;
-    
+
+    if (sortField === 'location') {
+      const houseComp = compareStrings(a.house, b.house);
+      if (houseComp !== 0) return sortDirection === 'asc' ? houseComp : -houseComp;
+      const roomComp = compareStrings(a.room, b.room);
+      return sortDirection === 'asc' ? roomComp : -roomComp;
+    }
+
+    if (sortField === 'category') {
+      const catComp = compareStrings(a.category, b.category);
+      if (catComp !== 0) return sortDirection === 'asc' ? catComp : -catComp;
+      const subComp = compareStrings(a.subcategory, b.subcategory);
+      return sortDirection === 'asc' ? subComp : -subComp;
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let aValue: any = a[sortField as keyof InventoryItem];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let bValue: any = b[sortField as keyof InventoryItem];
-    
-    // Handle special cases
+
     if (sortField === 'valuation') {
       aValue = Number(aValue) || 0;
       bValue = Number(bValue) || 0;
@@ -94,7 +115,7 @@ const AllItems = () => {
       aValue = String(aValue || '').toLowerCase();
       bValue = String(bValue || '').toLowerCase();
     }
-    
+
     if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
     if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
     return 0;

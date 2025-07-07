@@ -77,7 +77,7 @@ export function ItemsTable({ items, onItemClick, onSort, sortField, sortDirectio
             <SortableHeader field="artist">Artist</SortableHeader>
             <SortableHeader field="category">Category</SortableHeader>
             <SortableHeader field="yearPeriod">Year</SortableHeader>
-            <TableHead>Location</TableHead>
+            <SortableHeader field="location">Location</SortableHeader>
             <SortableHeader field="condition">Condition</SortableHeader>
             <SortableHeader field="valuation">
               <div className="text-right">Valuation</div>
