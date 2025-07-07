@@ -94,6 +94,46 @@ const CategoryPage = () => {
     setSortDirection(direction);
   };
 
+  const downloadCSV = () => {
+    const headers = [
+      'ID', 'Title', 'Artist', 'Category', 'Subcategory', 'Size', 'Valuation',
+      'Valuation Currency', 'Quantity', 'Year/Period', 'Description', 'Condition',
+      'House', 'Room', 'Notes'
+    ];
+
+    const csvContent = [
+      headers.join(','),
+      ...sortedItems.map(item => [
+        item.id || '',
+        `"${item.title || ''}"`,
+        `"${item.artist || ''}"`,
+        `"${item.category || ''}"`,
+        `"${item.subcategory || ''}"`,
+        `"${item.size || ''}"`,
+        item.valuation || '',
+        `"${item.valuationCurrency || ''}"`,
+        item.quantity || '',
+        `"${item.yearPeriod || ''}"`,
+        `"${item.description || ''}"`,
+        `"${item.condition || ''}"`,
+        `"${item.house || ''}"`,
+        `"${item.room || ''}"`,
+        `"${item.notes || ''}"`
+      ].join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `inventory_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-slate-50">
@@ -121,6 +161,7 @@ const CategoryPage = () => {
               setSelectedRoom={setSelectedRoom}
               viewMode={viewMode}
               setViewMode={setViewMode}
+              onDownloadCSV={downloadCSV}
               permanentCategory={categoryId}
             />
 
