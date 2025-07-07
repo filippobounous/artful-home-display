@@ -34,7 +34,9 @@ export function HierarchicalHouseRoomSelector({
         value={currentValue}
         onValueChange={handleSelectionChange}
       >
-        <SelectTrigger>
+        <SelectTrigger
+          className={currentValue ? undefined : "text-muted-foreground"}
+        >
           <SelectValue placeholder="Select house and room" />
         </SelectTrigger>
         <SelectContent>
