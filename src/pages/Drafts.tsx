@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppSidebar } from "@/components/AppSidebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -12,51 +12,14 @@ import { useToast } from "@/hooks/use-toast";
 const Drafts = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [drafts, setDrafts] = useState([
-    {
-      id: 1,
-      title: "Untitled Draft",
-      lastModified: "2024-01-15",
-      category: "art",
-      description: "Modern abstract painting...",
-      data: {
-        title: "Untitled Draft",
-        category: "art",
-        subcategory: "painting",
-        description: "Modern abstract painting with vibrant colors",
-        condition: "excellent",
-        house: "main-house",
-        room: "living-room",
-        artist: "Unknown Artist",
-        yearPeriod: "2023",
-        size: "24x36 inches",
-        valuation: 5000,
-        valuationCurrency: "USD",
-        notes: "Beautiful abstract piece with vibrant colors"
-      }
-    },
-    {
-      id: 2,
-      title: "Vintage Chair",
-      lastModified: "2024-01-14",
-      category: "furniture",
-      description: "Antique wooden chair from...",
-      data: {
-        title: "Vintage Chair",
-        category: "furniture",
-        subcategory: "chair",
-        description: "Antique wooden chair from the 1920s",
-        condition: "good",
-        house: "guest-house",
-        room: "bedroom",
-        yearPeriod: "1920s",
-        size: "Standard dining chair",
-        valuation: 800,
-        valuationCurrency: "USD",
-        notes: "Needs minor restoration on the seat"
-      }
-    }
-  ]);
+  const [drafts, setDrafts] = useState(() => {
+    const stored = localStorage.getItem('drafts');
+    return stored ? JSON.parse(stored) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('drafts', JSON.stringify(drafts));
+  }, [drafts]);
 
   const deleteDraft = (id: number, event: React.MouseEvent) => {
     event.stopPropagation();
