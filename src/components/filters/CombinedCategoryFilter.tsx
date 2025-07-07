@@ -24,11 +24,13 @@ export function CombinedCategoryFilter({
   const combinedOptions = categories.flatMap(category => {
     const subcategoryIds = category.subcategories.map(sub => sub.id);
     const selectedSubs = selectedSubcategory.filter(id => subcategoryIds.includes(id));
-    const checkState: CheckboxCheckedState = selectedCategory.includes(category.id)
-      ? true
-      : selectedSubs.length > 0
-        ? "indeterminate"
-        : false;
+    const allSelected = selectedSubs.length === subcategoryIds.length && subcategoryIds.length > 0;
+    const checkState: CheckboxCheckedState =
+      selectedCategory.includes(category.id) || allSelected
+        ? true
+        : selectedSubs.length > 0
+          ? "indeterminate"
+          : false;
     return [
       {
         id: category.id,
@@ -41,8 +43,10 @@ export function CombinedCategoryFilter({
               if (!selectedCategory.includes(category.id)) {
                 setSelectedCategory([...selectedCategory, category.id]);
               }
+              setSelectedSubcategory(selectedSubcategory.filter(s => !subcategoryIds.includes(s)));
             } else {
               setSelectedCategory(selectedCategory.filter(c => c !== category.id));
+              setSelectedSubcategory(selectedSubcategory.filter(s => !subcategoryIds.includes(s)));
             }
           }
         }
@@ -61,21 +65,18 @@ export function CombinedCategoryFilter({
   const handleSelectionChange = (values: string[]) => {
     const categoryIds: string[] = [];
     const subcategoryIds: string[] = [];
-    
-    values.forEach(value => {
-      const category = categories.find(cat => cat.id === value);
-      if (category) {
-        categoryIds.push(value);
+
+    categories.forEach(category => {
+      const subIds = category.subcategories.map(s => s.id);
+      const selectedSubs = values.filter(v => subIds.includes(v));
+      const hasCategory = values.includes(category.id);
+      if (hasCategory || (selectedSubs.length === subIds.length && subIds.length > 0)) {
+        categoryIds.push(category.id);
       } else {
-        const subcategory = categories
-          .flatMap(cat => cat.subcategories)
-          .find(sub => sub.id === value);
-        if (subcategory) {
-          subcategoryIds.push(value);
-        }
+        subcategoryIds.push(...selectedSubs);
       }
     });
-    
+
     if (!permanentCategory) {
       setSelectedCategory(categoryIds);
     }

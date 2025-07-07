@@ -55,17 +55,9 @@ export function MultiSelectFilter({ placeholder, options, selectedValues, onSele
         >
           <div className="flex flex-wrap gap-1">
             {selectedLabels.length > 0 ? (
-              selectedLabels.length <= 2 ? (
-                selectedLabels.map((label) => (
-                  <Badge key={label} variant="secondary" className="text-xs">
-                    {label}
-                  </Badge>
-                ))
-              ) : (
-                <Badge variant="secondary" className="text-xs">
-                  {selectedLabels.length} selected
-                </Badge>
-              )
+              <Badge variant="secondary" className="text-xs">
+                {selectedLabels.length} item{selectedLabels.length === 1 ? '' : 's'}
+              </Badge>
             ) : (
               <span className="text-muted-foreground">{placeholder}</span>
             )}

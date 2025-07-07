@@ -45,11 +45,13 @@ export function CombinedLocationFilter({
   const combinedOptions = houses.flatMap(house => {
     const roomIds = house.rooms.map(r => `${house.id}|${r.id}`);
     const selectedRooms = selectedRoom.filter(id => roomIds.includes(id));
-    const checkState: CheckboxCheckedState = selectedHouse.includes(house.id)
-      ? true
-      : selectedRooms.length > 0
-        ? "indeterminate"
-        : false;
+    const allSelected = selectedRooms.length === roomIds.length && roomIds.length > 0;
+    const checkState: CheckboxCheckedState =
+      selectedHouse.includes(house.id) || allSelected
+        ? true
+        : selectedRooms.length > 0
+          ? "indeterminate"
+          : false;
     return [
       {
         id: house.id,
@@ -62,8 +64,10 @@ export function CombinedLocationFilter({
               if (!selectedHouse.includes(house.id)) {
                 setSelectedHouse([...selectedHouse, house.id]);
               }
+              setSelectedRoom(selectedRoom.filter(r => !r.startsWith(`${house.id}|`)));
             } else {
               setSelectedHouse(selectedHouse.filter(h => h !== house.id));
+              setSelectedRoom(selectedRoom.filter(r => !r.startsWith(`${house.id}|`)));
             }
           }
         }
@@ -83,18 +87,14 @@ export function CombinedLocationFilter({
     const houseIds: string[] = [];
     const roomIds: string[] = [];
 
-    values.forEach(value => {
-      const house = houses.find(h => h.id === value);
-      if (house) {
-        houseIds.push(value);
+    houses.forEach(house => {
+      const roomKeys = house.rooms.map(r => `${house.id}|${r.id}`);
+      const selectedForHouse = values.filter(v => roomKeys.includes(v));
+      const houseSelected = values.includes(house.id);
+      if (houseSelected || (selectedForHouse.length === roomKeys.length && roomKeys.length > 0)) {
+        houseIds.push(house.id);
       } else {
-        const [houseId, roomId] = value.split('|');
-        if (houseId && roomId) {
-          if (!houseIds.includes(houseId)) {
-            houseIds.push(houseId);
-          }
-          roomIds.push(`${houseId}|${roomId}`);
-        }
+        roomIds.push(...selectedForHouse);
       }
     });
 
