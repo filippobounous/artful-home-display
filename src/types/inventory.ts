@@ -18,6 +18,11 @@ export interface InventoryItem {
   condition: "mint" | "excellent" | "very good" | "good";
   house?: string;
   room?: string;
+  /**
+   * Optional field from the API used to sort by location.
+   * When present, it takes precedence over computed house/room order.
+   */
+  locationSort?: number | string;
   notes?: string;
 }
 

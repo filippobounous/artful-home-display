@@ -5,6 +5,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { InventoryItem } from "@/types/inventory";
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { useSettingsState } from "@/hooks/useSettingsState";
+import { sortInventoryItems } from "@/lib/sortUtils";
 
 interface ItemsListProps {
   items: InventoryItem[];
@@ -24,6 +26,7 @@ type SortDirection = 'asc' | 'desc';
 export function ItemsList({ items, onItemClick }: ItemsListProps) {
   const [sortField, setSortField] = useState<SortField>('title');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+  const { houses, categories } = useSettingsState();
 
   const getConditionColor = (condition: string) => {
     switch (condition) {
@@ -58,32 +61,13 @@ export function ItemsList({ items, onItemClick }: ItemsListProps) {
     }
   };
 
-  const sortedItems = [...items].sort((a, b) => {
-    let aValue: any;
-    let bValue: any;
-
-    if (sortField === 'location') {
-      aValue = `${a.house || ''} ${a.room || ''}`.trim();
-      bValue = `${b.house || ''} ${b.room || ''}`.trim();
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      aValue = a[sortField as keyof InventoryItem];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      bValue = b[sortField as keyof InventoryItem];
-    }
-    
-    // Handle null/undefined values
-    if (!aValue && !bValue) return 0;
-    if (!aValue) return 1;
-    if (!bValue) return -1;
-    
-    // Convert to string for comparison
-    if (typeof aValue === 'string') aValue = aValue.toLowerCase();
-    if (typeof bValue === 'string') bValue = bValue.toLowerCase();
-    
-    const comparison = aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-    return sortDirection === 'asc' ? comparison : -comparison;
-  });
+  const sortedItems = sortInventoryItems(
+    items,
+    sortField,
+    sortDirection,
+    houses,
+    categories
+  );
 
   const SortButton = ({ field, children }: { field: SortField; children: React.ReactNode }) => (
     <Button
