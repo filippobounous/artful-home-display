@@ -62,20 +62,17 @@ export function MultiSelectFilter({ placeholder, options, selectedValues, onSele
               <span className="text-muted-foreground">{placeholder}</span>
             )}
           </div>
-          <div className="flex items-center gap-1">
-            {selectedValues.length > 0 && (
-              <span className="text-xs font-semibold">{selectedValues.length}</span>
-            )}
-            {selectedValues.length > 0 && (
-              <X
-                className="w-4 h-4 hover:text-destructive cursor-pointer"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleClear();
-                }}
-              />
-            )}
-            <ChevronDown className="w-4 h-4" />
+            <div className="flex items-center gap-1">
+              {selectedValues.length > 0 && (
+                <X
+                  className="w-4 h-4 hover:text-destructive cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleClear();
+                  }}
+                />
+              )}
+              <ChevronDown className="w-4 h-4" />
           </div>
         </Button>
       </PopoverTrigger>
