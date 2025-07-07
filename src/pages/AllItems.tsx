@@ -10,6 +10,7 @@ import { ItemsList } from "@/components/ItemsList";
 import { ItemsTable } from "@/components/ItemsTable";
 import { ItemDetailDialog } from "@/components/ItemDetailDialog";
 import { EmptyState } from "@/components/EmptyState";
+import { MultiSelectFilter } from "@/components/MultiSelectFilter";
 import { sampleItems } from "@/data/sampleData";
 import { fetchInventory } from "@/lib/api";
 import { InventoryItem } from "@/types/inventory";
@@ -26,6 +27,7 @@ const AllItems = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [items, setItems] = useState<InventoryItem[]>(sampleItems);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [sortField, setSortField] = useState<string>("");
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
@@ -122,6 +124,9 @@ const AllItems = () => {
     URL.revokeObjectURL(url);
   };
 
+  const itemOptions = items.map(item => ({ id: item.id.toString(), name: item.title }));
+  const selectedItems = items.filter(item => selectedIds.includes(item.id.toString()));
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-slate-50">
@@ -151,6 +156,26 @@ const AllItems = () => {
               setViewMode={setViewMode}
               onDownloadCSV={downloadCSV}
             />
+
+            <div className="max-w-md mb-6">
+              <MultiSelectFilter
+                placeholder="Select items"
+                options={itemOptions}
+                selectedValues={selectedIds}
+                onSelectionChange={setSelectedIds}
+              />
+            </div>
+
+            {selectedItems.length > 0 && (
+              <div className="mb-6 space-y-2">
+                <h3 className="font-medium text-slate-700">Selected Items</h3>
+                <ul className="list-disc pl-5 space-y-1">
+                  {selectedItems.map(item => (
+                    <li key={item.id}>{item.title}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             <div className="mb-6">
               <p className="text-slate-600">
