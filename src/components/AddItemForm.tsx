@@ -65,11 +65,18 @@ export function AddItemForm() {
           
           // Clear the draft data from localStorage
           localStorage.removeItem('editingDraft');
-          
-          toast({
-            title: "Draft loaded",
-            description: "Your draft has been loaded successfully"
-          });
+
+          if ('lastModified' in draft) {
+            toast({
+              title: 'Draft loaded',
+              description: 'Your draft has been loaded successfully',
+            });
+          } else {
+            toast({
+              title: 'Edit mode',
+              description: 'Item data loaded for editing',
+            });
+          }
         } catch (error) {
           console.error('Error loading draft:', error);
           toast({
@@ -87,12 +94,13 @@ export function AddItemForm() {
     console.log("Form submitted:", formData);
 
     let saveAction: Promise<InventoryItem | null>;
+    let exists = false;
 
     if (draftId) {
       const inventory = JSON.parse(
         localStorage.getItem('inventoryData') || '[]'
       ) as InventoryItem[];
-      const exists = inventory.some((item) => item.id === Number(draftId));
+      exists = inventory.some((item) => item.id === Number(draftId));
 
       saveAction = exists
         ? updateInventoryItem(draftId, {
