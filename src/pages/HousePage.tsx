@@ -11,9 +11,10 @@ import { ItemsTable } from "@/components/ItemsTable";
 import { ItemDetailDialog } from "@/components/ItemDetailDialog";
 import { EmptyState } from "@/components/EmptyState";
 import { sampleItems } from "@/data/sampleData";
-import { fetchInventory } from "@/lib/api";
+import { fetchInventory, deleteInventoryItem } from "@/lib/api";
 import { InventoryItem } from "@/types/inventory";
 import { useSettingsState } from "@/hooks/useSettingsState";
+import { useToast } from "@/hooks/use-toast";
 
 type ViewMode = "grid" | "list" | "table";
 
@@ -28,11 +29,34 @@ const HousePage = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [items, setItems] = useState<InventoryItem[]>(sampleItems);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
+  const [sortField, setSortField] = useState<string>("");
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const { houses } = useSettingsState();
+  const { toast } = useToast();
 
   const handleEdit = (item: InventoryItem) => {
     localStorage.setItem('editingDraft', JSON.stringify(item));
     navigate(`/add?draftId=${item.id}`);
+  };
+
+  const handleDelete = (item: InventoryItem) => {
+    if (!window.confirm(`Delete "${item.title}"?`)) return;
+    deleteInventoryItem(item.id)
+      .then(() => {
+        setItems(prev => prev.filter(i => i.id !== item.id));
+        toast({
+          title: 'Item deleted',
+          description: 'The item has been removed successfully',
+        });
+        setSelectedItem(null);
+      })
+      .catch(() => {
+        toast({
+          title: 'Error deleting item',
+          description: 'There was a problem deleting the item',
+          variant: 'destructive',
+        });
+      });
   };
 
   useEffect(() => {
@@ -105,6 +129,31 @@ const HousePage = () => {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+
+  const sortedItems = [...filteredItems].sort((a, b) => {
+    if (!sortField) return 0;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let aValue: any = a[sortField as keyof InventoryItem];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let bValue: any = b[sortField as keyof InventoryItem];
+
+    if (sortField === 'valuation') {
+      aValue = Number(aValue) || 0;
+      bValue = Number(bValue) || 0;
+    } else {
+      aValue = String(aValue || '').toLowerCase();
+      bValue = String(bValue || '').toLowerCase();
+    }
+
+    if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+    if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  const handleSort = (field: string, direction: 'asc' | 'desc') => {
+    setSortField(field);
+    setSortDirection(direction);
   };
 
   return (
@@ -140,18 +189,24 @@ const HousePage = () => {
 
             <div className="mb-6">
               <p className="text-slate-600">
-                Showing {filteredItems.length} items in {houseName}
+                Showing {sortedItems.length} items in {houseName}
               </p>
             </div>
 
-            {filteredItems.length === 0 ? (
+            {sortedItems.length === 0 ? (
               <EmptyState />
             ) : viewMode === "grid" ? (
-              <ItemsGrid items={filteredItems} onItemClick={setSelectedItem} />
+              <ItemsGrid items={sortedItems} onItemClick={setSelectedItem} />
             ) : viewMode === "list" ? (
-              <ItemsList items={filteredItems} onItemClick={setSelectedItem} />
+              <ItemsList items={sortedItems} onItemClick={setSelectedItem} />
             ) : (
-              <ItemsTable items={filteredItems} onItemClick={setSelectedItem} />
+              <ItemsTable
+                items={sortedItems}
+                onItemClick={setSelectedItem}
+                onSort={handleSort}
+                sortField={sortField}
+                sortDirection={sortDirection}
+              />
             )}
 
             <ItemDetailDialog
@@ -159,6 +214,7 @@ const HousePage = () => {
               open={!!selectedItem}
               onOpenChange={(open) => !open && setSelectedItem(null)}
               onEdit={handleEdit}
+              onDelete={handleDelete}
             />
           </main>
         </div>
