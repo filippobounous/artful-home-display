@@ -61,10 +61,14 @@ export function CombinedLocationFilter({
         onCheckChange: (checked: CheckboxCheckedState) => {
           if (!permanentHouse) {
             if (checked) {
+              const allIds = house.rooms.map(r => `${house.id}|${r.id}`);
               if (!selectedHouse.includes(house.id)) {
                 setSelectedHouse([...selectedHouse, house.id]);
               }
-              setSelectedRoom(selectedRoom.filter(r => !r.startsWith(`${house.id}|`)));
+              setSelectedRoom([
+                ...selectedRoom.filter(r => !r.startsWith(`${house.id}|`)),
+                ...allIds
+              ]);
             } else {
               setSelectedHouse(selectedHouse.filter(h => h !== house.id));
               setSelectedRoom(selectedRoom.filter(r => !r.startsWith(`${house.id}|`)));
@@ -82,6 +86,17 @@ export function CombinedLocationFilter({
 
   // Combine selected values for display
   const allSelectedValues = [...selectedHouse, ...selectedRoom];
+
+  // Determine how many logical selections exist for badge display
+  const selectedCount = houses.reduce((cnt, house) => {
+    const roomKeys = house.rooms.map(r => `${house.id}|${r.id}`);
+    const selectedRooms = selectedRoom.filter(r => roomKeys.includes(r));
+    const allSelected = selectedRooms.length === roomKeys.length && roomKeys.length > 0;
+    if (selectedHouse.includes(house.id) || allSelected) {
+      return cnt + 1;
+    }
+    return cnt + selectedRooms.length;
+  }, 0);
   
   const handleSelectionChange = (values: string[]) => {
     const houseIds: string[] = [];
@@ -90,9 +105,15 @@ export function CombinedLocationFilter({
     houses.forEach(house => {
       const roomKeys = house.rooms.map(r => `${house.id}|${r.id}`);
       const selectedForHouse = values.filter(v => roomKeys.includes(v));
+      const allSelected = selectedForHouse.length === roomKeys.length && roomKeys.length > 0;
       const houseSelected = values.includes(house.id);
-      if (houseSelected || (selectedForHouse.length === roomKeys.length && roomKeys.length > 0)) {
+
+      if (allSelected || (houseSelected && selectedForHouse.length === 0)) {
         houseIds.push(house.id);
+      }
+
+      if (allSelected) {
+        roomIds.push(...roomKeys);
       } else {
         roomIds.push(...selectedForHouse);
       }
@@ -110,6 +131,7 @@ export function CombinedLocationFilter({
         options={combinedOptions}
         selectedValues={allSelectedValues}
         onSelectionChange={handleSelectionChange}
+        selectedCount={selectedCount}
       />
     </div>
   );

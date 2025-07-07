@@ -43,7 +43,10 @@ export function CombinedCategoryFilter({
               if (!selectedCategory.includes(category.id)) {
                 setSelectedCategory([...selectedCategory, category.id]);
               }
-              setSelectedSubcategory(selectedSubcategory.filter(s => !subcategoryIds.includes(s)));
+              setSelectedSubcategory([
+                ...selectedSubcategory.filter(s => !subcategoryIds.includes(s)),
+                ...subcategoryIds
+              ]);
             } else {
               setSelectedCategory(selectedCategory.filter(c => c !== category.id));
               setSelectedSubcategory(selectedSubcategory.filter(s => !subcategoryIds.includes(s)));
@@ -61,6 +64,16 @@ export function CombinedCategoryFilter({
 
   // Combine selected values for display
   const allSelectedValues = [...selectedCategory, ...selectedSubcategory];
+
+  const selectedCount = categories.reduce((cnt, cat) => {
+    const subIds = cat.subcategories.map(s => s.id);
+    const subs = selectedSubcategory.filter(id => subIds.includes(id));
+    const allSel = subs.length === subIds.length && subIds.length > 0;
+    if (selectedCategory.includes(cat.id) || allSel) {
+      return cnt + 1;
+    }
+    return cnt + subs.length;
+  }, 0);
   
   const handleSelectionChange = (values: string[]) => {
     const categoryIds: string[] = [];
@@ -69,9 +82,15 @@ export function CombinedCategoryFilter({
     categories.forEach(category => {
       const subIds = category.subcategories.map(s => s.id);
       const selectedSubs = values.filter(v => subIds.includes(v));
+      const allSelected = selectedSubs.length === subIds.length && subIds.length > 0;
       const hasCategory = values.includes(category.id);
-      if (hasCategory || (selectedSubs.length === subIds.length && subIds.length > 0)) {
+
+      if (allSelected || (hasCategory && selectedSubs.length === 0)) {
         categoryIds.push(category.id);
+      }
+
+      if (allSelected) {
+        subcategoryIds.push(...subIds);
       } else {
         subcategoryIds.push(...selectedSubs);
       }
@@ -114,6 +133,7 @@ export function CombinedCategoryFilter({
         options={combinedOptions}
         selectedValues={allSelectedValues}
         onSelectionChange={handleSelectionChange}
+        selectedCount={selectedCount}
       />
     </div>
   );

@@ -23,9 +23,15 @@ interface MultiSelectFilterProps {
   options: MultiSelectOption[];
   selectedValues: string[];
   onSelectionChange: (values: string[]) => void;
+  /**
+   * Optional count override used for the badge. Allows parents
+   * to display a count that differs from the raw number of
+   * selected option ids.
+   */
+  selectedCount?: number;
 }
 
-export function MultiSelectFilter({ placeholder, options, selectedValues, onSelectionChange }: MultiSelectFilterProps) {
+export function MultiSelectFilter({ placeholder, options, selectedValues, onSelectionChange, selectedCount }: MultiSelectFilterProps) {
   const [open, setOpen] = useState(false);
 
   const handleToggle = (value: string) => {
@@ -43,6 +49,8 @@ export function MultiSelectFilter({ placeholder, options, selectedValues, onSele
     .filter(option => !option.header && selectedValues.includes(option.id))
     .map(option => option.name);
 
+  const selectionCount = selectedCount ?? selectedLabels.length;
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -54,9 +62,9 @@ export function MultiSelectFilter({ placeholder, options, selectedValues, onSele
           )}
         >
           <div className="flex flex-wrap gap-1">
-            {selectedLabels.length > 0 ? (
+            {selectionCount > 0 ? (
               <Badge variant="secondary" className="text-xs">
-                {selectedLabels.length} item{selectedLabels.length === 1 ? '' : 's'}
+                {selectionCount} item{selectionCount === 1 ? '' : 's'}
               </Badge>
             ) : (
               <span className="text-muted-foreground">{placeholder}</span>
