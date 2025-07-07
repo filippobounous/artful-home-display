@@ -94,9 +94,19 @@ const CategoryPage = () => {
     if (!sortField) return 0;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let aValue: any = a[sortField as keyof InventoryItem];
+    let aValue: any;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let bValue: any = b[sortField as keyof InventoryItem];
+    let bValue: any;
+
+    if (sortField === 'location') {
+      aValue = `${a.house || ''} ${a.room || ''}`.trim();
+      bValue = `${b.house || ''} ${b.room || ''}`.trim();
+    } else {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      aValue = a[sortField as keyof InventoryItem];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      bValue = b[sortField as keyof InventoryItem];
+    }
 
     if (sortField === 'valuation') {
       aValue = Number(aValue) || 0;
@@ -114,6 +124,46 @@ const CategoryPage = () => {
   const handleSort = (field: string, direction: 'asc' | 'desc') => {
     setSortField(field);
     setSortDirection(direction);
+  };
+
+  const downloadCSV = () => {
+    const headers = [
+      'ID', 'Title', 'Artist', 'Category', 'Subcategory', 'Size', 'Valuation',
+      'Valuation Currency', 'Quantity', 'Year/Period', 'Description', 'Condition',
+      'House', 'Room', 'Notes'
+    ];
+
+    const csvContent = [
+      headers.join(','),
+      ...sortedItems.map(item => [
+        item.id || '',
+        `"${item.title || ''}"`,
+        `"${item.artist || ''}"`,
+        `"${item.category || ''}"`,
+        `"${item.subcategory || ''}"`,
+        `"${item.size || ''}"`,
+        item.valuation || '',
+        `"${item.valuationCurrency || ''}"`,
+        item.quantity || '',
+        `"${item.yearPeriod || ''}"`,
+        `"${item.description || ''}"`,
+        `"${item.condition || ''}"`,
+        `"${item.house || ''}"`,
+        `"${item.room || ''}"`,
+        `"${item.notes || ''}"`
+      ].join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `inventory_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -143,6 +193,7 @@ const CategoryPage = () => {
               setSelectedRoom={setSelectedRoom}
               viewMode={viewMode}
               setViewMode={setViewMode}
+              onDownloadCSV={downloadCSV}
               permanentCategory={categoryId}
             />
 
