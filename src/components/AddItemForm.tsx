@@ -86,17 +86,33 @@ export function AddItemForm() {
     e.preventDefault();
     console.log("Form submitted:", formData);
 
-    const saveAction = draftId
-      ? updateInventoryItem(draftId, { id: Number(draftId), ...formData })
-      : createInventoryItem(formData as unknown as InventoryItem);
+    const localItems = JSON.parse(localStorage.getItem('inventoryData') || '[]') as InventoryItem[];
+    const itemExists = draftId ? localItems.some(i => i.id === Number(draftId)) : false;
+
+    // build the final item data, always including a primary image when available
+    const itemData: InventoryItem = {
+      ...(itemExists && draftId ? { id: Number(draftId) } : {}),
+      ...formData,
+      image: formData.images[0] || '',
+    } as InventoryItem;
+
+    const saveAction = draftId && itemExists
+      ? updateInventoryItem(draftId, itemData)
+      : createInventoryItem(itemData);
 
     saveAction
       .then(() => {
+        if (draftId) {
+          const drafts = JSON.parse(localStorage.getItem('drafts') || '[]');
+          const filtered = drafts.filter((d: { id: number }) => d.id !== Number(draftId));
+          localStorage.setItem('drafts', JSON.stringify(filtered));
+        }
+
         toast({
-          title: draftId ? "Item updated" : "Item added",
-          description: draftId
-            ? "Your item has been updated successfully"
-            : "Your item has been added to the collection successfully"
+          title: draftId && itemExists ? 'Item updated' : 'Item added',
+          description: draftId && itemExists
+            ? 'Your item has been updated successfully'
+            : 'Your item has been added to the collection successfully',
         });
 
         navigate('/inventory');
