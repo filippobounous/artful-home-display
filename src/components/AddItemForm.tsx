@@ -113,8 +113,8 @@ export function AddItemForm() {
         }
 
         toast({
-          title: draftId && itemExists ? 'Item updated' : 'Item added',
-          description: draftId && itemExists
+          title: draftId && exists ? 'Item updated' : 'Item added',
+          description: draftId && exists
             ? 'Your item has been updated successfully'
             : 'Your item has been added to the collection successfully',
         });
