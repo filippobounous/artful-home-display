@@ -37,7 +37,7 @@ export function ItemsList({ items, onItemClick }: ItemsListProps) {
     if (!value) return "-";
     const formatter = new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: currency || 'USD',
+      currency: currency || 'EUR',
     });
     return formatter.format(value);
   };

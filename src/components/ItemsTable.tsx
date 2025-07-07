@@ -33,7 +33,7 @@ export function ItemsTable({ items, onItemClick, onSort, sortField, sortDirectio
     if (!value) return "-";
     const formatter = new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: currency || 'USD',
+      currency: currency || 'EUR',
     });
     return formatter.format(value);
   };

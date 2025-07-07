@@ -135,7 +135,7 @@ export function ItemDetailDialog({ item, open, onOpenChange, onEdit }: ItemDetai
                     <p className="text-sm text-slate-600">Value</p>
                     <p className="text-slate-900 flex items-center">
                       <DollarSign className="w-4 h-4 mr-1" />
-                      {item.valuation.toLocaleString()} {item.valuationCurrency || 'USD'}
+                      {item.valuation.toLocaleString()} {item.valuationCurrency || 'EUR'}
                     </p>
                   </div>
                 )}
