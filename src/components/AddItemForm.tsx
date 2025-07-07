@@ -106,11 +106,17 @@ export function AddItemForm() {
 
     saveAction
       .then(() => {
+        if (draftId) {
+          const drafts = JSON.parse(localStorage.getItem('drafts') || '[]');
+          const filtered = drafts.filter((d: { id: number }) => d.id !== Number(draftId));
+          localStorage.setItem('drafts', JSON.stringify(filtered));
+        }
+
         toast({
-          title: draftId ? "Item updated" : "Item added",
-          description: draftId
-            ? "Your item has been updated successfully"
-            : "Your item has been added to the collection successfully"
+          title: draftId && itemExists ? 'Item updated' : 'Item added',
+          description: draftId && itemExists
+            ? 'Your item has been updated successfully'
+            : 'Your item has been added to the collection successfully',
         });
 
         navigate('/inventory');
