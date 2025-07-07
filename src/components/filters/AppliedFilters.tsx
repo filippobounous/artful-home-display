@@ -113,7 +113,7 @@ export function AppliedFilters({
           );
           const subcategory = category?.subcategories.find(s => s.id === subcategoryId);
           if (!subcategory || !category) return null;
-          if (selectedCategory.includes(category.id)) return null;
+          if (selectedCategory.includes(category.id) && category.id !== permanentCategory) return null;
           return (
             <Badge key={subcategoryId} variant="secondary" className="px-3 py-1">
               Subcategory: {subcategory.name}

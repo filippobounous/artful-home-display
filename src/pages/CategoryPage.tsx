@@ -46,6 +46,11 @@ const CategoryPage = () => {
     if (categoryId) {
       setSelectedCategory([categoryId]);
     }
+    // Reset other filters when navigating between categories
+    setSelectedSubcategory([]);
+    setSelectedHouse([]);
+    setSelectedRoom([]);
+    setSearchTerm("");
   }, [categoryId]);
 
   const categoryConfig = categories.find(c => c.id === categoryId);
