@@ -86,9 +86,23 @@ export function AddItemForm() {
     e.preventDefault();
     console.log("Form submitted:", formData);
 
-    const saveAction = draftId
-      ? updateInventoryItem(draftId, { id: Number(draftId), ...formData })
-      : createInventoryItem(formData as unknown as InventoryItem);
+    let saveAction: Promise<InventoryItem | null>;
+
+    if (draftId) {
+      const inventory = JSON.parse(
+        localStorage.getItem('inventoryData') || '[]'
+      ) as InventoryItem[];
+      const exists = inventory.some((item) => item.id === Number(draftId));
+
+      saveAction = exists
+        ? updateInventoryItem(draftId, {
+            id: Number(draftId),
+            ...formData,
+          })
+        : createInventoryItem(formData as unknown as InventoryItem);
+    } else {
+      saveAction = createInventoryItem(formData as unknown as InventoryItem);
+    }
 
     saveAction
       .then(() => {
