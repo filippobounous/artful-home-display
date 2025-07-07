@@ -113,7 +113,6 @@ export function MultiSelectFilter({ placeholder, options, selectedValues, onSele
                 }}
               >
                 <Checkbox
-                  onClick={(e) => e.stopPropagation()}
                   checked={isTri ? option.checkState : selectedValues.includes(option.id)}
                   onCheckedChange={(val) => {
                     if (isTri && option.onCheckChange) {

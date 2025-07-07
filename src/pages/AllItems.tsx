@@ -82,19 +82,9 @@ const AllItems = () => {
     if (!sortField) return 0;
     
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let aValue: any;
+    let aValue: any = a[sortField as keyof InventoryItem];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let bValue: any;
-
-    if (sortField === 'location') {
-      aValue = `${a.house || ''} ${a.room || ''}`.trim();
-      bValue = `${b.house || ''} ${b.room || ''}`.trim();
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      aValue = a[sortField as keyof InventoryItem];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      bValue = b[sortField as keyof InventoryItem];
-    }
+    let bValue: any = b[sortField as keyof InventoryItem];
     
     // Handle special cases
     if (sortField === 'valuation') {
