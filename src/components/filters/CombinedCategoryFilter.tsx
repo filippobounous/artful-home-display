@@ -1,6 +1,7 @@
 
 import { MultiSelectFilter } from "@/components/MultiSelectFilter";
 import { useSettingsState } from "@/hooks/useSettingsState";
+import type { CheckboxCheckedState } from "@radix-ui/react-checkbox";
 
 interface CombinedCategoryFilterProps {
   selectedCategory: string[];
@@ -19,16 +20,40 @@ export function CombinedCategoryFilter({
 }: CombinedCategoryFilterProps) {
   const { categories } = useSettingsState();
 
-  // Create combined options with headers similar to the Add Item form
-  const combinedOptions = categories.flatMap(category => [
-    { id: `header-${category.id}`, name: category.name, header: true },
-    { id: category.id, name: `General ${category.name}`, indent: true },
-    ...category.subcategories.map(sub => ({
-      id: sub.id,
-      name: sub.name,
-      indent: true
-    }))
-  ]);
+  // Create combined options with headers as tri-state checkboxes
+  const combinedOptions = categories.flatMap(category => {
+    const subcategoryIds = category.subcategories.map(sub => sub.id);
+    const selectedSubs = selectedSubcategory.filter(id => subcategoryIds.includes(id));
+    const checkState: CheckboxCheckedState = selectedCategory.includes(category.id)
+      ? true
+      : selectedSubs.length > 0
+        ? "indeterminate"
+        : false;
+    return [
+      {
+        id: category.id,
+        name: category.name,
+        header: true,
+        checkState,
+        onCheckChange: (checked: CheckboxCheckedState) => {
+          if (!permanentCategory) {
+            if (checked) {
+              if (!selectedCategory.includes(category.id)) {
+                setSelectedCategory([...selectedCategory, category.id]);
+              }
+            } else {
+              setSelectedCategory(selectedCategory.filter(c => c !== category.id));
+            }
+          }
+        }
+      },
+      ...category.subcategories.map(sub => ({
+        id: sub.id,
+        name: sub.name,
+        indent: true
+      }))
+    ];
+  });
 
   // Combine selected values for display
   const allSelectedValues = [...selectedCategory, ...selectedSubcategory];
