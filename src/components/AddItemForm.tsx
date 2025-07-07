@@ -86,19 +86,23 @@ export function AddItemForm() {
     e.preventDefault();
     console.log("Form submitted:", formData);
 
-    const localItems = JSON.parse(localStorage.getItem('inventoryData') || '[]') as InventoryItem[];
-    const itemExists = draftId ? localItems.some(i => i.id === Number(draftId)) : false;
+    let saveAction: Promise<InventoryItem | null>;
 
-    // build the final item data, always including a primary image when available
-    const itemData: InventoryItem = {
-      ...(itemExists && draftId ? { id: Number(draftId) } : {}),
-      ...formData,
-      image: formData.images[0] || '',
-    } as InventoryItem;
+    if (draftId) {
+      const inventory = JSON.parse(
+        localStorage.getItem('inventoryData') || '[]'
+      ) as InventoryItem[];
+      const exists = inventory.some((item) => item.id === Number(draftId));
 
-    const saveAction = draftId && itemExists
-      ? updateInventoryItem(draftId, itemData)
-      : createInventoryItem(itemData);
+      saveAction = exists
+        ? updateInventoryItem(draftId, {
+            id: Number(draftId),
+            ...formData,
+          })
+        : createInventoryItem(formData as unknown as InventoryItem);
+    } else {
+      saveAction = createInventoryItem(formData as unknown as InventoryItem);
+    }
 
     saveAction
       .then(() => {
