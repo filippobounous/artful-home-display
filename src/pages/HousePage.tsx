@@ -13,7 +13,7 @@ import { ItemHistoryDialog } from "@/components/ItemHistoryDialog";
 import { EmptyState } from "@/components/EmptyState";
 import { MultiSelectFilter } from "@/components/MultiSelectFilter";
 import { sampleItems } from "@/data/sampleData";
-import { fetchInventory, deleteInventoryItem } from "@/lib/api";
+import { fetchInventory, deleteInventoryItem, restoreInventoryItem } from "@/lib/api";
 import { InventoryItem } from "@/types/inventory";
 import { useSettingsState } from "@/hooks/useSettingsState";
 import { sortInventoryItems } from "@/lib/sortUtils";
@@ -66,6 +66,27 @@ const HousePage = () => {
 
   const handleHistory = (item: InventoryItem) => {
     setHistoryItem(item);
+  };
+
+  const handleRestore = (version: InventoryItem) => {
+    if (!historyItem) return;
+    restoreInventoryItem(historyItem.id, version)
+      .then(updated => {
+        setItems(prev => prev.map(i => i.id === updated.id ? updated : i));
+        setHistoryItem(updated);
+        setSelectedItem(updated);
+        toast({
+          title: 'Item restored',
+          description: 'The selected version has been restored',
+        });
+      })
+      .catch(() => {
+        toast({
+          title: 'Error restoring item',
+          description: 'There was a problem restoring this version',
+          variant: 'destructive',
+        });
+      });
   };
 
   useEffect(() => {
@@ -242,6 +263,7 @@ const HousePage = () => {
               item={historyItem}
               open={!!historyItem}
               onOpenChange={(open) => !open && setHistoryItem(null)}
+              onRestore={handleRestore}
             />
           </main>
         </div>

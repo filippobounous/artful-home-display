@@ -86,6 +86,10 @@ export async function updateInventoryItem(id: number | string, updates: Inventor
   }
 }
 
+export async function restoreInventoryItem(id: number | string, version: InventoryItem) {
+  return updateInventoryItem(id, version);
+}
+
 export async function deleteInventoryItem(id: number | string) {
   try {
     const response = await fetch(`${API_URL}/items/${id}`, {
