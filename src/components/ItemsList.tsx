@@ -1,8 +1,10 @@
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { cn } from "@/lib/utils";
 import { InventoryItem } from "@/types/inventory";
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { useSettingsState } from "@/hooks/useSettingsState";
@@ -11,6 +13,8 @@ import { sortInventoryItems } from "@/lib/sortUtils";
 interface ItemsListProps {
   items: InventoryItem[];
   onItemClick?: (item: InventoryItem) => void;
+  selectedIds?: string[];
+  onSelectionChange?: (ids: string[]) => void;
 }
 
 type SortField =
@@ -23,10 +27,11 @@ type SortField =
   | 'location';
 type SortDirection = 'asc' | 'desc';
 
-export function ItemsList({ items, onItemClick }: ItemsListProps) {
+export function ItemsList({ items, onItemClick, selectedIds = [], onSelectionChange }: ItemsListProps) {
   const [sortField, setSortField] = useState<SortField>('title');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
   const { houses, categories } = useSettingsState();
+  const lastIndex = useRef<number | null>(null);
 
   const getConditionColor = (condition: string) => {
     switch (condition) {
@@ -84,6 +89,24 @@ export function ItemsList({ items, onItemClick }: ItemsListProps) {
     </Button>
   );
 
+  const toggle = (id: string, index: number, shift: boolean) => {
+    if (!onSelectionChange) return;
+    let newIds = [...selectedIds];
+    if (shift && lastIndex.current !== null) {
+      const start = Math.min(lastIndex.current, index);
+      const end = Math.max(lastIndex.current, index);
+      const range = sortedItems.slice(start, end + 1).map(i => i.id.toString());
+      range.forEach(rid => {
+        if (!newIds.includes(rid)) newIds.push(rid);
+      });
+    } else {
+      if (newIds.includes(id)) newIds = newIds.filter(i => i !== id);
+      else newIds.push(id);
+      lastIndex.current = index;
+    }
+    onSelectionChange(newIds);
+  };
+
   return (
     <div className="space-y-4">
       {/* Sort Controls */}
@@ -99,15 +122,34 @@ export function ItemsList({ items, onItemClick }: ItemsListProps) {
       </div>
 
       {/* Items List */}
-      {sortedItems.map((item) => (
-        <Card 
-          key={item.id} 
-          className="hover:shadow-md transition-shadow cursor-pointer"
-          onClick={() => onItemClick?.(item)}
+      {sortedItems.map((item, idx) => (
+        <Card
+          key={item.id}
+          className={cn(
+            "hover:shadow-md transition-shadow cursor-pointer",
+            selectedIds.includes(item.id.toString()) && "ring-2 ring-primary bg-blue-50"
+          )}
+          onClick={(e) => {
+            if (e.shiftKey) {
+              toggle(item.id.toString(), idx, true);
+            } else {
+              onItemClick?.(item);
+            }
+          }}
         >
           <CardContent className="p-6">
             <div className="flex gap-4">
-              <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
+              <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 relative">
+                {onSelectionChange && (
+                  <Checkbox
+                    checked={selectedIds.includes(item.id.toString())}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggle(item.id.toString(), idx, false);
+                    }}
+                    className="absolute -left-3 top-1 bg-white rounded-sm"
+                  />
+                )}
                 <img
                   src={item.image}
                   alt={item.title}

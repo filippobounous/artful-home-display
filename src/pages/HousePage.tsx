@@ -11,7 +11,6 @@ import { ItemsTable } from "@/components/ItemsTable";
 import { ItemDetailDialog } from "@/components/ItemDetailDialog";
 import { ItemHistoryDialog } from "@/components/ItemHistoryDialog";
 import { EmptyState } from "@/components/EmptyState";
-import { MultiSelectFilter } from "@/components/MultiSelectFilter";
 import { sampleItems } from "@/data/sampleData";
 import { fetchInventory, deleteInventoryItem, restoreInventoryItem } from "@/lib/api";
 import { InventoryItem } from "@/types/inventory";
@@ -175,8 +174,6 @@ const HousePage = () => {
     setSortDirection(direction);
   };
 
-  const itemOptions = sortedItems.map(item => ({ id: item.id.toString(), name: item.title, image: item.image }));
-  const selectedItems = items.filter(item => selectedIds.includes(item.id.toString()));
 
   return (
     <SidebarProvider>
@@ -209,23 +206,15 @@ const HousePage = () => {
               permanentHouse={houseId}
             />
 
-            <div className="max-w-md mb-6">
-              <MultiSelectFilter
-                placeholder="Select items"
-                options={itemOptions}
-                selectedValues={selectedIds}
-                onSelectionChange={setSelectedIds}
-              />
-            </div>
-
-            {selectedItems.length > 0 && (
-              <div className="mb-6 space-y-2">
-                <h3 className="font-medium text-slate-700">Selected Items</h3>
-                <ul className="list-disc pl-5 space-y-1">
-                  {selectedItems.map(item => (
-                    <li key={item.id}>{item.title}</li>
-                  ))}
-                </ul>
+            {selectedIds.length > 0 && (
+              <div className="mb-6 flex items-center justify-between bg-blue-100 border border-blue-200 text-blue-800 px-4 py-2 rounded">
+                <span className="text-sm font-medium">{selectedIds.length} item{selectedIds.length === 1 ? '' : 's'} selected</span>
+                <button
+                  className="text-sm underline"
+                  onClick={() => setSelectedIds([])}
+                >
+                  Clear
+                </button>
               </div>
             )}
 
@@ -238,9 +227,19 @@ const HousePage = () => {
             {sortedItems.length === 0 ? (
               <EmptyState />
             ) : viewMode === "grid" ? (
-              <ItemsGrid items={sortedItems} onItemClick={setSelectedItem} />
+              <ItemsGrid
+                items={sortedItems}
+                onItemClick={setSelectedItem}
+                selectedIds={selectedIds}
+                onSelectionChange={setSelectedIds}
+              />
             ) : viewMode === "list" ? (
-              <ItemsList items={sortedItems} onItemClick={setSelectedItem} />
+              <ItemsList
+                items={sortedItems}
+                onItemClick={setSelectedItem}
+                selectedIds={selectedIds}
+                onSelectionChange={setSelectedIds}
+              />
             ) : (
               <ItemsTable
                 items={sortedItems}
@@ -248,6 +247,8 @@ const HousePage = () => {
                 onSort={handleSort}
                 sortField={sortField}
                 sortDirection={sortDirection}
+                selectedIds={selectedIds}
+                onSelectionChange={setSelectedIds}
               />
             )}
 
