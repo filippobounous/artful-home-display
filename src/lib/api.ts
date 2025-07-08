@@ -1,4 +1,12 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_KEY = import.meta.env.VITE_API_KEY;
+
+function buildHeaders(contentType?: string) {
+  const headers: Record<string, string> = {};
+  if (contentType) headers['Content-Type'] = contentType;
+  if (API_KEY) headers['X-API-Key'] = API_KEY;
+  return headers;
+}
 
 import { InventoryItem } from '@/types/inventory';
 import { sampleItems } from '@/data/sampleData';
@@ -26,7 +34,9 @@ function saveLocalInventory(items: InventoryItem[]) {
 
 export async function fetchInventory(): Promise<InventoryItem[]> {
   try {
-    const response = await fetch(`${API_URL}/items`);
+    const response = await fetch(`${API_URL}/items`, {
+      headers: buildHeaders(),
+    });
     if (!response.ok) throw new Error('Failed to fetch items');
     const data = await response.json();
     saveLocalInventory(data);
@@ -40,7 +50,7 @@ export async function createInventoryItem(item: InventoryItem) {
   try {
     const response = await fetch(`${API_URL}/items`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: buildHeaders('application/json'),
       body: JSON.stringify(item)
     });
     if (!response.ok) throw new Error('Failed to create item');
@@ -62,7 +72,7 @@ export async function updateInventoryItem(id: number | string, updates: Inventor
   try {
     const response = await fetch(`${API_URL}/items/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: buildHeaders('application/json'),
       body: JSON.stringify(updates)
     });
     if (!response.ok) throw new Error('Failed to update item');
@@ -94,6 +104,7 @@ export async function deleteInventoryItem(id: number | string) {
   try {
     const response = await fetch(`${API_URL}/items/${id}`, {
       method: 'DELETE',
+      headers: buildHeaders(),
     });
     if (!response.ok) throw new Error('Failed to delete item');
     const items = getAllInventory().map(item => item.id === Number(id) ? { ...item, deleted: true } : item);
