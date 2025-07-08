@@ -36,6 +36,20 @@ npm i
 npm run dev
 ```
 
+### Running tests
+
+Use Vitest for the unit and integration tests:
+
+```bash
+npm test -- --run
+```
+
+To check coverage locally run:
+
+```bash
+npm run test:coverage
+```
+
 **Edit a file directly in GitHub**
 
 - Navigate to the desired file(s).
