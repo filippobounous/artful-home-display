@@ -28,6 +28,9 @@ const CategoryPage = () => {
   const [selectedSubcategory, setSelectedSubcategory] = useState<string[]>([]);
   const [selectedHouse, setSelectedHouse] = useState<string[]>([]);
   const [selectedRoom, setSelectedRoom] = useState<string[]>([]); // stores "houseId|roomId"
+  const [selectedYear, setSelectedYear] = useState<string[]>([]);
+  const [selectedArtist, setSelectedArtist] = useState<string[]>([]);
+  const [valuationRange, setValuationRange] = useState<{ min?: number; max?: number }>({});
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [items, setItems] = useState<InventoryItem[]>(sampleItems);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
@@ -37,6 +40,8 @@ const CategoryPage = () => {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const { categories, houses } = useSettingsState();
   const { toast } = useToast();
+  const yearOptions = Array.from(new Set(items.map(i => i.yearPeriod).filter(Boolean)));
+  const artistOptions = Array.from(new Set(items.map(i => i.artist).filter(Boolean)));
 
   const handleEdit = (item: InventoryItem) => {
     localStorage.setItem('editingDraft', JSON.stringify(item));
@@ -116,8 +121,13 @@ const CategoryPage = () => {
     const matchesSubcategory = selectedSubcategory.length === 0 || (item.subcategory && selectedSubcategory.includes(item.subcategory));
     const matchesHouse = selectedHouse.length === 0 || (item.house && selectedHouse.includes(item.house));
     const matchesRoom = selectedRoom.length === 0 || (item.room && selectedRoom.includes(`${item.house}|${item.room}`));
+    const matchesYear = selectedYear.length === 0 || (item.yearPeriod && selectedYear.includes(item.yearPeriod));
+    const matchesArtist = selectedArtist.length === 0 || (item.artist && selectedArtist.includes(item.artist));
+    const valuation = item.valuation ?? 0;
+    const matchesValuation = (valuationRange.min === undefined || valuation >= valuationRange.min) &&
+                             (valuationRange.max === undefined || valuation <= valuationRange.max);
 
-    return matchesSearch && matchesCategory && matchesSubcategory && matchesHouse && matchesRoom;
+    return matchesSearch && matchesCategory && matchesSubcategory && matchesHouse && matchesRoom && matchesYear && matchesArtist && matchesValuation;
   });
 
   const sortedItems = sortInventoryItems(
@@ -201,6 +211,14 @@ const CategoryPage = () => {
               setSelectedHouse={setSelectedHouse}
               selectedRoom={selectedRoom}
               setSelectedRoom={setSelectedRoom}
+              yearOptions={yearOptions}
+              selectedYear={selectedYear}
+              setSelectedYear={setSelectedYear}
+              artistOptions={artistOptions}
+              selectedArtist={selectedArtist}
+              setSelectedArtist={setSelectedArtist}
+              valuationRange={valuationRange}
+              setValuationRange={setValuationRange}
               viewMode={viewMode}
               setViewMode={setViewMode}
               onDownloadCSV={downloadCSV}

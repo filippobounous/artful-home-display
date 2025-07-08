@@ -43,7 +43,7 @@ export function ItemHistoryDialog({ item, open, onOpenChange, onRestore }: ItemH
                   <td className="px-4 py-2 capitalize">
                     {[h.house, h.room].filter(Boolean).join(' / ') || '-'}
                   </td>
-                  <td className="px-4 py-2 space-x-2">
+                  <td className="px-4 py-2 space-x-2 text-right whitespace-nowrap">
                     <Button size="sm" variant="outline" onClick={() => setVersionItem(h)}>
                       View
                     </Button>

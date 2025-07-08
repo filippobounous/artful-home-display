@@ -15,6 +15,12 @@ interface AppliedFiltersProps {
   setSelectedHouse: (houses: string[]) => void;
   selectedRoom: string[];
   setSelectedRoom: (rooms: string[]) => void;
+  selectedYear: string[];
+  setSelectedYear: (years: string[]) => void;
+  selectedArtist: string[];
+  setSelectedArtist: (artists: string[]) => void;
+  valuationRange: { min?: number; max?: number };
+  setValuationRange: (range: { min?: number; max?: number }) => void;
   permanentCategory?: string;
   permanentHouse?: string;
 }
@@ -30,6 +36,12 @@ export function AppliedFilters({
   setSelectedHouse,
   selectedRoom,
   setSelectedRoom,
+  selectedYear,
+  setSelectedYear,
+  selectedArtist,
+  setSelectedArtist,
+  valuationRange,
+  setValuationRange,
   permanentCategory,
   permanentHouse,
 }: AppliedFiltersProps) {
@@ -53,7 +65,13 @@ export function AppliedFilters({
       case 'room':
         setSelectedRoom(selectedRoom.filter(r => r !== value));
         break;
-      }
+      case 'year':
+        setSelectedYear(selectedYear.filter(y => y !== value));
+        break;
+      case 'artist':
+        setSelectedArtist(selectedArtist.filter(a => a !== value));
+        break;
+    }
   };
 
   const clearAllFilters = () => {
@@ -65,11 +83,16 @@ export function AppliedFilters({
       setSelectedHouse([]);
     }
     setSelectedRoom([]);
+    setSelectedYear([]);
+    setSelectedArtist([]);
+    setValuationRange({});
     setSearchTerm("");
   };
 
   const hasActiveFilters = selectedCategory.length > 0 || selectedHouse.length > 0 ||
                           selectedSubcategory.length > 0 || selectedRoom.length > 0 ||
+                          selectedYear.length > 0 || selectedArtist.length > 0 ||
+                          valuationRange.min !== undefined || valuationRange.max !== undefined ||
                           searchTerm.length > 0;
 
   if (!hasActiveFilters) return null;
@@ -154,6 +177,33 @@ export function AppliedFilters({
             </Badge>
           );
         })}
+        {selectedYear.map(year => (
+          <Badge key={year} variant="secondary" className="px-3 py-1">
+            Year: {year}
+            <X
+              className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
+              onClick={() => clearFilter('year', year)}
+            />
+          </Badge>
+        ))}
+        {selectedArtist.map(artist => (
+          <Badge key={artist} variant="secondary" className="px-3 py-1">
+            Artist: {artist}
+            <X
+              className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
+              onClick={() => clearFilter('artist', artist)}
+            />
+          </Badge>
+        ))}
+        {(valuationRange.min !== undefined || valuationRange.max !== undefined) && (
+          <Badge variant="secondary" className="px-3 py-1">
+            Valuation: {valuationRange.min ?? 0} - {valuationRange.max ?? '∞'}
+            <X
+              className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
+              onClick={() => setValuationRange({})}
+            />
+          </Badge>
+        )}
       </div>
     </div>
   );
