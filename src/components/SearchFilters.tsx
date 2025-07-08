@@ -112,22 +112,28 @@ export function SearchFilters({
             permanentHouse={permanentHouse}
           />
 
-          <YearFilter
-            yearOptions={yearOptions}
-            selectedYear={selectedYear}
-            setSelectedYear={setSelectedYear}
-          />
+          <div className="md:col-span-2">
+            <YearFilter
+              yearOptions={yearOptions}
+              selectedYear={selectedYear}
+              setSelectedYear={setSelectedYear}
+            />
+          </div>
 
-          <ArtistFilter
-            artistOptions={artistOptions}
-            selectedArtist={selectedArtist}
-            setSelectedArtist={setSelectedArtist}
-          />
+          <div className="md:col-span-2">
+            <ArtistFilter
+              artistOptions={artistOptions}
+              selectedArtist={selectedArtist}
+              setSelectedArtist={setSelectedArtist}
+            />
+          </div>
 
-          <ValuationRangeFilter
-            range={valuationRange}
-            setRange={setValuationRange}
-          />
+          <div className="md:col-span-2">
+            <ValuationRangeFilter
+              range={valuationRange}
+              setRange={setValuationRange}
+            />
+          </div>
 
         </div>
       </div>
