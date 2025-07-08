@@ -12,6 +12,7 @@ import type { CheckboxCheckedState } from "@radix-ui/react-checkbox";
 interface MultiSelectOption {
   id: string;
   name: string;
+  image?: string;
   indent?: boolean;
   header?: boolean;
   checkState?: CheckboxCheckedState;
@@ -123,6 +124,13 @@ export function MultiSelectFilter({ placeholder, options, selectedValues, onSele
                     }
                   }}
                 />
+                {option.image && (
+                  <img
+                    src={option.image}
+                    alt={option.name}
+                    className="w-8 h-8 object-cover rounded"
+                  />
+                )}
                 <span className={`text-sm ${option.header ? 'font-medium text-slate-600' : ''}`}>{option.name}</span>
               </div>
             );

@@ -141,7 +141,7 @@ const AllItems = () => {
     URL.revokeObjectURL(url);
   };
 
-  const itemOptions = items.map(item => ({ id: item.id.toString(), name: item.title }));
+  const itemOptions = sortedItems.map(item => ({ id: item.id.toString(), name: item.title, image: item.image }));
   const selectedItems = items.filter(item => selectedIds.includes(item.id.toString()));
 
   return (

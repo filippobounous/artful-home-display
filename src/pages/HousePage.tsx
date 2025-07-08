@@ -11,6 +11,7 @@ import { ItemsTable } from "@/components/ItemsTable";
 import { ItemDetailDialog } from "@/components/ItemDetailDialog";
 import { ItemHistoryDialog } from "@/components/ItemHistoryDialog";
 import { EmptyState } from "@/components/EmptyState";
+import { MultiSelectFilter } from "@/components/MultiSelectFilter";
 import { sampleItems } from "@/data/sampleData";
 import { fetchInventory, deleteInventoryItem } from "@/lib/api";
 import { InventoryItem } from "@/types/inventory";
@@ -32,6 +33,7 @@ const HousePage = () => {
   const [items, setItems] = useState<InventoryItem[]>(sampleItems);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [historyItem, setHistoryItem] = useState<InventoryItem | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [sortField, setSortField] = useState<string>("");
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const { houses, categories } = useSettingsState();
@@ -152,6 +154,9 @@ const HousePage = () => {
     setSortDirection(direction);
   };
 
+  const itemOptions = sortedItems.map(item => ({ id: item.id.toString(), name: item.title, image: item.image }));
+  const selectedItems = items.filter(item => selectedIds.includes(item.id.toString()));
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-slate-50">
@@ -182,6 +187,26 @@ const HousePage = () => {
               onDownloadCSV={downloadCSV}
               permanentHouse={houseId}
             />
+
+            <div className="max-w-md mb-6">
+              <MultiSelectFilter
+                placeholder="Select items"
+                options={itemOptions}
+                selectedValues={selectedIds}
+                onSelectionChange={setSelectedIds}
+              />
+            </div>
+
+            {selectedItems.length > 0 && (
+              <div className="mb-6 space-y-2">
+                <h3 className="font-medium text-slate-700">Selected Items</h3>
+                <ul className="list-disc pl-5 space-y-1">
+                  {selectedItems.map(item => (
+                    <li key={item.id}>{item.title}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             <div className="mb-6">
               <p className="text-slate-600">
