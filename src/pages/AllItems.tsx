@@ -9,6 +9,7 @@ import { ItemsGrid } from "@/components/ItemsGrid";
 import { ItemsList } from "@/components/ItemsList";
 import { ItemsTable } from "@/components/ItemsTable";
 import { ItemDetailDialog } from "@/components/ItemDetailDialog";
+import { ItemHistoryDialog } from "@/components/ItemHistoryDialog";
 import { EmptyState } from "@/components/EmptyState";
 import { MultiSelectFilter } from "@/components/MultiSelectFilter";
 import { sampleItems } from "@/data/sampleData";
@@ -30,6 +31,7 @@ const AllItems = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [items, setItems] = useState<InventoryItem[]>(sampleItems);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
+  const [historyItem, setHistoryItem] = useState<InventoryItem | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [sortField, setSortField] = useState<string>("");
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
@@ -59,6 +61,10 @@ const AllItems = () => {
           variant: 'destructive',
         });
       });
+  };
+
+  const handleHistory = (item: InventoryItem) => {
+    setHistoryItem(item);
   };
 
   useEffect(() => {
@@ -216,6 +222,12 @@ const AllItems = () => {
               onOpenChange={(open) => !open && setSelectedItem(null)}
               onEdit={handleEdit}
               onDelete={handleDelete}
+              onHistory={handleHistory}
+            />
+            <ItemHistoryDialog
+              item={historyItem}
+              open={!!historyItem}
+              onOpenChange={(open) => !open && setHistoryItem(null)}
             />
           </main>
         </div>

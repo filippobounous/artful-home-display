@@ -2,7 +2,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { InventoryItem } from "@/types/inventory";
-import { Edit, MapPin, Calendar, DollarSign, Hash, Trash2 } from "lucide-react";
+import { Edit, MapPin, Calendar, DollarSign, Hash, Trash2, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ItemDetailDialogProps {
@@ -11,9 +11,10 @@ interface ItemDetailDialogProps {
   onOpenChange: (open: boolean) => void;
   onEdit?: (item: InventoryItem) => void;
   onDelete?: (item: InventoryItem) => void;
+  onHistory?: (item: InventoryItem) => void;
 }
 
-export function ItemDetailDialog({ item, open, onOpenChange, onEdit, onDelete }: ItemDetailDialogProps) {
+export function ItemDetailDialog({ item, open, onOpenChange, onEdit, onDelete, onHistory }: ItemDetailDialogProps) {
   if (!item) return null;
 
   const getConditionColor = (condition: string) => {
@@ -49,6 +50,17 @@ export function ItemDetailDialog({ item, open, onOpenChange, onEdit, onDelete }:
               >
                 <Edit className="w-4 h-4 mr-1" />
                 Edit
+              </Button>
+            )}
+            {onHistory && item.history && item.history.length > 0 && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => onHistory(item)}
+                className="h-8 px-2"
+              >
+                <History className="w-4 h-4 mr-1" />
+                History
               </Button>
             )}
             {onDelete && (
