@@ -1,22 +1,46 @@
 
 import { Card, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { cn } from "@/lib/utils";
 import { InventoryItem } from "@/types/inventory";
 
 interface ItemCardProps {
   item: InventoryItem;
   onClick?: (item: InventoryItem) => void;
+  selected?: boolean;
+  onSelect?: (shift: boolean) => void;
 }
 
-export function ItemCard({ item, onClick }: ItemCardProps) {
-  const handleClick = () => {
-    if (onClick) {
-      onClick(item);
+export function ItemCard({ item, onClick, selected, onSelect }: ItemCardProps) {
+  const handleClick = (e: React.MouseEvent) => {
+    if (e.shiftKey && onSelect) {
+      onSelect(true);
+      return;
     }
+    onClick?.(item);
+  };
+
+  const handleCheckbox = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onSelect?.(false);
   };
 
   return (
-    <Card className="group hover:shadow-lg transition-all duration-300 cursor-pointer" onClick={handleClick}>
+    <Card
+      className={cn(
+        "relative group hover:shadow-lg transition-all duration-300 cursor-pointer",
+        selected && "ring-2 ring-primary"
+      )}
+      onClick={handleClick}
+    >
       <CardContent className="p-0">
+        {onSelect && (
+          <Checkbox
+            checked={selected}
+            onClick={handleCheckbox}
+            className="absolute top-2 left-2 z-10 bg-white rounded-sm"
+          />
+        )}
         <div className="aspect-square overflow-hidden rounded-t-lg">
           <img
             src={item.image}
