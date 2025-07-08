@@ -24,6 +24,14 @@ export interface InventoryItem {
    */
   locationSort?: number | string;
   notes?: string;
+  /**
+   * Marks an item as deleted instead of removing it permanently.
+   */
+  deleted?: boolean;
+  /**
+   * Keeps previous versions of the item when edits occur.
+   */
+  history?: InventoryItem[];
 }
 
 export type ViewMode = "grid" | "list" | "table";

@@ -100,7 +100,7 @@ export function AddItemForm() {
       const inventory = JSON.parse(
         localStorage.getItem('inventoryData') || '[]'
       ) as InventoryItem[];
-      exists = inventory.some((item) => item.id === Number(draftId));
+      exists = inventory.some((item) => item.id === Number(draftId) && !item.deleted);
 
       saveAction = exists
         ? updateInventoryItem(draftId, {
