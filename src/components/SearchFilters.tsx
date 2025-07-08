@@ -4,6 +4,9 @@ import { FilterHeader } from "@/components/filters/FilterHeader";
 import { SearchInput } from "@/components/filters/SearchInput";
 import { CombinedCategoryFilter } from "@/components/filters/CombinedCategoryFilter";
 import { CombinedLocationFilter } from "@/components/filters/CombinedLocationFilter";
+import { YearFilter } from "@/components/filters/YearFilter";
+import { ArtistFilter } from "@/components/filters/ArtistFilter";
+import { ValuationRangeFilter } from "@/components/filters/ValuationRangeFilter";
 import { AppliedFilters } from "@/components/filters/AppliedFilters";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +21,14 @@ interface SearchFiltersProps {
   setSelectedHouse: (houses: string[]) => void;
   selectedRoom: string[];
   setSelectedRoom: (rooms: string[]) => void;
+  yearOptions: string[];
+  selectedYear: string[];
+  setSelectedYear: (years: string[]) => void;
+  artistOptions: string[];
+  selectedArtist: string[];
+  setSelectedArtist: (artists: string[]) => void;
+  valuationRange: { min?: number; max?: number };
+  setValuationRange: (range: { min?: number; max?: number }) => void;
   viewMode: ViewMode;
   setViewMode: (mode: ViewMode) => void;
   onDownloadCSV?: () => void;
@@ -36,6 +47,14 @@ export function SearchFilters({
   setSelectedHouse,
   selectedRoom,
   setSelectedRoom,
+  yearOptions,
+  selectedYear,
+  setSelectedYear,
+  artistOptions,
+  selectedArtist,
+  setSelectedArtist,
+  valuationRange,
+  setValuationRange,
   viewMode,
   setViewMode,
   onDownloadCSV,
@@ -47,7 +66,11 @@ export function SearchFilters({
     selectedCategory.length +
     selectedSubcategory.length +
     selectedHouse.length +
-    selectedRoom.length;
+    selectedRoom.length +
+    selectedYear.length +
+    selectedArtist.length +
+    (valuationRange.min ? 1 : 0) +
+    (valuationRange.max ? 1 : 0);
   return (
     <div className="mb-8 space-y-6">
       {/* Header with title and view controls */}
@@ -89,6 +112,23 @@ export function SearchFilters({
             permanentHouse={permanentHouse}
           />
 
+          <YearFilter
+            yearOptions={yearOptions}
+            selectedYear={selectedYear}
+            setSelectedYear={setSelectedYear}
+          />
+
+          <ArtistFilter
+            artistOptions={artistOptions}
+            selectedArtist={selectedArtist}
+            setSelectedArtist={setSelectedArtist}
+          />
+
+          <ValuationRangeFilter
+            range={valuationRange}
+            setRange={setValuationRange}
+          />
+
         </div>
       </div>
 
@@ -104,6 +144,12 @@ export function SearchFilters({
         setSelectedHouse={setSelectedHouse}
         selectedRoom={selectedRoom}
         setSelectedRoom={setSelectedRoom}
+        selectedYear={selectedYear}
+        setSelectedYear={setSelectedYear}
+        selectedArtist={selectedArtist}
+        setSelectedArtist={setSelectedArtist}
+        valuationRange={valuationRange}
+        setValuationRange={setValuationRange}
         permanentCategory={permanentCategory}
         permanentHouse={permanentHouse}
       />

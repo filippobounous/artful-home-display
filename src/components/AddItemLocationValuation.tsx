@@ -41,7 +41,7 @@ export function AddItemLocationValuation({ formData, setFormData }: AddItemLocat
       />
 
       <div>
-        <Label htmlFor="condition">Condition *</Label>
+        <Label htmlFor="condition">Condition</Label>
         <Select value={formData.condition} onValueChange={(value) => setFormData({ ...formData, condition: value })}>
           <SelectTrigger
             className={formData.condition ? undefined : "text-muted-foreground"}
