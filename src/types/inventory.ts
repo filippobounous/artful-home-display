@@ -5,7 +5,9 @@ export interface InventoryItem {
   artist?: string;
   category: string;
   subcategory?: string;
-  size?: string;
+  widthCm?: number;
+  heightCm?: number;
+  depthCm?: number;
   valuation?: number;
   valuationDate?: string;
   valuationPerson?: string;
@@ -15,7 +17,6 @@ export interface InventoryItem {
   image: string;
   images?: string[];
   description: string;
-  condition: "mint" | "excellent" | "very good" | "good";
   house?: string;
   room?: string;
   /**

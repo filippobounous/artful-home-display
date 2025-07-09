@@ -17,20 +17,6 @@ interface ItemDetailDialogProps {
 export function ItemDetailDialog({ item, open, onOpenChange, onEdit, onDelete, onHistory }: ItemDetailDialogProps) {
   if (!item) return null;
 
-  const getConditionColor = (condition: string) => {
-    switch (condition) {
-      case "mint":
-        return "bg-green-100 text-green-800 border-green-200";
-      case "excellent":
-        return "bg-blue-100 text-blue-800 border-blue-200";
-      case "very good":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200";
-      case "good":
-        return "bg-gray-100 text-gray-800 border-gray-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
-    }
-  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -38,9 +24,6 @@ export function ItemDetailDialog({ item, open, onOpenChange, onEdit, onDelete, o
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold pr-16">{item.title}</DialogTitle>
           <div className="flex items-center gap-2 mt-2">
-            <Badge className={getConditionColor(item.condition)}>
-              {item.condition}
-            </Badge>
             {onEdit && (
               <Button
                 size="sm"
@@ -118,10 +101,12 @@ export function ItemDetailDialog({ item, open, onOpenChange, onEdit, onDelete, o
             </div>
 
             <div className="space-y-4">
-              {item.size && (
+              {(item.widthCm || item.heightCm || item.depthCm) && (
                 <div>
-                  <h4 className="font-medium text-slate-700 mb-1">Size</h4>
-                  <p className="text-slate-900">{item.size}</p>
+                  <h4 className="font-medium text-slate-700 mb-1">Dimensions</h4>
+                  <p className="text-slate-900">
+                    {item.widthCm ?? '-'} x {item.heightCm ?? '-'} x {item.depthCm ?? '-'} cm
+                  </p>
                 </div>
               )}
 

@@ -125,7 +125,7 @@ export function BulkUpload({ onUpload }: BulkUploadProps) {
         filename = "categories-template.csv";
         break;
       case "items":
-        template = "title,category,subcategory,house,room,description,condition,valuation,artist\nMy Artwork,art,painting,main-house,living-room,Beautiful painting,excellent,5000,Famous Artist";
+        template = "title,category,subcategory,house,room,widthCm,heightCm,depthCm,description,valuation,artist\nMy Artwork,art,painting,main-house,living-room,60,90,5,Beautiful painting,5000,Famous Artist";
         filename = "items-template.csv";
         break;
       default:
