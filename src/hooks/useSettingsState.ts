@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { categoryConfigs, defaultHouses, CategoryConfig, HouseConfig } from "@/types/inventory";
+import { categoryConfigs, defaultHouses, CategoryConfig, HouseConfig, RoomConfig } from "@/types/inventory";
 
 // Load persisted settings from localStorage if available
 let storedCategories: CategoryConfig[] | null = null;
@@ -97,13 +97,24 @@ export function useSettingsState() {
     notifyListeners();
   };
 
-  const addRoom = (houseId: string, roomName: string) => {
+  const addRoom = (houseId: string, room: Partial<RoomConfig> & { name: string; floor: number }) => {
     globalHouses = globalHouses.map(house => {
       if (house.id === houseId) {
-        const newRoom = {
-          id: roomName.toLowerCase().replace(/\s+/g, '-'),
-          name: roomName,
-          visible: true
+        const newRoom: RoomConfig = {
+          id: Date.now().toString(),
+          code: room.code,
+          name: room.name,
+          house_code: house.code,
+          room_type: room.room_type,
+          floor: room.floor,
+          area_sqm: room.area_sqm,
+          windows: room.windows,
+          doors: room.doors,
+          description: room.description,
+          notes: room.notes,
+          version: 1,
+          is_deleted: false,
+          visible: true,
         };
         return {
           ...house,

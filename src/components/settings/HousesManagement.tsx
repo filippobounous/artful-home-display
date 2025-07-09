@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Plus, X, Download, Edit, Save } from "lucide-react";
 import { IconSelector } from "@/components/IconSelector";
@@ -14,6 +15,8 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
+import { API_URL } from "@/lib/api/common";
+import type { RoomConfig } from "@/types/inventory";
 
 const countries = [
   "United States", "Canada", "United Kingdom", "France", "Germany", "Italy", "Spain", 
@@ -23,7 +26,7 @@ const countries = [
 interface HousesManagementProps {
   houses: any[];
   onAddHouse: (name: string, country: string, address: string, yearBuilt: number | undefined, code: string, icon: string) => void;
-  onAddRoom: (houseId: string, roomName: string) => void;
+  onAddRoom: (houseId: string, room: Partial<RoomConfig> & { name: string; floor: number }) => void;
   onEditHouse?: (houseId: string, updates: any) => void;
   onDeleteRoom?: (houseId: string, roomId: string) => void;
 }
@@ -36,11 +39,26 @@ export function HousesManagement({ houses, onAddHouse, onAddRoom, onEditHouse, o
   const [newHouseCode, setNewHouseCode] = useState("");
   const [newHouseIcon, setNewHouseIcon] = useState("house");
   const [newRoomName, setNewRoomName] = useState("");
+  const [newRoomFloor, setNewRoomFloor] = useState("");
+  const [newRoomType, setNewRoomType] = useState("");
+  const [newRoomArea, setNewRoomArea] = useState("");
+  const [newRoomWindows, setNewRoomWindows] = useState("");
+  const [newRoomDoors, setNewRoomDoors] = useState("");
+  const [newRoomDescription, setNewRoomDescription] = useState("");
+  const [newRoomNotes, setNewRoomNotes] = useState("");
+  const [roomTypes, setRoomTypes] = useState<string[]>([]);
   const [selectedHouse, setSelectedHouse] = useState("");
   const [editingHouse, setEditingHouse] = useState<string | null>(null);
   const [editData, setEditData] = useState<any>({});
 
   const { toast } = useToast();
+
+  useEffect(() => {
+    fetch(`${API_URL}/roomtypes`)
+      .then(res => res.ok ? res.json() : [])
+      .then(data => setRoomTypes(Array.isArray(data) ? data : []))
+      .catch(() => setRoomTypes([]));
+  }, []);
 
   const handleAddHouse = () => {
     if (newHouseName.trim() && newHouseCountry.trim() && newHouseCode.trim()) {
@@ -76,19 +94,35 @@ export function HousesManagement({ houses, onAddHouse, onAddRoom, onEditHouse, o
   };
 
   const handleAddRoom = () => {
-    if (newRoomName.trim() && selectedHouse) {
-      onAddRoom(selectedHouse, newRoomName);
-      
+    if (newRoomName.trim() && newRoomFloor.trim() && selectedHouse) {
+      onAddRoom(selectedHouse, {
+        name: newRoomName,
+        floor: parseInt(newRoomFloor, 10),
+        room_type: newRoomType || undefined,
+        area_sqm: newRoomArea ? parseFloat(newRoomArea) : undefined,
+        windows: newRoomWindows ? parseInt(newRoomWindows, 10) : undefined,
+        doors: newRoomDoors ? parseInt(newRoomDoors, 10) : undefined,
+        description: newRoomDescription || undefined,
+        notes: newRoomNotes || undefined,
+      });
+
       toast({
         title: "Room added",
         description: `${newRoomName} has been added successfully`
       });
-      
+
       setNewRoomName("");
+      setNewRoomFloor("");
+      setNewRoomType("");
+      setNewRoomArea("");
+      setNewRoomWindows("");
+      setNewRoomDoors("");
+      setNewRoomDescription("");
+      setNewRoomNotes("");
     } else {
       toast({
         title: "Missing information",
-        description: "Please select a house and enter room name",
+        description: "Please fill in required fields",
         variant: "destructive"
       });
     }
@@ -395,19 +429,92 @@ export function HousesManagement({ houses, onAddHouse, onAddRoom, onEditHouse, o
             </Select>
           </div>
           
-          <div className="flex gap-2">
-            <Input
-              placeholder="Room name"
-              value={newRoomName}
-              onChange={(e) => setNewRoomName(e.target.value)}
-              className="flex-1"
-              disabled={!selectedHouse}
-            />
-            <Button onClick={handleAddRoom} disabled={!selectedHouse}>
-              <Plus className="w-4 h-4 mr-1" />
-              Add Room
-            </Button>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label>Room Name *</Label>
+              <Input
+                placeholder="Room name"
+                value={newRoomName}
+                onChange={(e) => setNewRoomName(e.target.value)}
+                disabled={!selectedHouse}
+              />
+            </div>
+            <div>
+              <Label>Floor *</Label>
+              <Input
+                type="number"
+                placeholder="0"
+                value={newRoomFloor}
+                onChange={(e) => setNewRoomFloor(e.target.value)}
+                disabled={!selectedHouse}
+              />
+            </div>
+            <div>
+              <Label>Room Type</Label>
+              <Select value={newRoomType} onValueChange={setNewRoomType} disabled={!selectedHouse}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {roomTypes.map((t) => (
+                    <SelectItem key={t} value={t}>{t}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Area (sqm)</Label>
+              <Input
+                type="number"
+                step="0.01"
+                placeholder="0"
+                value={newRoomArea}
+                onChange={(e) => setNewRoomArea(e.target.value)}
+                disabled={!selectedHouse}
+              />
+            </div>
+            <div>
+              <Label>Windows</Label>
+              <Input
+                type="number"
+                placeholder="0"
+                value={newRoomWindows}
+                onChange={(e) => setNewRoomWindows(e.target.value)}
+                disabled={!selectedHouse}
+              />
+            </div>
+            <div>
+              <Label>Doors</Label>
+              <Input
+                type="number"
+                placeholder="0"
+                value={newRoomDoors}
+                onChange={(e) => setNewRoomDoors(e.target.value)}
+                disabled={!selectedHouse}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <Label>Description</Label>
+              <Textarea
+                value={newRoomDescription}
+                onChange={(e) => setNewRoomDescription(e.target.value)}
+                rows={2}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <Label>Notes</Label>
+              <Textarea
+                value={newRoomNotes}
+                onChange={(e) => setNewRoomNotes(e.target.value)}
+                rows={2}
+              />
+            </div>
           </div>
+
+          <Button onClick={handleAddRoom} disabled={!selectedHouse} className="mt-2">
+            <Plus className="w-4 h-4 mr-1" />
+            Add Room
+          </Button>
           
           {selectedHouse && (
             <div className="space-y-2">
