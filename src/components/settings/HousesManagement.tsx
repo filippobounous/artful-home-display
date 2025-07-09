@@ -560,8 +560,8 @@ export function HousesManagement({ houses, onAddHouse, onAddRoom, onEditRoom, on
           </Button>
 
           {editingRoom && (
-            <div className="mt-6 space-y-4">
-              <Label>Edit Room</Label>
+            <div className="p-3 border rounded-lg mt-6 space-y-4">
+              <h4 className="font-medium">Edit Room</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label>Room Name *</Label>
@@ -633,12 +633,12 @@ export function HousesManagement({ houses, onAddHouse, onAddRoom, onEditRoom, on
                   />
                 </div>
               </div>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={handleCancelRoomEdit}>
+              <div className="flex items-center justify-end gap-2">
+                <Button variant="outline" size="sm" onClick={handleCancelRoomEdit}>
                   <X className="w-4 h-4 mr-1" />
                   Cancel
                 </Button>
-                <Button onClick={handleSaveRoomEdit}>
+                <Button size="sm" onClick={handleSaveRoomEdit}>
                   <Save className="w-4 h-4 mr-1" />
                   Save
                 </Button>
