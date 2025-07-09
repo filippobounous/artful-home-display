@@ -41,7 +41,7 @@ export function HierarchicalCategorySelector({
           <SelectValue placeholder="Select category and subcategory" />
         </SelectTrigger>
         <SelectContent>
-          {categories.map((category) => (
+          {categories.filter(c => c.visible).map((category) => (
             <div key={category.id}>
               <div className="px-2 py-1 text-sm font-medium text-slate-600 bg-muted">
                 {category.name}
@@ -52,7 +52,7 @@ export function HierarchicalCategorySelector({
               >
                 General {category.name}
               </SelectItem>
-              {category.subcategories.map((subcategory) => (
+              {category.subcategories.filter(s => s.visible).map((subcategory) => (
                 <SelectItem 
                   key={`${category.id}|${subcategory.id}`} 
                   value={`${category.id}|${subcategory.id}`}

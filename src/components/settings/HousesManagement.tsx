@@ -1,10 +1,17 @@
 import { useState, useEffect } from "react";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult
+} from "react-beautiful-dnd";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import { Plus, X, Download, Edit, Save } from "lucide-react";
 import { IconSelector } from "@/components/IconSelector";
 import { useToast } from "@/hooks/use-toast";
@@ -25,14 +32,35 @@ const countries = [
 
 interface HousesManagementProps {
   houses: any[];
-  onAddHouse: (name: string, country: string, address: string, yearBuilt: number | undefined, code: string, icon: string) => void;
+  onAddHouse: (
+    name: string,
+    country: string,
+    address: string,
+    yearBuilt: number | undefined,
+    code: string,
+    icon: string
+  ) => void;
   onAddRoom: (houseId: string, room: Partial<RoomConfig> & { name: string; floor: number }) => void;
   onEditRoom?: (houseId: string, roomId: string, updates: Partial<RoomConfig>) => void;
   onEditHouse?: (houseId: string, updates: any) => void;
   onDeleteRoom?: (houseId: string, roomId: string) => void;
+  onMoveHouse?: (from: number, to: number) => void;
+  onMoveRoom?: (houseId: string, from: number, to: number) => void;
+  onToggleHouse?: (houseId: string) => void;
+  onToggleRoom?: (houseId: string, roomId: string) => void;
 }
 
-export function HousesManagement({ houses, onAddHouse, onAddRoom, onEditRoom, onEditHouse, onDeleteRoom }: HousesManagementProps) {
+export function HousesManagement({
+  houses,
+  onAddHouse,
+  onAddRoom,
+  onEditHouse,
+  onDeleteRoom,
+  onMoveHouse,
+  onMoveRoom,
+  onToggleHouse,
+  onToggleRoom
+}: HousesManagementProps) {
   const [newHouseName, setNewHouseName] = useState("");
   const [newHouseCountry, setNewHouseCountry] = useState("");
   const [newHouseAddress, setNewHouseAddress] = useState("");
@@ -204,6 +232,29 @@ export function HousesManagement({ houses, onAddHouse, onAddRoom, onEditRoom, on
     }
   };
 
+  const handleHouseDragEnd = (result: DropResult) => {
+    if (!result.destination || !onMoveHouse) return;
+    if (result.source.index !== result.destination.index) {
+      onMoveHouse(result.source.index, result.destination.index);
+    }
+  };
+
+  const handleRoomDragEnd = (result: DropResult) => {
+    if (!result.destination || !selectedHouse || !onMoveRoom) return;
+    if (result.source.index !== result.destination.index) {
+      onMoveRoom(selectedHouse, result.source.index, result.destination.index);
+    }
+  };
+
+  const toggleHouse = (id: string) => {
+    onToggleHouse?.(id);
+  };
+
+  const toggleRoom = (roomId: string) => {
+    if (selectedHouse) {
+      onToggleRoom?.(selectedHouse, roomId);
+    }
+
   const handleEditRoom = (room: RoomConfig) => {
     setEditingRoom(room.id);
     setRoomEditData({
@@ -342,11 +393,21 @@ export function HousesManagement({ houses, onAddHouse, onAddRoom, onEditRoom, on
           
           <div className="space-y-2">
             <Label>Current Houses</Label>
-            <div className="space-y-2">
-              {houses.map((house) => (
-                <div key={house.id} className="p-3 border rounded-lg">
-                  {editingHouse === house.id ? (
-                    <div className="space-y-4">
+            <DragDropContext onDragEnd={handleHouseDragEnd}>
+              <Droppable droppableId="houses">
+                {(provided) => (
+                  <div className="space-y-2" ref={provided.innerRef} {...provided.droppableProps}>
+                    {houses.map((house, index) => (
+                      <Draggable key={house.id} draggableId={house.id} index={index}>
+                        {(prov) => (
+                          <div
+                            ref={prov.innerRef}
+                            {...prov.draggableProps}
+                            {...prov.dragHandleProps}
+                            className="p-3 border rounded-lg"
+                          >
+                            {editingHouse === house.id ? (
+                              <div className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                           <Label>House Name *</Label>
@@ -419,36 +480,43 @@ export function HousesManagement({ houses, onAddHouse, onAddRoom, onEditRoom, on
                         </div>
                       </div>
                     </div>
-                  ) : (
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h4 className="font-medium">{house.name}</h4>
-                        <p className="text-sm text-slate-600">{house.country}</p>
-                        {house.address && (
-                          <p className="text-xs text-slate-500">{house.address}</p>
+                            ) : (
+                              <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <h4 className="font-medium">{house.name}</h4>
+                                <p className="text-sm text-slate-600">{house.country}</p>
+                                {house.address && (
+                                  <p className="text-xs text-slate-500">{house.address}</p>
+                                )}
+                                {house.yearBuilt && (
+                                  <p className="text-xs text-slate-500">Built: {house.yearBuilt}</p>
+                                )}
+                                <p className="text-xs text-slate-500">Code: {house.code}</p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Switch checked={house.visible} onCheckedChange={() => toggleHouse(house.id)} />
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleEditHouse(house)}
+                                >
+                                  <Edit className="w-4 h-4" />
+                                </Button>
+                                <button className="text-slate-400 hover:text-destructive p-1">
+                                  <X className="w-4 h-4" />
+                                </button>
+                              </div>
+                              </div>
+                            )}
+                          </div>
                         )}
-                        {house.yearBuilt && (
-                          <p className="text-xs text-slate-500">Built: {house.yearBuilt}</p>
-                        )}
-                        <p className="text-xs text-slate-500">Code: {house.code}</p>
-                      </div>
-                      <div className="flex gap-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handleEditHouse(house)}
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <button className="text-slate-400 hover:text-destructive p-1">
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
           </div>
         </CardContent>
       </Card>
@@ -670,12 +738,48 @@ export function HousesManagement({ houses, onAddHouse, onAddRoom, onEditRoom, on
                       <button
                         className="ml-1 hover:text-destructive"
                         onClick={() => handleDeleteRoom(selectedHouse, room.id)}
+                <DragDropContext onDragEnd={handleRoomDragEnd}>
+                  <Droppable droppableId="rooms">
+                    {(provided) => (
+                      <div
+                        className="flex flex-col gap-2"
+                        ref={provided.innerRef}
+                        {...provided.droppableProps}
                       >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </Badge>
-                  ))}
-              </div>
+                        {houses
+                          .find(h => h.id === selectedHouse)
+                          ?.rooms.map((room, index) => (
+                            <Draggable key={room.id} draggableId={room.id} index={index}>
+                              {(prov) => (
+                                <div
+                                  ref={prov.innerRef}
+                                  {...prov.draggableProps}
+                                  {...prov.dragHandleProps}
+                                  className="flex items-center gap-2 border rounded px-2 py-1"
+                                >
+                                  <span className="flex-1">{room.name}</span>
+                                  <button
+                                    className="hover:text-primary"
+                                    onClick={() => handleEditRoom(room)}
+                                  >
+                                    <Edit className="w-3 h-3" />
+                                  </button>
+                                  <Switch checked={room.visible} onCheckedChange={() => toggleRoom(room.id)} />
+                                  <button
+                                    className="ml-2 hover:text-destructive"
+                                    onClick={() => handleDeleteRoom(selectedHouse, room.id)}
+                                  >
+                                    <X className="w-3 h-3" />
+                                  </button>
+                                </div>
+                              )}
+                            </Draggable>
+                          ))}
+                        {provided.placeholder}
+                      </div>
+                    )}
+                  </Droppable>
+                </DragDropContext>
             </div>
           )}
         </CardContent>

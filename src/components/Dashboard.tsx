@@ -14,13 +14,13 @@ export function Dashboard({ items }: DashboardProps) {
   const { categories, houses } = useSettingsState();
 
   // Count items by category using current settings
-  const categoryStats = categories.map(category => ({
+  const categoryStats = categories.filter(c => c.visible).map(category => ({
     ...category,
     count: items.filter(item => item.category === category.id).length,
   }));
 
   // Count items by house using current settings
-  const houseStats = houses.map(house => ({
+  const houseStats = houses.filter(h => h.visible).map(house => ({
     ...house,
     count: items.filter(item => item.house === house.id).length,
   }));
@@ -76,7 +76,7 @@ export function Dashboard({ items }: DashboardProps) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-600">Categories</p>
-                <p className="text-2xl font-bold text-slate-900">{categories.length}</p>
+                <p className="text-2xl font-bold text-slate-900">{categories.filter(c => c.visible).length}</p>
               </div>
               <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
                 <span className="text-purple-600 font-bold">#</span>
