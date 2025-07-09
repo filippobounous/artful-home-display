@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import { sampleItems } from "@/data/sampleData";
+import { sampleDecorItems } from "@/data/sampleData";
 
 export function InventoryHeader() {
   const navigate = useNavigate();
@@ -17,10 +17,10 @@ export function InventoryHeader() {
     ];
 
     // Use sample items as fallback if API fails
-    let items = sampleItems;
+    let items = sampleDecorItems;
     try {
-      const { fetchInventory } = await import("@/lib/api");
-      items = await fetchInventory();
+      const { fetchDecorItems } = await import("@/lib/api");
+      items = await fetchDecorItems();
     } catch (err) {
       console.error('Failed to fetch items for CSV, using sample data:', err);
     }

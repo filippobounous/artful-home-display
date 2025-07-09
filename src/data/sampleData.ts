@@ -1,7 +1,7 @@
 
-import { InventoryItem } from "@/types/inventory";
+import { DecorItem } from "@/types/inventory";
 
-export const sampleItems: InventoryItem[] = [
+export const sampleDecorItems: DecorItem[] = [
   {
     id: 1,
     title: "Vintage Oak Dining Table",
@@ -109,3 +109,4 @@ export const sampleItems: InventoryItem[] = [
     quantity: 1
   }
 ];
+

@@ -11,9 +11,9 @@ import { ItemsTable } from "@/components/ItemsTable";
 import { ItemDetailDialog } from "@/components/ItemDetailDialog";
 import { ItemHistoryDialog } from "@/components/ItemHistoryDialog";
 import { EmptyState } from "@/components/EmptyState";
-import { sampleItems } from "@/data/sampleData";
-import { fetchInventory, deleteInventoryItem, restoreInventoryItem } from "@/lib/api";
-import { InventoryItem } from "@/types/inventory";
+import { sampleDecorItems } from "@/data/sampleData";
+import { fetchDecorItems, deleteDecorItem, restoreDecorItem } from "@/lib/api";
+import { DecorItem } from "@/types/inventory";
 import { useSettingsState } from "@/hooks/useSettingsState";
 import { sortInventoryItems } from "@/lib/sortUtils";
 import { useToast } from "@/hooks/use-toast";
@@ -31,9 +31,9 @@ const AllItems = () => {
   const [selectedArtist, setSelectedArtist] = useState<string[]>([]);
   const [valuationRange, setValuationRange] = useState<{ min?: number; max?: number }>({});
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
-  const [items, setItems] = useState<InventoryItem[]>(sampleItems);
-  const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
-  const [historyItem, setHistoryItem] = useState<InventoryItem | null>(null);
+  const [items, setItems] = useState<DecorItem[]>(sampleDecorItems);
+  const [selectedItem, setSelectedItem] = useState<DecorItem | null>(null);
+  const [historyItem, setHistoryItem] = useState<DecorItem | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [sortField, setSortField] = useState<string>("");
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
@@ -43,14 +43,14 @@ const AllItems = () => {
   const yearOptions = Array.from(new Set(items.map(i => i.yearPeriod).filter(Boolean)));
   const artistOptions = Array.from(new Set(items.map(i => i.artist).filter(Boolean)));
 
-  const handleEdit = (item: InventoryItem) => {
+  const handleEdit = (item: DecorItem) => {
     localStorage.setItem('editingDraft', JSON.stringify(item));
     navigate(`/add?draftId=${item.id}`);
   };
 
-  const handleDelete = (item: InventoryItem) => {
+  const handleDelete = (item: DecorItem) => {
     if (!window.confirm(`Delete "${item.title}"?`)) return;
-    deleteInventoryItem(item.id)
+    deleteDecorItem(item.id)
       .then(() => {
         setItems(prev => prev.filter(i => i.id !== item.id));
         toast({
@@ -68,13 +68,13 @@ const AllItems = () => {
       });
   };
 
-  const handleHistory = (item: InventoryItem) => {
+  const handleHistory = (item: DecorItem) => {
     setHistoryItem(item);
   };
 
-  const handleRestore = (version: InventoryItem) => {
+  const handleRestore = (version: DecorItem) => {
     if (!historyItem) return;
-    restoreInventoryItem(historyItem.id, version)
+    restoreDecorItem(historyItem.id, version)
       .then(updated => {
         setItems(prev => prev.map(i => i.id === updated.id ? updated : i));
         setHistoryItem(updated);
@@ -94,7 +94,7 @@ const AllItems = () => {
   };
 
   useEffect(() => {
-    fetchInventory()
+    fetchDecorItems()
       .then(data => setItems(data))
       .catch(() => {});
   }, []);

@@ -1,17 +1,17 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { InventoryItem } from "@/types/inventory";
+import { DecorItem } from "@/types/inventory";
 import { Edit, MapPin, Calendar, DollarSign, Hash, Trash2, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ItemDetailDialogProps {
-  item: InventoryItem | null;
+  item: DecorItem | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onEdit?: (item: InventoryItem) => void;
-  onDelete?: (item: InventoryItem) => void;
-  onHistory?: (item: InventoryItem) => void;
+  onEdit?: (item: DecorItem) => void;
+  onDelete?: (item: DecorItem) => void;
+  onHistory?: (item: DecorItem) => void;
 }
 
 export function ItemDetailDialog({ item, open, onOpenChange, onEdit, onDelete, onHistory }: ItemDetailDialogProps) {

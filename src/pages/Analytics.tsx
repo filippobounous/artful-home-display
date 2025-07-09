@@ -5,15 +5,15 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 import { InventoryHeader } from "@/components/InventoryHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { sampleItems } from "@/data/sampleData";
-import { fetchInventory } from "@/lib/api";
-import { InventoryItem } from "@/types/inventory";
+import { sampleDecorItems } from "@/data/sampleData";
+import { fetchDecorItems } from "@/lib/api";
+import { DecorItem } from "@/types/inventory";
 
 const Analytics = () => {
-  const [items, setItems] = useState<InventoryItem[]>(sampleItems);
+  const [items, setItems] = useState<DecorItem[]>(sampleDecorItems);
 
   useEffect(() => {
-    fetchInventory()
+    fetchDecorItems()
       .then(data => setItems(data))
       .catch(() => {});
   }, []);

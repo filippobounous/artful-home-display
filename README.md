@@ -94,13 +94,16 @@ The app will be available at `http://localhost:5173` by default.
 
 1. Create a `.env` file based on `.env.example` and set `VITE_API_URL` to the URL of your FastAPI server. If your API requires authentication, also set `VITE_API_KEY` with your key value.
 2. Start your FastAPI app (for example `uvicorn your_package.main:app --reload`).
-3. The frontend will attempt to fetch inventory data from `${VITE_API_URL}/items`.
-4. If the request fails, the app falls back to sample data.
+3. The frontend will attempt to fetch decor item data from `${VITE_API_URL}/decoritems`.
+   It also looks for house information at `${VITE_API_URL}/houses` and room data
+   under `${VITE_API_URL}/houses/{houseId}/rooms`.
+4. If any of these requests fail, the app falls back to the sample data shipped
+   with the frontend.
 
 ### Using only a database
 
 If you prefer to expose just a database, create a small FastAPI layer that
-connects to your DB and provides the `/items` endpoints. Point `VITE_API_URL`
+connects to your DB and provides the `/decoritems` endpoints. Point `VITE_API_URL`
 to that service and the app will use it for data.
 
 ## Running with Docker

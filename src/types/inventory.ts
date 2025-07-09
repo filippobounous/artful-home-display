@@ -1,22 +1,16 @@
 
-export interface InventoryItem {
+export interface ItemBase {
   id: number;
   title: string;
-  artist?: string;
-  category: string;
-  subcategory?: string;
-  widthCm?: number;
-  heightCm?: number;
-  depthCm?: number;
-  valuation?: number;
-  valuationDate?: string;
-  valuationPerson?: string;
-  valuationCurrency?: string;
+  description: string;
   quantity?: number;
   yearPeriod?: string;
   image: string;
   images?: string[];
-  description: string;
+  valuation?: number;
+  valuationDate?: string;
+  valuationPerson?: string;
+  valuationCurrency?: string;
   house?: string;
   room?: string;
   /**
@@ -29,11 +23,48 @@ export interface InventoryItem {
    * Marks an item as deleted instead of removing it permanently.
    */
   deleted?: boolean;
+}
+
+export interface DecorItem extends ItemBase {
+  artist?: string;
+  category: string;
+  subcategory?: string;
+  size?: string;
+  condition: "mint" | "excellent" | "very good" | "good";
   /**
    * Keeps previous versions of the item when edits occur.
    */
-  history?: InventoryItem[];
+  history?: DecorItem[];
 }
+
+export interface BookItem extends ItemBase {
+  author?: string;
+  publisher?: string;
+  isbn?: string;
+  genre?: string;
+  pageCount?: number;
+  publicationYear?: number;
+  /**
+   * Keeps previous versions of the item when edits occur.
+   */
+  history?: BookItem[];
+}
+
+export interface MusicItem extends ItemBase {
+  artist?: string;
+  album?: string;
+  format?: string;
+  genre?: string;
+  releaseYear?: number;
+  trackCount?: number;
+  /**
+   * Keeps previous versions of the item when edits occur.
+   */
+  history?: MusicItem[];
+}
+
+export type InventoryItem = DecorItem | BookItem | MusicItem;
+
 
 export type ViewMode = "grid" | "list" | "table";
 export type CategoryFilter = "all" | string;
@@ -65,12 +96,16 @@ export interface HouseConfig {
   icon: string;
   rooms: RoomConfig[];
   visible: boolean;
+  deleted?: boolean;
+  history?: HouseConfig[];
 }
 
 export interface RoomConfig {
   id: string;
   name: string;
   visible: boolean;
+  deleted?: boolean;
+  history?: RoomConfig[];
 }
 
 // Category configurations with icons
@@ -114,7 +149,7 @@ export const categoryConfigs: CategoryConfig[] = [
 ];
 
 // House configurations with icons
-export const houseConfigs: HouseConfig[] = [
+export const defaultHouses: HouseConfig[] = [
   {
     id: "main-house",
     name: "Main House",
