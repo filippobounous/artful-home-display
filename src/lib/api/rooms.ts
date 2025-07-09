@@ -19,16 +19,16 @@ export async function addRoom(houseId: string, room: RoomConfig) {
     if (!response.ok) throw new Error('Failed to add room');
     const data = await response.json();
     const houses = getAllHouses().map(h =>
-      h.id === houseId ? { ...h, rooms: [...h.rooms, { ...data, deleted: false, history: [] }] } : h
+      h.id === houseId ? { ...h, rooms: [...h.rooms, { ...data, is_deleted: false, history: [] }] } : h
     );
     saveLocalHouses(houses);
     return data;
   } catch {
     const houses = getAllHouses().map(h =>
-      h.id === houseId ? { ...h, rooms: [...h.rooms, { ...room, deleted: false, history: [] }] } : h
+      h.id === houseId ? { ...h, rooms: [...h.rooms, { ...room, is_deleted: false, history: [] }] } : h
     );
     saveLocalHouses(houses);
-    return { ...room, deleted: false, history: [] };
+    return { ...room, is_deleted: false, history: [] };
   }
 }
 
@@ -83,13 +83,13 @@ export async function deleteRoom(houseId: string, roomId: string) {
     });
     if (!response.ok) throw new Error('Failed to delete room');
     const houses = getAllHouses().map(h =>
-      h.id === houseId ? { ...h, rooms: h.rooms.map(r => r.id === roomId ? { ...r, deleted: true } : r) } : h
+      h.id === houseId ? { ...h, rooms: h.rooms.map(r => r.id === roomId ? { ...r, is_deleted: true } : r) } : h
     );
     saveLocalHouses(houses);
     return true;
   } catch {
     const houses = getAllHouses().map(h =>
-      h.id === houseId ? { ...h, rooms: h.rooms.map(r => r.id === roomId ? { ...r, deleted: true } : r) } : h
+      h.id === houseId ? { ...h, rooms: h.rooms.map(r => r.id === roomId ? { ...r, is_deleted: true } : r) } : h
     );
     saveLocalHouses(houses);
     return true;
