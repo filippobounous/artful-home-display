@@ -95,7 +95,7 @@ export function MultiSelectFilter({ placeholder, options, selectedValues, onSele
               return (
                 <div
                   key={option.id}
-                  className="px-2 py-1 text-sm font-medium text-slate-600 bg-slate-50"
+                  className="px-2 py-1 text-sm font-medium text-slate-600 bg-muted"
                 >
                   {option.name}
                 </div>

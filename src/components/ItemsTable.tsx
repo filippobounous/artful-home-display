@@ -118,7 +118,7 @@ export function ItemsTable({ items, onItemClick, onSort, sortField, sortDirectio
                         e.stopPropagation();
                         toggle(item.id.toString(), idx, false);
                       }}
-                      className="bg-white rounded-sm"
+                      className="bg-card rounded-sm"
                     />
                   )}
                   <div className="w-12 h-12 rounded overflow-hidden">

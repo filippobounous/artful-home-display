@@ -43,7 +43,7 @@ export function HierarchicalCategorySelector({
         <SelectContent>
           {categories.map((category) => (
             <div key={category.id}>
-              <div className="px-2 py-1 text-sm font-medium text-slate-600 bg-slate-50">
+              <div className="px-2 py-1 text-sm font-medium text-slate-600 bg-muted">
                 {category.name}
               </div>
               <SelectItem 
