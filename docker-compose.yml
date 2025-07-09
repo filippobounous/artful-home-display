@@ -7,5 +7,14 @@ services:
         - VITE_API_URL=${VITE_API_URL:-http://localhost:8000}
     ports:
       - "3000:80"
+      # - "3000:8080"  # use this when enabling the dev target
     env_file:
       - .env
+    # To automatically reload on code changes during development,
+    # uncomment the line below and the port mapping above. This mounts
+    # your source so Vite can watch for updates.
+    # volumes:
+    #   - .:/app
+    #   - /app/node_modules
+    # and build using the 'dev' target:
+    # docker compose build --target dev frontend

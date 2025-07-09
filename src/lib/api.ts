@@ -1,4 +1,12 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_KEY = import.meta.env.VITE_API_KEY;
+
+function buildHeaders(contentType?: string) {
+  const headers: Record<string, string> = {};
+  if (contentType) headers['Content-Type'] = contentType;
+  if (API_KEY) headers['X-API-Key'] = API_KEY;
+  return headers;
+}
 
 import { DecorItem, HouseConfig, RoomConfig, defaultHouses } from '@/types/inventory';
 import { sampleDecorItems } from '@/data/sampleData';
@@ -40,7 +48,7 @@ export async function createDecorItem(item: DecorItem) {
   try {
     const response = await fetch(`${API_URL}/decoritems`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: buildHeaders('application/json'),
       body: JSON.stringify(item)
     });
     if (!response.ok) throw new Error('Failed to create item');
@@ -62,7 +70,7 @@ export async function updateDecorItem(id: number | string, updates: DecorItem) {
   try {
     const response = await fetch(`${API_URL}/decoritems/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: buildHeaders('application/json'),
       body: JSON.stringify(updates)
     });
     if (!response.ok) throw new Error('Failed to update item');
@@ -94,6 +102,7 @@ export async function deleteDecorItem(id: number | string) {
   try {
     const response = await fetch(`${API_URL}/decoritems/${id}`, {
       method: 'DELETE',
+      headers: buildHeaders(),
     });
     if (!response.ok) throw new Error('Failed to delete item');
     const items = getAllInventory().map(item => item.id === Number(id) ? { ...item, deleted: true } : item);
