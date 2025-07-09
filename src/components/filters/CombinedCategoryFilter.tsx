@@ -21,8 +21,9 @@ export function CombinedCategoryFilter({
   const { categories } = useSettingsState();
 
   // Create combined options with headers as tri-state checkboxes
-  const combinedOptions = categories.flatMap(category => {
-    const subcategoryIds = category.subcategories.map(sub => sub.id);
+  const visibleCategories = categories.filter(c => c.visible);
+  const combinedOptions = visibleCategories.flatMap(category => {
+    const subcategoryIds = category.subcategories.filter(s => s.visible).map(sub => sub.id);
     const selectedSubs = selectedSubcategory.filter(id => subcategoryIds.includes(id));
     const allSelected = selectedSubs.length === subcategoryIds.length && subcategoryIds.length > 0;
     const checkState: CheckboxCheckedState =
@@ -54,7 +55,7 @@ export function CombinedCategoryFilter({
           }
         }
       },
-      ...category.subcategories.map(sub => ({
+      ...category.subcategories.filter(s => s.visible).map(sub => ({
         id: sub.id,
         name: sub.name,
         indent: true
@@ -65,8 +66,8 @@ export function CombinedCategoryFilter({
   // Combine selected values for display
   const allSelectedValues = [...selectedCategory, ...selectedSubcategory];
 
-  const selectedCount = categories.reduce((cnt, cat) => {
-    const subIds = cat.subcategories.map(s => s.id);
+  const selectedCount = visibleCategories.reduce((cnt, cat) => {
+    const subIds = cat.subcategories.filter(s => s.visible).map(s => s.id);
     const subs = selectedSubcategory.filter(id => subIds.includes(id));
     const allSel = subs.length === subIds.length && subIds.length > 0;
     if (selectedCategory.includes(cat.id) || allSel) {
@@ -79,8 +80,8 @@ export function CombinedCategoryFilter({
     const categoryIds: string[] = [];
     const subcategoryIds: string[] = [];
 
-    categories.forEach(category => {
-      const subIds = category.subcategories.map(s => s.id);
+    visibleCategories.forEach(category => {
+      const subIds = category.subcategories.filter(s => s.visible).map(s => s.id);
       const selectedSubs = values.filter(v => subIds.includes(v));
       const allSelected = selectedSubs.length === subIds.length && subIds.length > 0;
       const hasCategory = values.includes(category.id);
@@ -106,8 +107,8 @@ export function CombinedCategoryFilter({
     // Only show subcategory filter for permanent category pages
     const permanentCat = categories.find(cat => cat.id === permanentCategory);
     if (!permanentCat) return null;
-    
-    const subcategoryOptions = permanentCat.subcategories.map(sub => ({
+
+    const subcategoryOptions = permanentCat.subcategories.filter(s => s.visible).map(sub => ({
       id: sub.id,
       name: sub.name
     }));

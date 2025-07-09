@@ -1,9 +1,16 @@
 import { useState } from "react";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult
+} from "react-beautiful-dnd";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
 import { Plus, X, Download } from "lucide-react";
 import { IconSelector } from "@/components/IconSelector";
 import { useToast } from "@/hooks/use-toast";
@@ -20,9 +27,22 @@ interface CategoriesManagementProps {
   onAddCategory: (name: string, icon: string) => void;
   onAddSubcategory: (categoryId: string, subcategoryName: string) => void;
   onDeleteSubcategory?: (categoryId: string, subcategoryId: string) => void;
+  onMoveCategory?: (from: number, to: number) => void;
+  onMoveSubcategory?: (categoryId: string, from: number, to: number) => void;
+  onToggleCategory?: (categoryId: string) => void;
+  onToggleSubcategory?: (categoryId: string, subId: string) => void;
 }
 
-export function CategoriesManagement({ categories, onAddCategory, onAddSubcategory, onDeleteSubcategory }: CategoriesManagementProps) {
+export function CategoriesManagement({
+  categories,
+  onAddCategory,
+  onAddSubcategory,
+  onDeleteSubcategory,
+  onMoveCategory,
+  onMoveSubcategory,
+  onToggleCategory,
+  onToggleSubcategory
+}: CategoriesManagementProps) {
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newCategoryIcon, setNewCategoryIcon] = useState("palette");
   const [newSubcategoryName, setNewSubcategoryName] = useState("");
@@ -79,6 +99,30 @@ export function CategoriesManagement({ categories, onAddCategory, onAddSubcatego
     }
   };
 
+  const handleCategoryDragEnd = (result: DropResult) => {
+    if (!result.destination || !onMoveCategory) return;
+    if (result.source.index !== result.destination.index) {
+      onMoveCategory(result.source.index, result.destination.index);
+    }
+  };
+
+  const handleSubcategoryDragEnd = (result: DropResult) => {
+    if (!result.destination || !onMoveSubcategory || !selectedCategory) return;
+    if (result.source.index !== result.destination.index) {
+      onMoveSubcategory(selectedCategory, result.source.index, result.destination.index);
+    }
+  };
+
+  const toggleCategory = (id: string) => {
+    onToggleCategory?.(id);
+  };
+
+  const toggleSubcategory = (id: string) => {
+    if (selectedCategory) {
+      onToggleSubcategory?.(selectedCategory, id);
+    }
+  };
+
   const downloadCategoriesTemplate = () => {
     const template = "name,icon\nArt,palette\nFurniture,sofa\nDecorative,lamp";
     const blob = new Blob([template], { type: 'text/csv' });
@@ -129,16 +173,30 @@ export function CategoriesManagement({ categories, onAddCategory, onAddSubcatego
           
           <div className="space-y-2">
             <Label>Current Categories</Label>
-            <div className="flex flex-wrap gap-2">
-              {categories.map((category) => (
-                <Badge key={category.id} variant="secondary" className="px-3 py-1">
-                  {category.name}
-                  <button className="ml-2 hover:text-destructive">
-                    <X className="w-3 h-3" />
-                  </button>
-                </Badge>
-              ))}
-            </div>
+            <DragDropContext onDragEnd={handleCategoryDragEnd}>
+              <Droppable droppableId="categories" direction="vertical">
+                {(provided) => (
+                  <div className="flex flex-col gap-2" ref={provided.innerRef} {...provided.droppableProps}>
+                    {categories.map((category, index) => (
+                      <Draggable key={category.id} draggableId={category.id} index={index}>
+                        {(prov) => (
+                          <div
+                            ref={prov.innerRef}
+                            {...prov.draggableProps}
+                            {...prov.dragHandleProps}
+                            className="flex items-center gap-2 border rounded px-2 py-1"
+                          >
+                            <span className="flex-1">{category.name}</span>
+                            <Switch checked={category.visible} onCheckedChange={() => toggleCategory(category.id)} />
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </DragDropContext>
           </div>
         </CardContent>
       </Card>
@@ -185,21 +243,42 @@ export function CategoriesManagement({ categories, onAddCategory, onAddSubcatego
           {selectedCategory && (
             <div className="space-y-2">
               <Label>Subcategories in {categories.find(c => c.id === selectedCategory)?.name}</Label>
-              <div className="flex flex-wrap gap-2">
-                {categories
-                  .find(c => c.id === selectedCategory)
-                  ?.subcategories.map((subcategory) => (
-                    <Badge key={subcategory.id} variant="secondary" className="px-3 py-1">
-                      {subcategory.name}
-                      <button 
-                        className="ml-2 hover:text-destructive"
-                        onClick={() => handleDeleteSubcategory(selectedCategory, subcategory.id)}
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </Badge>
-                  ))}
-              </div>
+              <DragDropContext onDragEnd={handleSubcategoryDragEnd}>
+                <Droppable droppableId="subcategories" direction="vertical">
+                  {(provided) => (
+                    <div
+                      className="flex flex-col gap-2"
+                      ref={provided.innerRef}
+                      {...provided.droppableProps}
+                    >
+                      {categories
+                        .find(c => c.id === selectedCategory)
+                        ?.subcategories.map((subcategory, index) => (
+                          <Draggable key={subcategory.id} draggableId={subcategory.id} index={index}>
+                            {(prov) => (
+                              <div
+                                ref={prov.innerRef}
+                                {...prov.draggableProps}
+                                {...prov.dragHandleProps}
+                                className="flex items-center gap-2 border rounded px-2 py-1"
+                              >
+                                <span className="flex-1">{subcategory.name}</span>
+                                <Switch checked={subcategory.visible} onCheckedChange={() => toggleSubcategory(subcategory.id)} />
+                                <button
+                                  className="ml-2 hover:text-destructive"
+                                  onClick={() => handleDeleteSubcategory(selectedCategory, subcategory.id)}
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </DragDropContext>
             </div>
           )}
         </CardContent>

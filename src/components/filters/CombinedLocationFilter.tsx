@@ -42,8 +42,9 @@ export function CombinedLocationFilter({
   }
 
   // Create combined options with headers as tri-state checkboxes
-  const combinedOptions = houses.flatMap(house => {
-    const roomIds = house.rooms.map(r => `${house.id}|${r.id}`);
+  const visibleHouses = houses.filter(h => h.visible);
+  const combinedOptions = visibleHouses.flatMap(house => {
+    const roomIds = house.rooms.filter(r => r.visible).map(r => `${house.id}|${r.id}`);
     const selectedRooms = selectedRoom.filter(id => roomIds.includes(id));
     const allSelected = selectedRooms.length === roomIds.length && roomIds.length > 0;
     const checkState: CheckboxCheckedState =
@@ -76,7 +77,7 @@ export function CombinedLocationFilter({
           }
         }
       },
-      ...house.rooms.map(room => ({
+      ...house.rooms.filter(r => r.visible).map(room => ({
         id: `${house.id}|${room.id}`,
         name: `${room.name} (${house.name})`,
         indent: true
@@ -88,8 +89,8 @@ export function CombinedLocationFilter({
   const allSelectedValues = [...selectedHouse, ...selectedRoom];
 
   // Determine how many logical selections exist for badge display
-  const selectedCount = houses.reduce((cnt, house) => {
-    const roomKeys = house.rooms.map(r => `${house.id}|${r.id}`);
+  const selectedCount = visibleHouses.reduce((cnt, house) => {
+    const roomKeys = house.rooms.filter(r => r.visible).map(r => `${house.id}|${r.id}`);
     const selectedRooms = selectedRoom.filter(r => roomKeys.includes(r));
     const allSelected = selectedRooms.length === roomKeys.length && roomKeys.length > 0;
     if (selectedHouse.includes(house.id) || allSelected) {
@@ -102,8 +103,8 @@ export function CombinedLocationFilter({
     const houseIds: string[] = [];
     const roomIds: string[] = [];
 
-    houses.forEach(house => {
-      const roomKeys = house.rooms.map(r => `${house.id}|${r.id}`);
+  visibleHouses.forEach(house => {
+      const roomKeys = house.rooms.filter(r => r.visible).map(r => `${house.id}|${r.id}`);
       const selectedForHouse = values.filter(v => roomKeys.includes(v));
       const allSelected = selectedForHouse.length === roomKeys.length && roomKeys.length > 0;
       const houseSelected = values.includes(house.id);
