@@ -27,11 +27,12 @@ interface HousesManagementProps {
   houses: any[];
   onAddHouse: (name: string, country: string, address: string, yearBuilt: number | undefined, code: string, icon: string) => void;
   onAddRoom: (houseId: string, room: Partial<RoomConfig> & { name: string; floor: number }) => void;
+  onEditRoom?: (houseId: string, roomId: string, updates: Partial<RoomConfig>) => void;
   onEditHouse?: (houseId: string, updates: any) => void;
   onDeleteRoom?: (houseId: string, roomId: string) => void;
 }
 
-export function HousesManagement({ houses, onAddHouse, onAddRoom, onEditHouse, onDeleteRoom }: HousesManagementProps) {
+export function HousesManagement({ houses, onAddHouse, onAddRoom, onEditRoom, onEditHouse, onDeleteRoom }: HousesManagementProps) {
   const [newHouseName, setNewHouseName] = useState("");
   const [newHouseCountry, setNewHouseCountry] = useState("");
   const [newHouseAddress, setNewHouseAddress] = useState("");
@@ -50,6 +51,8 @@ export function HousesManagement({ houses, onAddHouse, onAddRoom, onEditHouse, o
   const [selectedHouse, setSelectedHouse] = useState("");
   const [editingHouse, setEditingHouse] = useState<string | null>(null);
   const [editData, setEditData] = useState<any>({});
+  const [editingRoom, setEditingRoom] = useState<string | null>(null);
+  const [roomEditData, setRoomEditData] = useState<any>({});
 
   const { toast } = useToast();
 
@@ -193,6 +196,46 @@ export function HousesManagement({ houses, onAddHouse, onAddRoom, onEditHouse, o
         description: "Room has been removed successfully"
       });
     }
+  };
+
+  const handleEditRoom = (room: RoomConfig) => {
+    setEditingRoom(room.id);
+    setRoomEditData({
+      name: room.name,
+      floor: room.floor?.toString() || "",
+      room_type: room.room_type || "",
+      area_sqm: room.area_sqm?.toString() || "",
+      windows: room.windows?.toString() || "",
+      doors: room.doors?.toString() || "",
+      description: room.description || "",
+      notes: room.notes || "",
+    });
+  };
+
+  const handleSaveRoomEdit = () => {
+    if (!editingRoom || !selectedHouse) return;
+    if (roomEditData.name.trim() && roomEditData.floor.trim()) {
+      onEditRoom?.(selectedHouse, editingRoom, {
+        name: roomEditData.name,
+        floor: parseInt(roomEditData.floor, 10),
+        room_type: roomEditData.room_type || undefined,
+        area_sqm: roomEditData.area_sqm ? parseFloat(roomEditData.area_sqm) : undefined,
+        windows: roomEditData.windows ? parseInt(roomEditData.windows, 10) : undefined,
+        doors: roomEditData.doors ? parseInt(roomEditData.doors, 10) : undefined,
+        description: roomEditData.description || undefined,
+        notes: roomEditData.notes || undefined,
+      });
+      toast({ title: "Room updated", description: "Room has been updated" });
+      setEditingRoom(null);
+      setRoomEditData({});
+    } else {
+      toast({ title: "Missing information", description: "Please fill in required fields", variant: "destructive" });
+    }
+  };
+
+  const handleCancelRoomEdit = () => {
+    setEditingRoom(null);
+    setRoomEditData({});
   };
 
   const downloadHousesTemplate = () => {
@@ -515,6 +558,93 @@ export function HousesManagement({ houses, onAddHouse, onAddRoom, onEditHouse, o
             <Plus className="w-4 h-4 mr-1" />
             Add Room
           </Button>
+
+          {editingRoom && (
+            <div className="mt-6 space-y-4">
+              <Label>Edit Room</Label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label>Room Name *</Label>
+                  <Input
+                    value={roomEditData.name || ""}
+                    onChange={(e) => setRoomEditData({ ...roomEditData, name: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label>Floor *</Label>
+                  <Input
+                    type="number"
+                    value={roomEditData.floor || ""}
+                    onChange={(e) => setRoomEditData({ ...roomEditData, floor: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label>Room Type</Label>
+                  <Select value={roomEditData.room_type || ""} onValueChange={(val) => setRoomEditData({ ...roomEditData, room_type: val })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {roomTypes.map(t => (
+                        <SelectItem key={t} value={t}>{t}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Area (sqm)</Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={roomEditData.area_sqm || ""}
+                    onChange={(e) => setRoomEditData({ ...roomEditData, area_sqm: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label>Windows</Label>
+                  <Input
+                    type="number"
+                    value={roomEditData.windows || ""}
+                    onChange={(e) => setRoomEditData({ ...roomEditData, windows: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label>Doors</Label>
+                  <Input
+                    type="number"
+                    value={roomEditData.doors || ""}
+                    onChange={(e) => setRoomEditData({ ...roomEditData, doors: e.target.value })}
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <Label>Description</Label>
+                  <Textarea
+                    value={roomEditData.description || ""}
+                    onChange={(e) => setRoomEditData({ ...roomEditData, description: e.target.value })}
+                    rows={2}
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <Label>Notes</Label>
+                  <Textarea
+                    value={roomEditData.notes || ""}
+                    onChange={(e) => setRoomEditData({ ...roomEditData, notes: e.target.value })}
+                    rows={2}
+                  />
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button variant="outline" onClick={handleCancelRoomEdit}>
+                  <X className="w-4 h-4 mr-1" />
+                  Cancel
+                </Button>
+                <Button onClick={handleSaveRoomEdit}>
+                  <Save className="w-4 h-4 mr-1" />
+                  Save
+                </Button>
+              </div>
+            </div>
+          )}
           
           {selectedHouse && (
             <div className="space-y-2">
@@ -525,8 +655,14 @@ export function HousesManagement({ houses, onAddHouse, onAddRoom, onEditHouse, o
                   ?.rooms.map((room) => (
                     <Badge key={room.id} variant="secondary" className="px-3 py-1">
                       {room.name}
-                      <button 
-                        className="ml-2 hover:text-destructive"
+                      <button
+                        className="ml-2 hover:text-primary"
+                        onClick={() => handleEditRoom(room)}
+                      >
+                        <Edit className="w-3 h-3" />
+                      </button>
+                      <button
+                        className="ml-1 hover:text-destructive"
                         onClick={() => handleDeleteRoom(selectedHouse, room.id)}
                       >
                         <X className="w-3 h-3" />

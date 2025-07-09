@@ -16,7 +16,8 @@ export function SettingsManagement() {
     addCategory, 
     addHouse, 
     editHouse,
-    addRoom, 
+    editRoom,
+    addRoom,
     deleteRoom,
     addSubcategory, 
     deleteSubcategory,
@@ -78,10 +79,11 @@ export function SettingsManagement() {
         </TabsList>
         
         <TabsContent value="houses">
-          <HousesManagement 
-            houses={houses} 
-            onAddHouse={addHouse} 
+          <HousesManagement
+            houses={houses}
+            onAddHouse={addHouse}
             onAddRoom={addRoom}
+            onEditRoom={editRoom}
             onEditHouse={editHouse}
             onDeleteRoom={deleteRoom}
           />

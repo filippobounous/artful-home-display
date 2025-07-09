@@ -127,6 +127,31 @@ export function useSettingsState() {
     notifyListeners();
   };
 
+  const editRoom = (houseId: string, roomId: string, updates: Partial<RoomConfig>) => {
+    globalHouses = globalHouses.map(house => {
+      if (house.id === houseId) {
+        return {
+          ...house,
+          rooms: house.rooms.map(room => {
+            if (room.id === roomId) {
+              const history = room.history ? [...room.history, { ...room }] : [{ ...room }];
+              return {
+                ...room,
+                ...updates,
+                version: (room.version || 1) + 1,
+                history,
+              };
+            }
+            return room;
+          })
+        };
+      }
+      return house;
+    });
+    saveState();
+    notifyListeners();
+  };
+
   const deleteRoom = (houseId: string, roomId: string) => {
     globalHouses = globalHouses.map(house => {
       if (house.id === houseId) {
@@ -212,6 +237,7 @@ export function useSettingsState() {
     addHouse,
     editHouse,
     addRoom,
+    editRoom,
     deleteRoom,
     addSubcategory,
     deleteSubcategory,
