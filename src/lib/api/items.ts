@@ -2,10 +2,16 @@ import { DecorItem } from '@/types/inventory';
 import { sampleDecorItems } from '@/data/sampleData';
 import { API_URL, API_KEY } from './common';
 
+function getToken() {
+  return localStorage.getItem('authToken') || '';
+}
+
 function buildHeaders(contentType?: string) {
   const headers: Record<string, string> = {};
   if (contentType) headers['Content-Type'] = contentType;
   if (API_KEY) headers['X-API-Key'] = API_KEY;
+  const token = getToken();
+  if (token) headers['Authorization'] = `Bearer ${token}`;
   return headers;
 }
 
@@ -32,7 +38,9 @@ function saveLocalInventory(items: DecorItem[]) {
 
 export async function fetchDecorItems(): Promise<DecorItem[]> {
   try {
-    const response = await fetch(`${API_URL}/decoritems`);
+    const response = await fetch(`${API_URL}/decoritems`, {
+      headers: buildHeaders(),
+    });
     if (!response.ok) throw new Error('Failed to fetch items');
     const data = await response.json();
     saveLocalInventory(data);

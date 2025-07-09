@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Package } from "lucide-react";
+import { login } from "@/lib/api";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -19,16 +20,16 @@ const Login = () => {
     setIsLoading(true);
     setError("");
 
-    // Simple authentication check (replace with your actual authentication logic)
-    if (username === "admin" && password === "password123") {
+    try {
+      const data = await login(username, password);
+      localStorage.setItem("authToken", data.access_token);
       localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("user", JSON.stringify({ username: "admin", role: "admin" }));
       navigate("/");
-    } else {
+    } catch {
       setError("Invalid username or password");
+    } finally {
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
   };
 
   return (
