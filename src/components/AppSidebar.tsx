@@ -41,14 +41,14 @@ export function AppSidebar() {
   const { categories, houses } = useSettingsState();
 
   // Dynamic category items based on configuration
-  const categoryItems = categories.map(category => ({
+  const categoryItems = categories.filter(c => c.visible).map(category => ({
     title: category.name,
     url: `/category/${encodeURIComponent(category.id)}`,
     icon: getIconComponent(category.icon)
   }));
 
   // Dynamic house items based on configuration
-  const houseItems = houses.map(house => ({
+  const houseItems = houses.filter(h => h.visible).map(house => ({
     title: house.name,
     url: `/house/${encodeURIComponent(house.id)}`,
     icon: getIconComponent(house.icon)

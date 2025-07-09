@@ -130,6 +130,29 @@ export function useSettingsState() {
     notifyListeners();
   };
 
+  const moveHouse = (from: number, to: number) => {
+    const updated = Array.from(globalHouses);
+    const [moved] = updated.splice(from, 1);
+    updated.splice(to, 0, moved);
+    globalHouses = updated;
+    saveState();
+    notifyListeners();
+  };
+
+  const moveRoom = (houseId: string, from: number, to: number) => {
+    globalHouses = globalHouses.map(h => {
+      if (h.id === houseId) {
+        const rooms = Array.from(h.rooms);
+        const [moved] = rooms.splice(from, 1);
+        rooms.splice(to, 0, moved);
+        return { ...h, rooms };
+      }
+      return h;
+    });
+    saveState();
+    notifyListeners();
+  };
+
   const addSubcategory = (categoryId: string, subcategoryName: string) => {
     globalCategories = globalCategories.map(category => {
       if (category.id === categoryId) {
@@ -158,6 +181,80 @@ export function useSettingsState() {
         };
       }
       return category;
+    });
+    saveState();
+    notifyListeners();
+  };
+
+  const moveCategory = (from: number, to: number) => {
+    const updated = Array.from(globalCategories);
+    const [moved] = updated.splice(from, 1);
+    updated.splice(to, 0, moved);
+    globalCategories = updated;
+    saveState();
+    notifyListeners();
+  };
+
+  const moveSubcategory = (categoryId: string, from: number, to: number) => {
+    globalCategories = globalCategories.map(cat => {
+      if (cat.id === categoryId) {
+        const subs = Array.from(cat.subcategories);
+        const [moved] = subs.splice(from, 1);
+        subs.splice(to, 0, moved);
+        return { ...cat, subcategories: subs };
+      }
+      return cat;
+    });
+    saveState();
+    notifyListeners();
+  };
+
+  const toggleHouseVisibility = (houseId: string) => {
+    globalHouses = globalHouses.map(h =>
+      h.id === houseId ? { ...h, visible: !h.visible } : h
+    );
+    saveState();
+    notifyListeners();
+  };
+
+  const toggleRoomVisibility = (houseId: string, roomId: string) => {
+    globalHouses = globalHouses.map(h => {
+      if (h.id === houseId) {
+        return {
+          ...h,
+          rooms: h.rooms.map(r =>
+            r.id === roomId ? { ...r, visible: !r.visible } : r
+          )
+        };
+      }
+      return h;
+    });
+    saveState();
+    notifyListeners();
+  };
+
+  const toggleCategoryVisibility = (categoryId: string) => {
+    globalCategories = globalCategories.map(c =>
+      c.id === categoryId ? { ...c, visible: !c.visible } : c
+    );
+    saveState();
+    notifyListeners();
+  };
+
+  const toggleSubcategoryVisibility = (
+    categoryId: string,
+    subcategoryId: string
+  ) => {
+    globalCategories = globalCategories.map(c => {
+      if (c.id === categoryId) {
+        return {
+          ...c,
+          subcategories: c.subcategories.map(s =>
+            s.id === subcategoryId ? { ...s, visible: !s.visible } : s
+          )
+        };
+      }
+      return c;
     });
     saveState();
     notifyListeners();
@@ -204,6 +301,14 @@ export function useSettingsState() {
     deleteRoom,
     addSubcategory,
     deleteSubcategory,
-    downloadMappings
+    downloadMappings,
+    moveHouse,
+    moveRoom,
+    moveCategory,
+    moveSubcategory,
+    toggleHouseVisibility,
+    toggleRoomVisibility,
+    toggleCategoryVisibility,
+    toggleSubcategoryVisibility
   };
 }

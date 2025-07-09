@@ -18,9 +18,17 @@ export function SettingsManagement() {
     editHouse,
     addRoom, 
     deleteRoom,
-    addSubcategory, 
+    addSubcategory,
     deleteSubcategory,
-    downloadMappings 
+    downloadMappings,
+    moveHouse,
+    moveRoom,
+    moveCategory,
+    moveSubcategory,
+    toggleHouseVisibility,
+    toggleRoomVisibility,
+    toggleCategoryVisibility,
+    toggleSubcategoryVisibility
   } = useSettingsState();
 
   const handleCsvUpload = (data: any[], type: string) => {
@@ -78,21 +86,29 @@ export function SettingsManagement() {
         </TabsList>
         
         <TabsContent value="houses">
-          <HousesManagement 
-            houses={houses} 
-            onAddHouse={addHouse} 
+          <HousesManagement
+            houses={houses}
+            onAddHouse={addHouse}
             onAddRoom={addRoom}
             onEditHouse={editHouse}
             onDeleteRoom={deleteRoom}
+            onMoveHouse={moveHouse}
+            onMoveRoom={moveRoom}
+            onToggleHouse={toggleHouseVisibility}
+            onToggleRoom={toggleRoomVisibility}
           />
         </TabsContent>
         
         <TabsContent value="categories">
-          <CategoriesManagement 
-            categories={categories} 
-            onAddCategory={addCategory} 
+          <CategoriesManagement
+            categories={categories}
+            onAddCategory={addCategory}
             onAddSubcategory={addSubcategory}
             onDeleteSubcategory={deleteSubcategory}
+            onMoveCategory={moveCategory}
+            onMoveSubcategory={moveSubcategory}
+            onToggleCategory={toggleCategoryVisibility}
+            onToggleSubcategory={toggleSubcategoryVisibility}
           />
         </TabsContent>
 
