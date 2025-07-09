@@ -2,17 +2,17 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ItemDetailDialog } from "@/components/ItemDetailDialog";
-import type { InventoryItem } from "@/types/inventory";
+import type { DecorItem } from "@/types/inventory";
 
 interface ItemHistoryDialogProps {
-  item: InventoryItem | null;
+  item: DecorItem | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onRestore?: (version: InventoryItem) => void;
+  onRestore?: (version: DecorItem) => void;
 }
 
 export function ItemHistoryDialog({ item, open, onOpenChange, onRestore }: ItemHistoryDialogProps) {
-  const [versionItem, setVersionItem] = useState<InventoryItem | null>(null);
+  const [versionItem, setVersionItem] = useState<DecorItem | null>(null);
   if (!item || !item.history || item.history.length === 0) return null;
 
   return (

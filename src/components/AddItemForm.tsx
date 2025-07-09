@@ -8,8 +8,8 @@ import { AddItemLocationValuation } from "./AddItemLocationValuation";
 import { AddItemImages } from "./AddItemImages";
 import { AddItemDescriptionNotes } from "./AddItemDescriptionNotes";
 import { useToast } from "@/hooks/use-toast";
-import { createInventoryItem, updateInventoryItem } from "@/lib/api";
-import type { InventoryItem } from "@/types/inventory";
+import { createDecorItem, updateDecorItem } from "@/lib/api";
+import type { DecorItem } from "@/types/inventory";
 
 export function AddItemForm() {
   const [searchParams] = useSearchParams();
@@ -93,23 +93,23 @@ export function AddItemForm() {
     e.preventDefault();
     console.log("Form submitted:", formData);
 
-    let saveAction: Promise<InventoryItem | null>;
+    let saveAction: Promise<DecorItem | null>;
     let exists = false;
 
     if (draftId) {
       const inventory = JSON.parse(
         localStorage.getItem('inventoryData') || '[]'
-      ) as InventoryItem[];
+      ) as DecorItem[];
       exists = inventory.some((item) => item.id === Number(draftId) && !item.deleted);
 
       saveAction = exists
-        ? updateInventoryItem(draftId, {
+        ? updateDecorItem(draftId, {
             id: Number(draftId),
             ...formData,
           })
-        : createInventoryItem(formData as unknown as InventoryItem);
+        : createDecorItem(formData as unknown as DecorItem);
     } else {
-      saveAction = createInventoryItem(formData as unknown as InventoryItem);
+      saveAction = createDecorItem(formData as unknown as DecorItem);
     }
 
     saveAction

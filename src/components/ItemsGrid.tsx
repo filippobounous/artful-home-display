@@ -1,11 +1,11 @@
 
 import { useRef } from "react";
 import { ItemCard } from "./ItemCard";
-import { InventoryItem } from "@/types/inventory";
+import { DecorItem } from "@/types/inventory";
 
 interface ItemsGridProps {
-  items: InventoryItem[];
-  onItemClick?: (item: InventoryItem) => void;
+  items: DecorItem[];
+  onItemClick?: (item: DecorItem) => void;
   selectedIds?: string[];
   onSelectionChange?: (ids: string[]) => void;
 }

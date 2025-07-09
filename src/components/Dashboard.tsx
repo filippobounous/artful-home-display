@@ -1,13 +1,13 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { InventoryItem } from "@/types/inventory";
+import { DecorItem } from "@/types/inventory";
 import { useSettingsState } from "@/hooks/useSettingsState";
 import { Palette, Sofa, Package, Home } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface DashboardProps {
-  items: InventoryItem[];
+  items: DecorItem[];
 }
 
 export function Dashboard({ items }: DashboardProps) {
