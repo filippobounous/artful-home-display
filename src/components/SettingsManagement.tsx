@@ -41,8 +41,10 @@ export function SettingsManagement() {
   const downloadCsvMappings = () => {
     // Convert houses to CSV
     const housesCsv = [
-      'House Name,Country,Address,Year Built,Code,Icon',
-      ...houses.map(h => `"${h.name}","${h.country}","${h.address || ''}","${h.yearBuilt || ''}","${h.code}","${h.icon}"`)
+      'House Name,City,Country,Address,Postal Code,Code,Beneficiary,Latitude,Longitude,Description,Notes,Icon',
+      ...houses.map(h =>
+        `"${h.name}","${h.city}","${h.country}","${h.address || ''}","${h.postal_code || ''}","${h.code}","${Array.isArray(h.beneficiary) ? h.beneficiary.join(';') : (h.beneficiary || '')}","${h.latitude ?? ''}","${h.longitude ?? ''}","${h.description || ''}","${h.notes || ''}","${h.icon}"`
+      )
     ].join('\n');
 
     // Convert categories to CSV

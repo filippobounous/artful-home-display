@@ -126,7 +126,7 @@ export function CsvUploader({ onUpload }: CsvUploaderProps) {
 
         <div className="text-xs text-gray-500">
           <p><strong>CSV Format Examples:</strong></p>
-          <p><strong>Houses:</strong> name,country,address,yearBuilt,code</p>
+          <p><strong>Houses:</strong> name,city,country,address,postal_code,code,beneficiary,latitude,longitude,description,notes</p>
           <p><strong>Categories:</strong> name,icon</p>
           <p><strong>Rooms:</strong> name,houseId</p>
           <p><strong>Items:</strong> title,category,subcategory,house,room,widthCm,heightCm,depthCm,description,valuation,artist</p>

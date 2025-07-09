@@ -68,14 +68,35 @@ export function useSettingsState() {
     return newCategory;
   };
 
-  const addHouse = (name: string, country: string, address: string, yearBuilt: number | undefined, code: string, icon: string) => {
+  const addHouse = (
+    name: string,
+    city: string,
+    country: string,
+    address: string,
+    postalCode: string,
+    beneficiary: string,
+    latitude: number | undefined,
+    longitude: number | undefined,
+    code: string,
+    description: string,
+    notes: string,
+    icon: string
+  ) => {
     const newHouse: HouseConfig = {
       id: name.toLowerCase().replace(/\s+/g, '-'),
-      name,
-      country,
-      address,
-      yearBuilt,
       code: code.toUpperCase(),
+      name,
+      address,
+      city,
+      country,
+      postal_code: postalCode,
+      beneficiary: beneficiary ? beneficiary.split(';').map(b => b.trim()) : undefined,
+      latitude,
+      longitude,
+      description: description || undefined,
+      notes: notes || undefined,
+      version: 1,
+      is_deleted: false,
       icon,
       rooms: [],
       visible: true
@@ -89,7 +110,13 @@ export function useSettingsState() {
   const editHouse = (houseId: string, updates: Partial<HouseConfig>) => {
     globalHouses = globalHouses.map(house => {
       if (house.id === houseId) {
-        return { ...house, ...updates };
+        const history = house.history ? [...house.history, { ...house }] : [{ ...house }];
+        return {
+          ...house,
+          ...updates,
+          version: (house.version || 1) + 1,
+          history
+        };
       }
       return house;
     });
@@ -300,11 +327,19 @@ export function useSettingsState() {
     const mappings = {
       houses: houses.map(h => ({
         id: h.id,
-        name: h.name,
-        country: h.country,
-        address: h.address,
-        yearBuilt: h.yearBuilt,
         code: h.code,
+        name: h.name,
+        address: h.address,
+        city: h.city,
+        country: h.country,
+        postal_code: h.postal_code,
+        beneficiary: h.beneficiary,
+        latitude: h.latitude,
+        longitude: h.longitude,
+        description: h.description,
+        notes: h.notes,
+        version: h.version,
+        is_deleted: h.is_deleted,
         icon: h.icon,
         rooms: h.rooms.map(r => ({ id: r.id, name: r.name }))
       })),

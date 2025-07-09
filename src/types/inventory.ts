@@ -88,15 +88,22 @@ export interface SubcategoryConfig {
 
 export interface HouseConfig {
   id: string;
+  code: string;
   name: string;
-  country: string;
   address?: string;
-  yearBuilt?: number;
-  code?: string;
+  city: string;
+  country: string;
+  postal_code?: string;
+  beneficiary?: string | string[];
+  latitude?: number;
+  longitude?: number;
+  description?: string;
+  notes?: string;
+  version: number;
+  is_deleted: boolean;
   icon: string;
   rooms: RoomConfig[];
   visible: boolean;
-  deleted?: boolean;
   history?: HouseConfig[];
 }
 
@@ -162,11 +169,19 @@ export const categoryConfigs: CategoryConfig[] = [
 export const defaultHouses: HouseConfig[] = [
   {
     id: "main-house",
-    name: "Main House",
-    country: "United States",
-    address: "123 Main Street, Beverly Hills, CA",
-    yearBuilt: 1985,
     code: "MH01",
+    name: "Main House",
+    address: "123 Main Street",
+    city: "Beverly Hills",
+    country: "United States",
+    postal_code: "90210",
+    beneficiary: ["John Doe"],
+    latitude: 34.0736,
+    longitude: -118.4004,
+    description: "Primary residence",
+    notes: "",
+    version: 1,
+    is_deleted: false,
     icon: "house",
     rooms: [
       { id: "living-room", name: "Living Room", visible: true },
@@ -181,11 +196,19 @@ export const defaultHouses: HouseConfig[] = [
   },
   {
     id: "guest-house",
-    name: "Guest House",
-    country: "United States",
-    address: "125 Main Street, Beverly Hills, CA",
-    yearBuilt: 1990,
     code: "GH01",
+    name: "Guest House",
+    address: "125 Main Street",
+    city: "Beverly Hills",
+    country: "United States",
+    postal_code: "90210",
+    beneficiary: ["John Doe"],
+    latitude: 34.0736,
+    longitude: -118.401,
+    description: "Secondary residence",
+    notes: "",
+    version: 1,
+    is_deleted: false,
     icon: "house",
     rooms: [
       { id: "living-room", name: "Living Room", visible: true },
@@ -197,11 +220,19 @@ export const defaultHouses: HouseConfig[] = [
   },
   {
     id: "studio",
-    name: "Studio",
-    country: "France",
-    address: "45 Rue de Rivoli, Paris",
-    yearBuilt: 2010,
     code: "ST01",
+    name: "Studio",
+    address: "45 Rue de Rivoli",
+    city: "Paris",
+    country: "France",
+    postal_code: "75001",
+    beneficiary: ["John Doe"],
+    latitude: 48.8559,
+    longitude: 2.3601,
+    description: "Workspace",
+    notes: "",
+    version: 1,
+    is_deleted: false,
     icon: "house",
     rooms: [
       { id: "main-area", name: "Main Area", visible: true },

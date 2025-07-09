@@ -34,10 +34,16 @@ interface HousesManagementProps {
   houses: any[];
   onAddHouse: (
     name: string,
+    city: string,
     country: string,
     address: string,
-    yearBuilt: number | undefined,
+    postalCode: string,
+    beneficiary: string,
+    latitude: number | undefined,
+    longitude: number | undefined,
     code: string,
+    description: string,
+    notes: string,
     icon: string
   ) => void;
   onAddRoom: (houseId: string, room: Partial<RoomConfig> & { name: string; floor: number }) => void;
@@ -63,9 +69,15 @@ export function HousesManagement({
   onToggleRoom
 }: HousesManagementProps) {
   const [newHouseName, setNewHouseName] = useState("");
+  const [newHouseCity, setNewHouseCity] = useState("");
   const [newHouseCountry, setNewHouseCountry] = useState("");
   const [newHouseAddress, setNewHouseAddress] = useState("");
-  const [newHouseYear, setNewHouseYear] = useState("");
+  const [newHousePostal, setNewHousePostal] = useState("");
+  const [newHouseBeneficiary, setNewHouseBeneficiary] = useState("");
+  const [newHouseLatitude, setNewHouseLatitude] = useState("");
+  const [newHouseLongitude, setNewHouseLongitude] = useState("");
+  const [newHouseDescription, setNewHouseDescription] = useState("");
+  const [newHouseNotes, setNewHouseNotes] = useState("");
   const [newHouseCode, setNewHouseCode] = useState("");
   const [newHouseIcon, setNewHouseIcon] = useState("house");
   const [newRoomName, setNewRoomName] = useState("");
@@ -99,7 +111,7 @@ export function HousesManagement({
   }, [selectedHouse]);
 
   const handleAddHouse = () => {
-    if (newHouseName.trim() && newHouseCountry.trim() && newHouseCode.trim()) {
+    if (newHouseName.trim() && newHouseCity.trim() && newHouseCountry.trim() && newHouseCode.trim()) {
       if (newHouseCode.length !== 4) {
         toast({
           title: "Invalid house code",
@@ -108,24 +120,43 @@ export function HousesManagement({
         });
         return;
       }
-      
-      onAddHouse(newHouseName, newHouseCountry, newHouseAddress, newHouseYear ? parseInt(newHouseYear) : undefined, newHouseCode, newHouseIcon);
-      
+
+      onAddHouse(
+        newHouseName,
+        newHouseCity,
+        newHouseCountry,
+        newHouseAddress,
+        newHousePostal,
+        newHouseBeneficiary,
+        newHouseLatitude ? parseFloat(newHouseLatitude) : undefined,
+        newHouseLongitude ? parseFloat(newHouseLongitude) : undefined,
+        newHouseCode,
+        newHouseDescription,
+        newHouseNotes,
+        newHouseIcon
+      );
+
       toast({
         title: "House added",
         description: `${newHouseName} has been added successfully`
       });
-      
+
       setNewHouseName("");
+      setNewHouseCity("");
       setNewHouseCountry("");
       setNewHouseAddress("");
-      setNewHouseYear("");
+      setNewHousePostal("");
+      setNewHouseBeneficiary("");
+      setNewHouseLatitude("");
+      setNewHouseLongitude("");
+      setNewHouseDescription("");
+      setNewHouseNotes("");
       setNewHouseCode("");
       setNewHouseIcon("house");
     } else {
       toast({
         title: "Missing required fields",
-        description: "Please fill in house name, country, and code",
+        description: "Please fill in house name, city, country, and code",
         variant: "destructive"
       });
     }
@@ -170,16 +201,22 @@ export function HousesManagement({
     setEditingHouse(house.id);
     setEditData({
       name: house.name,
+      city: house.city,
       country: house.country,
       address: house.address || "",
-      yearBuilt: house.yearBuilt?.toString() || "",
+      postal_code: house.postal_code || "",
+      beneficiary: Array.isArray(house.beneficiary) ? house.beneficiary.join(';') : (house.beneficiary || ""),
+      latitude: house.latitude?.toString() || "",
+      longitude: house.longitude?.toString() || "",
       code: house.code,
+      description: house.description || "",
+      notes: house.notes || "",
       icon: house.icon
     });
   };
 
   const handleSaveEdit = () => {
-    if (editData.name.trim() && editData.country.trim() && editData.code.trim()) {
+    if (editData.name.trim() && editData.city.trim() && editData.country.trim() && editData.code.trim()) {
       if (editData.code.length !== 4) {
         toast({
           title: "Invalid house code",
@@ -191,10 +228,16 @@ export function HousesManagement({
 
       const updates = {
         name: editData.name,
+        city: editData.city,
         country: editData.country,
         address: editData.address,
-        yearBuilt: editData.yearBuilt ? parseInt(editData.yearBuilt) : undefined,
+        postal_code: editData.postal_code,
+        beneficiary: editData.beneficiary ? editData.beneficiary.split(';').map((b: string) => b.trim()) : undefined,
+        latitude: editData.latitude ? parseFloat(editData.latitude) : undefined,
+        longitude: editData.longitude ? parseFloat(editData.longitude) : undefined,
         code: editData.code.toUpperCase(),
+        description: editData.description || undefined,
+        notes: editData.notes || undefined,
         icon: editData.icon
       };
 
@@ -212,7 +255,7 @@ export function HousesManagement({
     } else {
       toast({
         title: "Missing required fields",
-        description: "Please fill in house name, country, and code",
+        description: "Please fill in house name, city, country, and code",
         variant: "destructive"
       });
     }
@@ -298,7 +341,7 @@ export function HousesManagement({
   };
 
   const downloadHousesTemplate = () => {
-    const template = "name,country,address,yearBuilt,code\nMy House,United States,123 Main St,1985,MH01\nGuest House,United States,125 Main St,1990,GH01";
+    const template = "name,city,country,address,postal_code,code,beneficiary,latitude,longitude,description,notes\nMy House,Beverly Hills,United States,123 Main St,90210,MH01,John Doe,34.07,-118.4,Primary residence,";
     const blob = new Blob([template], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -330,6 +373,14 @@ export function HousesManagement({
               />
             </div>
             <div>
+              <Label>City *</Label>
+              <Input
+                placeholder="City"
+                value={newHouseCity}
+                onChange={(e) => setNewHouseCity(e.target.value)}
+              />
+            </div>
+            <div>
               <Label>Country *</Label>
               <Select
                 value={newHouseCountry}
@@ -357,12 +408,11 @@ export function HousesManagement({
               />
             </div>
             <div>
-              <Label>Year Built</Label>
+              <Label>Postal Code</Label>
               <Input
-                placeholder="e.g., 1985"
-                type="number"
-                value={newHouseYear}
-                onChange={(e) => setNewHouseYear(e.target.value)}
+                placeholder="Postal code"
+                value={newHousePostal}
+                onChange={(e) => setNewHousePostal(e.target.value)}
               />
             </div>
             <div className="md:col-span-2">
@@ -371,6 +421,48 @@ export function HousesManagement({
                 placeholder="Full address"
                 value={newHouseAddress}
                 onChange={(e) => setNewHouseAddress(e.target.value)}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <Label>Beneficiary</Label>
+              <Input
+                placeholder="e.g., John Doe; Jane Doe"
+                value={newHouseBeneficiary}
+                onChange={(e) => setNewHouseBeneficiary(e.target.value)}
+              />
+            </div>
+            <div>
+              <Label>Latitude</Label>
+              <Input
+                type="number"
+                placeholder="Latitude"
+                value={newHouseLatitude}
+                onChange={(e) => setNewHouseLatitude(e.target.value)}
+              />
+            </div>
+            <div>
+              <Label>Longitude</Label>
+              <Input
+                type="number"
+                placeholder="Longitude"
+                value={newHouseLongitude}
+                onChange={(e) => setNewHouseLongitude(e.target.value)}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <Label>Description</Label>
+              <Textarea
+                value={newHouseDescription}
+                onChange={(e) => setNewHouseDescription(e.target.value)}
+                rows={2}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <Label>Notes</Label>
+              <Textarea
+                value={newHouseNotes}
+                onChange={(e) => setNewHouseNotes(e.target.value)}
+                rows={2}
               />
             </div>
           </div>
@@ -419,6 +511,13 @@ export function HousesManagement({
                           />
                         </div>
                         <div>
+                          <Label>City *</Label>
+                          <Input
+                            value={editData.city}
+                            onChange={(e) => setEditData({ ...editData, city: e.target.value })}
+                          />
+                        </div>
+                        <div>
                           <Label>Country *</Label>
                           <Select
                             value={editData.country}
@@ -440,23 +539,61 @@ export function HousesManagement({
                           <Label>House Code * (4 characters)</Label>
                           <Input
                             value={editData.code}
-                            onChange={(e) => setEditData({...editData, code: e.target.value.slice(0, 4)})}
+                            onChange={(e) => setEditData({ ...editData, code: e.target.value.slice(0, 4) })}
                             maxLength={4}
                           />
                         </div>
                         <div>
-                          <Label>Year Built</Label>
+                          <Label>Postal Code</Label>
                           <Input
-                            type="number"
-                            value={editData.yearBuilt}
-                            onChange={(e) => setEditData({...editData, yearBuilt: e.target.value})}
+                            value={editData.postal_code}
+                            onChange={(e) => setEditData({ ...editData, postal_code: e.target.value })}
                           />
                         </div>
                         <div className="md:col-span-2">
                           <Label>Address</Label>
                           <Input
                             value={editData.address}
-                            onChange={(e) => setEditData({...editData, address: e.target.value})}
+                            onChange={(e) => setEditData({ ...editData, address: e.target.value })}
+                          />
+                        </div>
+                        <div className="md:col-span-2">
+                          <Label>Beneficiary</Label>
+                          <Input
+                            value={editData.beneficiary}
+                            onChange={(e) => setEditData({ ...editData, beneficiary: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <Label>Latitude</Label>
+                          <Input
+                            type="number"
+                            value={editData.latitude}
+                            onChange={(e) => setEditData({ ...editData, latitude: e.target.value })}
+                          />
+                        </div>
+                        <div>
+                          <Label>Longitude</Label>
+                          <Input
+                            type="number"
+                            value={editData.longitude}
+                            onChange={(e) => setEditData({ ...editData, longitude: e.target.value })}
+                          />
+                        </div>
+                        <div className="md:col-span-2">
+                          <Label>Description</Label>
+                          <Textarea
+                            value={editData.description}
+                            onChange={(e) => setEditData({ ...editData, description: e.target.value })}
+                            rows={2}
+                          />
+                        </div>
+                        <div className="md:col-span-2">
+                          <Label>Notes</Label>
+                          <Textarea
+                            value={editData.notes}
+                            onChange={(e) => setEditData({ ...editData, notes: e.target.value })}
+                            rows={2}
                           />
                         </div>
                       </div>
@@ -489,9 +626,6 @@ export function HousesManagement({
                                 <p className="text-sm text-slate-600">{house.country}</p>
                                 {house.address && (
                                   <p className="text-xs text-slate-500">{house.address}</p>
-                                )}
-                                {house.yearBuilt && (
-                                  <p className="text-xs text-slate-500">Built: {house.yearBuilt}</p>
                                 )}
                                 <p className="text-xs text-slate-500">Code: {house.code}</p>
                               </div>
