@@ -95,7 +95,7 @@ export function ItemsList({ items, onItemClick, selectedIds = [], onSelectionCha
   return (
     <div className="space-y-4">
       {/* Sort Controls */}
-      <div className="flex flex-wrap gap-2 p-4 bg-white border rounded-lg">
+      <div className="flex flex-wrap gap-2 p-4 bg-card border rounded-lg">
         <span className="text-sm text-slate-600 mr-2">Sort by:</span>
         <SortButton field="title">Title</SortButton>
         <SortButton field="artist">Artist</SortButton>
@@ -131,7 +131,7 @@ export function ItemsList({ items, onItemClick, selectedIds = [], onSelectionCha
                       e.stopPropagation();
                       toggle(item.id.toString(), idx, false);
                     }}
-                    className="absolute -left-3 top-1 bg-white rounded-sm"
+                    className="absolute -left-3 top-1 bg-card rounded-sm"
                   />
                 )}
                 <img

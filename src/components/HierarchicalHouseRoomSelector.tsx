@@ -42,7 +42,7 @@ export function HierarchicalHouseRoomSelector({
         <SelectContent>
           {houses.map((house) => (
             <div key={house.id}>
-              <div className="px-2 py-1 text-sm font-medium text-slate-600 bg-slate-50">
+              <div className="px-2 py-1 text-sm font-medium text-slate-600 bg-muted">
                 {house.name}
               </div>
               {house.rooms.map((room) => (

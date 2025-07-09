@@ -38,7 +38,7 @@ export function ItemCard({ item, onClick, selected, onSelect }: ItemCardProps) {
           <Checkbox
             checked={selected}
             onClick={handleCheckbox}
-            className="absolute top-2 left-2 z-10 bg-white rounded-sm"
+            className="absolute top-2 left-2 z-10 bg-card rounded-sm"
           />
         )}
         <div className="aspect-square overflow-hidden rounded-t-lg">
