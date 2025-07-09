@@ -91,6 +91,12 @@ export function HousesManagement({
       .catch(() => setRoomTypes([]));
   }, []);
 
+  // Reset editing room state when the selected house changes
+  useEffect(() => {
+    setEditingRoom(null);
+    setRoomEditData({});
+  }, [selectedHouse]);
+
   const handleAddHouse = () => {
     if (newHouseName.trim() && newHouseCountry.trim() && newHouseCode.trim()) {
       if (newHouseCode.length !== 4) {
@@ -717,6 +723,21 @@ export function HousesManagement({
           {selectedHouse && (
             <div className="space-y-2">
               <Label>Rooms in {houses.find(h => h.id === selectedHouse)?.name}</Label>
+              <div className="flex flex-wrap gap-2">
+                {houses
+                  .find(h => h.id === selectedHouse)
+                  ?.rooms.map((room) => (
+                    <Badge key={room.id} variant="secondary" className="px-3 py-1">
+                      {room.name}
+                      <button
+                        className="ml-2 hover:text-primary"
+                        onClick={() => handleEditRoom(room)}
+                      >
+                        <Edit className="w-3 h-3" />
+                      </button>
+                      <button
+                        className="ml-1 hover:text-destructive"
+                        onClick={() => handleDeleteRoom(selectedHouse, room.id)}
                 <DragDropContext onDragEnd={handleRoomDragEnd}>
                   <Droppable droppableId="rooms">
                     {(provided) => (
