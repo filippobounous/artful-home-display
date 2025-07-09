@@ -186,7 +186,7 @@ const CategoryPage = () => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-slate-50">
+      <div className="min-h-screen flex w-full bg-background">
         <AppSidebar />
 
         <div className="flex-1 flex flex-col">
