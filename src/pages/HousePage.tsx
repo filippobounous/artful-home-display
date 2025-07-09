@@ -132,8 +132,8 @@ const HousePage = () => {
 
   const downloadCSV = () => {
     const headers = [
-      'ID', 'Title', 'Artist', 'Category', 'Subcategory', 'Size', 'Valuation',
-      'Valuation Currency', 'Quantity', 'Year/Period', 'Description', 'Condition',
+      'ID', 'Title', 'Artist', 'Category', 'Subcategory', 'Width (cm)', 'Height (cm)', 'Depth (cm)', 'Valuation',
+      'Valuation Currency', 'Quantity', 'Year/Period', 'Description',
       'House', 'Room', 'Notes'
     ];
 
@@ -145,13 +145,14 @@ const HousePage = () => {
         `"${item.artist || ''}"`,
         `"${item.category || ''}"`,
         `"${item.subcategory || ''}"`,
-        `"${item.size || ''}"`,
+        item.widthCm ?? '',
+        item.heightCm ?? '',
+        item.depthCm ?? '',
         item.valuation || '',
         `"${item.valuationCurrency || ''}"`,
         item.quantity || '',
         `"${item.yearPeriod || ''}"`,
         `"${item.description || ''}"`,
-        `"${item.condition || ''}"`,
         `"${item.house || ''}"`,
         `"${item.room || ''}"`,
         `"${item.notes || ''}"`

@@ -40,22 +40,7 @@ export function AddItemLocationValuation({ formData, setFormData }: AddItemLocat
         onSelectionChange={handleLocationChange}
       />
 
-      <div>
-        <Label htmlFor="condition">Condition</Label>
-        <Select value={formData.condition} onValueChange={(value) => setFormData({ ...formData, condition: value })}>
-          <SelectTrigger
-            className={formData.condition ? undefined : "text-muted-foreground"}
-          >
-            <SelectValue placeholder="Select condition" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="mint">Mint</SelectItem>
-            <SelectItem value="excellent">Excellent</SelectItem>
-            <SelectItem value="very good">Very Good</SelectItem>
-            <SelectItem value="good">Good</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+
 
       {/* Valuation Section */}
       <div className="space-y-4 pt-4 border-t">

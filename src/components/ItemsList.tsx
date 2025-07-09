@@ -23,7 +23,6 @@ type SortField =
   | 'category'
   | 'valuation'
   | 'yearPeriod'
-  | 'condition'
   | 'location';
 type SortDirection = 'asc' | 'desc';
 
@@ -33,20 +32,6 @@ export function ItemsList({ items, onItemClick, selectedIds = [], onSelectionCha
   const { houses, categories } = useSettingsState();
   const lastIndex = useRef<number | null>(null);
 
-  const getConditionColor = (condition: string) => {
-    switch (condition) {
-      case "mint":
-        return "bg-green-100 text-green-800 border-green-200";
-      case "excellent":
-        return "bg-blue-100 text-blue-800 border-blue-200";
-      case "very good":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200";
-      case "good":
-        return "bg-gray-100 text-gray-800 border-gray-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
-    }
-  };
 
   const formatCurrency = (value?: number, currency?: string) => {
     if (!value) return "-";
@@ -118,7 +103,6 @@ export function ItemsList({ items, onItemClick, selectedIds = [], onSelectionCha
         <SortButton field="valuation">Valuation</SortButton>
         <SortButton field="yearPeriod">Year</SortButton>
         <SortButton field="location">Location</SortButton>
-        <SortButton field="condition">Condition</SortButton>
       </div>
 
       {/* Items List */}
@@ -165,9 +149,6 @@ export function ItemsList({ items, onItemClick, selectedIds = [], onSelectionCha
                     )}
                   </div>
                   <div className="flex gap-2">
-                    <Badge className={getConditionColor(item.condition)}>
-                      {item.condition}
-                    </Badge>
                     {item.valuation && (
                       <Badge variant="outline">
                         {formatCurrency(item.valuation, item.valuationCurrency)}
@@ -201,10 +182,12 @@ export function ItemsList({ items, onItemClick, selectedIds = [], onSelectionCha
                     </div>
                   )}
                   
-                  {item.size && (
+                  {(item.widthCm || item.heightCm || item.depthCm) && (
                     <div>
-                      <span className="font-medium text-slate-600">Size:</span>
-                      <span className="ml-2">{item.size}</span>
+                      <span className="font-medium text-slate-600">Dimensions:</span>
+                      <span className="ml-2">
+                        {item.widthCm ?? '-'} x {item.heightCm ?? '-'} x {item.depthCm ?? '-'} cm
+                      </span>
                     </div>
                   )}
                   

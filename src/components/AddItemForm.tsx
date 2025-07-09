@@ -22,7 +22,9 @@ export function AddItemForm() {
     artist: "",
     category: "",
     subcategory: "",
-    size: "",
+    widthCm: "",
+    heightCm: "",
+    depthCm: "",
     valuation: "",
     valuationDate: undefined as Date | undefined,
     valuationPerson: "",
@@ -32,7 +34,6 @@ export function AddItemForm() {
     house: "",
     room: "",
     description: "",
-    condition: "",
     notes: "",
     images: [] as string[]
   });
@@ -48,7 +49,9 @@ export function AddItemForm() {
             artist: draft.artist || "",
             category: draft.category || "",
             subcategory: draft.subcategory || "",
-            size: draft.size || "",
+            widthCm: draft.widthCm || "",
+            heightCm: draft.heightCm || "",
+            depthCm: draft.depthCm || "",
             valuation: draft.valuation || "",
             valuationDate: draft.valuationDate || undefined,
             valuationPerson: draft.valuationPerson || "",
@@ -58,7 +61,6 @@ export function AddItemForm() {
             house: draft.house || "",
             room: draft.room || "",
             description: draft.description || "",
-            condition: draft.condition || "",
             notes: draft.notes || "",
             images: draft.images || []
           });
