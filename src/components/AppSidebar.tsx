@@ -54,27 +54,23 @@ export function AppSidebar() {
     icon: getIconComponent(house.icon)
   }));
 
-  const isActive = (path: string) => {
+  const checkActive = (path: string) => {
     if (path === "/") {
       return currentPath === "/";
     }
     return currentPath.startsWith(path);
   };
 
-  const getNavCls = ({ isActive: active }: { isActive: boolean }) =>
-    active 
-      ? "bg-blue-100 text-blue-900 font-medium border-r-2 border-blue-600" 
-      : "hover:bg-slate-100 text-slate-700";
 
   return (
     <Sidebar className={isCollapsed ? "w-14" : "w-64"} collapsible="icon">
-      <SidebarContent className="bg-white border-r border-slate-200">
+      <SidebarContent className="border-r border-sidebar-border">
         {/* Logo Section */}
-        <div className="p-6 border-b border-slate-200">
+        <div className="p-6 border-b border-slate-200 dark:border-slate-700">
           {!isCollapsed ? (
             <div>
-              <h2 className="text-xl font-bold text-slate-900">Murgenere</h2>
-              <p className="text-sm text-slate-600">Collection Manager</p>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Murgenere</h2>
+              <p className="text-sm text-slate-600 dark:text-slate-400">Collection Manager</p>
             </div>
           ) : (
             <div className="text-center">
@@ -87,18 +83,18 @@ export function AppSidebar() {
 
         {/* Main Navigation */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-slate-500 uppercase tracking-wider text-xs font-semibold">
+          <SidebarGroupLabel className="text-slate-500 dark:text-slate-400 uppercase tracking-wider text-xs font-semibold">
             {!isCollapsed && "Main Menu"}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {mainItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink 
-                      to={item.url} 
+                  <SidebarMenuButton asChild isActive={checkActive(item.url)}>
+                    <NavLink
+                      to={item.url}
                       end={item.url === "/"}
-                      className={({ isActive }) => getNavCls({ isActive })}
+                      className="flex items-center gap-2 w-full"
                     >
                       <item.icon className="w-4 h-4" />
                       {!isCollapsed && <span>{item.title}</span>}
@@ -112,18 +108,15 @@ export function AppSidebar() {
 
         {/* Categories */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-slate-500 uppercase tracking-wider text-xs font-semibold">
+          <SidebarGroupLabel className="text-slate-500 dark:text-slate-400 uppercase tracking-wider text-xs font-semibold">
             {!isCollapsed && "Categories"}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {categoryItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink 
-                      to={item.url}
-                      className={({ isActive }) => getNavCls({ isActive })}
-                    >
+                  <SidebarMenuButton asChild isActive={checkActive(item.url)}>
+                    <NavLink to={item.url} className="flex items-center gap-2 w-full">
                       <item.icon className="w-4 h-4" />
                       {!isCollapsed && <span>{item.title}</span>}
                     </NavLink>
@@ -136,18 +129,15 @@ export function AppSidebar() {
 
         {/* Houses */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-slate-500 uppercase tracking-wider text-xs font-semibold">
+          <SidebarGroupLabel className="text-slate-500 dark:text-slate-400 uppercase tracking-wider text-xs font-semibold">
             {!isCollapsed && "Houses"}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {houseItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink 
-                      to={item.url}
-                      className={({ isActive }) => getNavCls({ isActive })}
-                    >
+                  <SidebarMenuButton asChild isActive={checkActive(item.url)}>
+                    <NavLink to={item.url} className="flex items-center gap-2 w-full">
                       <item.icon className="w-4 h-4" />
                       {!isCollapsed && <span>{item.title}</span>}
                     </NavLink>
@@ -159,16 +149,13 @@ export function AppSidebar() {
         </SidebarGroup>
 
         {/* Settings at bottom */}
-        <div className="mt-auto border-t border-slate-200">
+        <div className="mt-auto border-t border-slate-200 dark:border-slate-700">
           <SidebarGroup>
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild>
-                    <NavLink 
-                      to="/settings"
-                      className={({ isActive }) => getNavCls({ isActive })}
-                    >
+                  <SidebarMenuButton asChild isActive={checkActive('/settings')}>
+                    <NavLink to="/settings" className="flex items-center gap-2 w-full">
                       <Settings className="w-4 h-4" />
                       {!isCollapsed && <span>Settings</span>}
                     </NavLink>

@@ -110,8 +110,8 @@ export function ItemsList({ items, onItemClick, selectedIds = [], onSelectionCha
   return (
     <div className="space-y-4">
       {/* Sort Controls */}
-      <div className="flex flex-wrap gap-2 p-4 bg-white border rounded-lg">
-        <span className="text-sm text-slate-600 mr-2">Sort by:</span>
+      <div className="flex flex-wrap gap-2 p-4 bg-card border border-border rounded-lg">
+        <span className="text-sm text-slate-600 dark:text-slate-400 mr-2">Sort by:</span>
         <SortButton field="title">Title</SortButton>
         <SortButton field="artist">Artist</SortButton>
         <SortButton field="category">Category</SortButton>
@@ -147,7 +147,7 @@ export function ItemsList({ items, onItemClick, selectedIds = [], onSelectionCha
                       e.stopPropagation();
                       toggle(item.id.toString(), idx, false);
                     }}
-                    className="absolute -left-3 top-1 bg-white rounded-sm"
+                    className="absolute -left-3 top-1 bg-card rounded-sm"
                   />
                 )}
                 <img
@@ -159,9 +159,9 @@ export function ItemsList({ items, onItemClick, selectedIds = [], onSelectionCha
               <div className="flex-1 space-y-2">
                 <div className="flex items-start justify-between">
                   <div>
-                    <h3 className="text-lg font-semibold text-slate-900">{item.title}</h3>
+                    <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{item.title}</h3>
                     {item.artist && (
-                      <p className="text-slate-600 text-sm font-medium">by {item.artist}</p>
+                      <p className="text-slate-600 dark:text-slate-400 text-sm font-medium">by {item.artist}</p>
                     )}
                   </div>
                   <div className="flex gap-2">
@@ -178,62 +178,62 @@ export function ItemsList({ items, onItemClick, selectedIds = [], onSelectionCha
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                   <div>
-                    <span className="font-medium text-slate-600">Category:</span>
+                    <span className="font-medium text-slate-600 dark:text-slate-400">Category:</span>
                     <span className="ml-2 capitalize">{item.category}</span>
                     {item.subcategory && (
-                      <span className="text-slate-500"> • {item.subcategory}</span>
+                      <span className="text-slate-500 dark:text-slate-400"> • {item.subcategory}</span>
                     )}
                   </div>
                   
                   {(item.house || item.room) && (
                     <div>
-                      <span className="font-medium text-slate-600">Location:</span>
+                      <span className="font-medium text-slate-600 dark:text-slate-400">Location:</span>
                       {item.house && <span className="ml-2 capitalize">{item.house.replace('-', ' ')}</span>}
-                      {item.house && item.room && <span className="text-slate-500"> • </span>}
+                      {item.house && item.room && <span className="text-slate-500 dark:text-slate-400"> • </span>}
                       {item.room && <span className="capitalize">{item.room.replace('-', ' ')}</span>}
                     </div>
                   )}
                   
                   {item.yearPeriod && (
                     <div>
-                      <span className="font-medium text-slate-600">Period:</span>
+                      <span className="font-medium text-slate-600 dark:text-slate-400">Period:</span>
                       <span className="ml-2">{item.yearPeriod}</span>
                     </div>
                   )}
                   
                   {item.size && (
                     <div>
-                      <span className="font-medium text-slate-600">Size:</span>
+                      <span className="font-medium text-slate-600 dark:text-slate-400">Size:</span>
                       <span className="ml-2">{item.size}</span>
                     </div>
                   )}
                   
                   {item.quantity && item.quantity > 1 && (
                     <div>
-                      <span className="font-medium text-slate-600">Quantity:</span>
+                      <span className="font-medium text-slate-600 dark:text-slate-400">Quantity:</span>
                       <span className="ml-2">{item.quantity}</span>
                     </div>
                   )}
                   
                   {item.valuationDate && (
                     <div>
-                      <span className="font-medium text-slate-600">Valued:</span>
+                      <span className="font-medium text-slate-600 dark:text-slate-400">Valued:</span>
                       <span className="ml-2">{item.valuationDate}</span>
                       {item.valuationPerson && (
-                        <span className="text-slate-500"> by {item.valuationPerson}</span>
+                        <span className="text-slate-500 dark:text-slate-400"> by {item.valuationPerson}</span>
                       )}
                     </div>
                   )}
                 </div>
                 
                 {item.description && (
-                  <p className="text-slate-600 text-sm line-clamp-2">{item.description}</p>
+                  <p className="text-slate-600 dark:text-slate-400 text-sm line-clamp-2">{item.description}</p>
                 )}
                 
                 {item.notes && (
                   <div className="pt-2 border-t">
-                    <span className="font-medium text-slate-600 text-sm">Notes:</span>
-                    <p className="text-slate-500 text-sm mt-1">{item.notes}</p>
+                    <span className="font-medium text-slate-600 dark:text-slate-400 text-sm">Notes:</span>
+                    <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">{item.notes}</p>
                   </div>
                 )}
               </div>

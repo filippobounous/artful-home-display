@@ -83,7 +83,7 @@ export function SearchFilters({
       {/* Search and filters in aligned grid */}
       <div
         className={cn(
-          "bg-white p-4 rounded-lg border shadow-sm relative",
+          "bg-card p-4 rounded-lg border shadow-sm relative",
           activeCount > 0 && "border-primary"
         )}
       >

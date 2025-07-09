@@ -38,7 +38,7 @@ export function ItemCard({ item, onClick, selected, onSelect }: ItemCardProps) {
           <Checkbox
             checked={selected}
             onClick={handleCheckbox}
-            className="absolute top-2 left-2 z-10 bg-white rounded-sm"
+            className="absolute top-2 left-2 z-10 bg-card rounded-sm"
           />
         )}
         <div className="aspect-square overflow-hidden rounded-t-lg">
@@ -50,26 +50,26 @@ export function ItemCard({ item, onClick, selected, onSelect }: ItemCardProps) {
         </div>
         <div className="p-4">
           <div className="flex items-start justify-between mb-2">
-            <h3 className="font-semibold text-slate-900 line-clamp-2">{item.title}</h3>
+            <h3 className="font-semibold text-slate-900 dark:text-slate-100 line-clamp-2">{item.title}</h3>
           </div>
           
           {item.artist && (
-            <p className="text-slate-600 text-sm font-medium mb-1">by {item.artist}</p>
+            <p className="text-slate-600 dark:text-slate-400 text-sm font-medium mb-1">by {item.artist}</p>
           )}
           
           {item.yearPeriod && (
-            <p className="text-slate-600 text-sm mb-2">{item.yearPeriod}</p>
+            <p className="text-slate-600 dark:text-slate-400 text-sm mb-2">{item.yearPeriod}</p>
           )}
           
           <div className="flex items-center justify-between text-sm">
-            <div className="flex gap-2 text-xs text-slate-500">
+            <div className="flex gap-2 text-xs text-slate-500 dark:text-slate-400">
               <span className="capitalize">{item.category}</span>
               {item.subcategory && <span>• {item.subcategory}</span>}
             </div>
           </div>
           
           {(item.house || item.room) && (
-            <div className="mt-2 text-xs text-slate-500">
+            <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">
               {item.house && <span className="capitalize">{item.house.replace('-', ' ')}</span>}
               {item.house && item.room && <span> • </span>}
               {item.room && <span className="capitalize">{item.room.replace('-', ' ')}</span>}

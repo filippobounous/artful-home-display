@@ -1,6 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Plus, Download } from "lucide-react";
+import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { sampleItems } from "@/data/sampleData";
@@ -67,10 +68,10 @@ export function InventoryHeader() {
   };
 
   return (
-    <header className="border-b bg-white px-6 py-4">
+    <header className="border-b border-border bg-card px-6 py-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <h1 className="text-2xl font-bold text-slate-900">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
             Collection Manager
           </h1>
         </div>
@@ -92,13 +93,15 @@ export function InventoryHeader() {
               </Button>
             </>
           )}
-          
+
           {location.pathname !== '/add' && (
             <Button onClick={() => navigate('/add')}>
               <Plus className="w-4 h-4 mr-2" />
               Add Item
             </Button>
           )}
+
+          <DarkModeToggle />
         </div>
       </div>
     </header>

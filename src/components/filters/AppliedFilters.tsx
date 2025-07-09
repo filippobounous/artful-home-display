@@ -98,9 +98,9 @@ export function AppliedFilters({
   if (!hasActiveFilters) return null;
 
   return (
-    <div className="bg-white p-4 rounded-lg border shadow-sm">
+    <div className="bg-card p-4 rounded-lg border shadow-sm">
       <div className="flex items-center justify-between mb-3">
-        <h4 className="text-sm font-medium text-slate-700">Applied Filters</h4>
+        <h4 className="text-sm font-medium text-slate-700 dark:text-slate-300">Applied Filters</h4>
         <Button variant="ghost" size="sm" onClick={clearAllFilters}>
           Clear All
         </Button>

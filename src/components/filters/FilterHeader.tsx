@@ -15,8 +15,8 @@ export function FilterHeader({
   onDownloadCSV,
 }: FilterHeaderProps) {
   return (
-    <div className="flex items-center justify-between bg-white p-4 rounded-lg border shadow-sm">
-      <h3 className="text-lg font-semibold text-slate-900">Filter & View Options</h3>
+    <div className="flex items-center justify-between bg-card p-4 rounded-lg border shadow-sm">
+      <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Filter & View Options</h3>
       <div className="flex items-center gap-2">
         {onDownloadCSV && (
           <Button variant="outline" size="sm" onClick={onDownloadCSV}>
