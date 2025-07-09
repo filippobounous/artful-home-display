@@ -54,6 +54,7 @@ export function HousesManagement({
   houses,
   onAddHouse,
   onAddRoom,
+  onEditRoom,
   onEditHouse,
   onDeleteRoom,
   onMoveHouse,
@@ -254,6 +255,7 @@ export function HousesManagement({
     if (selectedHouse) {
       onToggleRoom?.(selectedHouse, roomId);
     }
+  };
 
   const handleEditRoom = (room: RoomConfig) => {
     setEditingRoom(room.id);
@@ -738,7 +740,13 @@ export function HousesManagement({
                       <button
                         className="ml-1 hover:text-destructive"
                         onClick={() => handleDeleteRoom(selectedHouse, room.id)}
-                <DragDropContext onDragEnd={handleRoomDragEnd}>
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </Badge>
+                  ))}
+              </div>
+              <DragDropContext onDragEnd={handleRoomDragEnd}>
                   <Droppable droppableId="rooms">
                     {(provided) => (
                       <div
