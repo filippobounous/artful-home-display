@@ -276,7 +276,7 @@ const CategoryPage = () => {
 
 
             {selectedIds.length > 0 && (
-              <div className="mb-6 flex flex-wrap items-center justify-between gap-2 bg-blue-100 border border-blue-200 text-blue-800 px-4 py-2 rounded">
+              <div className="mb-6 flex flex-wrap items-center justify-between gap-2 bg-blue-100 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-100 px-4 py-2 rounded">
                 <span className="text-sm font-medium">{selectedIds.length} item{selectedIds.length === 1 ? '' : 's'} selected</span>
                 <div className="flex items-center gap-2">
                   <Button variant="link" size="sm" onClick={() => setLocationDialogOpen(true)}>
