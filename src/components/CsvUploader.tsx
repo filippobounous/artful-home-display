@@ -129,7 +129,7 @@ export function CsvUploader({ onUpload }: CsvUploaderProps) {
           <p><strong>Houses:</strong> name,country,address,yearBuilt,code</p>
           <p><strong>Categories:</strong> name,icon</p>
           <p><strong>Rooms:</strong> name,houseId</p>
-          <p><strong>Items:</strong> title,category,subcategory,house,room,description,condition</p>
+          <p><strong>Items:</strong> title,category,subcategory,house,room,widthCm,heightCm,depthCm,description,valuation,artist</p>
         </div>
       </CardContent>
     </Card>

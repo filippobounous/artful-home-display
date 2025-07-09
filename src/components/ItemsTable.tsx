@@ -20,20 +20,6 @@ interface ItemsTableProps {
 
 export function ItemsTable({ items, onItemClick, onSort, sortField, sortDirection, selectedIds = [], onSelectionChange }: ItemsTableProps) {
   const lastIndex = useRef<number | null>(null);
-  const getConditionColor = (condition: string) => {
-    switch (condition) {
-      case "mint":
-        return "bg-green-100 text-green-800 border-green-200";
-      case "excellent":
-        return "bg-blue-100 text-blue-800 border-blue-200";
-      case "very good":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200";
-      case "good":
-        return "bg-gray-100 text-gray-800 border-gray-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
-    }
-  };
 
   const formatCurrency = (value?: number, currency?: string) => {
     if (!value) return "-";
@@ -102,7 +88,6 @@ export function ItemsTable({ items, onItemClick, onSort, sortField, sortDirectio
             <SortableHeader field="category">Category</SortableHeader>
             <SortableHeader field="yearPeriod">Year</SortableHeader>
             <SortableHeader field="location">Location</SortableHeader>
-            <SortableHeader field="condition">Condition</SortableHeader>
             <SortableHeader field="valuation">
               <div className="text-right">Valuation</div>
             </SortableHeader>
@@ -167,11 +152,6 @@ export function ItemsTable({ items, onItemClick, onSort, sortField, sortDirectio
                     <p className="text-muted-foreground capitalize">{item.room.replace('-', ' ')}</p>
                   )}
                 </div>
-              </TableCell>
-              <TableCell>
-                <Badge className={getConditionColor(item.condition)}>
-                  {item.condition}
-                </Badge>
               </TableCell>
               <TableCell className="text-right">
                 {formatCurrency(item.valuation, item.valuationCurrency)}

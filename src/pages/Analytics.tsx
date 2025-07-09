@@ -48,16 +48,6 @@ const Analytics = () => {
     count
   }));
 
-  // Items by condition
-  const conditionData = items.reduce((acc, item) => {
-    acc[item.condition] = (acc[item.condition] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
-  const conditionChartData = Object.entries(conditionData).map(([condition, count]) => ({
-    condition: condition.charAt(0).toUpperCase() + condition.slice(1),
-    count
-  }));
 
   // Valuation by category
   const valuationByCategory = items.reduce((acc, item) => {
@@ -192,22 +182,6 @@ const Analytics = () => {
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Items by Condition</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={conditionChartData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="condition" />
-                      <YAxis />
-                      <Tooltip />
-                      <Bar dataKey="count" fill="#f59e0b" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
             </div>
           </main>
         </div>
