@@ -2,11 +2,11 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
-import { InventoryItem } from "@/types/inventory";
+import { DecorItem } from "@/types/inventory";
 
 interface ItemCardProps {
-  item: InventoryItem;
-  onClick?: (item: InventoryItem) => void;
+  item: DecorItem;
+  onClick?: (item: DecorItem) => void;
   selected?: boolean;
   onSelect?: (shift: boolean) => void;
 }

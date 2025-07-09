@@ -1,6 +1,6 @@
-import { InventoryItem, HouseConfig, CategoryConfig } from "@/types/inventory";
+import { DecorItem, HouseConfig, CategoryConfig } from "@/types/inventory";
 
-function locationIndex(item: InventoryItem, houses: HouseConfig[]): number {
+function locationIndex(item: DecorItem, houses: HouseConfig[]): number {
   if (item as any && (item as any).locationSort !== undefined) {
     const val = (item as any).locationSort;
     const num = typeof val === 'number' ? val : Number(val);
@@ -13,7 +13,7 @@ function locationIndex(item: InventoryItem, houses: HouseConfig[]): number {
   return h * 1000 + r;
 }
 
-function categoryIndex(item: InventoryItem, categories: CategoryConfig[]): number {
+function categoryIndex(item: DecorItem, categories: CategoryConfig[]): number {
   const catIdx = categories.findIndex(c => c.id === item.category);
   const subIdx = catIdx === -1 || !item.subcategory ? -1 : categories[catIdx].subcategories.findIndex(s => s.id === item.subcategory);
   const c = catIdx === -1 ? 999 : catIdx;
@@ -22,12 +22,12 @@ function categoryIndex(item: InventoryItem, categories: CategoryConfig[]): numbe
 }
 
 export function sortInventoryItems(
-  items: InventoryItem[],
+  items: DecorItem[],
   sortField: string,
   sortDirection: 'asc' | 'desc',
   houses: HouseConfig[],
   categories: CategoryConfig[]
-): InventoryItem[] {
+): DecorItem[] {
   return [...items].sort((a, b) => {
     if (!sortField) return 0;
     let aValue: any;
@@ -40,9 +40,9 @@ export function sortInventoryItems(
       bValue = categoryIndex(b, categories);
     } else {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      aValue = a[sortField as keyof InventoryItem];
+      aValue = a[sortField as keyof DecorItem];
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      bValue = b[sortField as keyof InventoryItem];
+      bValue = b[sortField as keyof DecorItem];
       if (sortField === 'valuation') {
         aValue = Number(aValue) || 0;
         bValue = Number(bValue) || 0;

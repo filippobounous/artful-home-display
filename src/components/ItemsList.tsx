@@ -5,14 +5,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
-import { InventoryItem } from "@/types/inventory";
+import { DecorItem } from "@/types/inventory";
 import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { useSettingsState } from "@/hooks/useSettingsState";
 import { sortInventoryItems } from "@/lib/sortUtils";
 
 interface ItemsListProps {
-  items: InventoryItem[];
-  onItemClick?: (item: InventoryItem) => void;
+  items: DecorItem[];
+  onItemClick?: (item: DecorItem) => void;
   selectedIds?: string[];
   onSelectionChange?: (ids: string[]) => void;
 }

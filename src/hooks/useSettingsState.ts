@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { categoryConfigs, houseConfigs, CategoryConfig, HouseConfig } from "@/types/inventory";
+import { categoryConfigs, defaultHouses, CategoryConfig, HouseConfig } from "@/types/inventory";
 
 // Load persisted settings from localStorage if available
 let storedCategories: CategoryConfig[] | null = null;
@@ -17,7 +17,7 @@ if (typeof window !== 'undefined') {
 
 // Create a global state management solution
 let globalCategories: CategoryConfig[] = storedCategories || categoryConfigs;
-let globalHouses: HouseConfig[] = storedHouses || houseConfigs;
+let globalHouses: HouseConfig[] = storedHouses || defaultHouses;
 let listeners: (() => void)[] = [];
 
 const notifyListeners = () => {

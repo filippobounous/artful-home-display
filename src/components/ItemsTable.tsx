@@ -6,11 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { ArrowUpDown, ChevronUp, ChevronDown } from "lucide-react";
-import { InventoryItem } from "@/types/inventory";
+import { DecorItem } from "@/types/inventory";
 
 interface ItemsTableProps {
-  items: InventoryItem[];
-  onItemClick?: (item: InventoryItem) => void;
+  items: DecorItem[];
+  onItemClick?: (item: DecorItem) => void;
   onSort?: (field: string, direction: 'asc' | 'desc') => void;
   sortField?: string;
   sortDirection?: 'asc' | 'desc';
