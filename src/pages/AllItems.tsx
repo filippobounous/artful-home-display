@@ -14,6 +14,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { sampleDecorItems } from "@/data/sampleData";
 import { fetchDecorItems, deleteDecorItem, restoreDecorItem, updateDecorItem } from "@/lib/api";
 import { BatchLocationDialog } from "@/components/BatchLocationDialog";
+import { Button } from "@/components/ui/button";
 import { DecorItem } from "@/types/inventory";
 import { useSettingsState } from "@/hooks/useSettingsState";
 import { sortInventoryItems } from "@/lib/sortUtils";
@@ -264,24 +265,20 @@ const AllItems = () => {
               <div className="mb-6 flex flex-wrap items-center justify-between gap-2 bg-blue-100 border border-blue-200 text-blue-800 px-4 py-2 rounded">
                 <span className="text-sm font-medium">{selectedIds.length} item{selectedIds.length === 1 ? '' : 's'} selected</span>
                 <div className="flex items-center gap-2">
-                  <button
-                    className="text-sm underline"
-                    onClick={() => setLocationDialogOpen(true)}
-                  >
+                  <Button variant="link" size="sm" onClick={() => setLocationDialogOpen(true)}>
                     Change Location
-                  </button>
-                  <button
-                    className="text-sm underline text-red-600"
+                  </Button>
+                  <Button
+                    variant="link"
+                    size="sm"
+                    className="text-destructive"
                     onClick={handleBatchDelete}
                   >
                     Delete
-                  </button>
-                  <button
-                    className="text-sm underline"
-                    onClick={() => setSelectedIds([])}
-                  >
+                  </Button>
+                  <Button variant="link" size="sm" onClick={() => setSelectedIds([])}>
                     Clear
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
