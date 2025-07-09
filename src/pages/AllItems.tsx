@@ -12,7 +12,9 @@ import { ItemDetailDialog } from "@/components/ItemDetailDialog";
 import { ItemHistoryDialog } from "@/components/ItemHistoryDialog";
 import { EmptyState } from "@/components/EmptyState";
 import { sampleDecorItems } from "@/data/sampleData";
-import { fetchDecorItems, deleteDecorItem, restoreDecorItem } from "@/lib/api";
+import { fetchDecorItems, deleteDecorItem, restoreDecorItem, updateDecorItem } from "@/lib/api";
+import { BatchLocationDialog } from "@/components/BatchLocationDialog";
+import { Button } from "@/components/ui/button";
 import { DecorItem } from "@/types/inventory";
 import { useSettingsState } from "@/hooks/useSettingsState";
 import { sortInventoryItems } from "@/lib/sortUtils";
@@ -35,6 +37,7 @@ const AllItems = () => {
   const [selectedItem, setSelectedItem] = useState<DecorItem | null>(null);
   const [historyItem, setHistoryItem] = useState<DecorItem | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [locationDialogOpen, setLocationDialogOpen] = useState(false);
   const [sortField, setSortField] = useState<string>("");
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const { houses, categories } = useSettingsState();
@@ -173,6 +176,52 @@ const AllItems = () => {
     URL.revokeObjectURL(url);
   };
 
+  const handleBatchLocation = (house: string, room: string) => {
+    const ids = [...selectedIds];
+    downloadCSV();
+    Promise.all(ids.map(id => updateDecorItem(id, { house, room } as unknown as DecorItem)))
+      .then(updated => {
+        setItems(prev => prev.map(it => {
+          const match = updated.find(u => u.id === it.id);
+          return match ? match : it;
+        }));
+        toast({
+          title: 'Items updated',
+          description: `${ids.length} item${ids.length === 1 ? '' : 's'} moved`,
+        });
+        setSelectedIds([]);
+      })
+      .catch(() => {
+        toast({
+          title: 'Error updating items',
+          description: 'There was a problem updating the selected items',
+          variant: 'destructive',
+        });
+      });
+  };
+
+  const handleBatchDelete = () => {
+    if (!window.confirm(`Delete ${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'}?`)) return;
+    const ids = [...selectedIds];
+    downloadCSV();
+    Promise.all(ids.map(id => deleteDecorItem(id)))
+      .then(() => {
+        setItems(prev => prev.filter(i => !ids.includes(i.id.toString())));
+        toast({
+          title: 'Items deleted',
+          description: `${ids.length} item${ids.length === 1 ? '' : 's'} removed`,
+        });
+        setSelectedIds([]);
+      })
+      .catch(() => {
+        toast({
+          title: 'Error deleting items',
+          description: 'There was a problem deleting the selected items',
+          variant: 'destructive',
+        });
+      });
+  };
+
 
   return (
     <SidebarProvider>
@@ -213,14 +262,24 @@ const AllItems = () => {
             />
 
             {selectedIds.length > 0 && (
-              <div className="mb-6 flex items-center justify-between bg-blue-100 border border-blue-200 text-blue-800 px-4 py-2 rounded">
+              <div className="mb-6 flex flex-wrap items-center justify-between gap-2 bg-blue-100 border border-blue-200 text-blue-800 px-4 py-2 rounded">
                 <span className="text-sm font-medium">{selectedIds.length} item{selectedIds.length === 1 ? '' : 's'} selected</span>
-                <button
-                  className="text-sm underline"
-                  onClick={() => setSelectedIds([])}
-                >
-                  Clear
-                </button>
+                <div className="flex items-center gap-2">
+                  <Button variant="link" size="sm" onClick={() => setLocationDialogOpen(true)}>
+                    Change Location
+                  </Button>
+                  <Button
+                    variant="link"
+                    size="sm"
+                    className="text-destructive"
+                    onClick={handleBatchDelete}
+                  >
+                    Delete
+                  </Button>
+                  <Button variant="link" size="sm" onClick={() => setSelectedIds([])}>
+                    Clear
+                  </Button>
+                </div>
               </div>
             )}
 
@@ -271,6 +330,11 @@ const AllItems = () => {
               open={!!historyItem}
               onOpenChange={(open) => !open && setHistoryItem(null)}
               onRestore={handleRestore}
+            />
+            <BatchLocationDialog
+              open={locationDialogOpen}
+              onOpenChange={setLocationDialogOpen}
+              onSubmit={handleBatchLocation}
             />
           </main>
         </div>
