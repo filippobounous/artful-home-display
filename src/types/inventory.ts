@@ -102,9 +102,19 @@ export interface HouseConfig {
 
 export interface RoomConfig {
   id: string;
+  code?: string;
   name: string;
-  visible: boolean;
-  deleted?: boolean;
+  house_code?: string;
+  room_type?: string;
+  floor: number;
+  area_sqm?: number;
+  windows?: number;
+  doors?: number;
+  description?: string;
+  notes?: string;
+  version: number;
+  is_deleted: boolean;
+  visible?: boolean;
   history?: RoomConfig[];
 }
 
