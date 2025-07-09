@@ -16,7 +16,8 @@ export function SettingsManagement() {
     addCategory, 
     addHouse, 
     editHouse,
-    addRoom, 
+    editRoom,
+    addRoom,
     deleteRoom,
     addSubcategory,
     deleteSubcategory,
@@ -90,6 +91,7 @@ export function SettingsManagement() {
             houses={houses}
             onAddHouse={addHouse}
             onAddRoom={addRoom}
+            onEditRoom={editRoom}
             onEditHouse={editHouse}
             onDeleteRoom={deleteRoom}
             onMoveHouse={moveHouse}
