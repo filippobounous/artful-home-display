@@ -17,7 +17,7 @@ interface AddItemLocationValuationProps {
 
 export function AddItemLocationValuation({ formData, setFormData }: AddItemLocationValuationProps) {
   const handleLocationChange = (house: string, room: string) => {
-    setFormData({ ...formData, house, room });
+    setFormData({ ...formData, house, room, room_code: room });
   };
 
   const handleCategoryChange = (category: string, subcategory: string) => {
@@ -40,26 +40,34 @@ export function AddItemLocationValuation({ formData, setFormData }: AddItemLocat
         onSelectionChange={handleLocationChange}
       />
 
+      <div className="space-y-4">
+        <Label htmlFor="provenance">Provenance</Label>
+        <Input
+          id="provenance"
+          placeholder="Where was it acquired from?"
+          value={formData.provenance}
+          onChange={(e) => setFormData({ ...formData, provenance: e.target.value })}
+        />
+      </div>
 
-
-      {/* Valuation Section */}
+      {/* Acquisition Section */}
       <div className="space-y-4 pt-4 border-t">
-        <h4 className="font-medium text-slate-700">Valuation Information</h4>
-        
+        <h4 className="font-medium text-slate-700">Acquisition Information</h4>
+
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="valuation">Valuation Amount</Label>
+            <Label htmlFor="acquisition_value">Acquisition Value</Label>
             <Input
-              id="valuation"
+              id="acquisition_value"
               type="number"
               placeholder="0.00"
-              value={formData.valuation}
-              onChange={(e) => setFormData({ ...formData, valuation: e.target.value })}
+              value={formData.acquisition_value}
+              onChange={(e) => setFormData({ ...formData, acquisition_value: e.target.value })}
             />
           </div>
           <div>
-            <Label htmlFor="valuationCurrency">Currency</Label>
-            <Select value={formData.valuationCurrency} onValueChange={(value) => setFormData({ ...formData, valuationCurrency: value })}>
+            <Label htmlFor="acquisition_currency">Currency</Label>
+            <Select value={formData.acquisition_currency} onValueChange={(value) => setFormData({ ...formData, acquisition_currency: value })}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -76,22 +84,79 @@ export function AddItemLocationValuation({ formData, setFormData }: AddItemLocat
         </div>
 
         <div>
-          <Label>Valuation Date</Label>
+          <Label>Acquisition Date</Label>
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className={`w-full justify-start text-left font-normal ${formData.valuationDate ? "" : "text-muted-foreground"}`}
+                className={`w-full justify-start text-left font-normal ${formData.acquisition_date ? "" : "text-muted-foreground"}`}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {formData.valuationDate ? format(formData.valuationDate, "PPP") : "Select date"}
+                {formData.acquisition_date ? format(formData.acquisition_date, "PPP") : "Select date"}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
               <Calendar
                 mode="single"
-                selected={formData.valuationDate}
-                onSelect={(date) => setFormData({ ...formData, valuationDate: date })}
+                selected={formData.acquisition_date}
+                onSelect={(date) => setFormData({ ...formData, acquisition_date: date })}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+      </div>
+
+      {/* Appraisal Section */}
+      <div className="space-y-4 pt-4 border-t">
+        <h4 className="font-medium text-slate-700">Appraisal Information</h4>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="appraisal_value">Appraisal Value</Label>
+            <Input
+              id="appraisal_value"
+              type="number"
+              placeholder="0.00"
+              value={formData.appraisal_value}
+              onChange={(e) => setFormData({ ...formData, appraisal_value: e.target.value })}
+            />
+          </div>
+          <div>
+            <Label htmlFor="appraisal_currency">Currency</Label>
+            <Select value={formData.appraisal_currency} onValueChange={(value) => setFormData({ ...formData, appraisal_currency: value })}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="USD">USD ($)</SelectItem>
+                <SelectItem value="EUR">EUR (€)</SelectItem>
+                <SelectItem value="GBP">GBP (£)</SelectItem>
+                <SelectItem value="JPY">JPY (¥)</SelectItem>
+                <SelectItem value="CAD">CAD ($)</SelectItem>
+                <SelectItem value="AUD">AUD ($)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        <div>
+          <Label>Appraisal Date</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={`w-full justify-start text-left font-normal ${formData.appraisal_date ? "" : "text-muted-foreground"}`}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {formData.appraisal_date ? format(formData.appraisal_date, "PPP") : "Select date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={formData.appraisal_date}
+                onSelect={(date) => setFormData({ ...formData, appraisal_date: date })}
                 initialFocus
               />
             </PopoverContent>
@@ -99,12 +164,12 @@ export function AddItemLocationValuation({ formData, setFormData }: AddItemLocat
         </div>
 
         <div>
-          <Label htmlFor="valuationPerson">Valued By</Label>
+          <Label htmlFor="appraisal_entity">Appraised By</Label>
           <Input
-            id="valuationPerson"
+            id="appraisal_entity"
             placeholder="Appraiser name or organization"
-            value={formData.valuationPerson}
-            onChange={(e) => setFormData({ ...formData, valuationPerson: e.target.value })}
+            value={formData.appraisal_entity}
+            onChange={(e) => setFormData({ ...formData, appraisal_entity: e.target.value })}
           />
         </div>
       </div>

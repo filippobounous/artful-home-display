@@ -26,15 +26,50 @@ export interface ItemBase {
 }
 
 export interface DecorItem extends ItemBase {
-  artist?: string;
+  /** Optional unique code assigned to the item */
+  code?: string;
+  /** Name of the item. `title` from ItemBase remains for backwards compatibility */
+  name?: string;
+  /** Code of the room where the item is located */
+  room_code?: string;
+  /** Creator or artist of the piece */
+  creator?: string;
+  /** Region of origin */
+  origin_region?: string;
+  /** When the piece was created (string/date/number) */
+  date_period?: string | number;
+  /** Material the item is made of */
+  material?: string;
+  height_cm?: number;
+  width_cm?: number;
+  depth_cm?: number;
+  weight_kg?: number;
+  /** Where the item was acquired from */
+  provenance?: string;
   category: string;
   subcategory?: string;
-  size?: string;
-  condition: "mint" | "excellent" | "very good" | "good";
+  quantity?: number;
+  /** Acquisition details */
+  acquisition_date?: string;
+  acquisition_value?: number;
+  acquisition_currency?: string;
+  /** Appraisal details */
+  appraisal_date?: string;
+  appraisal_value?: number;
+  appraisal_currency?: string;
+  appraisal_entity?: string;
+  /** Version number automatically incremented when edited */
+  version?: number;
+  /** Flag used when an item is soft deleted */
+  is_deleted?: boolean;
   /**
    * Keeps previous versions of the item when edits occur.
    */
   history?: DecorItem[];
+  /** Artist field kept for older data sets */
+  artist?: string;
+  size?: string;
+  condition?: "mint" | "excellent" | "very good" | "good";
 }
 
 export interface BookItem extends ItemBase {
