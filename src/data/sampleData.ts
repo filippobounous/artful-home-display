@@ -15,7 +15,8 @@ export const sampleDecorItems: DecorItem[] = [
     house: "main-house",
     room: "dining-room",
     yearPeriod: "1960s",
-    quantity: 1
+    quantity: 1,
+    condition: "good"
   },
   {
     id: 2,
@@ -35,7 +36,8 @@ export const sampleDecorItems: DecorItem[] = [
     valuationPerson: "Art Appraiser Co.",
     valuationCurrency: "USD",
     yearPeriod: "2020",
-    quantity: 1
+    quantity: 1,
+    condition: "excellent"
   },
   {
     id: 3,
@@ -51,7 +53,8 @@ export const sampleDecorItems: DecorItem[] = [
     house: "guest-house",
     room: "living-room",
     yearPeriod: "1950s",
-    quantity: 1
+    quantity: 1,
+    condition: "very good"
   },
   {
     id: 4,
@@ -71,7 +74,8 @@ export const sampleDecorItems: DecorItem[] = [
     valuationPerson: "Modern Art Valuations",
     valuationCurrency: "USD",
     yearPeriod: "2018",
-    quantity: 1
+    quantity: 1,
+    condition: "mint"
   },
   {
     id: 5,
@@ -86,7 +90,8 @@ export const sampleDecorItems: DecorItem[] = [
     house: "main-house",
     room: "living-room",
     yearPeriod: "19th century",
-    quantity: 1
+    quantity: 1,
+    condition: "good"
   },
   {
     id: 6,
@@ -106,7 +111,7 @@ export const sampleDecorItems: DecorItem[] = [
     valuationPerson: "Fine Art Appraisers",
     valuationCurrency: "USD",
     yearPeriod: "1920s",
-    quantity: 1
+    quantity: 1,
+    condition: "very good"
   }
 ];
-

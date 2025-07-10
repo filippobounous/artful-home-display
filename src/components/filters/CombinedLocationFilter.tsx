@@ -1,7 +1,7 @@
 
 import { MultiSelectFilter } from "@/components/MultiSelectFilter";
 import { useSettingsState } from "@/hooks/useSettingsState";
-import type { CheckboxCheckedState } from "@radix-ui/react-checkbox";
+import type { CheckedState } from "@radix-ui/react-checkbox";
 
 interface CombinedLocationFilterProps {
   selectedHouse: string[];
@@ -47,7 +47,7 @@ export function CombinedLocationFilter({
     const roomIds = house.rooms.filter(r => r.visible).map(r => `${house.id}|${r.id}`);
     const selectedRooms = selectedRoom.filter(id => roomIds.includes(id));
     const allSelected = selectedRooms.length === roomIds.length && roomIds.length > 0;
-    const checkState: CheckboxCheckedState =
+    const checkState: CheckedState =
       selectedHouse.includes(house.id) || allSelected
         ? true
         : selectedRooms.length > 0
@@ -59,7 +59,7 @@ export function CombinedLocationFilter({
         name: house.name,
         header: true,
         checkState,
-        onCheckChange: (checked: CheckboxCheckedState) => {
+        onCheckChange: (checked: CheckedState) => {
           if (!permanentHouse) {
             if (checked) {
               const allIds = house.rooms.map(r => `${house.id}|${r.id}`);

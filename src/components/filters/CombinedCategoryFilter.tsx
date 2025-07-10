@@ -1,7 +1,7 @@
 
 import { MultiSelectFilter } from "@/components/MultiSelectFilter";
 import { useSettingsState } from "@/hooks/useSettingsState";
-import type { CheckboxCheckedState } from "@radix-ui/react-checkbox";
+import type { CheckedState } from "@radix-ui/react-checkbox";
 
 interface CombinedCategoryFilterProps {
   selectedCategory: string[];
@@ -26,7 +26,7 @@ export function CombinedCategoryFilter({
     const subcategoryIds = category.subcategories.filter(s => s.visible).map(sub => sub.id);
     const selectedSubs = selectedSubcategory.filter(id => subcategoryIds.includes(id));
     const allSelected = selectedSubs.length === subcategoryIds.length && subcategoryIds.length > 0;
-    const checkState: CheckboxCheckedState =
+    const checkState: CheckedState =
       selectedCategory.includes(category.id) || allSelected
         ? true
         : selectedSubs.length > 0
@@ -38,7 +38,7 @@ export function CombinedCategoryFilter({
         name: category.name,
         header: true,
         checkState,
-        onCheckChange: (checked: CheckboxCheckedState) => {
+        onCheckChange: (checked: CheckedState) => {
           if (!permanentCategory) {
             if (checked) {
               if (!selectedCategory.includes(category.id)) {
