@@ -768,6 +768,18 @@ export function HousesManagement({
                                     }
                                   />
                                 </div>
+                                <div>
+                                  <Label htmlFor="edit-room-code">Room Code</Label>
+                                  <Input id="edit-room-code" value={editingRoom.room.code || ''} disabled />
+                                </div>
+                                <div>
+                                  <Label htmlFor="edit-house-code">House Code</Label>
+                                  <Input
+                                    id="edit-house-code"
+                                    value={houses.find(h => h.id === editingRoom.houseId)?.code || ''}
+                                    disabled
+                                  />
+                                </div>
                                 <div className="flex justify-end gap-2">
                                   <Button variant="outline" onClick={() => setEditingRoom(null)}>
                                     Cancel
