@@ -18,3 +18,5 @@ services:
     #   - /app/node_modules
     # and build using the 'dev' target:
     # docker compose build --target dev frontend
+    # To start the Vite dev server inside Docker, also override the command:
+    # command: npm run dev -- --host

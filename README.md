@@ -124,6 +124,13 @@ docker compose up --build
 
 The application will be available at `http://localhost:3000`.
 
+To run the development server inside Docker, build with the `dev` target and
+uncomment the `command: npm run dev -- --host` line in `docker-compose.yml`:
+
+```bash
+docker compose build --target dev frontend
+```
+
 ## Permanent filters
 
 Certain pages lock a specific category or house so that browsing focuses on a single subset of the inventory. Category pages are accessed under `/category/:categoryId` and automatically reflect any categories you configure. House pages available under `/house/:houseId` are restricted to the selected house. When a category or house is fixed, the search filters only show the relevant subfilters (e.g. subcategories or rooms) and the locked filter cannot be removed.
