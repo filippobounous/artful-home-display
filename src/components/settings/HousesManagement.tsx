@@ -1,16 +1,17 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { IconSelector } from "@/components/IconSelector";
 import { Plus, Edit, Trash2, GripVertical, Eye, EyeOff, ChevronDown, ChevronRight } from "lucide-react";
 import { HouseConfig, RoomConfig } from "@/types/inventory";
+import { countries } from "@/lib/countries";
 
 interface HousesManagementProps {
   houses: HouseConfig[];
@@ -211,17 +212,16 @@ export function HousesManagement({
               <div className="space-y-4">
                 <div>
                   <Label htmlFor="house-select">House *</Label>
-                  <select
-                    id="house-select"
-                    className="w-full p-2 border rounded"
-                    value={newRoom.houseId}
-                    onChange={(e) => setNewRoom({ ...newRoom, houseId: e.target.value })}
-                  >
-                    <option value="">Select a house</option>
-                    {houses.map(house => (
-                      <option key={house.id} value={house.id}>{house.name}</option>
-                    ))}
-                  </select>
+                  <Select value={newRoom.houseId} onValueChange={(value) => setNewRoom({ ...newRoom, houseId: value })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a house" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {houses.map(house => (
+                        <SelectItem key={house.id} value={house.id}>{house.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div>
                   <Label htmlFor="room-name">Room Name *</Label>
@@ -273,18 +273,24 @@ export function HousesManagement({
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="country">Country *</Label>
-                    <Input
-                      id="country"
-                      value={newHouse.country}
-                      onChange={(e) => {
-                        setNewHouse({ ...newHouse, country: e.target.value });
+                    <Select 
+                      value={newHouse.country} 
+                      onValueChange={(value) => {
+                        setNewHouse({ ...newHouse, country: value });
                         if (validationErrors.country) {
                           setValidationErrors({ ...validationErrors, country: '' });
                         }
                       }}
-                      placeholder="e.g., France"
-                      className={validationErrors.country ? 'border-red-500' : ''}
-                    />
+                    >
+                      <SelectTrigger className={validationErrors.country ? 'border-red-500' : ''}>
+                        <SelectValue placeholder="Select a country" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {countries.map(country => (
+                          <SelectItem key={country} value={country}>{country}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     {validationErrors.country && (
                       <p className="text-sm text-red-500 mt-1">{validationErrors.country}</p>
                     )}
@@ -412,17 +418,24 @@ export function HousesManagement({
                           <div className="grid grid-cols-2 gap-4">
                             <div>
                               <Label htmlFor="edit-country">Country *</Label>
-                              <Input
-                                id="edit-country"
-                                value={editingHouse.country}
-                                onChange={(e) => {
-                                  setEditingHouse({ ...editingHouse, country: e.target.value });
+                              <Select 
+                                value={editingHouse.country} 
+                                onValueChange={(value) => {
+                                  setEditingHouse({ ...editingHouse, country: value });
                                   if (validationErrors.country) {
                                     setValidationErrors({ ...validationErrors, country: '' });
                                   }
                                 }}
-                                className={validationErrors.country ? 'border-red-500' : ''}
-                              />
+                              >
+                                <SelectTrigger className={validationErrors.country ? 'border-red-500' : ''}>
+                                  <SelectValue placeholder="Select a country" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {countries.map(country => (
+                                    <SelectItem key={country} value={country}>{country}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
                               {validationErrors.country && (
                                 <p className="text-sm text-red-500 mt-1">{validationErrors.country}</p>
                               )}
