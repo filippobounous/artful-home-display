@@ -91,15 +91,23 @@ export interface SubcategoryConfig {
 
 export interface HouseConfig {
   id: string;
+  code: string;
   name: string;
-  country: string;
   address?: string;
+  city: string;
+  country: string;
+  postal_code?: string;
+  beneficiary?: string[];
+  latitude?: number;
+  longitude?: number;
+  description?: string;
+  notes?: string;
   yearBuilt?: number;
-  code?: string;
   icon: string;
   rooms: RoomConfig[];
   visible: boolean;
-  deleted?: boolean;
+  version: number;
+  is_deleted: boolean;
   history?: HouseConfig[];
 }
 
@@ -165,11 +173,20 @@ export const categoryConfigs: CategoryConfig[] = [
 export const defaultHouses: HouseConfig[] = [
   {
     id: "main-house",
-    name: "Main House",
-    country: "United States",
-    address: "123 Main Street, Beverly Hills, CA",
-    yearBuilt: 1985,
     code: "MH01",
+    name: "Main House",
+    address: "123 Main Street, Beverly Hills, CA",
+    city: "Beverly Hills",
+    country: "United States",
+    postal_code: "90210",
+    beneficiary: ["Owner"],
+    latitude: 34.0736,
+    longitude: -118.4004,
+    description: "Primary residence",
+    notes: "",
+    yearBuilt: 1985,
+    version: 1,
+    is_deleted: false,
     icon: "house",
     rooms: [
       { id: "living-room", name: "Living Room", floor: 1, version: 1, is_deleted: false, visible: true },
@@ -184,11 +201,20 @@ export const defaultHouses: HouseConfig[] = [
   },
   {
     id: "guest-house",
-    name: "Guest House",
-    country: "United States",
-    address: "125 Main Street, Beverly Hills, CA",
-    yearBuilt: 1990,
     code: "GH01",
+    name: "Guest House",
+    address: "125 Main Street, Beverly Hills, CA",
+    city: "Beverly Hills",
+    country: "United States",
+    postal_code: "90210",
+    beneficiary: ["Guests"],
+    latitude: 34.0736,
+    longitude: -118.4004,
+    description: "Guest accommodation",
+    notes: "",
+    yearBuilt: 1990,
+    version: 1,
+    is_deleted: false,
     icon: "house",
     rooms: [
       { id: "living-room", name: "Living Room", floor: 1, version: 1, is_deleted: false, visible: true },
@@ -200,11 +226,20 @@ export const defaultHouses: HouseConfig[] = [
   },
   {
     id: "studio",
-    name: "Studio",
-    country: "France",
-    address: "45 Rue de Rivoli, Paris",
-    yearBuilt: 2010,
     code: "ST01",
+    name: "Studio",
+    address: "45 Rue de Rivoli, Paris",
+    city: "Paris",
+    country: "France",
+    postal_code: "75001",
+    beneficiary: ["Artist"],
+    latitude: 48.8559,
+    longitude: 2.3601,
+    description: "Work studio",
+    notes: "",
+    yearBuilt: 2010,
+    version: 1,
+    is_deleted: false,
     icon: "house",
     rooms: [
       { id: "main-area", name: "Main Area", floor: 1, version: 1, is_deleted: false, visible: true },

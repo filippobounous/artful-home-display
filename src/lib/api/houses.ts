@@ -22,7 +22,7 @@ function getAllHouses(): HouseConfig[] {
 }
 
 function getLocalHouses(): HouseConfig[] {
-  return getAllHouses().filter(h => !h.deleted);
+  return getAllHouses().filter(h => !h.is_deleted);
 }
 
 function saveLocalHouses(houses: HouseConfig[]) {
@@ -35,7 +35,7 @@ export async function fetchHouses(): Promise<HouseConfig[]> {
     if (!response.ok) throw new Error('Failed to fetch houses');
     const data = await response.json();
     saveLocalHouses(data);
-    return data.filter((h: HouseConfig) => !h.deleted);
+    return data.filter((h: HouseConfig) => !h.is_deleted);
   } catch {
     return getLocalHouses();
   }
@@ -51,11 +51,11 @@ export async function createHouse(house: HouseConfig) {
     if (!response.ok) throw new Error('Failed to create house');
     const data = await response.json();
     const houses = getAllHouses();
-    saveLocalHouses([...houses, { ...data, deleted: false, history: [] }]);
+    saveLocalHouses([...houses, { ...data, is_deleted: false, history: [] }]);
     return data;
   } catch {
     const houses = getAllHouses();
-    const newHouse = { ...house, deleted: false, history: [] };
+    const newHouse = { ...house, is_deleted: false, history: [] };
     saveLocalHouses([...houses, newHouse]);
     return newHouse;
   }
@@ -79,7 +79,7 @@ export async function updateHouse(id: string, updates: Partial<HouseConfig>) {
     const updated = houses.map(h => {
       if (h.id === id) {
         const history = h.history ? [...h.history, { ...h }] : [{ ...h }];
-        updatedHouse = { ...h, ...updates, history };
+        updatedHouse = { ...h, ...updates, version: (h.version || 1) + 1, history };
         return updatedHouse;
       }
       return h;
@@ -95,11 +95,11 @@ export async function deleteHouse(id: string) {
       method: 'DELETE'
     });
     if (!response.ok) throw new Error('Failed to delete house');
-    const houses = getAllHouses().map(h => h.id === id ? { ...h, deleted: true } : h);
+    const houses = getAllHouses().map(h => h.id === id ? { ...h, is_deleted: true } : h);
     saveLocalHouses(houses);
     return true;
   } catch {
-    const houses = getAllHouses().map(h => h.id === id ? { ...h, deleted: true } : h);
+    const houses = getAllHouses().map(h => h.id === id ? { ...h, is_deleted: true } : h);
     saveLocalHouses(houses);
     return true;
   }

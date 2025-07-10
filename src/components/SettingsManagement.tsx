@@ -39,14 +39,15 @@ export function SettingsManagement() {
   };
 
   const handleAddHouse = (house: Omit<HouseConfig, 'id' | 'rooms'>) => {
-    addHouse(house.name, house.country, house.address || '', house.yearBuilt, house.code || '', house.icon);
+    addHouse(house);
   };
 
   const downloadCsvMappings = () => {
     // Convert houses to CSV
     const housesCsv = [
-      'House Name,Country,Address,Year Built,Code,Icon',
-      ...houses.map(h => `"${h.name}","${h.country}","${h.address || ''}","${h.yearBuilt || ''}","${h.code}","${h.icon}"`)
+      'House Name,City,Country,Address,Postal Code,Code,Icon',
+      ...houses.map(h =>
+        `"${h.name}","${h.city}","${h.country}","${h.address || ''}","${h.postal_code || ''}","${h.code}"`)
     ].join('\n');
 
     // Convert categories to CSV
