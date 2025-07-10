@@ -68,17 +68,12 @@ export function useSettingsState() {
     return newCategory;
   };
 
-  const addHouse = (name: string, country: string, address: string, yearBuilt: number | undefined, code: string, icon: string) => {
+  const addHouse = (house: Omit<HouseConfig, 'id' | 'rooms'>) => {
     const newHouse: HouseConfig = {
-      id: name.toLowerCase().replace(/\s+/g, '-'),
-      name,
-      country,
-      address,
-      yearBuilt,
-      code: code.toUpperCase(),
-      icon,
+      ...house,
+      id: Date.now().toString(),
+      code: house.code.toUpperCase(),
       rooms: [],
-      visible: true
     };
     globalHouses = [...globalHouses, newHouse];
     saveState();
@@ -89,7 +84,13 @@ export function useSettingsState() {
   const editHouse = (houseId: string, updates: Partial<HouseConfig>) => {
     globalHouses = globalHouses.map(house => {
       if (house.id === houseId) {
-        return { ...house, ...updates };
+        const history = house.history ? [...house.history, { ...house }] : [{ ...house }];
+        return {
+          ...house,
+          ...updates,
+          version: (house.version || 1) + 1,
+          history,
+        };
       }
       return house;
     });
