@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,7 @@ import { useSettingsState } from "@/hooks/useSettingsState";
 import { HousesManagement } from "@/components/settings/HousesManagement";
 import { CategoriesManagement } from "@/components/settings/CategoriesManagement";
 import { BulkUpload } from "@/components/settings/BulkUpload";
+import { HouseConfig } from "@/types/inventory";
 
 export function SettingsManagement() {
   const { 
