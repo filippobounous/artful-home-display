@@ -95,6 +95,32 @@ export function AddItemForm() {
     e.preventDefault();
     console.log("Form submitted:", formData);
 
+    // Create a proper DecorItem object
+    const decorItem: DecorItem = {
+      id: draftId ? Number(draftId) : 0,
+      title: formData.title,
+      artist: formData.artist,
+      category: formData.category,
+      subcategory: formData.subcategory,
+      widthCm: formData.widthCm ? Number(formData.widthCm) : undefined,
+      heightCm: formData.heightCm ? Number(formData.heightCm) : undefined,
+      depthCm: formData.depthCm ? Number(formData.depthCm) : undefined,
+      valuation: formData.valuation ? Number(formData.valuation) : undefined,
+      valuationDate: formData.valuationDate ? formData.valuationDate.toISOString().split('T')[0] : undefined,
+      valuationPerson: formData.valuationPerson,
+      valuationCurrency: formData.valuationCurrency,
+      quantity: formData.quantity ? Number(formData.quantity) : 1,
+      yearPeriod: formData.yearPeriod,
+      house: formData.house,
+      room: formData.room,
+      description: formData.description,
+      notes: formData.notes,
+      image: formData.images[0] || "/placeholder.svg",
+      images: formData.images,
+      condition: "good" as const, // Default condition
+      deleted: false
+    };
+
     let saveAction: Promise<DecorItem | null>;
     let exists = false;
 
@@ -105,13 +131,10 @@ export function AddItemForm() {
       exists = inventory.some((item) => item.id === Number(draftId) && !item.deleted);
 
       saveAction = exists
-        ? updateDecorItem(draftId, {
-            id: Number(draftId),
-            ...formData,
-          })
-        : createDecorItem(formData as unknown as DecorItem);
+        ? updateDecorItem(draftId, decorItem)
+        : createDecorItem(decorItem);
     } else {
-      saveAction = createDecorItem(formData as unknown as DecorItem);
+      saveAction = createDecorItem(decorItem);
     }
 
     saveAction

@@ -7,7 +7,7 @@ import { Check, ChevronDown, X } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 
-import type { CheckboxCheckedState } from "@radix-ui/react-checkbox";
+import type { CheckedState } from "@radix-ui/react-checkbox";
 
 interface MultiSelectOption {
   id: string;
@@ -15,8 +15,8 @@ interface MultiSelectOption {
   image?: string;
   indent?: boolean;
   header?: boolean;
-  checkState?: CheckboxCheckedState;
-  onCheckChange?: (checked: CheckboxCheckedState) => void;
+  checkState?: CheckedState;
+  onCheckChange?: (checked: CheckedState) => void;
 }
 
 interface MultiSelectFilterProps {
@@ -118,7 +118,7 @@ export function MultiSelectFilter({ placeholder, options, selectedValues, onSele
                   checked={isTri ? option.checkState : selectedValues.includes(option.id)}
                   onCheckedChange={(val) => {
                     if (isTri && option.onCheckChange) {
-                      option.onCheckChange(val as CheckboxCheckedState);
+                      option.onCheckChange(val as CheckedState);
                     } else {
                       handleToggle(option.id);
                     }
