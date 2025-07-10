@@ -1,36 +1,26 @@
+
 import { useState } from "react";
-import {
-  DragDropContext,
-  Droppable,
-  Draggable,
-  DropResult
-} from "react-beautiful-dnd";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Plus, X, Download } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { IconSelector } from "@/components/IconSelector";
-import { useToast } from "@/hooks/use-toast";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select";
+import { Plus, Edit, Trash2, GripVertical, Eye, EyeOff, ChevronDown, ChevronRight } from "lucide-react";
+import { CategoryConfig } from "@/types/inventory";
 
 interface CategoriesManagementProps {
-  categories: any[];
+  categories: CategoryConfig[];
   onAddCategory: (name: string, icon: string) => void;
   onAddSubcategory: (categoryId: string, subcategoryName: string) => void;
-  onDeleteSubcategory?: (categoryId: string, subcategoryId: string) => void;
-  onMoveCategory?: (from: number, to: number) => void;
-  onMoveSubcategory?: (categoryId: string, from: number, to: number) => void;
-  onToggleCategory?: (categoryId: string) => void;
-  onToggleSubcategory?: (categoryId: string, subId: string) => void;
+  onDeleteSubcategory: (categoryId: string, subcategoryId: string) => void;
+  onMoveCategory: (dragIndex: number, hoverIndex: number) => void;
+  onMoveSubcategory: (categoryId: string, dragIndex: number, hoverIndex: number) => void;
+  onToggleCategory: (categoryId: string) => void;
+  onToggleSubcategory: (categoryId: string, subcategoryId: string) => void;
 }
 
 export function CategoriesManagement({
@@ -43,246 +33,262 @@ export function CategoriesManagement({
   onToggleCategory,
   onToggleSubcategory
 }: CategoriesManagementProps) {
-  const [newCategoryName, setNewCategoryName] = useState("");
-  const [newCategoryIcon, setNewCategoryIcon] = useState("palette");
-  const [newSubcategoryName, setNewSubcategoryName] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
-
-  const { toast } = useToast();
+  const [newCategory, setNewCategory] = useState({ name: '', icon: 'folder' });
+  const [newSubcategory, setNewSubcategory] = useState({ name: '', categoryId: '' });
+  const [showAddCategory, setShowAddCategory] = useState(false);
+  const [showAddSubcategory, setShowAddSubcategory] = useState(false);
+  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
+  const [draggedCategory, setDraggedCategory] = useState<number | null>(null);
 
   const handleAddCategory = () => {
-    if (newCategoryName.trim()) {
-      onAddCategory(newCategoryName, newCategoryIcon);
-      
-      toast({
-        title: "Category added",
-        description: `${newCategoryName} has been added successfully`
-      });
-      
-      setNewCategoryName("");
-      setNewCategoryIcon("palette");
-    } else {
-      toast({
-        title: "Missing information",
-        description: "Please enter a category name",
-        variant: "destructive"
-      });
-    }
+    if (!newCategory.name.trim()) return;
+    onAddCategory(newCategory.name, newCategory.icon);
+    setNewCategory({ name: '', icon: 'folder' });
+    setShowAddCategory(false);
   };
 
   const handleAddSubcategory = () => {
-    if (newSubcategoryName.trim() && selectedCategory) {
-      onAddSubcategory(selectedCategory, newSubcategoryName);
-      
-      toast({
-        title: "Subcategory added",
-        description: `${newSubcategoryName} has been added successfully`
-      });
-      
-      setNewSubcategoryName("");
+    if (!newSubcategory.name.trim() || !newSubcategory.categoryId) return;
+    onAddSubcategory(newSubcategory.categoryId, newSubcategory.name);
+    setNewSubcategory({ name: '', categoryId: '' });
+    setShowAddSubcategory(false);
+  };
+
+  const toggleCategoryCollapse = (categoryId: string) => {
+    const newCollapsed = new Set(collapsedCategories);
+    if (newCollapsed.has(categoryId)) {
+      newCollapsed.delete(categoryId);
     } else {
-      toast({
-        title: "Missing information",
-        description: "Please select a category and enter subcategory name",
-        variant: "destructive"
-      });
+      newCollapsed.add(categoryId);
     }
+    setCollapsedCategories(newCollapsed);
   };
 
-  const handleDeleteSubcategory = (categoryId: string, subcategoryId: string) => {
-    if (onDeleteSubcategory) {
-      onDeleteSubcategory(categoryId, subcategoryId);
-      toast({
-        title: "Subcategory deleted",
-        description: "Subcategory has been removed successfully"
-      });
+  const handleCategoryDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedCategory(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleCategoryDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleCategoryDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    if (draggedCategory !== null && draggedCategory !== dropIndex) {
+      onMoveCategory(draggedCategory, dropIndex);
     }
+    setDraggedCategory(null);
   };
 
-  const handleCategoryDragEnd = (result: DropResult) => {
-    if (!result.destination || !onMoveCategory) return;
-    if (result.source.index !== result.destination.index) {
-      onMoveCategory(result.source.index, result.destination.index);
+  const handleSubcategoryDragStart = (e: React.DragEvent, categoryId: string, subcategoryIndex: number) => {
+    e.dataTransfer.setData('text/plain', `${categoryId}:${subcategoryIndex}`);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleSubcategoryDrop = (e: React.DragEvent, categoryId: string, dropIndex: number) => {
+    e.preventDefault();
+    const dragData = e.dataTransfer.getData('text/plain');
+    const [dragCategoryId, dragSubcategoryIndex] = dragData.split(':');
+    
+    if (dragCategoryId === categoryId && parseInt(dragSubcategoryIndex) !== dropIndex) {
+      onMoveSubcategory(categoryId, parseInt(dragSubcategoryIndex), dropIndex);
     }
-  };
-
-  const handleSubcategoryDragEnd = (result: DropResult) => {
-    if (!result.destination || !onMoveSubcategory || !selectedCategory) return;
-    if (result.source.index !== result.destination.index) {
-      onMoveSubcategory(selectedCategory, result.source.index, result.destination.index);
-    }
-  };
-
-  const toggleCategory = (id: string) => {
-    onToggleCategory?.(id);
-  };
-
-  const toggleSubcategory = (id: string) => {
-    if (selectedCategory) {
-      onToggleSubcategory?.(selectedCategory, id);
-    }
-  };
-
-  const downloadCategoriesTemplate = () => {
-    const template = "name,icon\nArt,palette\nFurniture,sofa\nDecorative,lamp";
-    const blob = new Blob([template], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'categories-template.csv';
-    a.click();
-    URL.revokeObjectURL(url);
   };
 
   return (
-    <div className="space-y-6">
-      {/* Categories Management */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>Manage Categories</CardTitle>
-          <Button onClick={downloadCategoriesTemplate} variant="outline" size="sm">
-            <Download className="w-4 h-4 mr-2" />
-            Download Template
-          </Button>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-            <div className="md:col-span-2">
-              <Label>Category Name</Label>
-              <Input
-                placeholder="Category name"
-                value={newCategoryName}
-                onChange={(e) => setNewCategoryName(e.target.value)}
-              />
-            </div>
-            <div>
-              <Label>Icon</Label>
-              <div className="mt-1">
-                <IconSelector
-                  selectedIcon={newCategoryIcon}
-                  onIconSelect={setNewCategoryIcon}
-                />
-              </div>
-            </div>
-          </div>
-          
-          <Button onClick={handleAddCategory} className="w-full">
-            <Plus className="w-4 h-4 mr-1" />
-            Add Category
-          </Button>
-          
-          <div className="space-y-2">
-            <Label>Current Categories</Label>
-            <DragDropContext onDragEnd={handleCategoryDragEnd}>
-              <Droppable droppableId="categories" direction="vertical">
-                {(provided) => (
-                  <div className="flex flex-col gap-2" ref={provided.innerRef} {...provided.droppableProps}>
-                    {categories.map((category, index) => (
-                      <Draggable key={category.id} draggableId={category.id} index={index}>
-                        {(prov) => (
-                          <div
-                            ref={prov.innerRef}
-                            {...prov.draggableProps}
-                            {...prov.dragHandleProps}
-                            className="flex items-center gap-2 border rounded px-2 py-1"
-                          >
-                            <span className="flex-1">{category.name}</span>
-                            <Switch checked={category.visible} onCheckedChange={() => toggleCategory(category.id)} />
-                          </div>
-                        )}
-                      </Draggable>
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h4 className="font-medium">Categories & Subcategories</h4>
+        <div className="flex gap-2">
+          <Dialog open={showAddSubcategory} onOpenChange={setShowAddSubcategory}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Subcategory
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add New Subcategory</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="category-select">Category</Label>
+                  <select
+                    id="category-select"
+                    className="w-full p-2 border rounded"
+                    value={newSubcategory.categoryId}
+                    onChange={(e) => setNewSubcategory({ ...newSubcategory, categoryId: e.target.value })}
+                  >
+                    <option value="">Select a category</option>
+                    {categories.map(category => (
+                      <option key={category.id} value={category.id}>{category.name}</option>
                     ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </DragDropContext>
-          </div>
-        </CardContent>
-      </Card>
+                  </select>
+                </div>
+                <div>
+                  <Label htmlFor="subcategory-name">Subcategory Name</Label>
+                  <Input
+                    id="subcategory-name"
+                    value={newSubcategory.name}
+                    onChange={(e) => setNewSubcategory({ ...newSubcategory, name: e.target.value })}
+                    placeholder="e.g., Modern Art, Vintage"
+                  />
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={() => setShowAddSubcategory(false)}>Cancel</Button>
+                  <Button onClick={handleAddSubcategory}>Add Subcategory</Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
 
-      {/* Subcategories Management */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Manage Subcategories</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label>Select Category</Label>
-            <Select
-              value={selectedCategory}
-              onValueChange={setSelectedCategory}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((category) => (
-                  <SelectItem key={category.id} value={category.id}>
-                    {category.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          
-          <div className="flex gap-2">
-            <Input
-              placeholder="Subcategory name"
-              value={newSubcategoryName}
-              onChange={(e) => setNewSubcategoryName(e.target.value)}
-              className="flex-1"
-              disabled={!selectedCategory}
-            />
-            <Button onClick={handleAddSubcategory} disabled={!selectedCategory}>
-              <Plus className="w-4 h-4 mr-1" />
-              Add Subcategory
-            </Button>
-          </div>
-          
-          {selectedCategory && (
-            <div className="space-y-2">
-              <Label>Subcategories in {categories.find(c => c.id === selectedCategory)?.name}</Label>
-              <DragDropContext onDragEnd={handleSubcategoryDragEnd}>
-                <Droppable droppableId="subcategories" direction="vertical">
-                  {(provided) => (
-                    <div
-                      className="flex flex-col gap-2"
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                    >
-                      {categories
-                        .find(c => c.id === selectedCategory)
-                        ?.subcategories.map((subcategory, index) => (
-                          <Draggable key={subcategory.id} draggableId={subcategory.id} index={index}>
-                            {(prov) => (
-                              <div
-                                ref={prov.innerRef}
-                                {...prov.draggableProps}
-                                {...prov.dragHandleProps}
-                                className="flex items-center gap-2 border rounded px-2 py-1"
-                              >
-                                <span className="flex-1">{subcategory.name}</span>
-                                <Switch checked={subcategory.visible} onCheckedChange={() => toggleSubcategory(subcategory.id)} />
-                                <button
-                                  className="ml-2 hover:text-destructive"
-                                  onClick={() => handleDeleteSubcategory(selectedCategory, subcategory.id)}
-                                >
-                                  <X className="w-3 h-3" />
-                                </button>
-                              </div>
-                            )}
-                          </Draggable>
-                        ))}
-                      {provided.placeholder}
+          <Dialog open={showAddCategory} onOpenChange={setShowAddCategory}>
+            <DialogTrigger asChild>
+              <Button size="sm">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Category
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add New Category</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="category-name">Category Name</Label>
+                  <Input
+                    id="category-name"
+                    value={newCategory.name}
+                    onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
+                    placeholder="e.g., Electronics, Books"
+                  />
+                </div>
+                <div>
+                  <Label>Icon</Label>
+                  <IconSelector
+                    selectedIcon={newCategory.icon}
+                    onIconSelect={(icon) => setNewCategory({ ...newCategory, icon })}
+                  />
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={() => setShowAddCategory(false)}>Cancel</Button>
+                  <Button onClick={handleAddCategory}>Add Category</Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        {categories.map((category, categoryIndex) => (
+          <Card 
+            key={category.id}
+            draggable
+            onDragStart={(e) => handleCategoryDragStart(e, categoryIndex)}
+            onDragOver={handleCategoryDragOver}
+            onDrop={(e) => handleCategoryDrop(e, categoryIndex)}
+            className="cursor-move"
+          >
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 flex-1">
+                  <GripVertical className="w-4 h-4 text-gray-400" />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <CardTitle className="text-lg">{category.name}</CardTitle>
+                      <span className="text-sm font-mono bg-gray-100 px-2 py-1 rounded">
+                        {category.id}
+                      </span>
                     </div>
-                  )}
-                </Droppable>
-              </DragDropContext>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                    <div className="text-sm text-gray-600 mt-1">
+                      {category.subcategories.length} subcategories
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch
+                    checked={category.visible}
+                    onCheckedChange={() => onToggleCategory(category.id)}
+                  />
+                  {category.visible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <Collapsible 
+                open={!collapsedCategories.has(category.id)} 
+                onOpenChange={() => toggleCategoryCollapse(category.id)}
+              >
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" className="w-full justify-between p-0 h-auto">
+                    <h5 className="font-medium text-sm text-gray-700">
+                      Subcategories ({category.subcategories.length})
+                    </h5>
+                    {collapsedCategories.has(category.id) ? (
+                      <ChevronRight className="w-4 h-4" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4" />
+                    )}
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="space-y-2 mt-3">
+                  {category.subcategories.map((subcategory, subcategoryIndex) => (
+                    <div 
+                      key={subcategory.id} 
+                      className="flex items-center justify-between p-2 bg-gray-50 rounded cursor-move"
+                      draggable
+                      onDragStart={(e) => handleSubcategoryDragStart(e, category.id, subcategoryIndex)}
+                      onDragOver={handleCategoryDragOver}
+                      onDrop={(e) => handleSubcategoryDrop(e, category.id, subcategoryIndex)}
+                    >
+                      <div className="flex items-center gap-2">
+                        <GripVertical className="w-3 h-3 text-gray-400" />
+                        <span className="text-sm">{subcategory.name}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          checked={subcategory.visible}
+                          onCheckedChange={() => onToggleSubcategory(category.id, subcategory.id)}
+                        />
+                        {subcategory.visible ? (
+                          <Eye className="w-3 h-3" />
+                        ) : (
+                          <EyeOff className="w-3 h-3" />
+                        )}
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete Subcategory</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to delete "{subcategory.name}"? This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => onDeleteSubcategory(category.id, subcategory.id)}>
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </div>
+                  ))}
+                </CollapsibleContent>
+              </Collapsible>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }

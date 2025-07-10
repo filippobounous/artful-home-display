@@ -7,8 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { IconSelector } from "@/components/IconSelector";
-import { Plus, Edit, Trash2, GripVertical, Eye, EyeOff } from "lucide-react";
+import { Plus, Edit, Trash2, GripVertical, Eye, EyeOff, ChevronDown, ChevronRight } from "lucide-react";
 import { HouseConfig, RoomConfig } from "@/types/inventory";
 
 interface HousesManagementProps {
@@ -31,6 +32,8 @@ export function HousesManagement({
   onEditRoom,
   onEditHouse,
   onDeleteRoom,
+  onMoveHouse,
+  onMoveRoom,
   onToggleHouse,
   onToggleRoom
 }: HousesManagementProps) {
@@ -47,15 +50,43 @@ export function HousesManagement({
   const [editingHouse, setEditingHouse] = useState<HouseConfig | null>(null);
   const [showAddHouse, setShowAddHouse] = useState(false);
   const [showAddRoom, setShowAddRoom] = useState(false);
+  const [collapsedHouses, setCollapsedHouses] = useState<Set<string>>(new Set());
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [draggedHouse, setDraggedHouse] = useState<number | null>(null);
+
+  const validateHouse = (house: typeof newHouse) => {
+    const errors: Record<string, string> = {};
+    
+    if (!house.name.trim()) {
+      errors.name = 'House name is required';
+    }
+    
+    if (!house.country.trim()) {
+      errors.country = 'Country is required';
+    }
+    
+    if (!house.code.trim()) {
+      errors.code = 'House code is required';
+    } else if (house.code.length !== 4) {
+      errors.code = 'House code must be exactly 4 characters long';
+    }
+    
+    return errors;
+  };
 
   const handleAddHouse = () => {
-    if (!newHouse.name.trim()) return;
+    const errors = validateHouse(newHouse);
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      return;
+    }
+    
     onAddHouse({
       name: newHouse.name,
       country: newHouse.country,
       address: newHouse.address,
       yearBuilt: newHouse.yearBuilt ? parseInt(newHouse.yearBuilt) : undefined,
-      code: newHouse.code,
+      code: newHouse.code.toUpperCase(),
       icon: newHouse.icon,
       visible: true
     });
@@ -67,6 +98,7 @@ export function HousesManagement({
       code: '',
       icon: 'home'
     });
+    setValidationErrors({});
     setShowAddHouse(false);
   };
 
@@ -90,16 +122,74 @@ export function HousesManagement({
   };
 
   const handleEditHouse = () => {
-    if (!editingHouse || !editingHouse.name.trim()) return;
+    if (!editingHouse) return;
+    const errors = validateHouse({
+      name: editingHouse.name,
+      country: editingHouse.country,
+      address: editingHouse.address || '',
+      yearBuilt: editingHouse.yearBuilt?.toString() || '',
+      code: editingHouse.code || '',
+      icon: editingHouse.icon
+    });
+    
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
+      return;
+    }
+    
     onEditHouse(editingHouse.id, {
       name: editingHouse.name,
       country: editingHouse.country,
       address: editingHouse.address,
       yearBuilt: editingHouse.yearBuilt,
-      code: editingHouse.code,
+      code: editingHouse.code?.toUpperCase(),
       icon: editingHouse.icon
     });
+    setValidationErrors({});
     setEditingHouse(null);
+  };
+
+  const toggleHouseCollapse = (houseId: string) => {
+    const newCollapsed = new Set(collapsedHouses);
+    if (newCollapsed.has(houseId)) {
+      newCollapsed.delete(houseId);
+    } else {
+      newCollapsed.add(houseId);
+    }
+    setCollapsedHouses(newCollapsed);
+  };
+
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedHouse(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    if (draggedHouse !== null && draggedHouse !== dropIndex) {
+      onMoveHouse(draggedHouse, dropIndex);
+    }
+    setDraggedHouse(null);
+  };
+
+  const handleRoomDragStart = (e: React.DragEvent, houseId: string, roomIndex: number) => {
+    e.dataTransfer.setData('text/plain', `${houseId}:${roomIndex}`);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleRoomDrop = (e: React.DragEvent, houseId: string, dropIndex: number) => {
+    e.preventDefault();
+    const dragData = e.dataTransfer.getData('text/plain');
+    const [dragHouseId, dragRoomIndex] = dragData.split(':');
+    
+    if (dragHouseId === houseId && parseInt(dragRoomIndex) !== dropIndex) {
+      onMoveRoom(houseId, parseInt(dragRoomIndex), dropIndex);
+    }
   };
 
   return (
@@ -120,7 +210,7 @@ export function HousesManagement({
               </DialogHeader>
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="house-select">House</Label>
+                  <Label htmlFor="house-select">House *</Label>
                   <select
                     id="house-select"
                     className="w-full p-2 border rounded"
@@ -134,7 +224,7 @@ export function HousesManagement({
                   </select>
                 </div>
                 <div>
-                  <Label htmlFor="room-name">Room Name</Label>
+                  <Label htmlFor="room-name">Room Name *</Label>
                   <Input
                     id="room-name"
                     value={newRoom.name}
@@ -163,32 +253,61 @@ export function HousesManagement({
               </DialogHeader>
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="house-name">House Name</Label>
+                  <Label htmlFor="house-name">House Name *</Label>
                   <Input
                     id="house-name"
                     value={newHouse.name}
-                    onChange={(e) => setNewHouse({ ...newHouse, name: e.target.value })}
+                    onChange={(e) => {
+                      setNewHouse({ ...newHouse, name: e.target.value });
+                      if (validationErrors.name) {
+                        setValidationErrors({ ...validationErrors, name: '' });
+                      }
+                    }}
                     placeholder="e.g., Main House, Studio"
+                    className={validationErrors.name ? 'border-red-500' : ''}
                   />
+                  {validationErrors.name && (
+                    <p className="text-sm text-red-500 mt-1">{validationErrors.name}</p>
+                  )}
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="country">Country</Label>
+                    <Label htmlFor="country">Country *</Label>
                     <Input
                       id="country"
                       value={newHouse.country}
-                      onChange={(e) => setNewHouse({ ...newHouse, country: e.target.value })}
+                      onChange={(e) => {
+                        setNewHouse({ ...newHouse, country: e.target.value });
+                        if (validationErrors.country) {
+                          setValidationErrors({ ...validationErrors, country: '' });
+                        }
+                      }}
                       placeholder="e.g., France"
+                      className={validationErrors.country ? 'border-red-500' : ''}
                     />
+                    {validationErrors.country && (
+                      <p className="text-sm text-red-500 mt-1">{validationErrors.country}</p>
+                    )}
                   </div>
                   <div>
-                    <Label htmlFor="code">Code</Label>
+                    <Label htmlFor="code">Code * (4 characters)</Label>
                     <Input
                       id="code"
                       value={newHouse.code}
-                      onChange={(e) => setNewHouse({ ...newHouse, code: e.target.value })}
-                      placeholder="e.g., MH"
+                      onChange={(e) => {
+                        const value = e.target.value.toUpperCase().slice(0, 4);
+                        setNewHouse({ ...newHouse, code: value });
+                        if (validationErrors.code) {
+                          setValidationErrors({ ...validationErrors, code: '' });
+                        }
+                      }}
+                      placeholder="e.g., MH01"
+                      maxLength={4}
+                      className={validationErrors.code ? 'border-red-500' : ''}
                     />
+                    {validationErrors.code && (
+                      <p className="text-sm text-red-500 mt-1">{validationErrors.code}</p>
+                    )}
                   </div>
                 </div>
                 <div>
@@ -217,7 +336,10 @@ export function HousesManagement({
                   />
                 </div>
                 <div className="flex justify-end gap-2">
-                  <Button variant="outline" onClick={() => setShowAddHouse(false)}>Cancel</Button>
+                  <Button variant="outline" onClick={() => {
+                    setShowAddHouse(false);
+                    setValidationErrors({});
+                  }}>Cancel</Button>
                   <Button onClick={handleAddHouse}>Add House</Button>
                 </div>
               </div>
@@ -227,15 +349,29 @@ export function HousesManagement({
       </div>
 
       <div className="space-y-4">
-        {houses.map((house) => (
-          <Card key={house.id}>
+        {houses.map((house, houseIndex) => (
+          <Card 
+            key={house.id}
+            draggable
+            onDragStart={(e) => handleDragStart(e, houseIndex)}
+            onDragOver={handleDragOver}
+            onDrop={(e) => handleDrop(e, houseIndex)}
+            className="cursor-move"
+          >
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2">
-                    <GripVertical className="w-4 h-4 text-gray-400" />
-                    <CardTitle className="text-lg">{house.name}</CardTitle>
-                    <span className="text-sm text-gray-500">({house.country})</span>
+                <div className="flex items-center gap-3 flex-1">
+                  <GripVertical className="w-4 h-4 text-gray-400" />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <CardTitle className="text-lg">{house.name}</CardTitle>
+                      <span className="text-sm font-mono bg-gray-100 px-2 py-1 rounded">
+                        {house.code}
+                      </span>
+                    </div>
+                    <div className="text-sm text-gray-600 mt-1">
+                      {house.address ? `${house.address.split(',')[0]}, ` : ''}{house.country}
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -257,29 +393,58 @@ export function HousesManagement({
                       {editingHouse && (
                         <div className="space-y-4">
                           <div>
-                            <Label htmlFor="edit-house-name">House Name</Label>
+                            <Label htmlFor="edit-house-name">House Name *</Label>
                             <Input
                               id="edit-house-name"
                               value={editingHouse.name}
-                              onChange={(e) => setEditingHouse({ ...editingHouse, name: e.target.value })}
+                              onChange={(e) => {
+                                setEditingHouse({ ...editingHouse, name: e.target.value });
+                                if (validationErrors.name) {
+                                  setValidationErrors({ ...validationErrors, name: '' });
+                                }
+                              }}
+                              className={validationErrors.name ? 'border-red-500' : ''}
                             />
+                            {validationErrors.name && (
+                              <p className="text-sm text-red-500 mt-1">{validationErrors.name}</p>
+                            )}
                           </div>
                           <div className="grid grid-cols-2 gap-4">
                             <div>
-                              <Label htmlFor="edit-country">Country</Label>
+                              <Label htmlFor="edit-country">Country *</Label>
                               <Input
                                 id="edit-country"
                                 value={editingHouse.country}
-                                onChange={(e) => setEditingHouse({ ...editingHouse, country: e.target.value })}
+                                onChange={(e) => {
+                                  setEditingHouse({ ...editingHouse, country: e.target.value });
+                                  if (validationErrors.country) {
+                                    setValidationErrors({ ...validationErrors, country: '' });
+                                  }
+                                }}
+                                className={validationErrors.country ? 'border-red-500' : ''}
                               />
+                              {validationErrors.country && (
+                                <p className="text-sm text-red-500 mt-1">{validationErrors.country}</p>
+                              )}
                             </div>
                             <div>
-                              <Label htmlFor="edit-code">Code</Label>
+                              <Label htmlFor="edit-code">Code * (4 characters)</Label>
                               <Input
                                 id="edit-code"
                                 value={editingHouse.code || ''}
-                                onChange={(e) => setEditingHouse({ ...editingHouse, code: e.target.value })}
+                                onChange={(e) => {
+                                  const value = e.target.value.toUpperCase().slice(0, 4);
+                                  setEditingHouse({ ...editingHouse, code: value });
+                                  if (validationErrors.code) {
+                                    setValidationErrors({ ...validationErrors, code: '' });
+                                  }
+                                }}
+                                maxLength={4}
+                                className={validationErrors.code ? 'border-red-500' : ''}
                               />
+                              {validationErrors.code && (
+                                <p className="text-sm text-red-500 mt-1">{validationErrors.code}</p>
+                              )}
                             </div>
                           </div>
                           <div>
@@ -306,7 +471,10 @@ export function HousesManagement({
                             />
                           </div>
                           <div className="flex justify-end gap-2">
-                            <Button variant="outline" onClick={() => setEditingHouse(null)}>Cancel</Button>
+                            <Button variant="outline" onClick={() => {
+                              setEditingHouse(null);
+                              setValidationErrors({});
+                            }}>Cancel</Button>
                             <Button onClick={handleEditHouse}>Save Changes</Button>
                           </div>
                         </div>
@@ -317,88 +485,111 @@ export function HousesManagement({
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2">
-                <h5 className="font-medium text-sm text-gray-700 mb-3">Rooms</h5>
-                {house.rooms.filter(room => !room.is_deleted).map((room) => (
-                  <div key={room.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                    <div className="flex items-center gap-2">
-                      <GripVertical className="w-3 h-3 text-gray-400" />
-                      <span className="text-sm">{room.name}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Switch
-                        checked={room.visible}
-                        onCheckedChange={() => onToggleRoom(house.id, room.id)}
-                      />
-                      {room.visible ? (
-                        <Eye className="w-3 h-3" />
-                      ) : (
-                        <EyeOff className="w-3 h-3" />
-                      )}
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setEditingRoom({ houseId: house.id, room })}
-                          >
-                            <Edit className="w-3 h-3" />
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Edit Room</DialogTitle>
-                          </DialogHeader>
-                          {editingRoom && (
-                            <div className="space-y-4">
-                              <div>
-                                <Label htmlFor="edit-room-name">Room Name</Label>
-                                <Input
-                                  id="edit-room-name"
-                                  value={editingRoom.room.name}
-                                  onChange={(e) =>
-                                    setEditingRoom({
-                                      ...editingRoom,
-                                      room: { ...editingRoom.room, name: e.target.value }
-                                    })
-                                  }
-                                />
+              <Collapsible 
+                open={!collapsedHouses.has(house.id)} 
+                onOpenChange={() => toggleHouseCollapse(house.id)}
+              >
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" className="w-full justify-between p-0 h-auto">
+                    <h5 className="font-medium text-sm text-gray-700">
+                      Rooms ({house.rooms.filter(room => !room.is_deleted).length})
+                    </h5>
+                    {collapsedHouses.has(house.id) ? (
+                      <ChevronRight className="w-4 h-4" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4" />
+                    )}
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="space-y-2 mt-3">
+                  {house.rooms.filter(room => !room.is_deleted).map((room, roomIndex) => (
+                    <div 
+                      key={room.id} 
+                      className="flex items-center justify-between p-2 bg-gray-50 rounded cursor-move"
+                      draggable
+                      onDragStart={(e) => handleRoomDragStart(e, house.id, roomIndex)}
+                      onDragOver={handleDragOver}
+                      onDrop={(e) => handleRoomDrop(e, house.id, roomIndex)}
+                    >
+                      <div className="flex items-center gap-2">
+                        <GripVertical className="w-3 h-3 text-gray-400" />
+                        <span className="text-sm">{room.name}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          checked={room.visible}
+                          onCheckedChange={() => onToggleRoom(house.id, room.id)}
+                        />
+                        {room.visible ? (
+                          <Eye className="w-3 h-3" />
+                        ) : (
+                          <EyeOff className="w-3 h-3" />
+                        )}
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setEditingRoom({ houseId: house.id, room })}
+                            >
+                              <Edit className="w-3 h-3" />
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>Edit Room</DialogTitle>
+                            </DialogHeader>
+                            {editingRoom && (
+                              <div className="space-y-4">
+                                <div>
+                                  <Label htmlFor="edit-room-name">Room Name</Label>
+                                  <Input
+                                    id="edit-room-name"
+                                    value={editingRoom.room.name}
+                                    onChange={(e) =>
+                                      setEditingRoom({
+                                        ...editingRoom,
+                                        room: { ...editingRoom.room, name: e.target.value }
+                                      })
+                                    }
+                                  />
+                                </div>
+                                <div className="flex justify-end gap-2">
+                                  <Button variant="outline" onClick={() => setEditingRoom(null)}>
+                                    Cancel
+                                  </Button>
+                                  <Button onClick={handleEditRoom}>Save Changes</Button>
+                                </div>
                               </div>
-                              <div className="flex justify-end gap-2">
-                                <Button variant="outline" onClick={() => setEditingRoom(null)}>
-                                  Cancel
-                                </Button>
-                                <Button onClick={handleEditRoom}>Save Changes</Button>
-                              </div>
-                            </div>
-                          )}
-                        </DialogContent>
-                      </Dialog>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="ghost" size="sm">
-                            <Trash2 className="w-3 h-3" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Delete Room</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Are you sure you want to delete "{room.name}"? This action cannot be undone.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => onDeleteRoom(house.id, room.id)}>
-                              Delete
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                            )}
+                          </DialogContent>
+                        </Dialog>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="sm">
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete Room</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to delete "{room.name}"? This action cannot be undone.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => onDeleteRoom(house.id, room.id)}>
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </CollapsibleContent>
+              </Collapsible>
             </CardContent>
           </Card>
         ))}
