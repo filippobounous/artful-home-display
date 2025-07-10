@@ -1121,7 +1121,15 @@ export function HousesManagement({
                           ) : (
                             <EyeOff className="w-3 h-3" />
                           )}
-                          <Dialog>
+                          <Dialog
+                            open={
+                              editingRoom?.room.id === room.id &&
+                              editingRoom.houseId === house.id
+                            }
+                            onOpenChange={(open) => {
+                              if (!open) setEditingRoom(null);
+                            }}
+                          >
                             <DialogTrigger asChild>
                               <Button
                                 variant="ghost"
@@ -1322,9 +1330,12 @@ export function HousesManagement({
                                       </Label>
                                       <Input
                                         id="edit-room-code"
-                                        value={editingRoom.room.code || ""}
+                                        value={editingRoom.room.code || ''}
                                         disabled
                                       />
+                                      <p className="text-xs text-gray-500 mt-1">
+                                        Code is auto-generated from the house code.
+                                      </p>
                                     </div>
                                     <div>
                                       <Label htmlFor="edit-house-code">
