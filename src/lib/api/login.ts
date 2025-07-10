@@ -18,8 +18,8 @@ export async function login(username: string, password: string): Promise<LoginRe
     if (!response.ok) throw new Error('Invalid credentials');
     return response.json();
   } catch {
-    // Fallback to offline authentication
-    if (username === "admin" && password === "password123") {
+    // Fallback to offline authentication in development
+    if (import.meta.env.DEV && username === "admin" && password === "password123") {
       return {
         access_token: "demo_token_" + Date.now(),
         token_type: "Bearer"
