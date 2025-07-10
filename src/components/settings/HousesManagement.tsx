@@ -765,7 +765,15 @@ export function HousesManagement({
                   ) : (
                     <EyeOff className="w-4 h-4" />
                   )}
-                  <Dialog>
+                  <Dialog
+                    open={!!editingHouse}
+                    onOpenChange={(open) => {
+                      if (!open) {
+                        setEditingHouse(null);
+                        setValidationErrors({});
+                      }
+                    }}
+                  >
                     <DialogTrigger asChild>
                       <Button
                         variant="ghost"
@@ -858,22 +866,7 @@ export function HousesManagement({
                               <Input
                                 id="edit-code"
                                 value={editingHouse.code || ""}
-                                onChange={(e) => {
-                                  const value = e.target.value
-                                    .toUpperCase()
-                                    .slice(0, 4);
-                                  setEditingHouse({
-                                    ...editingHouse,
-                                    code: value,
-                                  });
-                                  if (validationErrors.code) {
-                                    setValidationErrors({
-                                      ...validationErrors,
-                                      code: "",
-                                    });
-                                  }
-                                }}
-                                maxLength={4}
+                                disabled
                                 className={
                                   validationErrors.code ? "border-red-500" : ""
                                 }
@@ -1330,11 +1323,12 @@ export function HousesManagement({
                                       </Label>
                                       <Input
                                         id="edit-room-code"
-                                        value={editingRoom.room.code || ''}
+                                        value={editingRoom.room.code || ""}
                                         disabled
                                       />
                                       <p className="text-xs text-gray-500 mt-1">
-                                        Code is auto-generated from the house code.
+                                        Code is auto-generated from the house
+                                        code.
                                       </p>
                                     </div>
                                     <div>
