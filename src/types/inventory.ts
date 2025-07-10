@@ -1,4 +1,3 @@
-
 export interface ItemBase {
   id: number;
   title: string;
@@ -68,11 +67,18 @@ export interface MusicItem extends ItemBase {
 
 export type InventoryItem = DecorItem | BookItem | MusicItem;
 
-
 export type ViewMode = "grid" | "list" | "table";
 export type CategoryFilter = "all" | string;
 export type HouseFilter = "all" | "main-house" | "guest-house" | "studio";
-export type RoomFilter = "all" | "living-room" | "bedroom" | "kitchen" | "dining-room" | "office" | "bathroom" | "hallway";
+export type RoomFilter =
+  | "all"
+  | "living-room"
+  | "bedroom"
+  | "kitchen"
+  | "dining-room"
+  | "office"
+  | "bathroom"
+  | "hallway";
 
 // Configuration types for settings
 export interface CategoryConfig {
@@ -102,7 +108,6 @@ export interface HouseConfig {
   longitude?: number;
   description?: string;
   notes?: string;
-  yearBuilt?: number;
   icon: string;
   rooms: RoomConfig[];
   visible: boolean;
@@ -139,9 +144,9 @@ export const categoryConfigs: CategoryConfig[] = [
       { id: "painting", name: "Painting", visible: true },
       { id: "sculpture", name: "Sculpture", visible: true },
       { id: "photography", name: "Photography", visible: true },
-      { id: "print", name: "Print", visible: true }
+      { id: "print", name: "Print", visible: true },
     ],
-    visible: true
+    visible: true,
   },
   {
     id: "furniture",
@@ -152,9 +157,9 @@ export const categoryConfigs: CategoryConfig[] = [
       { id: "table", name: "Table", visible: true },
       { id: "sofa", name: "Sofa", visible: true },
       { id: "cabinet", name: "Cabinet", visible: true },
-      { id: "rug", name: "Rug", visible: true }
+      { id: "rug", name: "Rug", visible: true },
     ],
-    visible: true
+    visible: true,
   },
   {
     id: "decorative",
@@ -163,10 +168,10 @@ export const categoryConfigs: CategoryConfig[] = [
     subcategories: [
       { id: "vase", name: "Vase", visible: true },
       { id: "mirror", name: "Mirror", visible: true },
-      { id: "lighting", name: "Lighting", visible: true }
+      { id: "lighting", name: "Lighting", visible: true },
     ],
-    visible: true
-  }
+    visible: true,
+  },
 ];
 
 // House configurations with icons
@@ -184,20 +189,68 @@ export const defaultHouses: HouseConfig[] = [
     longitude: -118.4004,
     description: "Primary residence",
     notes: "",
-    yearBuilt: 1985,
     version: 1,
     is_deleted: false,
     icon: "house",
     rooms: [
-      { id: "living-room", name: "Living Room", floor: 1, version: 1, is_deleted: false, visible: true },
-      { id: "dining-room", name: "Dining Room", floor: 1, version: 1, is_deleted: false, visible: true },
-      { id: "kitchen", name: "Kitchen", floor: 1, version: 1, is_deleted: false, visible: true },
-      { id: "bedroom", name: "Bedroom", floor: 2, version: 1, is_deleted: false, visible: true },
-      { id: "office", name: "Office", floor: 2, version: 1, is_deleted: false, visible: true },
-      { id: "bathroom", name: "Bathroom", floor: 2, version: 1, is_deleted: false, visible: true },
-      { id: "hallway", name: "Hallway", floor: 1, version: 1, is_deleted: false, visible: true }
+      {
+        id: "living-room",
+        name: "Living Room",
+        floor: 1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+      {
+        id: "dining-room",
+        name: "Dining Room",
+        floor: 1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+      {
+        id: "kitchen",
+        name: "Kitchen",
+        floor: 1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+      {
+        id: "bedroom",
+        name: "Bedroom",
+        floor: 2,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+      {
+        id: "office",
+        name: "Office",
+        floor: 2,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+      {
+        id: "bathroom",
+        name: "Bathroom",
+        floor: 2,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+      {
+        id: "hallway",
+        name: "Hallway",
+        floor: 1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
     ],
-    visible: true
+    visible: true,
   },
   {
     id: "guest-house",
@@ -212,17 +265,44 @@ export const defaultHouses: HouseConfig[] = [
     longitude: -118.4004,
     description: "Guest accommodation",
     notes: "",
-    yearBuilt: 1990,
     version: 1,
     is_deleted: false,
     icon: "house",
     rooms: [
-      { id: "living-room", name: "Living Room", floor: 1, version: 1, is_deleted: false, visible: true },
-      { id: "bedroom", name: "Bedroom", floor: 1, version: 1, is_deleted: false, visible: true },
-      { id: "kitchen", name: "Kitchen", floor: 1, version: 1, is_deleted: false, visible: true },
-      { id: "bathroom", name: "Bathroom", floor: 1, version: 1, is_deleted: false, visible: true }
+      {
+        id: "living-room",
+        name: "Living Room",
+        floor: 1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+      {
+        id: "bedroom",
+        name: "Bedroom",
+        floor: 1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+      {
+        id: "kitchen",
+        name: "Kitchen",
+        floor: 1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+      {
+        id: "bathroom",
+        name: "Bathroom",
+        floor: 1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
     ],
-    visible: true
+    visible: true,
   },
   {
     id: "studio",
@@ -237,14 +317,27 @@ export const defaultHouses: HouseConfig[] = [
     longitude: 2.3601,
     description: "Work studio",
     notes: "",
-    yearBuilt: 2010,
     version: 1,
     is_deleted: false,
     icon: "house",
     rooms: [
-      { id: "main-area", name: "Main Area", floor: 1, version: 1, is_deleted: false, visible: true },
-      { id: "storage", name: "Storage", floor: 1, version: 1, is_deleted: false, visible: true }
+      {
+        id: "main-area",
+        name: "Main Area",
+        floor: 1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+      {
+        id: "storage",
+        name: "Storage",
+        floor: 1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
     ],
-    visible: true
-  }
+    visible: true,
+  },
 ];
