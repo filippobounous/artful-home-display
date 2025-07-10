@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -102,10 +103,15 @@ const CategoryPage = () => {
       'House', 'Room', 'Notes'
     ];
 
-    const selectedItems = sortedItems.filter(item => selectedIds.includes(item.id.toString()));
+    // If no items are selected, download all filtered items
+    // If items are selected, download only selected items
+    const itemsToDownload = selectedIds.length > 0 
+      ? sortedItems.filter(item => selectedIds.includes(item.id.toString()))
+      : sortedItems;
+
     const csvContent = [
       headers.join(','),
-      ...selectedItems.map(item => [
+      ...itemsToDownload.map(item => [
         item.id || '',
         `"${item.title || ''}"`,
         `"${item.artist || ''}"`,
@@ -129,7 +135,10 @@ const CategoryPage = () => {
     const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
     link.setAttribute('href', url);
-    link.setAttribute('download', `selected_items_${new Date().toISOString().split('T')[0]}.csv`);
+    const filename = selectedIds.length > 0 
+      ? `selected_items_${new Date().toISOString().split('T')[0]}.csv`
+      : `filtered_items_${new Date().toISOString().split('T')[0]}.csv`;
+    link.setAttribute('download', filename);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -207,6 +216,7 @@ const CategoryPage = () => {
           description: `${ids.length} item${ids.length === 1 ? '' : 's'} moved`,
         });
         setSelectedIds([]);
+        setLocationDialogOpen(false); // Close the dialog after successful update
       })
       .catch(() => {
         toast({
