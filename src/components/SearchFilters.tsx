@@ -32,6 +32,7 @@ interface SearchFiltersProps {
   viewMode: ViewMode;
   setViewMode: (mode: ViewMode) => void;
   onDownloadCSV?: () => void;
+  onDownloadImages?: () => void;
   permanentCategory?: string;
   permanentHouse?: string;
 }
@@ -58,6 +59,7 @@ export function SearchFilters({
   viewMode,
   setViewMode,
   onDownloadCSV,
+  onDownloadImages,
   permanentCategory,
   permanentHouse,
 }: SearchFiltersProps) {
@@ -78,6 +80,7 @@ export function SearchFilters({
         viewMode={viewMode}
         setViewMode={setViewMode}
         onDownloadCSV={onDownloadCSV}
+        onDownloadImages={onDownloadImages}
       />
 
       {/* Search and filters in aligned grid */}

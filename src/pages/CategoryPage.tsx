@@ -95,6 +95,53 @@ const CategoryPage = () => {
       });
   };
 
+  const downloadSelectedCSV = () => {
+    const headers = [
+      'ID', 'Title', 'Artist', 'Category', 'Subcategory', 'Width (cm)', 'Height (cm)', 'Depth (cm)', 'Valuation',
+      'Valuation Currency', 'Quantity', 'Year/Period', 'Description',
+      'House', 'Room', 'Notes'
+    ];
+
+    const selectedItems = sortedItems.filter(item => selectedIds.includes(item.id.toString()));
+    const csvContent = [
+      headers.join(','),
+      ...selectedItems.map(item => [
+        item.id || '',
+        `"${item.title || ''}"`,
+        `"${item.artist || ''}"`,
+        `"${item.category || ''}"`,
+        `"${item.subcategory || ''}"`,
+        item.widthCm ?? '',
+        item.heightCm ?? '',
+        item.depthCm ?? '',
+        item.valuation || '',
+        `"${item.valuationCurrency || ''}"`,
+        item.quantity || '',
+        `"${item.yearPeriod || ''}"`,
+        `"${item.description || ''}"`,
+        `"${item.house || ''}"`,
+        `"${item.room || ''}"`,
+        `"${item.notes || ''}"`
+      ].join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `selected_items_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const downloadSelectedImages = () => {
+    console.log('Downloading selected images...');
+    alert('Selected images download functionality requires backend implementation');
+  };
+
   useEffect(() => {
     fetchDecorItems()
       .then(data => setItems(data))
@@ -145,50 +192,8 @@ const CategoryPage = () => {
     setSortDirection(direction);
   };
 
-  const downloadCSV = () => {
-    const headers = [
-      'ID', 'Title', 'Artist', 'Category', 'Subcategory', 'Width (cm)', 'Height (cm)', 'Depth (cm)', 'Valuation',
-      'Valuation Currency', 'Quantity', 'Year/Period', 'Description',
-      'House', 'Room', 'Notes'
-    ];
-
-    const csvContent = [
-      headers.join(','),
-      ...sortedItems.map(item => [
-        item.id || '',
-        `"${item.title || ''}"`,
-        `"${item.artist || ''}"`,
-        `"${item.category || ''}"`,
-        `"${item.subcategory || ''}"`,
-        item.widthCm ?? '',
-        item.heightCm ?? '',
-        item.depthCm ?? '',
-        item.valuation || '',
-        `"${item.valuationCurrency || ''}"`,
-        item.quantity || '',
-        `"${item.yearPeriod || ''}"`,
-        `"${item.description || ''}"`,
-        `"${item.house || ''}"`,
-        `"${item.room || ''}"`,
-        `"${item.notes || ''}"`
-      ].join(','))
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `inventory_${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
-
   const handleBatchLocation = (house: string, room: string) => {
     const ids = [...selectedIds];
-    downloadCSV();
     Promise.all(ids.map(id => updateDecorItem(id, { house, room } as unknown as DecorItem)))
       .then(updated => {
         setItems(prev =>
@@ -215,7 +220,6 @@ const CategoryPage = () => {
   const handleBatchDelete = () => {
     if (!window.confirm(`Delete ${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'}?`)) return;
     const ids = [...selectedIds];
-    downloadCSV();
     Promise.all(ids.map(id => deleteDecorItem(id)))
       .then(() => {
         setItems(prev => prev.filter(i => !ids.includes(i.id.toString())));
@@ -233,7 +237,6 @@ const CategoryPage = () => {
         });
       });
   };
-
 
   return (
     <SidebarProvider>
@@ -270,10 +273,10 @@ const CategoryPage = () => {
               setValuationRange={setValuationRange}
               viewMode={viewMode}
               setViewMode={setViewMode}
-              onDownloadCSV={downloadCSV}
+              onDownloadCSV={downloadSelectedCSV}
+              onDownloadImages={downloadSelectedImages}
               permanentCategory={categoryId}
             />
-
 
             {selectedIds.length > 0 && (
               <div className="mb-6 flex flex-wrap items-center justify-between gap-2 bg-blue-100 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-100 px-4 py-2 rounded">
@@ -283,9 +286,8 @@ const CategoryPage = () => {
                     Change Location
                   </Button>
                   <Button
-                    variant="link"
+                    variant="destructive"
                     size="sm"
-                    className="text-destructive"
                     onClick={handleBatchDelete}
                   >
                     Delete

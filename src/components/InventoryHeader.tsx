@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Plus, Download } from "lucide-react";
+import { Plus, Download, Images } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
@@ -86,11 +86,11 @@ export function InventoryHeader() {
             <>
               <Button variant="outline" onClick={downloadCSV}>
                 <Download className="w-4 h-4 mr-2" />
-                Download CSV
+                Full CSV
               </Button>
               <Button variant="outline" onClick={downloadImages}>
-                <Download className="w-4 h-4 mr-2" />
-                Download Images
+                <Images className="w-4 h-4 mr-2" />
+                Full Images
               </Button>
             </>
           )}
