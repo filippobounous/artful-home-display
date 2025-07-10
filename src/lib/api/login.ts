@@ -7,25 +7,38 @@ export interface LoginResponse {
 }
 
 export async function login(username: string, password: string): Promise<LoginResponse> {
+  const form = new FormData();
+  form.append('username', username);
+  form.append('password', password);
+
+  let response: Response;
   try {
-    const form = new FormData();
-    form.append('username', username);
-    form.append('password', password);
-    const response = await fetch(`${API_URL}/login`, {
+    response = await fetch(`${API_URL}/login`, {
       method: 'POST',
       body: form,
     });
-    if (!response.ok) throw new Error('Invalid credentials');
-    return response.json();
   } catch {
-    // Fallback to offline authentication in development
-    if (import.meta.env.DEV && username === "admin" && password === "password123") {
+    // If the API can't be reached, allow the demo credentials
+    if (username === 'admin' && password === 'password123') {
       return {
-        access_token: "demo_token_" + Date.now(),
-        token_type: "Bearer"
+        access_token: 'demo_token_' + Date.now(),
+        token_type: 'Bearer'
       };
-    } else {
-      throw new Error('Invalid credentials');
     }
+    throw new Error('Unable to reach authentication server');
   }
+
+  if (!response.ok) {
+    // Fallback to offline authentication in development or when explicitly enabled
+    const allowDemo = import.meta.env.VITE_ALLOW_DEMO_LOGIN === 'true';
+    if ((import.meta.env.DEV || allowDemo) && username === 'admin' && password === 'password123') {
+      return {
+        access_token: 'demo_token_' + Date.now(),
+        token_type: 'Bearer'
+      };
+    }
+    throw new Error('Invalid credentials');
+  }
+
+  return response.json();
 }

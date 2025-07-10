@@ -93,6 +93,13 @@ The app will be available at `http://localhost:5173` by default.
 When running `npm run dev`, Vite automatically sets `import.meta.env.DEV` to
 `true`. You do not need to define this variable in your `.env` file.
 
+If the API server cannot be reached, you can still log in with the demo
+credentials `admin` / `password123`.
+
+If your app is started by another tool and `import.meta.env.DEV` isn't `true`,
+set `VITE_ALLOW_DEMO_LOGIN=true` in a `.env` file to enable the offline demo
+login with `admin` / `password123`.
+
 ## Connecting a FastAPI backend
 
 1. Create a `.env` file based on `.env.example` and set `VITE_API_URL` to the URL of your FastAPI server. If your API requires authentication, also set `VITE_API_KEY` with your key value.
@@ -119,6 +126,13 @@ docker compose up --build
 ```
 
 The application will be available at `http://localhost:3000`.
+
+To run the development server inside Docker, build with the `dev` target and
+uncomment the `command: npm run dev -- --host` line in `docker-compose.yml`:
+
+```bash
+docker compose build --target dev frontend
+```
 
 ## Permanent filters
 
