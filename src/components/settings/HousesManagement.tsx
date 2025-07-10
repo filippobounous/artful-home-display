@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,6 +47,7 @@ import {
 } from "lucide-react";
 import { HouseConfig, RoomConfig } from "@/types/inventory";
 import { countries } from "@/lib/countries";
+import { fetchRoomTypes, RoomType } from "@/lib/api/roomTypes";
 
 interface HousesManagementProps {
   houses: HouseConfig[];
@@ -92,7 +93,17 @@ export function HousesManagement({
     yearBuilt: "",
     icon: "home",
   });
-  const [newRoom, setNewRoom] = useState({ name: "", houseId: "" });
+  const [newRoom, setNewRoom] = useState({
+    name: "",
+    houseId: "",
+    room_type: "",
+    floor: "",
+    area_sqm: "",
+    windows: "",
+    doors: "",
+    description: "",
+    notes: "",
+  });
   const [editingRoom, setEditingRoom] = useState<{
     houseId: string;
     room: RoomConfig;
@@ -100,6 +111,7 @@ export function HousesManagement({
   const [editingHouse, setEditingHouse] = useState<HouseConfig | null>(null);
   const [showAddHouse, setShowAddHouse] = useState(false);
   const [showAddRoom, setShowAddRoom] = useState(false);
+  const [roomTypes, setRoomTypes] = useState<RoomType[]>([]);
   const [collapsedHouses, setCollapsedHouses] = useState<Set<string>>(
     new Set(),
   );
@@ -107,6 +119,12 @@ export function HousesManagement({
     Record<string, string>
   >({});
   const [draggedHouse, setDraggedHouse] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetchRoomTypes()
+      .then(setRoomTypes)
+      .catch(() => setRoomTypes([]));
+  }, []);
 
   const validateHouse = (house: typeof newHouse) => {
     const errors: Record<string, string> = {};
@@ -181,22 +199,51 @@ export function HousesManagement({
   };
 
   const handleAddRoom = () => {
-    if (!newRoom.name.trim() || !newRoom.houseId) return;
+    if (!newRoom.name.trim() || !newRoom.houseId || newRoom.floor === "")
+      return;
     onAddRoom(newRoom.houseId, {
       name: newRoom.name,
-      floor: 1,
+      room_type: newRoom.room_type || undefined,
+      floor: parseInt(newRoom.floor, 10),
+      area_sqm: newRoom.area_sqm ? parseFloat(newRoom.area_sqm) : undefined,
+      windows: newRoom.windows ? parseInt(newRoom.windows, 10) : undefined,
+      doors: newRoom.doors ? parseInt(newRoom.doors, 10) : undefined,
+      description: newRoom.description || undefined,
+      notes: newRoom.notes || undefined,
       version: 1,
       is_deleted: false,
       visible: true,
     });
-    setNewRoom({ name: "", houseId: "" });
+    setNewRoom({
+      name: "",
+      houseId: "",
+      room_type: "",
+      floor: "",
+      area_sqm: "",
+      windows: "",
+      doors: "",
+      description: "",
+      notes: "",
+    });
     setShowAddRoom(false);
   };
 
   const handleEditRoom = () => {
-    if (!editingRoom || !editingRoom.room.name.trim()) return;
+    if (
+      !editingRoom ||
+      !editingRoom.room.name.trim() ||
+      editingRoom.room.floor === undefined
+    )
+      return;
     onEditRoom(editingRoom.houseId, editingRoom.room.id, {
       name: editingRoom.room.name,
+      room_type: editingRoom.room.room_type,
+      floor: editingRoom.room.floor,
+      area_sqm: editingRoom.room.area_sqm,
+      windows: editingRoom.room.windows,
+      doors: editingRoom.room.doors,
+      description: editingRoom.room.description,
+      notes: editingRoom.room.notes,
     });
     setEditingRoom(null);
   };
@@ -331,15 +378,104 @@ export function HousesManagement({
                     </SelectContent>
                   </Select>
                 </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="room-name">Room Name *</Label>
+                    <Input
+                      id="room-name"
+                      value={newRoom.name}
+                      onChange={(e) =>
+                        setNewRoom({ ...newRoom, name: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="room-floor">Floor *</Label>
+                    <Input
+                      id="room-floor"
+                      type="number"
+                      value={newRoom.floor}
+                      onChange={(e) =>
+                        setNewRoom({ ...newRoom, floor: e.target.value })
+                      }
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="room-type">Room Type</Label>
+                    <Select
+                      value={newRoom.room_type}
+                      onValueChange={(value) =>
+                        setNewRoom({ ...newRoom, room_type: value })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {roomTypes.map((rt) => (
+                          <SelectItem key={rt.id} value={rt.id}>
+                            {rt.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="room-area">Area (sqm)</Label>
+                    <Input
+                      id="room-area"
+                      type="number"
+                      value={newRoom.area_sqm}
+                      onChange={(e) =>
+                        setNewRoom({ ...newRoom, area_sqm: e.target.value })
+                      }
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="room-windows">Windows</Label>
+                    <Input
+                      id="room-windows"
+                      type="number"
+                      value={newRoom.windows}
+                      onChange={(e) =>
+                        setNewRoom({ ...newRoom, windows: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="room-doors">Doors</Label>
+                    <Input
+                      id="room-doors"
+                      type="number"
+                      value={newRoom.doors}
+                      onChange={(e) =>
+                        setNewRoom({ ...newRoom, doors: e.target.value })
+                      }
+                    />
+                  </div>
+                </div>
                 <div>
-                  <Label htmlFor="room-name">Room Name *</Label>
+                  <Label htmlFor="room-description">Description</Label>
                   <Input
-                    id="room-name"
-                    value={newRoom.name}
+                    id="room-description"
+                    value={newRoom.description}
                     onChange={(e) =>
-                      setNewRoom({ ...newRoom, name: e.target.value })
+                      setNewRoom({ ...newRoom, description: e.target.value })
                     }
-                    placeholder="e.g., Living Room, Kitchen"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="room-notes">Notes</Label>
+                  <Input
+                    id="room-notes"
+                    value={newRoom.notes}
+                    onChange={(e) =>
+                      setNewRoom({ ...newRoom, notes: e.target.value })
+                    }
                   />
                 </div>
                 <div className="flex justify-end gap-2">
@@ -629,15 +765,7 @@ export function HousesManagement({
                   ) : (
                     <EyeOff className="w-4 h-4" />
                   )}
-                  <Dialog
-                    open={!!editingHouse}
-                    onOpenChange={(open) => {
-                      if (!open) {
-                        setEditingHouse(null);
-                        setValidationErrors({});
-                      }
-                    }}
-                  >
+                  <Dialog>
                     <DialogTrigger asChild>
                       <Button
                         variant="ghost"
@@ -730,7 +858,21 @@ export function HousesManagement({
                               <Input
                                 id="edit-code"
                                 value={editingHouse.code || ""}
-                                disabled
+                                onChange={(e) => {
+                                  const value = e.target.value
+                                    .toUpperCase()
+                                    .slice(0, 4);
+                                  setEditingHouse({
+                                    ...editingHouse,
+                                    code: value,
+                                  });
+                                  if (validationErrors.code) {
+                                    setValidationErrors({
+                                      ...validationErrors,
+                                      code: "",
+                                    });
+                                  }
+                                }}
                                 maxLength={4}
                                 className={
                                   validationErrors.code ? "border-red-500" : ""
@@ -997,47 +1139,207 @@ export function HousesManagement({
                               </DialogHeader>
                               {editingRoom && (
                                 <div className="space-y-4">
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                      <Label htmlFor="edit-room-name">
+                                        Room Name *
+                                      </Label>
+                                      <Input
+                                        id="edit-room-name"
+                                        value={editingRoom.room.name}
+                                        onChange={(e) =>
+                                          setEditingRoom({
+                                            ...editingRoom,
+                                            room: {
+                                              ...editingRoom.room,
+                                              name: e.target.value,
+                                            },
+                                          })
+                                        }
+                                      />
+                                    </div>
+                                    <div>
+                                      <Label htmlFor="edit-room-floor">
+                                        Floor *
+                                      </Label>
+                                      <Input
+                                        id="edit-room-floor"
+                                        type="number"
+                                        value={editingRoom.room.floor}
+                                        onChange={(e) =>
+                                          setEditingRoom({
+                                            ...editingRoom,
+                                            room: {
+                                              ...editingRoom.room,
+                                              floor: parseInt(
+                                                e.target.value,
+                                                10,
+                                              ),
+                                            },
+                                          })
+                                        }
+                                      />
+                                    </div>
+                                  </div>
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                      <Label htmlFor="edit-room-type">
+                                        Room Type
+                                      </Label>
+                                      <Select
+                                        value={editingRoom.room.room_type || ""}
+                                        onValueChange={(value) =>
+                                          setEditingRoom({
+                                            ...editingRoom,
+                                            room: {
+                                              ...editingRoom.room,
+                                              room_type: value,
+                                            },
+                                          })
+                                        }
+                                      >
+                                        <SelectTrigger>
+                                          <SelectValue placeholder="Select type" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          {roomTypes.map((rt) => (
+                                            <SelectItem
+                                              key={rt.id}
+                                              value={rt.id}
+                                            >
+                                              {rt.name}
+                                            </SelectItem>
+                                          ))}
+                                        </SelectContent>
+                                      </Select>
+                                    </div>
+                                    <div>
+                                      <Label htmlFor="edit-room-area">
+                                        Area (sqm)
+                                      </Label>
+                                      <Input
+                                        id="edit-room-area"
+                                        type="number"
+                                        value={editingRoom.room.area_sqm ?? ""}
+                                        onChange={(e) =>
+                                          setEditingRoom({
+                                            ...editingRoom,
+                                            room: {
+                                              ...editingRoom.room,
+                                              area_sqm: e.target.value
+                                                ? parseFloat(e.target.value)
+                                                : undefined,
+                                            },
+                                          })
+                                        }
+                                      />
+                                    </div>
+                                  </div>
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                      <Label htmlFor="edit-room-windows">
+                                        Windows
+                                      </Label>
+                                      <Input
+                                        id="edit-room-windows"
+                                        type="number"
+                                        value={editingRoom.room.windows ?? ""}
+                                        onChange={(e) =>
+                                          setEditingRoom({
+                                            ...editingRoom,
+                                            room: {
+                                              ...editingRoom.room,
+                                              windows: e.target.value
+                                                ? parseInt(e.target.value, 10)
+                                                : undefined,
+                                            },
+                                          })
+                                        }
+                                      />
+                                    </div>
+                                    <div>
+                                      <Label htmlFor="edit-room-doors">
+                                        Doors
+                                      </Label>
+                                      <Input
+                                        id="edit-room-doors"
+                                        type="number"
+                                        value={editingRoom.room.doors ?? ""}
+                                        onChange={(e) =>
+                                          setEditingRoom({
+                                            ...editingRoom,
+                                            room: {
+                                              ...editingRoom.room,
+                                              doors: e.target.value
+                                                ? parseInt(e.target.value, 10)
+                                                : undefined,
+                                            },
+                                          })
+                                        }
+                                      />
+                                    </div>
+                                  </div>
                                   <div>
-                                    <Label htmlFor="edit-room-name">
-                                      Room Name
+                                    <Label htmlFor="edit-room-description">
+                                      Description
                                     </Label>
                                     <Input
-                                      id="edit-room-name"
-                                      value={editingRoom.room.name}
+                                      id="edit-room-description"
+                                      value={editingRoom.room.description || ""}
                                       onChange={(e) =>
                                         setEditingRoom({
                                           ...editingRoom,
                                           room: {
                                             ...editingRoom.room,
-                                            name: e.target.value,
+                                            description: e.target.value,
                                           },
                                         })
                                       }
                                     />
                                   </div>
                                   <div>
-                                    <Label htmlFor="edit-room-code">
-                                      Room Code
+                                    <Label htmlFor="edit-room-notes">
+                                      Notes
                                     </Label>
                                     <Input
-                                      id="edit-room-code"
-                                      value={editingRoom.room.code || ""}
-                                      disabled
+                                      id="edit-room-notes"
+                                      value={editingRoom.room.notes || ""}
+                                      onChange={(e) =>
+                                        setEditingRoom({
+                                          ...editingRoom,
+                                          room: {
+                                            ...editingRoom.room,
+                                            notes: e.target.value,
+                                          },
+                                        })
+                                      }
                                     />
                                   </div>
-                                  <div>
-                                    <Label htmlFor="edit-house-code">
-                                      House Code
-                                    </Label>
-                                    <Input
-                                      id="edit-house-code"
-                                      value={
-                                        houses.find(
-                                          (h) => h.id === editingRoom.houseId,
-                                        )?.code || ""
-                                      }
-                                      disabled
-                                    />
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                      <Label htmlFor="edit-room-code">
+                                        Room Code
+                                      </Label>
+                                      <Input
+                                        id="edit-room-code"
+                                        value={editingRoom.room.code || ""}
+                                        disabled
+                                      />
+                                    </div>
+                                    <div>
+                                      <Label htmlFor="edit-house-code">
+                                        House Code
+                                      </Label>
+                                      <Input
+                                        id="edit-house-code"
+                                        value={
+                                          houses.find(
+                                            (h) => h.id === editingRoom.houseId,
+                                          )?.code || ""
+                                        }
+                                        disabled
+                                      />
+                                    </div>
                                   </div>
                                   <div className="flex justify-end gap-2">
                                     <Button
