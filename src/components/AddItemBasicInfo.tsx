@@ -12,24 +12,55 @@ export function AddItemBasicInfo({ formData, setFormData }: AddItemBasicInfoProp
       <h3 className="text-lg font-medium text-slate-900">Core Information</h3>
       
       <div>
-        <Label htmlFor="title">Title *</Label>
+        <Label htmlFor="code">Code</Label>
         <Input
-          id="title"
-          placeholder="Enter item title"
-          value={formData.title}
-          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+          id="code"
+          placeholder="Optional code"
+          value={formData.code}
+          onChange={(e) => setFormData({ ...formData, code: e.target.value })}
+        />
+      </div>
+
+      <div>
+        <Label htmlFor="name">Name *</Label>
+        <Input
+          id="name"
+          placeholder="Enter item name"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           required
         />
       </div>
 
       <div>
-        <Label htmlFor="artist">Artist/Maker *</Label>
+        <Label htmlFor="creator">Creator *</Label>
         <Input
-          id="artist"
+          id="creator"
           placeholder="Artist or maker name"
-          value={formData.artist}
-          onChange={(e) => setFormData({ ...formData, artist: e.target.value })}
+          value={formData.creator}
+          onChange={(e) => setFormData({ ...formData, creator: e.target.value })}
           required
+        />
+      </div>
+
+      <div>
+        <Label htmlFor="origin">Origin Region *</Label>
+        <Input
+          id="origin"
+          placeholder="Where is it from?"
+          value={formData.originRegion}
+          onChange={(e) => setFormData({ ...formData, originRegion: e.target.value })}
+          required
+        />
+      </div>
+
+      <div>
+        <Label htmlFor="material">Material</Label>
+        <Input
+          id="material"
+          placeholder="What is it made of?"
+          value={formData.material}
+          onChange={(e) => setFormData({ ...formData, material: e.target.value })}
         />
       </div>
 
@@ -70,6 +101,28 @@ export function AddItemBasicInfo({ formData, setFormData }: AddItemBasicInfoProp
       </div>
 
       <div>
+        <Label htmlFor="weight">Weight (kg)</Label>
+        <Input
+          id="weight"
+          type="number"
+          step="0.01"
+          placeholder="0"
+          value={formData.weightKg}
+          onChange={(e) => setFormData({ ...formData, weightKg: e.target.value })}
+        />
+      </div>
+
+      <div>
+        <Label htmlFor="provenance">Provenance</Label>
+        <Input
+          id="provenance"
+          placeholder="Where it was bought or comes from"
+          value={formData.provenance}
+          onChange={(e) => setFormData({ ...formData, provenance: e.target.value })}
+        />
+      </div>
+
+      <div>
         <Label htmlFor="quantity">Quantity *</Label>
         <Input
           id="quantity"
@@ -82,12 +135,12 @@ export function AddItemBasicInfo({ formData, setFormData }: AddItemBasicInfoProp
       </div>
 
       <div>
-        <Label htmlFor="yearPeriod">Year/Period *</Label>
+        <Label htmlFor="datePeriod">Date/Period *</Label>
         <Input
-          id="yearPeriod"
+          id="datePeriod"
           placeholder="e.g., 1920s, 2023"
-          value={formData.yearPeriod}
-          onChange={(e) => setFormData({ ...formData, yearPeriod: e.target.value })}
+          value={formData.datePeriod}
+          onChange={(e) => setFormData({ ...formData, datePeriod: e.target.value })}
           required
         />
       </div>

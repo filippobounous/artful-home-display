@@ -26,13 +26,52 @@ export interface ItemBase {
 }
 
 export interface DecorItem extends ItemBase {
-  artist?: string;
+  /** Optional internal code for the item */
+  code?: string;
+  /** Primary display name */
+  name?: string;
+  /** Creator or artist of the piece */
+  creator?: string;
+  /** Room code where the item is located */
+  room_code?: string;
+  /** Region of origin */
+  origin_region?: string;
+  /** Period or year of creation */
+  date_period?: string;
+  /** Construction material */
+  material?: string;
+  /** Width in centimeters */
+  widthCm?: number;
+  /** Height in centimeters */
+  heightCm?: number;
+  /** Depth in centimeters */
+  depthCm?: number;
+  /** Weight in kilograms */
+  weight_kg?: number;
+  /** Provenance information */
+  provenance?: string;
   category: string;
   subcategory?: string;
   size?: string;
-  widthCm?: number;
-  heightCm?: number;
-  depthCm?: number;
+  /** Acquisition date */
+  acquisition_date?: string;
+  /** Acquisition value */
+  acquisition_value?: number;
+  /** Acquisition currency */
+  acquisition_currency?: string;
+  /** Appraisal date */
+  appraisal_date?: string;
+  /** Appraisal value */
+  appraisal_value?: number;
+  /** Appraisal currency */
+  appraisal_currency?: string;
+  /** Entity that performed the appraisal */
+  appraisal_entity?: string;
+  /** Latest revision version */
+  version?: number;
+  /** Marks an item as deleted instead of removing it permanently */
+  is_deleted?: boolean;
+  /** Condition state */
   condition: "mint" | "excellent" | "very good" | "good";
   /**
    * Keeps previous versions of the item when edits occur.

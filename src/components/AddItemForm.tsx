@@ -18,21 +18,29 @@ export function AddItemForm() {
   const draftId = searchParams.get('draftId');
 
   const [formData, setFormData] = useState({
-    title: "",
-    artist: "",
-    category: "",
-    subcategory: "",
+    code: "",
+    name: "",
+    creator: "",
+    originRegion: "",
+    datePeriod: "",
+    material: "",
     widthCm: "",
     heightCm: "",
     depthCm: "",
-    valuation: "",
-    valuationDate: undefined as Date | undefined,
-    valuationPerson: "",
-    valuationCurrency: "EUR",
+    weightKg: "",
+    provenance: "",
+    category: "",
+    subcategory: "",
     quantity: "1",
-    yearPeriod: "",
     house: "",
-    room: "",
+    room_code: "",
+    acquisitionValue: "",
+    acquisitionDate: undefined as Date | undefined,
+    acquisitionCurrency: "USD",
+    appraisalValue: "",
+    appraisalDate: undefined as Date | undefined,
+    appraisalCurrency: "USD",
+    appraisalEntity: "",
     description: "",
     notes: "",
     images: [] as string[]
@@ -45,21 +53,29 @@ export function AddItemForm() {
         try {
           const draft = JSON.parse(draftData);
           setFormData({
-            title: draft.title || "",
-            artist: draft.artist || "",
-            category: draft.category || "",
-            subcategory: draft.subcategory || "",
+            code: draft.code || "",
+            name: draft.name || draft.title || "",
+            creator: draft.creator || draft.artist || "",
+            originRegion: draft.originRegion || draft.origin_region || "",
+            datePeriod: draft.datePeriod || draft.yearPeriod || "",
+            material: draft.material || "",
             widthCm: draft.widthCm || "",
             heightCm: draft.heightCm || "",
             depthCm: draft.depthCm || "",
-            valuation: draft.valuation || "",
-            valuationDate: draft.valuationDate || undefined,
-            valuationPerson: draft.valuationPerson || "",
-            valuationCurrency: draft.valuationCurrency || "EUR",
+            weightKg: draft.weightKg || draft.weight_kg || "",
+            provenance: draft.provenance || "",
+            category: draft.category || "",
+            subcategory: draft.subcategory || "",
             quantity: draft.quantity || "1",
-            yearPeriod: draft.yearPeriod || "",
             house: draft.house || "",
-            room: draft.room || "",
+            room_code: draft.room_code || draft.room || "",
+            acquisitionValue: draft.acquisitionValue || draft.acquisition_value || "",
+            acquisitionDate: draft.acquisitionDate || draft.acquisition_date || undefined,
+            acquisitionCurrency: draft.acquisitionCurrency || draft.acquisition_currency || "USD",
+            appraisalValue: draft.appraisalValue || draft.appraisal_value || draft.valuation || "",
+            appraisalDate: draft.appraisalDate || draft.appraisal_date || draft.valuationDate || undefined,
+            appraisalCurrency: draft.appraisalCurrency || draft.appraisal_currency || draft.valuationCurrency || "USD",
+            appraisalEntity: draft.appraisalEntity || draft.appraisal_entity || draft.valuationPerson || "",
             description: draft.description || "",
             notes: draft.notes || "",
             images: draft.images || []
@@ -95,30 +111,93 @@ export function AddItemForm() {
     e.preventDefault();
     console.log("Form submitted:", formData);
 
+    const required = [
+      formData.name,
+      formData.room_code,
+      formData.creator,
+      formData.originRegion,
+      formData.datePeriod,
+      formData.category,
+      formData.subcategory,
+      formData.quantity,
+    ];
+
+    if (required.some((v) => !v || v === "")) {
+      toast({
+        title: "Missing required fields",
+        description: "Please fill all mandatory fields before submitting",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const acqProvided =
+      formData.acquisitionDate || formData.acquisitionValue || formData.acquisitionCurrency;
+    if (acqProvided && !(formData.acquisitionDate && formData.acquisitionValue && formData.acquisitionCurrency)) {
+      toast({
+        title: "Incomplete acquisition info",
+        description: "Date, value and currency must all be provided",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const apprProvided =
+      formData.appraisalDate ||
+      formData.appraisalValue ||
+      formData.appraisalCurrency ||
+      formData.appraisalEntity;
+    if (apprProvided && !(formData.appraisalDate && formData.appraisalValue && formData.appraisalCurrency && formData.appraisalEntity)) {
+      toast({
+        title: "Incomplete appraisal info",
+        description: "Date, value, currency and entity must all be provided",
+        variant: "destructive",
+      });
+      return;
+    }
+
     // Create a proper DecorItem object
     const decorItem: DecorItem = {
       id: draftId ? Number(draftId) : 0,
-      title: formData.title,
-      artist: formData.artist,
-      category: formData.category,
-      subcategory: formData.subcategory,
+      code: formData.code || undefined,
+      name: formData.name,
+      title: formData.name,
+      creator: formData.creator,
+      artist: formData.creator,
+      origin_region: formData.originRegion,
+      date_period: formData.datePeriod,
+      yearPeriod: formData.datePeriod,
+      material: formData.material,
       widthCm: formData.widthCm ? Number(formData.widthCm) : undefined,
       heightCm: formData.heightCm ? Number(formData.heightCm) : undefined,
       depthCm: formData.depthCm ? Number(formData.depthCm) : undefined,
-      valuation: formData.valuation ? Number(formData.valuation) : undefined,
-      valuationDate: formData.valuationDate ? formData.valuationDate.toISOString().split('T')[0] : undefined,
-      valuationPerson: formData.valuationPerson,
-      valuationCurrency: formData.valuationCurrency,
+      weight_kg: formData.weightKg ? Number(formData.weightKg) : undefined,
+      provenance: formData.provenance,
+      category: formData.category,
+      subcategory: formData.subcategory,
       quantity: formData.quantity ? Number(formData.quantity) : 1,
-      yearPeriod: formData.yearPeriod,
+      acquisition_value: formData.acquisitionValue ? Number(formData.acquisitionValue) : undefined,
+      acquisition_date: formData.acquisitionDate ? formData.acquisitionDate.toISOString().split('T')[0] : undefined,
+      acquisition_currency: formData.acquisitionCurrency || undefined,
+      appraisal_value: formData.appraisalValue ? Number(formData.appraisalValue) : undefined,
+      appraisal_date: formData.appraisalDate ? formData.appraisalDate.toISOString().split('T')[0] : undefined,
+      appraisal_currency: formData.appraisalCurrency || undefined,
+      appraisal_entity: formData.appraisalEntity || undefined,
+      valuation: formData.appraisalValue ? Number(formData.appraisalValue) : undefined,
+      valuationDate: formData.appraisalDate ? formData.appraisalDate.toISOString().split('T')[0] : undefined,
+      valuationCurrency: formData.appraisalCurrency,
+      valuationPerson: formData.appraisalEntity,
       house: formData.house,
-      room: formData.room,
+      room_code: formData.room_code,
+      room: formData.room_code,
       description: formData.description,
       notes: formData.notes,
       image: formData.images[0] || "/placeholder.svg",
       images: formData.images,
       condition: "good" as const, // Default condition
-      deleted: false
+      version: 1,
+      is_deleted: false,
+      deleted: false,
     };
 
     let saveAction: Promise<DecorItem | null>;
@@ -171,7 +250,7 @@ export function AddItemForm() {
       id,
       lastModified: new Date().toISOString().split('T')[0],
       data: formData,
-      title: formData.title || 'Untitled Draft',
+      title: formData.name || 'Untitled Draft',
       category: formData.category,
       description: formData.description || '',
     };
