@@ -150,6 +150,24 @@ export function HousesManagement({
     return errors;
   };
 
+  const validateRoom = (room: typeof newRoom) => {
+    const errors: Record<string, string> = {};
+
+    if (!room.houseId) {
+      errors.houseId = "House is required";
+    }
+
+    if (!room.name.trim()) {
+      errors.roomName = "Room name is required";
+    }
+
+    if (room.floor === "") {
+      errors.floor = "Floor is required";
+    }
+
+    return errors;
+  };
+
   const handleAddHouse = () => {
     const errors = validateHouse(newHouse);
     if (Object.keys(errors).length > 0) {
@@ -199,8 +217,11 @@ export function HousesManagement({
   };
 
   const handleAddRoom = () => {
-    if (!newRoom.name.trim() || !newRoom.houseId || newRoom.floor === "")
+    const errors = validateRoom(newRoom);
+    if (Object.keys(errors).length > 0) {
+      setValidationErrors(errors);
       return;
+    }
     onAddRoom(newRoom.houseId, {
       name: newRoom.name,
       room_type: newRoom.room_type || undefined,
@@ -225,6 +246,7 @@ export function HousesManagement({
       description: "",
       notes: "",
     });
+    setValidationErrors({});
     setShowAddRoom(false);
   };
 
@@ -362,11 +384,21 @@ export function HousesManagement({
                   <Label htmlFor="house-select">House *</Label>
                   <Select
                     value={newRoom.houseId}
-                    onValueChange={(value) =>
-                      setNewRoom({ ...newRoom, houseId: value })
-                    }
+                    onValueChange={(value) => {
+                      setNewRoom({ ...newRoom, houseId: value });
+                      if (validationErrors.houseId) {
+                        setValidationErrors({
+                          ...validationErrors,
+                          houseId: "",
+                        });
+                      }
+                    }}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger
+                      className={
+                        validationErrors.houseId ? "border-red-500" : ""
+                      }
+                    >
                       <SelectValue placeholder="Select a house" />
                     </SelectTrigger>
                     <SelectContent>
@@ -377,6 +409,11 @@ export function HousesManagement({
                       ))}
                     </SelectContent>
                   </Select>
+                  {validationErrors.houseId && (
+                    <p className="text-sm text-red-500 mt-1">
+                      {validationErrors.houseId}
+                    </p>
+                  )}
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -384,10 +421,24 @@ export function HousesManagement({
                     <Input
                       id="room-name"
                       value={newRoom.name}
-                      onChange={(e) =>
-                        setNewRoom({ ...newRoom, name: e.target.value })
+                      onChange={(e) => {
+                        setNewRoom({ ...newRoom, name: e.target.value });
+                        if (validationErrors.roomName) {
+                          setValidationErrors({
+                            ...validationErrors,
+                            roomName: "",
+                          });
+                        }
+                      }}
+                      className={
+                        validationErrors.roomName ? "border-red-500" : ""
                       }
                     />
+                    {validationErrors.roomName && (
+                      <p className="text-sm text-red-500 mt-1">
+                        {validationErrors.roomName}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <Label htmlFor="room-floor">Floor *</Label>
@@ -395,10 +446,22 @@ export function HousesManagement({
                       id="room-floor"
                       type="number"
                       value={newRoom.floor}
-                      onChange={(e) =>
-                        setNewRoom({ ...newRoom, floor: e.target.value })
-                      }
+                      onChange={(e) => {
+                        setNewRoom({ ...newRoom, floor: e.target.value });
+                        if (validationErrors.floor) {
+                          setValidationErrors({
+                            ...validationErrors,
+                            floor: "",
+                          });
+                        }
+                      }}
+                      className={validationErrors.floor ? "border-red-500" : ""}
                     />
+                    {validationErrors.floor && (
+                      <p className="text-sm text-red-500 mt-1">
+                        {validationErrors.floor}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
