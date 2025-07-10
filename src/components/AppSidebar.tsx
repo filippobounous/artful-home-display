@@ -47,7 +47,7 @@ export function AppSidebar() {
   }));
 
   // Dynamic house items based on configuration
-  const houseItems = houses.filter(h => h.visible).map(house => ({
+  const houseItems = houses.filter(h => !h.is_deleted).map(house => ({
     title: house.name,
     url: `/house/${encodeURIComponent(house.id)}`,
     icon: getIconComponent(house.icon)

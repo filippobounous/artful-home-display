@@ -3,9 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { IconSelector } from "@/components/IconSelector";
@@ -15,14 +15,13 @@ import { countries } from "@/lib/countries";
 
 interface HousesManagementProps {
   houses: HouseConfig[];
-  onAddHouse: (house: Omit<HouseConfig, 'id' | 'rooms'>) => void;
+  onAddHouse: (house: Omit<HouseConfig, 'id' | 'rooms' | 'version' | 'is_deleted'>) => void;
   onAddRoom: (houseId: string, room: Omit<RoomConfig, 'id'>) => void;
   onEditRoom: (houseId: string, roomId: string, updates: Partial<RoomConfig>) => void;
   onEditHouse: (houseId: string, updates: Partial<HouseConfig>) => void;
   onDeleteRoom: (houseId: string, roomId: string) => void;
   onMoveHouse: (dragIndex: number, hoverIndex: number) => void;
   onMoveRoom: (houseId: string, dragIndex: number, hoverIndex: number) => void;
-  onToggleHouse: (houseId: string) => void;
   onToggleRoom: (houseId: string, roomId: string) => void;
 }
 
@@ -35,16 +34,21 @@ export function HousesManagement({
   onDeleteRoom,
   onMoveHouse,
   onMoveRoom,
-  onToggleHouse,
   onToggleRoom
 }: HousesManagementProps) {
   const [newHouse, setNewHouse] = useState({
     name: '',
+    code: '',
+    icon: 'house',
+    city: '',
     country: '',
     address: '',
-    yearBuilt: '',
-    code: '',
-    icon: 'home'
+    postal_code: '',
+    beneficiary: '',
+    latitude: '',
+    longitude: '',
+    description: '',
+    notes: ''
   });
   const [newRoom, setNewRoom] = useState({ name: '', houseId: '' });
   const [editingRoom, setEditingRoom] = useState<{ houseId: string; room: RoomConfig } | null>(null);
@@ -62,10 +66,14 @@ export function HousesManagement({
       errors.name = 'House name is required';
     }
     
+    if (!house.city.trim()) {
+      errors.city = 'City is required';
+    }
+
     if (!house.country.trim()) {
       errors.country = 'Country is required';
     }
-    
+
     if (!house.code.trim()) {
       errors.code = 'House code is required';
     } else if (house.code.length !== 4) {
@@ -84,20 +92,35 @@ export function HousesManagement({
     
     onAddHouse({
       name: newHouse.name,
-      country: newHouse.country,
-      address: newHouse.address,
-      yearBuilt: newHouse.yearBuilt ? parseInt(newHouse.yearBuilt) : undefined,
       code: newHouse.code.toUpperCase(),
       icon: newHouse.icon,
-      visible: true
+      city: newHouse.city,
+      country: newHouse.country,
+      address: newHouse.address,
+      postal_code: newHouse.postal_code,
+      beneficiary: newHouse.beneficiary
+        ? newHouse.beneficiary.split(',').map(b => b.trim())
+        : undefined,
+      latitude: newHouse.latitude ? parseFloat(newHouse.latitude) : undefined,
+      longitude: newHouse.longitude ? parseFloat(newHouse.longitude) : undefined,
+      description: newHouse.description || undefined,
+      notes: newHouse.notes || undefined,
+      version: 1,
+      is_deleted: false
     });
     setNewHouse({
       name: '',
+      code: '',
+      icon: 'house',
+      city: '',
       country: '',
       address: '',
-      yearBuilt: '',
-      code: '',
-      icon: 'home'
+      postal_code: '',
+      beneficiary: '',
+      latitude: '',
+      longitude: '',
+      description: '',
+      notes: ''
     });
     setValidationErrors({});
     setShowAddHouse(false);
@@ -126,11 +149,16 @@ export function HousesManagement({
     if (!editingHouse) return;
     const errors = validateHouse({
       name: editingHouse.name,
+      code: editingHouse.code || '',
+      city: editingHouse.city,
       country: editingHouse.country,
       address: editingHouse.address || '',
-      yearBuilt: editingHouse.yearBuilt?.toString() || '',
-      code: editingHouse.code || '',
-      icon: editingHouse.icon
+      postal_code: editingHouse.postal_code || '',
+      beneficiary: '',
+      latitude: '',
+      longitude: '',
+      description: '',
+      notes: ''
     });
     
     if (Object.keys(errors).length > 0) {
@@ -140,11 +168,17 @@ export function HousesManagement({
     
     onEditHouse(editingHouse.id, {
       name: editingHouse.name,
+      code: editingHouse.code?.toUpperCase(),
+      icon: editingHouse.icon,
+      city: editingHouse.city,
       country: editingHouse.country,
       address: editingHouse.address,
-      yearBuilt: editingHouse.yearBuilt,
-      code: editingHouse.code?.toUpperCase(),
-      icon: editingHouse.icon
+      postal_code: editingHouse.postal_code,
+      beneficiary: editingHouse.beneficiary,
+      latitude: editingHouse.latitude,
+      longitude: editingHouse.longitude,
+      description: editingHouse.description,
+      notes: editingHouse.notes
     });
     setValidationErrors({});
     setEditingHouse(null);
@@ -273,8 +307,8 @@ export function HousesManagement({
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="country">Country *</Label>
-                    <Select 
-                      value={newHouse.country} 
+                    <Select
+                      value={newHouse.country}
                       onValueChange={(value) => {
                         setNewHouse({ ...newHouse, country: value });
                         if (validationErrors.country) {
@@ -316,22 +350,78 @@ export function HousesManagement({
                     )}
                   </div>
                 </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="city">City *</Label>
+                    <Input
+                      id="city"
+                      value={newHouse.city}
+                      onChange={(e) => {
+                        setNewHouse({ ...newHouse, city: e.target.value });
+                        if (validationErrors.city) {
+                          setValidationErrors({ ...validationErrors, city: '' });
+                        }
+                      }}
+                      placeholder="e.g., Paris"
+                      className={validationErrors.city ? 'border-red-500' : ''}
+                    />
+                    {validationErrors.city && (
+                      <p className="text-sm text-red-500 mt-1">{validationErrors.city}</p>
+                    )}
+                  </div>
+                  <div>
+                    <Label htmlFor="postal">Postal Code</Label>
+                    <Input
+                      id="postal"
+                      value={newHouse.postal_code}
+                      onChange={(e) => setNewHouse({ ...newHouse, postal_code: e.target.value })}
+                      placeholder="e.g., 90210"
+                    />
+                  </div>
+                </div>
                 <div>
-                  <Label htmlFor="address">Address</Label>
+                  <Label htmlFor="beneficiary">Beneficiary (comma separated)</Label>
                   <Input
-                    id="address"
-                    value={newHouse.address}
-                    onChange={(e) => setNewHouse({ ...newHouse, address: e.target.value })}
-                    placeholder="Full address"
+                    id="beneficiary"
+                    value={newHouse.beneficiary}
+                    onChange={(e) => setNewHouse({ ...newHouse, beneficiary: e.target.value })}
+                    placeholder="e.g., Owner, Family"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="latitude">Latitude</Label>
+                    <Input
+                      id="latitude"
+                      value={newHouse.latitude}
+                      onChange={(e) => setNewHouse({ ...newHouse, latitude: e.target.value })}
+                      placeholder="34.07"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="longitude">Longitude</Label>
+                    <Input
+                      id="longitude"
+                      value={newHouse.longitude}
+                      onChange={(e) => setNewHouse({ ...newHouse, longitude: e.target.value })}
+                      placeholder="-118.40"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="description">Description</Label>
+                  <Input
+                    id="description"
+                    value={newHouse.description}
+                    onChange={(e) => setNewHouse({ ...newHouse, description: e.target.value })}
                   />
                 </div>
                 <div>
-                  <Label htmlFor="year-built">Year Built</Label>
+                  <Label htmlFor="notes">Notes</Label>
                   <Input
-                    id="year-built"
-                    value={newHouse.yearBuilt}
-                    onChange={(e) => setNewHouse({ ...newHouse, yearBuilt: e.target.value })}
-                    placeholder="e.g., 1985"
+                    id="notes"
+                    value={newHouse.notes}
+                    onChange={(e) => setNewHouse({ ...newHouse, notes: e.target.value })}
                   />
                 </div>
                 <div>
@@ -341,6 +431,16 @@ export function HousesManagement({
                     onIconSelect={(icon) => setNewHouse({ ...newHouse, icon })}
                   />
                 </div>
+                <div>
+                  <Label htmlFor="address">Address</Label>
+                  <Input
+                    id="address"
+                    value={newHouse.address}
+                    onChange={(e) => setNewHouse({ ...newHouse, address: e.target.value })}
+                    placeholder="Full address"
+                  />
+                </div>
+
                 <div className="flex justify-end gap-2">
                   <Button variant="outline" onClick={() => {
                     setShowAddHouse(false);
@@ -381,11 +481,6 @@ export function HousesManagement({
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Switch
-                    checked={house.visible}
-                    onCheckedChange={() => onToggleHouse(house.id)}
-                  />
-                  {house.visible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button variant="ghost" size="sm" onClick={() => setEditingHouse(house)}>
@@ -418,8 +513,8 @@ export function HousesManagement({
                           <div className="grid grid-cols-2 gap-4">
                             <div>
                               <Label htmlFor="edit-country">Country *</Label>
-                              <Select 
-                                value={editingHouse.country} 
+                              <Select
+                                value={editingHouse.country}
                                 onValueChange={(value) => {
                                   setEditingHouse({ ...editingHouse, country: value });
                                   if (validationErrors.country) {
@@ -460,20 +555,88 @@ export function HousesManagement({
                               )}
                             </div>
                           </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="edit-city">City *</Label>
+                              <Input
+                                id="edit-city"
+                                value={editingHouse.city}
+                                onChange={(e) => {
+                                  setEditingHouse({ ...editingHouse, city: e.target.value });
+                                  if (validationErrors.city) {
+                                    setValidationErrors({ ...validationErrors, city: '' });
+                                  }
+                                }}
+                                className={validationErrors.city ? 'border-red-500' : ''}
+                              />
+                              {validationErrors.city && (
+                                <p className="text-sm text-red-500 mt-1">{validationErrors.city}</p>
+                              )}
+                            </div>
+                            <div>
+                              <Label htmlFor="edit-postal">Postal Code</Label>
+                              <Input
+                                id="edit-postal"
+                                value={editingHouse.postal_code || ''}
+                                onChange={(e) => setEditingHouse({ ...editingHouse, postal_code: e.target.value })}
+                              />
+                            </div>
+                          </div>
                           <div>
-                            <Label htmlFor="edit-address">Address</Label>
+                            <Label htmlFor="edit-beneficiary">Beneficiary (comma separated)</Label>
                             <Input
-                              id="edit-address"
-                              value={editingHouse.address || ''}
-                              onChange={(e) => setEditingHouse({ ...editingHouse, address: e.target.value })}
+                              id="edit-beneficiary"
+                              value={editingHouse.beneficiary ? editingHouse.beneficiary.join(', ') : ''}
+                              onChange={(e) =>
+                                setEditingHouse({
+                                  ...editingHouse,
+                                  beneficiary: e.target.value.split(',').map(b => b.trim())
+                                })
+                              }
+                            />
+                          </div>
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor="edit-latitude">Latitude</Label>
+                              <Input
+                                id="edit-latitude"
+                                value={editingHouse.latitude ?? ''}
+                                onChange={(e) =>
+                                  setEditingHouse({
+                                    ...editingHouse,
+                                    latitude: e.target.value ? parseFloat(e.target.value) : undefined
+                                  })
+                                }
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="edit-longitude">Longitude</Label>
+                              <Input
+                                id="edit-longitude"
+                                value={editingHouse.longitude ?? ''}
+                                onChange={(e) =>
+                                  setEditingHouse({
+                                    ...editingHouse,
+                                    longitude: e.target.value ? parseFloat(e.target.value) : undefined
+                                  })
+                                }
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <Label htmlFor="edit-description">Description</Label>
+                            <Input
+                              id="edit-description"
+                              value={editingHouse.description || ''}
+                              onChange={(e) => setEditingHouse({ ...editingHouse, description: e.target.value })}
                             />
                           </div>
                           <div>
-                            <Label htmlFor="edit-year-built">Year Built</Label>
+                            <Label htmlFor="edit-notes">Notes</Label>
                             <Input
-                              id="edit-year-built"
-                              value={editingHouse.yearBuilt ? editingHouse.yearBuilt.toString() : ''}
-                              onChange={(e) => setEditingHouse({ ...editingHouse, yearBuilt: e.target.value ? parseInt(e.target.value) : undefined })}
+                              id="edit-notes"
+                              value={editingHouse.notes || ''}
+                              onChange={(e) => setEditingHouse({ ...editingHouse, notes: e.target.value })}
                             />
                           </div>
                           <div>
@@ -483,6 +646,15 @@ export function HousesManagement({
                               onIconSelect={(icon) => setEditingHouse({ ...editingHouse, icon })}
                             />
                           </div>
+                          <div>
+                            <Label htmlFor="edit-address">Address</Label>
+                            <Input
+                              id="edit-address"
+                              value={editingHouse.address || ''}
+                              onChange={(e) => setEditingHouse({ ...editingHouse, address: e.target.value })}
+                            />
+                          </div>
+
                           <div className="flex justify-end gap-2">
                             <Button variant="outline" onClick={() => {
                               setEditingHouse(null);

@@ -113,7 +113,7 @@ export function BulkUpload({ onUpload }: BulkUploadProps) {
     
     switch (type) {
       case "houses":
-        template = "name,country,address,yearBuilt,code\nMy House,United States,123 Main St,1985,MH01\nGuest House,United States,125 Main St,1990,GH01";
+        template = "name,city,country,address,postal_code,code\nMain House,Beverly Hills,United States,123 Main St,90210,MH01\nGuest House,Beverly Hills,United States,125 Main St,90210,GH01";
         filename = "houses-template.csv";
         break;
       case "rooms":

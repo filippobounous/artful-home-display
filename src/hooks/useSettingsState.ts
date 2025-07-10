@@ -68,17 +68,14 @@ export function useSettingsState() {
     return newCategory;
   };
 
-  const addHouse = (name: string, country: string, address: string, yearBuilt: number | undefined, code: string, icon: string) => {
+  const addHouse = (house: Omit<HouseConfig, 'id' | 'rooms' | 'version' | 'is_deleted'>) => {
     const newHouse: HouseConfig = {
-      id: name.toLowerCase().replace(/\s+/g, '-'),
-      name,
-      country,
-      address,
-      yearBuilt,
-      code: code.toUpperCase(),
-      icon,
+      ...house,
+      id: Date.now().toString(),
+      code: house.code.toUpperCase(),
+      version: 1,
+      is_deleted: false,
       rooms: [],
-      visible: true
     };
     globalHouses = [...globalHouses, newHouse];
     saveState();
@@ -89,7 +86,11 @@ export function useSettingsState() {
   const editHouse = (houseId: string, updates: Partial<HouseConfig>) => {
     globalHouses = globalHouses.map(house => {
       if (house.id === houseId) {
-        return { ...house, ...updates };
+        return {
+          ...house,
+          ...updates,
+          version: (house.version || 1) + 1,
+        };
       }
       return house;
     });
@@ -245,13 +246,6 @@ export function useSettingsState() {
     notifyListeners();
   };
 
-  const toggleHouseVisibility = (houseId: string) => {
-    globalHouses = globalHouses.map(h =>
-      h.id === houseId ? { ...h, visible: !h.visible } : h
-    );
-    saveState();
-    notifyListeners();
-  };
 
   const toggleRoomVisibility = (houseId: string, roomId: string) => {
     globalHouses = globalHouses.map(h => {
@@ -301,11 +295,10 @@ export function useSettingsState() {
       houses: houses.map(h => ({
         id: h.id,
         name: h.name,
+        icon: h.icon,
         country: h.country,
         address: h.address,
-        yearBuilt: h.yearBuilt,
         code: h.code,
-        icon: h.icon,
         rooms: h.rooms.map(r => ({ id: r.id, name: r.name }))
       })),
       categories: categories.map(c => ({
@@ -343,7 +336,6 @@ export function useSettingsState() {
     moveRoom,
     moveCategory,
     moveSubcategory,
-    toggleHouseVisibility,
     toggleRoomVisibility,
     toggleCategoryVisibility,
     toggleSubcategoryVisibility

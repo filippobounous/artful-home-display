@@ -26,7 +26,6 @@ export function SettingsManagement() {
     moveRoom,
     moveCategory,
     moveSubcategory,
-    toggleHouseVisibility,
     toggleRoomVisibility,
     toggleCategoryVisibility,
     toggleSubcategoryVisibility
@@ -38,15 +37,16 @@ export function SettingsManagement() {
     // This is a placeholder for the actual implementation
   };
 
-  const handleAddHouse = (house: Omit<HouseConfig, 'id' | 'rooms'>) => {
-    addHouse(house.name, house.country, house.address || '', house.yearBuilt, house.code || '', house.icon);
+  const handleAddHouse = (house: Omit<HouseConfig, 'id' | 'rooms' | 'version' | 'is_deleted'>) => {
+    addHouse(house);
   };
 
   const downloadCsvMappings = () => {
     // Convert houses to CSV
     const housesCsv = [
-      'House Name,Country,Address,Year Built,Code,Icon',
-      ...houses.map(h => `"${h.name}","${h.country}","${h.address || ''}","${h.yearBuilt || ''}","${h.code}","${h.icon}"`)
+      'House Name,City,Country,Address,Postal Code,Code',
+      ...houses.map(h =>
+        `"${h.name}","${h.city}","${h.country}","${h.address || ''}","${h.postal_code || ''}","${h.code}"`)
     ].join('\n');
 
     // Convert categories to CSV
@@ -100,7 +100,6 @@ export function SettingsManagement() {
             onDeleteRoom={deleteRoom}
             onMoveHouse={moveHouse}
             onMoveRoom={moveRoom}
-            onToggleHouse={toggleHouseVisibility}
             onToggleRoom={toggleRoomVisibility}
           />
         </TabsContent>

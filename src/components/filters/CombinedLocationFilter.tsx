@@ -42,8 +42,8 @@ export function CombinedLocationFilter({
   }
 
   // Create combined options with headers as tri-state checkboxes
-  const visibleHouses = houses.filter(h => h.visible);
-  const combinedOptions = visibleHouses.flatMap(house => {
+  const activeHouses = houses.filter(h => !h.is_deleted);
+  const combinedOptions = activeHouses.flatMap(house => {
     const roomIds = house.rooms.filter(r => r.visible).map(r => `${house.id}|${r.id}`);
     const selectedRooms = selectedRoom.filter(id => roomIds.includes(id));
     const allSelected = selectedRooms.length === roomIds.length && roomIds.length > 0;
@@ -89,7 +89,7 @@ export function CombinedLocationFilter({
   const allSelectedValues = [...selectedHouse, ...selectedRoom];
 
   // Determine how many logical selections exist for badge display
-  const selectedCount = visibleHouses.reduce((cnt, house) => {
+  const selectedCount = activeHouses.reduce((cnt, house) => {
     const roomKeys = house.rooms.filter(r => r.visible).map(r => `${house.id}|${r.id}`);
     const selectedRooms = selectedRoom.filter(r => roomKeys.includes(r));
     const allSelected = selectedRooms.length === roomKeys.length && roomKeys.length > 0;
@@ -103,7 +103,7 @@ export function CombinedLocationFilter({
     const houseIds: string[] = [];
     const roomIds: string[] = [];
 
-  visibleHouses.forEach(house => {
+  activeHouses.forEach(house => {
       const roomKeys = house.rooms.filter(r => r.visible).map(r => `${house.id}|${r.id}`);
       const selectedForHouse = values.filter(v => roomKeys.includes(v));
       const allSelected = selectedForHouse.length === roomKeys.length && roomKeys.length > 0;

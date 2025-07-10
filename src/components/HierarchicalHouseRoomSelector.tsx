@@ -40,7 +40,7 @@ export function HierarchicalHouseRoomSelector({
           <SelectValue placeholder="Select house and room" />
         </SelectTrigger>
         <SelectContent>
-          {houses.filter(h => h.visible).map((house) => (
+          {houses.filter(h => !h.is_deleted).map((house) => (
             <div key={house.id}>
               <div className="px-2 py-1 text-sm font-medium text-slate-600 bg-muted">
                 {house.name}

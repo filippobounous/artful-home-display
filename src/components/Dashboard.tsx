@@ -20,7 +20,7 @@ export function Dashboard({ items }: DashboardProps) {
   }));
 
   // Count items by house using current settings
-  const houseStats = houses.filter(h => h.visible).map(house => ({
+  const houseStats = houses.filter(h => !h.is_deleted).map(house => ({
     ...house,
     count: items.filter(item => item.house === house.id).length,
   }));
