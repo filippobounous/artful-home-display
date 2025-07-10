@@ -50,7 +50,15 @@ export function HousesManagement({
 
   const handleAddHouse = () => {
     if (!newHouse.name.trim()) return;
-    onAddHouse(newHouse);
+    onAddHouse({
+      name: newHouse.name,
+      country: newHouse.country,
+      address: newHouse.address,
+      yearBuilt: newHouse.yearBuilt ? parseInt(newHouse.yearBuilt) : undefined,
+      code: newHouse.code,
+      icon: newHouse.icon,
+      visible: true
+    });
     setNewHouse({
       name: '',
       country: '',
@@ -64,7 +72,13 @@ export function HousesManagement({
 
   const handleAddRoom = () => {
     if (!newRoom.name.trim() || !newRoom.houseId) return;
-    onAddRoom(newRoom.houseId, { name: newRoom.name, visible: true });
+    onAddRoom(newRoom.houseId, { 
+      name: newRoom.name, 
+      floor: 1,
+      version: 1,
+      is_deleted: false,
+      visible: true 
+    });
     setNewRoom({ name: '', houseId: '' });
     setShowAddRoom(false);
   };
@@ -263,7 +277,7 @@ export function HousesManagement({
                               <Label htmlFor="edit-code">Code</Label>
                               <Input
                                 id="edit-code"
-                                value={editingHouse.code}
+                                value={editingHouse.code || ''}
                                 onChange={(e) => setEditingHouse({ ...editingHouse, code: e.target.value })}
                               />
                             </div>
@@ -280,8 +294,8 @@ export function HousesManagement({
                             <Label htmlFor="edit-year-built">Year Built</Label>
                             <Input
                               id="edit-year-built"
-                              value={editingHouse.yearBuilt || ''}
-                              onChange={(e) => setEditingHouse({ ...editingHouse, yearBuilt: e.target.value })}
+                              value={editingHouse.yearBuilt ? editingHouse.yearBuilt.toString() : ''}
+                              onChange={(e) => setEditingHouse({ ...editingHouse, yearBuilt: e.target.value ? parseInt(e.target.value) : undefined })}
                             />
                           </div>
                           <div>

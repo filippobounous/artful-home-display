@@ -38,6 +38,10 @@ export function SettingsManagement() {
     // This is a placeholder for the actual implementation
   };
 
+  const handleAddHouse = (house: Omit<HouseConfig, 'id' | 'rooms'>) => {
+    addHouse(house.name, house.country, house.address || '', house.yearBuilt, house.code || '', house.icon);
+  };
+
   const downloadCsvMappings = () => {
     // Convert houses to CSV
     const housesCsv = [
@@ -89,7 +93,7 @@ export function SettingsManagement() {
         <TabsContent value="houses">
           <HousesManagement
             houses={houses}
-            onAddHouse={addHouse}
+            onAddHouse={handleAddHouse}
             onAddRoom={addRoom}
             onEditRoom={editRoom}
             onEditHouse={editHouse}
