@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,11 +11,11 @@ import { DownloadDialog } from "@/components/settings/DownloadDialog";
 import { HouseConfig } from "@/types/inventory";
 
 export function SettingsManagement() {
-  const { 
-    categories, 
-    houses, 
-    addCategory, 
-    addHouse, 
+  const {
+    categories,
+    houses,
+    addCategory,
+    addHouse,
     editHouse,
     editRoom,
     addRoom,
@@ -31,7 +30,7 @@ export function SettingsManagement() {
     toggleHouseVisibility,
     toggleRoomVisibility,
     toggleCategoryVisibility,
-    toggleSubcategoryVisibility
+    toggleSubcategoryVisibility,
   } = useSettingsState();
 
   const [showDownloadDialog, setShowDownloadDialog] = useState(false);
@@ -48,7 +47,7 @@ export function SettingsManagement() {
     // This is a placeholder for the actual implementation
   };
 
-  const handleAddHouse = (house: Omit<HouseConfig, 'id' | 'rooms'>) => {
+  const handleAddHouse = (house: Omit<HouseConfig, "id" | "rooms">) => {
     addHouse(house);
   };
 
@@ -67,10 +66,12 @@ export function SettingsManagement() {
       <Tabs defaultValue="houses" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="houses">Houses & Rooms</TabsTrigger>
-          <TabsTrigger value="categories">Categories & Subcategories</TabsTrigger>
+          <TabsTrigger value="categories">
+            Categories & Subcategories
+          </TabsTrigger>
           <TabsTrigger value="upload">Bulk Upload</TabsTrigger>
         </TabsList>
-        
+
         <TabsContent value="houses">
           <HousesManagement
             houses={houses}
@@ -85,12 +86,14 @@ export function SettingsManagement() {
             onToggleRoom={toggleRoomVisibility}
           />
         </TabsContent>
-        
+
         <TabsContent value="categories">
           <CategoriesManagement
             categories={categories}
             onAddCategory={addCategory}
             onAddSubcategory={addSubcategory}
+            onEditCategory={editCategory}
+            onEditSubcategory={editSubcategory}
             onDeleteSubcategory={deleteSubcategory}
             onMoveCategory={moveCategory}
             onMoveSubcategory={moveSubcategory}
@@ -100,7 +103,10 @@ export function SettingsManagement() {
         </TabsContent>
 
         <TabsContent value="upload">
-          <BulkUpload onCsvUpload={handleCsvUpload} onJsonUpload={handleJsonUpload} />
+          <BulkUpload
+            onCsvUpload={handleCsvUpload}
+            onJsonUpload={handleJsonUpload}
+          />
         </TabsContent>
       </Tabs>
 
