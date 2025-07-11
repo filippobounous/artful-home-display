@@ -10,22 +10,37 @@ interface ValuationRangeFilterProps {
   setRange: (range: ValuationRange) => void;
 }
 
-export function ValuationRangeFilter({ range, setRange }: ValuationRangeFilterProps) {
+export function ValuationRangeFilter({
+  range,
+  setRange,
+}: ValuationRangeFilterProps) {
   return (
     <div>
-      <label className="block text-sm font-medium text-slate-700 mb-2">Valuation Range</label>
+      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+        Valuation Range
+      </label>
       <div className="flex gap-2">
         <Input
           type="number"
           placeholder="Min"
           value={range.min ?? ""}
-          onChange={(e) => setRange({ ...range, min: e.target.value ? Number(e.target.value) : undefined })}
+          onChange={(e) =>
+            setRange({
+              ...range,
+              min: e.target.value ? Number(e.target.value) : undefined,
+            })
+          }
         />
         <Input
           type="number"
           placeholder="Max"
           value={range.max ?? ""}
-          onChange={(e) => setRange({ ...range, max: e.target.value ? Number(e.target.value) : undefined })}
+          onChange={(e) =>
+            setRange({
+              ...range,
+              max: e.target.value ? Number(e.target.value) : undefined,
+            })
+          }
         />
       </div>
     </div>
