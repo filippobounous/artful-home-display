@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -78,6 +79,7 @@ export function HousesManagement({
   onToggleHouse,
   onToggleRoom,
 }: HousesManagementProps) {
+  const { toast } = useToast();
   const [newHouse, setNewHouse] = useState({
     name: "",
     code: "",
@@ -172,6 +174,11 @@ export function HousesManagement({
     const errors = validateHouse(newHouse);
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors);
+      toast({
+        title: "Missing required fields",
+        description: "Please fill in all mandatory fields",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -220,6 +227,11 @@ export function HousesManagement({
     const errors = validateRoom(newRoom);
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors);
+      toast({
+        title: "Missing required fields",
+        description: "Please fill in all mandatory fields",
+        variant: "destructive",
+      });
       return;
     }
     onAddRoom(newRoom.houseId, {
@@ -290,6 +302,11 @@ export function HousesManagement({
 
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors);
+      toast({
+        title: "Missing required fields",
+        description: "Please fill in all mandatory fields",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -307,6 +324,10 @@ export function HousesManagement({
       notes: editingHouse.notes,
       yearBuilt: editingHouse.yearBuilt,
       icon: editingHouse.icon,
+    });
+    toast({
+      title: "House updated",
+      description: "Changes saved successfully",
     });
     setValidationErrors({});
     setEditingHouse(null);
@@ -804,15 +825,15 @@ export function HousesManagement({
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 flex-1">
-                  <GripVertical className="w-4 h-4 text-gray-400" />
+                  <GripVertical className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <CardTitle className="text-lg">{house.name}</CardTitle>
-                      <span className="text-sm font-mono bg-gray-100 px-2 py-1 rounded">
+                      <span className="text-sm font-mono bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
                         {house.code}
                       </span>
                     </div>
-                    <div className="text-sm text-gray-600 mt-1">
+                    <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                       {house.address ? `${house.address.split(",")[0]}, ` : ""}
                       {house.country}
                     </div>
@@ -1136,7 +1157,7 @@ export function HousesManagement({
                     variant="ghost"
                     className="w-full justify-between p-0 h-auto"
                   >
-                    <h5 className="font-medium text-sm text-gray-700">
+                    <h5 className="font-medium text-sm text-gray-700 dark:text-gray-300">
                       Rooms (
                       {house.rooms.filter((room) => !room.is_deleted).length})
                     </h5>
@@ -1153,7 +1174,7 @@ export function HousesManagement({
                     .map((room, roomIndex) => (
                       <div
                         key={room.id}
-                        className="flex items-center justify-between p-2 bg-gray-50 rounded cursor-move"
+                        className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded cursor-move"
                         draggable
                         onDragStart={(e) =>
                           handleRoomDragStart(e, house.id, roomIndex)
@@ -1162,7 +1183,7 @@ export function HousesManagement({
                         onDrop={(e) => handleRoomDrop(e, house.id, roomIndex)}
                       >
                         <div className="flex items-center gap-2">
-                          <GripVertical className="w-3 h-3 text-gray-400" />
+                          <GripVertical className="w-3 h-3 text-gray-400 dark:text-gray-500" />
                           <span className="text-sm">{room.name}</span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -1389,7 +1410,7 @@ export function HousesManagement({
                                         value={editingRoom.room.code || ""}
                                         disabled
                                       />
-                                      <p className="text-xs text-gray-500 mt-1">
+                                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                         Code is auto-generated from the house
                                         code.
                                       </p>
