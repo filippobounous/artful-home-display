@@ -35,7 +35,6 @@ export function DownloadDialog({ open, onOpenChange, houses, categories }: Downl
           postal_code: h.postal_code || '',
           code: h.code,
           icon: h.icon || '',
-          yearBuilt: h.yearBuilt || '',
           visible: h.visible
         }));
         filename = `houses.${format}`;

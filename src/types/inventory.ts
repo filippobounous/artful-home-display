@@ -102,7 +102,6 @@ export interface HouseConfig {
   longitude?: number;
   description?: string;
   notes?: string;
-  yearBuilt?: number;
   icon: string;
   rooms: RoomConfig[];
   visible: boolean;
@@ -187,7 +186,6 @@ export const defaultHouses: HouseConfig[] = [
     longitude: -118.4004,
     description: "Primary residence",
     notes: "",
-    yearBuilt: 1985,
     version: 1,
     is_deleted: false,
     icon: "house",
@@ -215,7 +213,6 @@ export const defaultHouses: HouseConfig[] = [
     longitude: -118.4004,
     description: "Guest accommodation",
     notes: "",
-    yearBuilt: 1990,
     version: 1,
     is_deleted: false,
     icon: "house",
@@ -240,7 +237,6 @@ export const defaultHouses: HouseConfig[] = [
     longitude: 2.3601,
     description: "Work studio",
     notes: "",
-    yearBuilt: 2010,
     version: 1,
     is_deleted: false,
     icon: "house",

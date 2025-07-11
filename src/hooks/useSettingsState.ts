@@ -466,7 +466,6 @@ export function useSettingsState() {
         name: h.name,
         country: h.country,
         address: h.address,
-        yearBuilt: h.yearBuilt,
         code: h.code,
         icon: h.icon,
         rooms: h.rooms.map((r) => ({ id: r.id, name: r.name })),

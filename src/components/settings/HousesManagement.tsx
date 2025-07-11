@@ -95,7 +95,6 @@ export function HousesManagement({
     address: "",
     code: "",
     icon: "home",
-    yearBuilt: undefined,
     postal_code: "",
     latitude: undefined,
     longitude: undefined,
@@ -154,7 +153,6 @@ export function HousesManagement({
         address: "",
         code: "",
         icon: "home",
-        yearBuilt: undefined,
         postal_code: "",
         latitude: undefined,
         longitude: undefined,
@@ -433,23 +431,6 @@ export function HousesManagement({
                     setNewHouse({ ...newHouse, postal_code: e.target.value })
                   }
                   placeholder="e.g., 10001"
-                />
-              </div>
-              <div>
-                <Label htmlFor="house-year">Year Built</Label>
-                <Input
-                  id="house-year"
-                  type="number"
-                  value={newHouse.yearBuilt || ""}
-                  onChange={(e) =>
-                    setNewHouse({
-                      ...newHouse,
-                      yearBuilt: e.target.value
-                        ? parseInt(e.target.value)
-                        : undefined,
-                    })
-                  }
-                  placeholder="e.g., 1990"
                 />
               </div>
               <div>
@@ -756,15 +737,11 @@ export function HousesManagement({
               </div>
               <div>
                 <Label htmlFor="edit-house-code">Code * (4 characters)</Label>
+                {/* Code cannot be edited once set */}
                 <Input
                   id="edit-house-code"
                   value={editingHouse.code}
-                  onChange={(e) =>
-                    setEditingHouse({
-                      ...editingHouse,
-                      code: e.target.value.toUpperCase(),
-                    })
-                  }
+                  disabled
                   placeholder="e.g., MH01"
                   maxLength={4}
                 />
@@ -800,23 +777,6 @@ export function HousesManagement({
                     })
                   }
                   placeholder="e.g., 10001"
-                />
-              </div>
-              <div>
-                <Label htmlFor="edit-house-year">Year Built</Label>
-                <Input
-                  id="edit-house-year"
-                  type="number"
-                  value={editingHouse.yearBuilt || ""}
-                  onChange={(e) =>
-                    setEditingHouse({
-                      ...editingHouse,
-                      yearBuilt: e.target.value
-                        ? parseInt(e.target.value)
-                        : undefined,
-                    })
-                  }
-                  placeholder="e.g., 1990"
                 />
               </div>
               <div>
