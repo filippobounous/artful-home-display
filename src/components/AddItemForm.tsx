@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,7 +14,7 @@ export function AddItemForm() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const draftId = searchParams.get('draftId');
+  const draftId = searchParams.get("draftId");
 
   const [formData, setFormData] = useState({
     title: "",
@@ -35,12 +34,13 @@ export function AddItemForm() {
     room: "",
     description: "",
     notes: "",
-    images: [] as string[]
+    images: [] as string[],
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (draftId) {
-      const draftData = localStorage.getItem('editingDraft');
+      const draftData = localStorage.getItem("editingDraft");
       if (draftData) {
         try {
           const draft = JSON.parse(draftData);
@@ -62,29 +62,29 @@ export function AddItemForm() {
             room: draft.room || "",
             description: draft.description || "",
             notes: draft.notes || "",
-            images: draft.images || []
+            images: draft.images || [],
           });
-          
-          // Clear the draft data from localStorage
-          localStorage.removeItem('editingDraft');
 
-          if ('lastModified' in draft) {
+          // Clear the draft data from localStorage
+          localStorage.removeItem("editingDraft");
+
+          if ("lastModified" in draft) {
             toast({
-              title: 'Draft loaded',
-              description: 'Your draft has been loaded successfully',
+              title: "Draft loaded",
+              description: "Your draft has been loaded successfully",
             });
           } else {
             toast({
-              title: 'Edit mode',
-              description: 'Item data loaded for editing',
+              title: "Edit mode",
+              description: "Item data loaded for editing",
             });
           }
         } catch (error) {
-          console.error('Error loading draft:', error);
+          console.error("Error loading draft:", error);
           toast({
             title: "Error loading draft",
             description: "Failed to load the draft data",
-            variant: "destructive"
+            variant: "destructive",
           });
         }
       }
@@ -93,6 +93,20 @@ export function AddItemForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const newErrors: Record<string, string> = {};
+    if (!formData.title.trim()) newErrors.title = "This field is required";
+    if (!formData.artist.trim()) newErrors.artist = "This field is required";
+    if (!formData.quantity || Number(formData.quantity) <= 0)
+      newErrors.quantity = "This field is required";
+    if (!formData.yearPeriod.trim())
+      newErrors.yearPeriod = "This field is required";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+    setErrors({});
+
     console.log("Form submitted:", formData);
 
     // Create a proper DecorItem object
@@ -106,7 +120,9 @@ export function AddItemForm() {
       heightCm: formData.heightCm ? Number(formData.heightCm) : undefined,
       depthCm: formData.depthCm ? Number(formData.depthCm) : undefined,
       valuation: formData.valuation ? Number(formData.valuation) : undefined,
-      valuationDate: formData.valuationDate ? formData.valuationDate.toISOString().split('T')[0] : undefined,
+      valuationDate: formData.valuationDate
+        ? formData.valuationDate.toISOString().split("T")[0]
+        : undefined,
       valuationPerson: formData.valuationPerson,
       valuationCurrency: formData.valuationCurrency,
       quantity: formData.quantity ? Number(formData.quantity) : 1,
@@ -118,7 +134,7 @@ export function AddItemForm() {
       image: formData.images[0] || "/placeholder.svg",
       images: formData.images,
       condition: "good" as const, // Default condition
-      deleted: false
+      deleted: false,
     };
 
     let saveAction: Promise<DecorItem | null>;
@@ -126,9 +142,11 @@ export function AddItemForm() {
 
     if (draftId) {
       const inventory = JSON.parse(
-        localStorage.getItem('inventoryData') || '[]'
+        localStorage.getItem("inventoryData") || "[]",
       ) as DecorItem[];
-      exists = inventory.some((item) => item.id === Number(draftId) && !item.deleted);
+      exists = inventory.some(
+        (item) => item.id === Number(draftId) && !item.deleted,
+      );
 
       saveAction = exists
         ? updateDecorItem(draftId, decorItem)
@@ -140,48 +158,51 @@ export function AddItemForm() {
     saveAction
       .then(() => {
         if (draftId) {
-          const drafts = JSON.parse(localStorage.getItem('drafts') || '[]');
-          const filtered = drafts.filter((d: { id: number }) => d.id !== Number(draftId));
-          localStorage.setItem('drafts', JSON.stringify(filtered));
+          const drafts = JSON.parse(localStorage.getItem("drafts") || "[]");
+          const filtered = drafts.filter(
+            (d: { id: number }) => d.id !== Number(draftId),
+          );
+          localStorage.setItem("drafts", JSON.stringify(filtered));
         }
 
         toast({
-          title: draftId && exists ? 'Item updated' : 'Item added',
-          description: draftId && exists
-            ? 'Your item has been updated successfully'
-            : 'Your item has been added to the collection successfully',
+          title: draftId && exists ? "Item updated" : "Item added",
+          description:
+            draftId && exists
+              ? "Your item has been updated successfully"
+              : "Your item has been added to the collection successfully",
         });
 
-        navigate('/inventory');
+        navigate("/inventory");
       })
       .catch((error) => {
-        console.error('Error saving item:', error);
+        console.error("Error saving item:", error);
         toast({
-          title: 'Error saving item',
-          description: 'There was a problem saving your changes',
-          variant: 'destructive'
+          title: "Error saving item",
+          description: "There was a problem saving your changes",
+          variant: "destructive",
         });
       });
   };
 
   const handleSaveDraft = () => {
-    const drafts = JSON.parse(localStorage.getItem('drafts') || '[]');
+    const drafts = JSON.parse(localStorage.getItem("drafts") || "[]");
     const id = draftId ? Number(draftId) : Date.now();
     const newDraft = {
       id,
-      lastModified: new Date().toISOString().split('T')[0],
+      lastModified: new Date().toISOString().split("T")[0],
       data: formData,
-      title: formData.title || 'Untitled Draft',
+      title: formData.title || "Untitled Draft",
       category: formData.category,
-      description: formData.description || '',
+      description: formData.description || "",
     };
     const filtered = drafts.filter((d: { id: number }) => d.id !== id);
-    localStorage.setItem('drafts', JSON.stringify([...filtered, newDraft]));
+    localStorage.setItem("drafts", JSON.stringify([...filtered, newDraft]));
     toast({
-      title: 'Draft saved',
-      description: 'You can continue editing this draft later',
+      title: "Draft saved",
+      description: "You can continue editing this draft later",
     });
-    navigate('/drafts');
+    navigate("/drafts");
   };
 
   return (
@@ -191,24 +212,34 @@ export function AddItemForm() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
             {/* Basic Information - Left Column */}
             <div className="h-full">
-              <AddItemBasicInfo formData={formData} setFormData={setFormData} />
+              <AddItemBasicInfo
+                formData={formData}
+                setFormData={setFormData}
+                errors={errors}
+              />
             </div>
 
             {/* Category, Location and Valuation - Right Column */}
             <div className="h-full">
-              <AddItemLocationValuation formData={formData} setFormData={setFormData} />
+              <AddItemLocationValuation
+                formData={formData}
+                setFormData={setFormData}
+              />
             </div>
           </div>
 
           {/* Description and Notes */}
-          <AddItemDescriptionNotes formData={formData} setFormData={setFormData} />
+          <AddItemDescriptionNotes
+            formData={formData}
+            setFormData={setFormData}
+          />
 
           {/* Images */}
           <AddItemImages formData={formData} setFormData={setFormData} />
 
           <div className="flex gap-4 pt-6 max-w-2xl mx-auto">
             <Button type="submit" className="flex-1 h-12 text-lg font-semibold">
-              {draftId ? 'Save Changes' : 'Add to Collection'}
+              {draftId ? "Save Changes" : "Add to Collection"}
             </Button>
             <Button
               type="button"
