@@ -52,11 +52,25 @@ const validateRoom = (room: Partial<RoomConfig>): string[] => {
   return errors;
 };
 
-// Mock function to check for linked items - in a real app this would query your items database
+// Enhanced function to check for linked items - simulates checking for items in a room
 const getLinkedItems = (houseId: string, roomId: string): any[] => {
-  // This is a placeholder - replace with actual item checking logic
-  // For now, return empty array to simulate no linked items
-  return [];
+  // This simulates items being linked to a room
+  // In a real app, this would query your items database
+  // For demonstration, we'll return some mock data for certain rooms
+  const mockLinkedItems = [
+    { houseId: '1', roomId: 'living-room', items: ['item1', 'item2', 'item3'] },
+    { houseId: '1', roomId: 'kitchen', items: ['item4', 'item5'] },
+  ];
+  
+  const linkedData = mockLinkedItems.find(data => data.houseId === houseId && data.roomId === roomId);
+  return linkedData ? linkedData.items : [];
+};
+
+// Function to reassign items from one room to another
+const reassignItems = (fromHouseId: string, fromRoomId: string, toHouseId: string, toRoomId: string): void => {
+  // This would update your items database to reassign items
+  // For now, we'll just log the action
+  console.log(`Reassigning items from ${fromHouseId}/${fromRoomId} to ${toHouseId}/${toRoomId}`);
 };
 
 export function useSettingsState() {
@@ -225,6 +239,28 @@ export function useSettingsState() {
     notifyListeners();
   };
 
+  const deleteRoomWithReassignment = (houseId: string, roomId: string, newHouseId?: string, newRoomId?: string) => {
+    const linkedItems = getLinkedItems(houseId, roomId);
+    
+    if (linkedItems.length > 0 && newHouseId && newRoomId) {
+      // Reassign items first
+      reassignItems(houseId, roomId, newHouseId, newRoomId);
+    }
+    
+    // Then delete the room
+    globalHouses = globalHouses.map(house => {
+      if (house.id === houseId) {
+        return {
+          ...house,
+          rooms: house.rooms.filter(room => room.id !== roomId)
+        };
+      }
+      return house;
+    });
+    saveState();
+    notifyListeners();
+  };
+
   const moveHouse = (from: number, to: number) => {
     const updated = Array.from(globalHouses);
     const [moved] = updated.splice(from, 1);
@@ -316,13 +352,13 @@ export function useSettingsState() {
     globalHouses = globalHouses.map(h => {
       if (h.id === houseId) {
         return {
-          ...h,
-          rooms: h.rooms.map(r =>
+          ...house,
+          rooms: house.rooms.map(r =>
             r.id === roomId ? { ...r, visible: !r.visible } : r
           )
         };
       }
-      return h;
+      return house;
     });
     saveState();
     notifyListeners();
@@ -395,6 +431,7 @@ export function useSettingsState() {
     addRoom,
     editRoom,
     deleteRoom,
+    deleteRoomWithReassignment,
     addSubcategory,
     deleteSubcategory,
     downloadMappings,

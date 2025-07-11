@@ -191,7 +191,7 @@ export function CategoriesManagement({
             onDragStart={(e) => handleCategoryDragStart(e, categoryIndex)}
             onDragOver={handleCategoryDragOver}
             onDrop={(e) => handleCategoryDrop(e, categoryIndex)}
-            className="cursor-move border-border/50 bg-card/50 backdrop-blur-sm"
+            className="cursor-move border-border bg-card"
           >
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
@@ -200,7 +200,7 @@ export function CategoriesManagement({
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <CardTitle className="text-lg">{category.name}</CardTitle>
-                      <span className="text-sm font-mono bg-muted/50 text-muted-foreground px-2 py-1 rounded">
+                      <span className="text-sm font-mono bg-muted text-muted-foreground px-2 py-1 rounded">
                         {category.id}
                       </span>
                     </div>
@@ -239,7 +239,7 @@ export function CategoriesManagement({
                   {category.subcategories.map((subcategory, subcategoryIndex) => (
                     <div 
                       key={subcategory.id} 
-                      className="flex items-center justify-between p-2 bg-muted/30 rounded cursor-move border border-border/30"
+                      className="flex items-center justify-between p-3 bg-muted/50 rounded-lg cursor-move border border-border"
                       draggable
                       onDragStart={(e) => handleSubcategoryDragStart(e, category.id, subcategoryIndex)}
                       onDragOver={handleCategoryDragOver}
