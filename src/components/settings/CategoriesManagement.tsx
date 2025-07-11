@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -103,48 +102,6 @@ export function CategoriesManagement({
       <div className="flex justify-between items-center">
         <h4 className="font-medium">Categories & Subcategories</h4>
         <div className="flex gap-2">
-          <Dialog open={showAddSubcategory} onOpenChange={setShowAddSubcategory}>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="sm">
-                <Plus className="w-4 h-4 mr-2" />
-                Add Subcategory
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add New Subcategory</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="category-select">Category</Label>
-                  <Select value={newSubcategory.categoryId} onValueChange={(value) => setNewSubcategory({ ...newSubcategory, categoryId: value })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map(category => (
-                        <SelectItem key={category.id} value={category.id}>{category.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="subcategory-name">Subcategory Name</Label>
-                  <Input
-                    id="subcategory-name"
-                    value={newSubcategory.name}
-                    onChange={(e) => setNewSubcategory({ ...newSubcategory, name: e.target.value })}
-                    placeholder="e.g., Modern Art, Vintage"
-                  />
-                </div>
-                <div className="flex justify-end gap-2">
-                  <Button variant="outline" onClick={() => setShowAddSubcategory(false)}>Cancel</Button>
-                  <Button onClick={handleAddSubcategory}>Add Subcategory</Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-
           <Dialog open={showAddCategory} onOpenChange={setShowAddCategory}>
             <DialogTrigger asChild>
               <Button size="sm">
@@ -204,9 +161,6 @@ export function CategoriesManagement({
                         {category.id}
                       </span>
                     </div>
-                    <div className="text-sm text-muted-foreground mt-1">
-                      {category.subcategories.length} subcategories
-                    </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -223,18 +177,47 @@ export function CategoriesManagement({
                 open={!collapsedCategories.has(category.id)} 
                 onOpenChange={() => toggleCategoryCollapse(category.id)}
               >
-                <CollapsibleTrigger asChild>
-                  <Button variant="ghost" className="w-full justify-between p-0 h-auto">
-                    <h5 className="font-medium text-sm text-muted-foreground">
-                      Subcategories ({category.subcategories.length})
-                    </h5>
-                    {collapsedCategories.has(category.id) ? (
-                      <ChevronRight className="w-4 h-4" />
-                    ) : (
-                      <ChevronDown className="w-4 h-4" />
-                    )}
-                  </Button>
-                </CollapsibleTrigger>
+                <div className="flex items-center justify-between">
+                  <CollapsibleTrigger asChild>
+                    <Button variant="ghost" className="justify-start p-0 h-auto">
+                      {collapsedCategories.has(category.id) ? (
+                        <ChevronRight className="w-4 h-4" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4" />
+                      )}
+                      <h5 className="font-medium text-sm text-muted-foreground ml-2">
+                        Subcategories
+                      </h5>
+                    </Button>
+                  </CollapsibleTrigger>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="ghost" size="sm" onClick={() => setNewSubcategory({ name: '', categoryId: category.id })}>
+                        <Plus className="w-4 h-4" />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Add Subcategory to {category.name}</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label htmlFor="subcategory-name">Subcategory Name</Label>
+                          <Input
+                            id="subcategory-name"
+                            value={newSubcategory.name}
+                            onChange={(e) => setNewSubcategory({ ...newSubcategory, name: e.target.value })}
+                            placeholder="e.g., Modern Art, Vintage"
+                          />
+                        </div>
+                        <div className="flex justify-end gap-2">
+                          <Button variant="outline" onClick={() => setNewSubcategory({ name: '', categoryId: '' })}>Cancel</Button>
+                          <Button onClick={handleAddSubcategory}>Add Subcategory</Button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
                 <CollapsibleContent className="space-y-2 mt-3">
                   {category.subcategories.map((subcategory, subcategoryIndex) => (
                     <div 
