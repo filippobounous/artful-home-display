@@ -138,7 +138,6 @@ export function BulkUpload({ onCsvUpload, onJsonUpload }: BulkUploadProps) {
           postal_code: "90210",
           code: "MH01",
           icon: "home",
-          yearBuilt: "2020",
           visible: true
         }];
         filename = `houses-template.${format}`;
