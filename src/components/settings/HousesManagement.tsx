@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -53,12 +52,15 @@ export function HousesManagement({
     code: '',
     icon: 'home',
     yearBuilt: undefined,
-    postalCode: '',
+    postal_code: '',
     latitude: undefined,
     longitude: undefined,
     description: '',
     notes: '',
-    beneficiary: ''
+    beneficiary: [] as string[],
+    version: 1,
+    visible: true,
+    is_deleted: false
   });
 
   const [editingHouse, setEditingHouse] = useState<HouseConfig | null>(null);
@@ -94,12 +96,15 @@ export function HousesManagement({
         code: '',
         icon: 'home',
         yearBuilt: undefined,
-        postalCode: '',
+        postal_code: '',
         latitude: undefined,
         longitude: undefined,
         description: '',
         notes: '',
-        beneficiary: ''
+        beneficiary: [],
+        version: 1,
+        visible: true,
+        is_deleted: false
       });
       setShowAddHouse(false);
     } catch (error) {
@@ -298,8 +303,8 @@ export function HousesManagement({
                 <Label htmlFor="house-postal">Postal Code</Label>
                 <Input
                   id="house-postal"
-                  value={newHouse.postalCode}
-                  onChange={(e) => setNewHouse({ ...newHouse, postalCode: e.target.value })}
+                  value={newHouse.postal_code}
+                  onChange={(e) => setNewHouse({ ...newHouse, postal_code: e.target.value })}
                   placeholder="e.g., 10001"
                 />
               </div>
@@ -339,8 +344,8 @@ export function HousesManagement({
                 <Label htmlFor="house-beneficiary">Beneficiary (comma separated)</Label>
                 <Input
                   id="house-beneficiary"
-                  value={newHouse.beneficiary}
-                  onChange={(e) => setNewHouse({ ...newHouse, beneficiary: e.target.value })}
+                  value={newHouse.beneficiary.join(', ')}
+                  onChange={(e) => setNewHouse({ ...newHouse, beneficiary: e.target.value.split(',').map(s => s.trim()).filter(s => s) })}
                   placeholder="e.g., John Doe, Jane Smith"
                 />
               </div>
@@ -563,8 +568,8 @@ export function HousesManagement({
                 <Label htmlFor="edit-house-postal">Postal Code</Label>
                 <Input
                   id="edit-house-postal"
-                  value={editingHouse.postalCode || ''}
-                  onChange={(e) => setEditingHouse({ ...editingHouse, postalCode: e.target.value })}
+                  value={editingHouse.postal_code || ''}
+                  onChange={(e) => setEditingHouse({ ...editingHouse, postal_code: e.target.value })}
                   placeholder="e.g., 10001"
                 />
               </div>
@@ -604,8 +609,8 @@ export function HousesManagement({
                 <Label htmlFor="edit-house-beneficiary">Beneficiary (comma separated)</Label>
                 <Input
                   id="edit-house-beneficiary"
-                  value={editingHouse.beneficiary || ''}
-                  onChange={(e) => setEditingHouse({ ...editingHouse, beneficiary: e.target.value })}
+                  value={editingHouse.beneficiary?.join(', ') || ''}
+                  onChange={(e) => setEditingHouse({ ...editingHouse, beneficiary: e.target.value.split(',').map(s => s.trim()).filter(s => s) })}
                   placeholder="e.g., John Doe, Jane Smith"
                 />
               </div>
