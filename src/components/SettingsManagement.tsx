@@ -27,6 +27,8 @@ export function SettingsManagement() {
     moveRoom,
     moveCategory,
     moveSubcategory,
+    editCategory,
+    editSubcategory,
     toggleHouseVisibility,
     toggleRoomVisibility,
     toggleCategoryVisibility,
