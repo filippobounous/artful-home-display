@@ -297,72 +297,74 @@ export function CategoriesManagement({
                 onOpenChange={() => toggleCategoryCollapse(category.id)}
               >
                 <div className="flex items-center gap-2">
-                  <CollapsibleTrigger asChild>
-                    <Button variant="ghost" className="p-0 h-auto">
-                      {collapsedCategories.has(category.id) ? (
-                        <ChevronRight className="w-4 h-4" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4" />
-                      )}
-                    </Button>
-                  </CollapsibleTrigger>
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() =>
-                          setNewSubcategory({
-                            name: "",
-                            categoryId: category.id,
-                          })
-                        }
-                      >
-                        <Plus className="w-4 h-4" />
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>
-                          Add Subcategory to {category.name}
-                        </DialogTitle>
-                      </DialogHeader>
-                      <div className="space-y-4">
-                        <div>
-                          <Label htmlFor="subcategory-name">
-                            Subcategory Name
-                          </Label>
-                          <Input
-                            id="subcategory-name"
-                            value={newSubcategory.name}
-                            onChange={(e) =>
-                              setNewSubcategory({
-                                ...newSubcategory,
-                                name: e.target.value,
-                              })
-                            }
-                            placeholder="e.g., Modern Art, Vintage"
-                          />
-                        </div>
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="outline"
-                            onClick={() =>
-                              setNewSubcategory({ name: "", categoryId: "" })
-                            }
-                          >
-                            Cancel
-                          </Button>
-                          <Button onClick={handleAddSubcategory}>
-                            Add Subcategory
-                          </Button>
-                        </div>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                  <h5 className="font-medium text-sm text-muted-foreground ml-1">
+                  <h5 className="font-medium text-sm text-muted-foreground">
                     Subcategories ({category.subcategories.length})
                   </h5>
+                  <div className="ml-auto flex items-center gap-2">
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() =>
+                            setNewSubcategory({
+                              name: "",
+                              categoryId: category.id,
+                            })
+                          }
+                        >
+                          <Plus className="w-4 h-4" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>
+                            Add Subcategory to {category.name}
+                          </DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          <div>
+                            <Label htmlFor="subcategory-name">
+                              Subcategory Name
+                            </Label>
+                            <Input
+                              id="subcategory-name"
+                              value={newSubcategory.name}
+                              onChange={(e) =>
+                                setNewSubcategory({
+                                  ...newSubcategory,
+                                  name: e.target.value,
+                                })
+                              }
+                              placeholder="e.g., Modern Art, Vintage"
+                            />
+                          </div>
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              variant="outline"
+                              onClick={() =>
+                                setNewSubcategory({ name: "", categoryId: "" })
+                              }
+                            >
+                              Cancel
+                            </Button>
+                            <Button onClick={handleAddSubcategory}>
+                              Add Subcategory
+                            </Button>
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                    <CollapsibleTrigger asChild>
+                      <Button variant="ghost" className="p-0 h-auto">
+                        {collapsedCategories.has(category.id) ? (
+                          <ChevronRight className="w-4 h-4" />
+                        ) : (
+                          <ChevronDown className="w-4 h-4" />
+                        )}
+                      </Button>
+                    </CollapsibleTrigger>
+                  </div>
                 </div>
                 <CollapsibleContent className="space-y-2 mt-3">
                   {category.subcategories.map(
