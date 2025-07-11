@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { categoryConfigs, defaultHouses, CategoryConfig, HouseConfig, RoomConfig } from "@/types/inventory";
 
@@ -35,6 +34,31 @@ const saveState = () => {
   }
 };
 
+// Validation functions
+const validateHouse = (house: Partial<HouseConfig>): string[] => {
+  const errors: string[] = [];
+  if (!house.name?.trim()) errors.push('House name is required');
+  if (!house.city?.trim()) errors.push('City is required');
+  if (!house.country?.trim()) errors.push('Country is required');
+  if (!house.code?.trim()) errors.push('House code is required');
+  return errors;
+};
+
+const validateRoom = (room: Partial<RoomConfig>): string[] => {
+  const errors: string[] = [];
+  if (!room.name?.trim()) errors.push('Room name is required');
+  if (!room.house_code?.trim()) errors.push('House code is required');
+  if (room.floor === undefined || room.floor === null) errors.push('Floor is required');
+  return errors;
+};
+
+// Mock function to check for linked items - in a real app this would query your items database
+const getLinkedItems = (houseId: string, roomId: string): any[] => {
+  // This is a placeholder - replace with actual item checking logic
+  // For now, return empty array to simulate no linked items
+  return [];
+};
+
 export function useSettingsState() {
   const [categories, setCategories] = useState<CategoryConfig[]>(globalCategories);
   const [houses, setHouses] = useState<HouseConfig[]>(globalHouses);
@@ -69,6 +93,11 @@ export function useSettingsState() {
   };
 
   const addHouse = (house: Omit<HouseConfig, 'id' | 'rooms'>) => {
+    const validationErrors = validateHouse(house);
+    if (validationErrors.length > 0) {
+      throw new Error(validationErrors.join(', '));
+    }
+    
     const newHouse: HouseConfig = {
       ...house,
       id: Date.now().toString(),
@@ -82,6 +111,15 @@ export function useSettingsState() {
   };
 
   const editHouse = (houseId: string, updates: Partial<HouseConfig>) => {
+    const house = globalHouses.find(h => h.id === houseId);
+    if (!house) throw new Error('House not found');
+    
+    const updatedHouse = { ...house, ...updates };
+    const validationErrors = validateHouse(updatedHouse);
+    if (validationErrors.length > 0) {
+      throw new Error(validationErrors.join(', '));
+    }
+    
     globalHouses = globalHouses.map(house => {
       if (house.id === houseId) {
         const history = house.history ? [...house.history, { ...house }] : [{ ...house }];
@@ -99,6 +137,11 @@ export function useSettingsState() {
   };
 
   const addRoom = (houseId: string, room: Partial<RoomConfig> & { name: string; floor: number }) => {
+    const validationErrors = validateRoom(room);
+    if (validationErrors.length > 0) {
+      throw new Error(validationErrors.join(', '));
+    }
+    
     globalHouses = globalHouses.map(house => {
       if (house.id === houseId) {
         const newRoom: RoomConfig = {
@@ -129,6 +172,16 @@ export function useSettingsState() {
   };
 
   const editRoom = (houseId: string, roomId: string, updates: Partial<RoomConfig>) => {
+    const house = globalHouses.find(h => h.id === houseId);
+    const room = house?.rooms.find(r => r.id === roomId);
+    if (!house || !room) throw new Error('House or room not found');
+    
+    const updatedRoom = { ...room, ...updates };
+    const validationErrors = validateRoom(updatedRoom);
+    if (validationErrors.length > 0) {
+      throw new Error(validationErrors.join(', '));
+    }
+    
     globalHouses = globalHouses.map(house => {
       if (house.id === houseId) {
         return {
@@ -154,6 +207,11 @@ export function useSettingsState() {
   };
 
   const deleteRoom = (houseId: string, roomId: string) => {
+    const linkedItems = getLinkedItems(houseId, roomId);
+    if (linkedItems.length > 0) {
+      throw new Error(`Cannot delete room: ${linkedItems.length} items are linked to this room. Please reassign them first.`);
+    }
+    
     globalHouses = globalHouses.map(house => {
       if (house.id === houseId) {
         return {
@@ -347,6 +405,9 @@ export function useSettingsState() {
     toggleHouseVisibility,
     toggleRoomVisibility,
     toggleCategoryVisibility,
-    toggleSubcategoryVisibility
+    toggleSubcategoryVisibility,
+    validateHouse,
+    validateRoom,
+    getLinkedItems
   };
 }

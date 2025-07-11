@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,7 @@ import { useSettingsState } from "@/hooks/useSettingsState";
 import { HousesManagement } from "@/components/settings/HousesManagement";
 import { CategoriesManagement } from "@/components/settings/CategoriesManagement";
 import { BulkUpload } from "@/components/settings/BulkUpload";
+import { DownloadDialog } from "@/components/settings/DownloadDialog";
 import { HouseConfig } from "@/types/inventory";
 
 export function SettingsManagement() {
@@ -32,9 +34,17 @@ export function SettingsManagement() {
     toggleSubcategoryVisibility
   } = useSettingsState();
 
+  const [showDownloadDialog, setShowDownloadDialog] = useState(false);
+
   const handleCsvUpload = (data: any[], type: string) => {
     console.log(`Processing ${type} upload:`, data);
     // Here you would process the CSV data and add to your state
+    // This is a placeholder for the actual implementation
+  };
+
+  const handleJsonUpload = (data: any[], type: string) => {
+    console.log(`Processing ${type} JSON upload:`, data);
+    // Here you would process the JSON data and add to your state
     // This is a placeholder for the actual implementation
   };
 
@@ -42,44 +52,14 @@ export function SettingsManagement() {
     addHouse(house);
   };
 
-  const downloadCsvMappings = () => {
-    // Convert houses to CSV
-    const housesCsv = [
-      'House Name,City,Country,Address,Postal Code,Code,Icon',
-      ...houses.map(h =>
-        `"${h.name}","${h.city}","${h.country}","${h.address || ''}","${h.postal_code || ''}","${h.code}"`)
-    ].join('\n');
-
-    // Convert categories to CSV
-    const categoriesCsv = [
-      'Category Name,Icon',
-      ...categories.map(c => `"${c.name}","${c.icon}"`)
-    ].join('\n');
-
-    // Create combined CSV with sections
-    const csvContent = `Houses\n${housesCsv}\n\nCategories\n${categoriesCsv}`;
-    
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'inventory-mappings.csv';
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-medium">Settings Management</h3>
         <div className="flex gap-2">
-          <Button onClick={downloadCsvMappings} variant="outline">
+          <Button onClick={() => setShowDownloadDialog(true)} variant="outline">
             <Download className="w-4 h-4 mr-2" />
-            Download CSV
-          </Button>
-          <Button onClick={downloadMappings} variant="outline">
-            <Download className="w-4 h-4 mr-2" />
-            Download JSON
+            Download Data
           </Button>
         </div>
       </div>
@@ -87,7 +67,7 @@ export function SettingsManagement() {
       <Tabs defaultValue="houses" className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="houses">Houses & Rooms</TabsTrigger>
-          <TabsTrigger value="categories">Categories</TabsTrigger>
+          <TabsTrigger value="categories">Categories & Subcategories</TabsTrigger>
           <TabsTrigger value="upload">Bulk Upload</TabsTrigger>
         </TabsList>
         
@@ -120,9 +100,16 @@ export function SettingsManagement() {
         </TabsContent>
 
         <TabsContent value="upload">
-          <BulkUpload onUpload={handleCsvUpload} />
+          <BulkUpload onCsvUpload={handleCsvUpload} onJsonUpload={handleJsonUpload} />
         </TabsContent>
       </Tabs>
+
+      <DownloadDialog
+        open={showDownloadDialog}
+        onOpenChange={setShowDownloadDialog}
+        houses={houses}
+        categories={categories}
+      />
     </div>
   );
 }

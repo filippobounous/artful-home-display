@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -190,20 +191,20 @@ export function CategoriesManagement({
             onDragStart={(e) => handleCategoryDragStart(e, categoryIndex)}
             onDragOver={handleCategoryDragOver}
             onDrop={(e) => handleCategoryDrop(e, categoryIndex)}
-            className="cursor-move"
+            className="cursor-move border-border/50 bg-card/50 backdrop-blur-sm"
           >
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 flex-1">
-                  <GripVertical className="w-4 h-4 text-gray-400" />
+                  <GripVertical className="w-4 h-4 text-muted-foreground" />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <CardTitle className="text-lg">{category.name}</CardTitle>
-                      <span className="text-sm font-mono bg-gray-100 px-2 py-1 rounded">
+                      <span className="text-sm font-mono bg-muted/50 text-muted-foreground px-2 py-1 rounded">
                         {category.id}
                       </span>
                     </div>
-                    <div className="text-sm text-gray-600 mt-1">
+                    <div className="text-sm text-muted-foreground mt-1">
                       {category.subcategories.length} subcategories
                     </div>
                   </div>
@@ -224,7 +225,7 @@ export function CategoriesManagement({
               >
                 <CollapsibleTrigger asChild>
                   <Button variant="ghost" className="w-full justify-between p-0 h-auto">
-                    <h5 className="font-medium text-sm text-gray-700">
+                    <h5 className="font-medium text-sm text-muted-foreground">
                       Subcategories ({category.subcategories.length})
                     </h5>
                     {collapsedCategories.has(category.id) ? (
@@ -238,14 +239,14 @@ export function CategoriesManagement({
                   {category.subcategories.map((subcategory, subcategoryIndex) => (
                     <div 
                       key={subcategory.id} 
-                      className="flex items-center justify-between p-2 bg-gray-50 rounded cursor-move"
+                      className="flex items-center justify-between p-2 bg-muted/30 rounded cursor-move border border-border/30"
                       draggable
                       onDragStart={(e) => handleSubcategoryDragStart(e, category.id, subcategoryIndex)}
                       onDragOver={handleCategoryDragOver}
                       onDrop={(e) => handleSubcategoryDrop(e, category.id, subcategoryIndex)}
                     >
                       <div className="flex items-center gap-2">
-                        <GripVertical className="w-3 h-3 text-gray-400" />
+                        <GripVertical className="w-3 h-3 text-muted-foreground" />
                         <span className="text-sm">{subcategory.name}</span>
                       </div>
                       <div className="flex items-center gap-2">

@@ -15,22 +15,23 @@ import {
 } from "@/components/ui/select";
 
 interface BulkUploadProps {
-  onUpload: (data: any[], type: string) => void;
+  onCsvUpload: (data: any[], type: string) => void;
+  onJsonUpload: (data: any[], type: string) => void;
 }
 
-export function BulkUpload({ onUpload }: BulkUploadProps) {
+export function BulkUpload({ onCsvUpload, onJsonUpload }: BulkUploadProps) {
   const [file, setFile] = useState<File | null>(null);
   const [uploadType, setUploadType] = useState<string>("");
   const { toast } = useToast();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
-    if (selectedFile && selectedFile.type === 'text/csv') {
+    if (selectedFile && (selectedFile.type === 'text/csv' || selectedFile.type === 'application/json' || selectedFile.name.endsWith('.json'))) {
       setFile(selectedFile);
     } else {
       toast({
         title: "Invalid file type",
-        description: "Please select a CSV file",
+        description: "Please select a CSV or JSON file",
         variant: "destructive"
       });
     }
@@ -76,6 +77,15 @@ export function BulkUpload({ onUpload }: BulkUploadProps) {
     return data;
   };
 
+  const parseJson = (text: string) => {
+    try {
+      const data = JSON.parse(text);
+      return Array.isArray(data) ? data : [data];
+    } catch (error) {
+      throw new Error('Invalid JSON format');
+    }
+  };
+
   const handleUpload = async () => {
     if (!file || !uploadType) {
       toast({
@@ -88,8 +98,15 @@ export function BulkUpload({ onUpload }: BulkUploadProps) {
 
     try {
       const text = await file.text();
-      const data = parseCsv(text);
-      onUpload(data, uploadType);
+      let data: any[];
+      
+      if (file.name.endsWith('.json') || file.type === 'application/json') {
+        data = parseJson(text);
+        onJsonUpload(data, uploadType);
+      } else {
+        data = parseCsv(text);
+        onCsvUpload(data, uploadType);
+      }
       
       toast({
         title: "Upload successful",
@@ -101,44 +118,120 @@ export function BulkUpload({ onUpload }: BulkUploadProps) {
     } catch (error) {
       toast({
         title: "Upload failed",
-        description: "Error parsing CSV file",
+        description: "Error parsing file",
         variant: "destructive"
       });
     }
   };
 
-  const downloadTemplate = (type: string) => {
-    let template = "";
+  const downloadTemplate = (type: string, format: 'csv' | 'json') => {
+    let data: any[] = [];
     let filename = "";
     
     switch (type) {
       case "houses":
-        template = "name,city,country,address,postal_code,code\nMain House,Beverly Hills,United States,123 Main St,90210,MH01\nGuest House,Beverly Hills,United States,125 Main St,90210,GH01";
-        filename = "houses-template.csv";
+        data = [{
+          name: "Main House",
+          city: "Beverly Hills",
+          country: "United States",
+          address: "123 Main St",
+          postal_code: "90210",
+          code: "MH01",
+          icon: "home",
+          yearBuilt: "2020",
+          visible: true
+        }];
+        filename = `houses-template.${format}`;
         break;
       case "rooms":
-        template = "name,houseId\nLiving Room,main-house\nBedroom,main-house\nKitchen,guest-house";
-        filename = "rooms-template.csv";
+        data = [{
+          name: "Living Room",
+          houseId: "main-house",
+          code: "LR01",
+          room_type: "living",
+          floor: 1,
+          area_sqm: 25.5,
+          windows: 2,
+          doors: 1,
+          description: "Spacious living room with natural light",
+          notes: "Recently renovated",
+          visible: true
+        }];
+        filename = `rooms-template.${format}`;
         break;
       case "categories":
-        template = "name,icon\nArt,palette\nFurniture,sofa\nDecorative,lamp";
-        filename = "categories-template.csv";
+        data = [{
+          name: "Art",
+          icon: "palette",
+          visible: true
+        }];
+        filename = `categories-template.${format}`;
+        break;
+      case "subcategories":
+        data = [{
+          name: "Paintings",
+          categoryId: "art",
+          visible: true
+        }];
+        filename = `subcategories-template.${format}`;
         break;
       case "items":
-        template = "title,category,subcategory,house,room,widthCm,heightCm,depthCm,description,valuation,artist\nMy Artwork,art,painting,main-house,living-room,60,90,5,Beautiful painting,5000,Famous Artist";
-        filename = "items-template.csv";
+        data = [{
+          title: "My Artwork",
+          category: "art",
+          subcategory: "painting",
+          house: "main-house",
+          room: "living-room",
+          widthCm: 60,
+          heightCm: 90,
+          depthCm: 5,
+          description: "Beautiful painting",
+          valuation: 5000,
+          artist: "Famous Artist",
+          year: 2020,
+          materials: "Oil on canvas",
+          condition: "Excellent",
+          provenance: "Gallery purchase",
+          insurance_value: 5500,
+          notes: "Purchased in 2020"
+        }];
+        filename = `items-template.${format}`;
         break;
       default:
         return;
     }
     
-    const blob = new Blob([template], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
+    if (format === 'csv') {
+      const headers = Object.keys(data[0]);
+      const csvContent = [
+        headers.join(','),
+        ...data.map(row => 
+          headers.map(header => {
+            const value = row[header];
+            return typeof value === 'string' && value.includes(',') 
+              ? `"${value}"` 
+              : value;
+          }).join(',')
+        )
+      ].join('\n');
+      
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    } else {
+      const jsonContent = JSON.stringify(data, null, 2);
+      const blob = new Blob([jsonContent], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
   };
 
   return (
@@ -146,7 +239,7 @@ export function BulkUpload({ onUpload }: BulkUploadProps) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Upload className="w-5 h-5" />
-          Bulk Upload via CSV
+          Bulk Upload via CSV/JSON
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -163,33 +256,40 @@ export function BulkUpload({ onUpload }: BulkUploadProps) {
               <SelectItem value="houses">Houses</SelectItem>
               <SelectItem value="rooms">Rooms</SelectItem>
               <SelectItem value="categories">Categories</SelectItem>
+              <SelectItem value="subcategories">Subcategories</SelectItem>
               <SelectItem value="items">Items</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
         {uploadType && (
-          <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
-            <span className="text-sm text-blue-800">Download template for {uploadType}</span>
-            <Button onClick={() => downloadTemplate(uploadType)} variant="outline" size="sm">
-              <Download className="w-4 h-4 mr-2" />
-              Template
-            </Button>
+          <div className="flex justify-between items-center p-3 bg-accent/50 rounded-lg border border-border/50">
+            <span className="text-sm text-foreground">Download template for {uploadType}</span>
+            <div className="flex gap-2">
+              <Button onClick={() => downloadTemplate(uploadType, 'csv')} variant="outline" size="sm">
+                <Download className="w-4 h-4 mr-2" />
+                CSV
+              </Button>
+              <Button onClick={() => downloadTemplate(uploadType, 'json')} variant="outline" size="sm">
+                <Download className="w-4 h-4 mr-2" />
+                JSON
+              </Button>
+            </div>
           </div>
         )}
         
         <div>
-          <Label>CSV File</Label>
+          <Label>File (CSV or JSON)</Label>
           <Input
             type="file"
-            accept=".csv"
+            accept=".csv,.json"
             onChange={handleFileChange}
             className="mt-1"
           />
         </div>
 
         {file && (
-          <div className="flex items-center gap-2 text-sm text-gray-600">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <FileText className="w-4 h-4" />
             {file.name}
           </div>
@@ -197,7 +297,7 @@ export function BulkUpload({ onUpload }: BulkUploadProps) {
 
         <Button onClick={handleUpload} disabled={!file || !uploadType} className="w-full">
           <Upload className="w-4 h-4 mr-2" />
-          Upload CSV
+          Upload File
         </Button>
       </CardContent>
     </Card>
