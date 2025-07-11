@@ -352,13 +352,13 @@ export function useSettingsState() {
     globalHouses = globalHouses.map(h => {
       if (h.id === houseId) {
         return {
-          ...house,
-          rooms: house.rooms.map(r =>
+          ...h,
+          rooms: h.rooms.map(r =>
             r.id === roomId ? { ...r, visible: !r.visible } : r
           )
         };
       }
-      return house;
+      return h;
     });
     saveState();
     notifyListeners();
