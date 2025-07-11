@@ -394,17 +394,6 @@ export function CategoriesManagement({
                           <span className="text-sm">{subcategory.name}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Switch
-                            checked={subcategory.visible}
-                            onCheckedChange={() =>
-                              onToggleSubcategory(category.id, subcategory.id)
-                            }
-                          />
-                          {subcategory.visible ? (
-                            <Eye className="w-3 h-3" />
-                          ) : (
-                            <EyeOff className="w-3 h-3" />
-                          )}
                           <Button
                             variant="ghost"
                             size="sm"
@@ -418,6 +407,17 @@ export function CategoriesManagement({
                           >
                             <Edit className="w-3 h-3" />
                           </Button>
+                          <Switch
+                            checked={subcategory.visible}
+                            onCheckedChange={() =>
+                              onToggleSubcategory(category.id, subcategory.id)
+                            }
+                          />
+                          {subcategory.visible ? (
+                            <Eye className="w-3 h-3" />
+                          ) : (
+                            <EyeOff className="w-3 h-3" />
+                          )}
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
                               <Button variant="ghost" size="sm">

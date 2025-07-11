@@ -37,6 +37,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { IconSelector } from "@/components/IconSelector";
+import { countries } from "@/lib/countries";
 import {
   Plus,
   Edit,
@@ -127,6 +128,7 @@ export function HousesManagement({
     room: RoomConfig;
   } | null>(null);
   const [showAddHouse, setShowAddHouse] = useState(false);
+  const [showAddHouseValidation, setShowAddHouseValidation] = useState(false);
   const [showEditHouse, setShowEditHouse] = useState(false);
   const [showAddRoom, setShowAddRoom] = useState<{
     houseId: string;
@@ -139,6 +141,7 @@ export function HousesManagement({
   const [draggedHouse, setDraggedHouse] = useState<number | null>(null);
   const [roomError, setRoomError] = useState<string>("");
   const [showHouseValidation, setShowHouseValidation] = useState(false);
+  const [showAddRoomValidation, setShowAddRoomValidation] = useState(false);
   const [showRoomValidation, setShowRoomValidation] = useState(false);
 
   const handleAddHouse = () => {
@@ -163,8 +166,10 @@ export function HousesManagement({
         is_deleted: false,
       });
       setShowAddHouse(false);
+      setShowAddHouseValidation(false);
     } catch (error) {
       console.error("Error adding house:", error);
+      setShowAddHouseValidation(true);
     }
   };
 
@@ -200,8 +205,10 @@ export function HousesManagement({
         code: "",
       });
       setShowAddRoom(null);
+      setShowAddRoomValidation(false);
     } catch (error) {
       console.error("Error adding room:", error);
+      setShowAddRoomValidation(true);
     }
   };
 
@@ -311,7 +318,13 @@ export function HousesManagement({
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h4 className="font-medium">Houses & Rooms</h4>
-        <Dialog open={showAddHouse} onOpenChange={setShowAddHouse}>
+        <Dialog
+          open={showAddHouse}
+          onOpenChange={(open) => {
+            setShowAddHouse(open);
+            if (!open) setShowAddHouseValidation(false);
+          }}
+        >
           <DialogTrigger asChild>
             <Button size="sm">
               <Plus className="w-4 h-4 mr-2" />
@@ -333,17 +346,36 @@ export function HousesManagement({
                   }
                   placeholder="e.g., Main House"
                 />
+                {showAddHouseValidation && !newHouse.name.trim() && (
+                  <p className="text-destructive text-sm mt-1">
+                    This field is required
+                  </p>
+                )}
               </div>
               <div>
                 <Label htmlFor="house-country">Country *</Label>
-                <Input
-                  id="house-country"
+                <Select
                   value={newHouse.country}
-                  onChange={(e) =>
-                    setNewHouse({ ...newHouse, country: e.target.value })
+                  onValueChange={(value) =>
+                    setNewHouse({ ...newHouse, country: value })
                   }
-                  placeholder="e.g., United States"
-                />
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select country" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {countries.map((c) => (
+                      <SelectItem key={c} value={c}>
+                        {c}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {showAddHouseValidation && !newHouse.country.trim() && (
+                  <p className="text-destructive text-sm mt-1">
+                    This field is required
+                  </p>
+                )}
               </div>
               <div>
                 <Label htmlFor="house-city">City *</Label>
@@ -355,6 +387,11 @@ export function HousesManagement({
                   }
                   placeholder="e.g., New York"
                 />
+                {showAddHouseValidation && !newHouse.city.trim() && (
+                  <p className="text-destructive text-sm mt-1">
+                    This field is required
+                  </p>
+                )}
               </div>
               <div>
                 <Label htmlFor="house-code">Code * (4 characters)</Label>
@@ -370,6 +407,11 @@ export function HousesManagement({
                   placeholder="e.g., MH01"
                   maxLength={4}
                 />
+                {showAddHouseValidation && !newHouse.code.trim() && (
+                  <p className="text-destructive text-sm mt-1">
+                    This field is required
+                  </p>
+                )}
               </div>
               <div className="col-span-2">
                 <Label htmlFor="house-address">Address</Label>
@@ -673,17 +715,23 @@ export function HousesManagement({
               </div>
               <div>
                 <Label htmlFor="edit-house-country">Country *</Label>
-                <Input
-                  id="edit-house-country"
+                <Select
                   value={editingHouse.country}
-                  onChange={(e) =>
-                    setEditingHouse({
-                      ...editingHouse,
-                      country: e.target.value,
-                    })
+                  onValueChange={(value) =>
+                    setEditingHouse({ ...editingHouse, country: value })
                   }
-                  placeholder="e.g., United States"
-                />
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select country" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {countries.map((c) => (
+                      <SelectItem key={c} value={c}>
+                        {c}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 {showHouseValidation && !editingHouse.country.trim() && (
                   <p className="text-destructive text-sm mt-1">
                     This field is required
@@ -867,7 +915,12 @@ export function HousesManagement({
       {/* Add Room Dialog */}
       <Dialog
         open={!!showAddRoom}
-        onOpenChange={(open) => !open && setShowAddRoom(null)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setShowAddRoom(null);
+            setShowAddRoomValidation(false);
+          }
+        }}
       >
         <DialogContent className="max-w-2xl">
           <DialogHeader>
@@ -884,6 +937,11 @@ export function HousesManagement({
                 }
                 placeholder="e.g., Living Room"
               />
+              {showAddRoomValidation && !newRoom.name.trim() && (
+                <p className="text-destructive text-sm mt-1">
+                  This field is required
+                </p>
+              )}
             </div>
             <div>
               <Label htmlFor="room-floor">Floor *</Label>
@@ -896,6 +954,12 @@ export function HousesManagement({
                 }
                 placeholder="e.g., 1"
               />
+              {showAddRoomValidation &&
+                (newRoom.floor === undefined || isNaN(newRoom.floor)) && (
+                  <p className="text-destructive text-sm mt-1">
+                    This field is required
+                  </p>
+                )}
             </div>
             <div>
               <Label htmlFor="room-type">Room Type</Label>

@@ -4,13 +4,18 @@ import { Label } from "@/components/ui/label";
 interface AddItemBasicInfoProps {
   formData: any;
   setFormData: (data: any) => void;
+  errors?: Record<string, string>;
 }
 
-export function AddItemBasicInfo({ formData, setFormData }: AddItemBasicInfoProps) {
+export function AddItemBasicInfo({
+  formData,
+  setFormData,
+  errors = {},
+}: AddItemBasicInfoProps) {
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-medium text-slate-900">Core Information</h3>
-      
+
       <div>
         <Label htmlFor="title">Title *</Label>
         <Input
@@ -20,6 +25,9 @@ export function AddItemBasicInfo({ formData, setFormData }: AddItemBasicInfoProp
           onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           required
         />
+        {errors.title && (
+          <p className="text-destructive text-sm mt-1">{errors.title}</p>
+        )}
       </div>
 
       <div>
@@ -31,6 +39,9 @@ export function AddItemBasicInfo({ formData, setFormData }: AddItemBasicInfoProp
           onChange={(e) => setFormData({ ...formData, artist: e.target.value })}
           required
         />
+        {errors.artist && (
+          <p className="text-destructive text-sm mt-1">{errors.artist}</p>
+        )}
       </div>
 
       <div className="grid grid-cols-3 gap-4">
@@ -42,7 +53,9 @@ export function AddItemBasicInfo({ formData, setFormData }: AddItemBasicInfoProp
             step="0.01"
             placeholder="0"
             value={formData.widthCm}
-            onChange={(e) => setFormData({ ...formData, widthCm: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, widthCm: e.target.value })
+            }
           />
         </div>
         <div>
@@ -53,7 +66,9 @@ export function AddItemBasicInfo({ formData, setFormData }: AddItemBasicInfoProp
             step="0.01"
             placeholder="0"
             value={formData.heightCm}
-            onChange={(e) => setFormData({ ...formData, heightCm: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, heightCm: e.target.value })
+            }
           />
         </div>
         <div>
@@ -64,7 +79,9 @@ export function AddItemBasicInfo({ formData, setFormData }: AddItemBasicInfoProp
             step="0.01"
             placeholder="0"
             value={formData.depthCm}
-            onChange={(e) => setFormData({ ...formData, depthCm: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, depthCm: e.target.value })
+            }
           />
         </div>
       </div>
@@ -76,9 +93,14 @@ export function AddItemBasicInfo({ formData, setFormData }: AddItemBasicInfoProp
           type="number"
           min="1"
           value={formData.quantity}
-          onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, quantity: e.target.value })
+          }
           required
         />
+        {errors.quantity && (
+          <p className="text-destructive text-sm mt-1">{errors.quantity}</p>
+        )}
       </div>
 
       <div>
@@ -87,9 +109,14 @@ export function AddItemBasicInfo({ formData, setFormData }: AddItemBasicInfoProp
           id="yearPeriod"
           placeholder="e.g., 1920s, 2023"
           value={formData.yearPeriod}
-          onChange={(e) => setFormData({ ...formData, yearPeriod: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, yearPeriod: e.target.value })
+          }
           required
         />
+        {errors.yearPeriod && (
+          <p className="text-destructive text-sm mt-1">{errors.yearPeriod}</p>
+        )}
       </div>
     </div>
   );
