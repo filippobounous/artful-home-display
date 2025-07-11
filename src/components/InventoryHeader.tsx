@@ -1,5 +1,10 @@
-
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Plus, Download, Images } from "lucide-react";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { useNavigate } from "react-router-dom";
@@ -12,9 +17,22 @@ export function InventoryHeader() {
 
   const downloadCSV = async () => {
     const headers = [
-      'ID', 'Title', 'Artist', 'Category', 'Subcategory', 'Width (cm)', 'Height (cm)', 'Depth (cm)', 'Valuation',
-      'Valuation Currency', 'Quantity', 'Year/Period', 'Description',
-      'House', 'Room', 'Notes'
+      "ID",
+      "Title",
+      "Artist",
+      "Category",
+      "Subcategory",
+      "Width (cm)",
+      "Height (cm)",
+      "Depth (cm)",
+      "Valuation",
+      "Valuation Currency",
+      "Quantity",
+      "Year/Period",
+      "Description",
+      "House",
+      "Room",
+      "Notes",
     ];
 
     // Use sample items as fallback if API fails
@@ -23,38 +41,70 @@ export function InventoryHeader() {
       const { fetchDecorItems } = await import("@/lib/api");
       items = await fetchDecorItems();
     } catch (err) {
-      console.error('Failed to fetch items for CSV, using sample data:', err);
+      console.error("Failed to fetch items for CSV, using sample data:", err);
     }
 
     const csvContent = [
-      headers.join(','),
-      ...items.map(item => [
-        item.id || '',
-        `"${item.title || ''}"`,
-        `"${item.artist || ''}"`,
-        `"${item.category || ''}"`,
-        `"${item.subcategory || ''}"`,
-        item.widthCm ?? '',
-        item.heightCm ?? '',
-        item.depthCm ?? '',
-        item.valuation || '',
-        `"${item.valuationCurrency || ''}"`,
-        item.quantity || '',
-        `"${item.yearPeriod || ''}"`,
-        `"${item.description || ''}"`,
-        `"${item.house || ''}"`,
-        `"${item.room || ''}"`,
-        `"${item.notes || ''}"`
-      ].join(','))
-    ].join('\n');
+      headers.join(","),
+      ...items.map((item) =>
+        [
+          item.id || "",
+          `"${item.title || ""}"`,
+          `"${item.artist || ""}"`,
+          `"${item.category || ""}"`,
+          `"${item.subcategory || ""}"`,
+          item.widthCm ?? "",
+          item.heightCm ?? "",
+          item.depthCm ?? "",
+          item.valuation || "",
+          `"${item.valuationCurrency || ""}"`,
+          item.quantity || "",
+          `"${item.yearPeriod || ""}"`,
+          `"${item.description || ""}"`,
+          `"${item.house || ""}"`,
+          `"${item.room || ""}"`,
+          `"${item.notes || ""}"`,
+        ].join(","),
+      ),
+    ].join("\n");
 
     // Create and download the CSV file
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `inventory_${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `inventory_${new Date().toISOString().split("T")[0]}.csv`,
+    );
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const downloadJSON = async () => {
+    let items = sampleDecorItems;
+    try {
+      const { fetchDecorItems } = await import("@/lib/api");
+      items = await fetchDecorItems();
+    } catch (err) {
+      console.error("Failed to fetch items for JSON, using sample data:", err);
+    }
+
+    const jsonContent = JSON.stringify(items, null, 2);
+    const blob = new Blob([jsonContent], {
+      type: "application/json;charset=utf-8;",
+    });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `inventory_${new Date().toISOString().split("T")[0]}.json`,
+    );
+    link.style.visibility = "hidden";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -64,8 +114,8 @@ export function InventoryHeader() {
   const downloadImages = async () => {
     // This is a simplified version - in a real app you'd need a backend service
     // to create and serve the zip file with all images
-    console.log('Downloading images zip...');
-    alert('Image download functionality requires backend implementation');
+    console.log("Downloading images zip...");
+    alert("Image download functionality requires backend implementation");
   };
 
   return (
@@ -76,27 +126,36 @@ export function InventoryHeader() {
             Collection Manager
           </h1>
         </div>
-        
+
         <div className="flex items-center gap-3">
           {/* Show download buttons on inventory, category and house pages */}
-          {(location.pathname === '/inventory' ||
-            location.pathname === '/' ||
-            location.pathname.startsWith('/category/') ||
-            location.pathname.startsWith('/house/')) && (
-            <>
-              <Button variant="outline" onClick={downloadCSV}>
-                <Download className="w-4 h-4 mr-2" />
-                Full CSV
-              </Button>
-              <Button variant="outline" onClick={downloadImages}>
-                <Images className="w-4 h-4 mr-2" />
-                Full Images
-              </Button>
-            </>
+          {(location.pathname === "/inventory" ||
+            location.pathname === "/" ||
+            location.pathname.startsWith("/category/") ||
+            location.pathname.startsWith("/house/")) && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">
+                  <Download className="w-4 h-4 mr-2" />
+                  Download
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={downloadCSV}>
+                  All Items (CSV)
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={downloadJSON}>
+                  All Items (JSON)
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={downloadImages}>
+                  All Images
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
 
-          {location.pathname !== '/add' && (
-            <Button onClick={() => navigate('/add')}>
+          {location.pathname !== "/add" && (
+            <Button onClick={() => navigate("/add")}>
               <Plus className="w-4 h-4 mr-2" />
               Add Item
             </Button>

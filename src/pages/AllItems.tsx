@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppSidebar } from "@/components/AppSidebar";
@@ -12,7 +11,12 @@ import { ItemDetailDialog } from "@/components/ItemDetailDialog";
 import { ItemHistoryDialog } from "@/components/ItemHistoryDialog";
 import { EmptyState } from "@/components/EmptyState";
 import { sampleDecorItems } from "@/data/sampleData";
-import { fetchDecorItems, deleteDecorItem, restoreDecorItem, updateDecorItem } from "@/lib/api";
+import {
+  fetchDecorItems,
+  deleteDecorItem,
+  restoreDecorItem,
+  updateDecorItem,
+} from "@/lib/api";
 import { BatchLocationDialog } from "@/components/BatchLocationDialog";
 import { Button } from "@/components/ui/button";
 import { DecorItem } from "@/types/inventory";
@@ -31,7 +35,10 @@ const AllItems = () => {
   const [selectedRoom, setSelectedRoom] = useState<string[]>([]); // stores "houseId|roomId"
   const [selectedYear, setSelectedYear] = useState<string[]>([]);
   const [selectedArtist, setSelectedArtist] = useState<string[]>([]);
-  const [valuationRange, setValuationRange] = useState<{ min?: number; max?: number }>({});
+  const [valuationRange, setValuationRange] = useState<{
+    min?: number;
+    max?: number;
+  }>({});
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [items, setItems] = useState<DecorItem[]>(sampleDecorItems);
   const [selectedItem, setSelectedItem] = useState<DecorItem | null>(null);
@@ -39,15 +46,19 @@ const AllItems = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
   const [sortField, setSortField] = useState<string>("");
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const { houses, categories } = useSettingsState();
   const { toast } = useToast();
 
-  const yearOptions = Array.from(new Set(items.map(i => i.yearPeriod).filter(Boolean)));
-  const artistOptions = Array.from(new Set(items.map(i => i.artist).filter(Boolean)));
+  const yearOptions = Array.from(
+    new Set(items.map((i) => i.yearPeriod).filter(Boolean)),
+  );
+  const artistOptions = Array.from(
+    new Set(items.map((i) => i.artist).filter(Boolean)),
+  );
 
   const handleEdit = (item: DecorItem) => {
-    localStorage.setItem('editingDraft', JSON.stringify(item));
+    localStorage.setItem("editingDraft", JSON.stringify(item));
     navigate(`/add?draftId=${item.id}`);
   };
 
@@ -55,18 +66,18 @@ const AllItems = () => {
     if (!window.confirm(`Delete "${item.title}"?`)) return;
     deleteDecorItem(item.id)
       .then(() => {
-        setItems(prev => prev.filter(i => i.id !== item.id));
+        setItems((prev) => prev.filter((i) => i.id !== item.id));
         toast({
-          title: 'Item deleted',
-          description: 'The item has been removed successfully',
+          title: "Item deleted",
+          description: "The item has been removed successfully",
         });
         setSelectedItem(null);
       })
       .catch(() => {
         toast({
-          title: 'Error deleting item',
-          description: 'There was a problem deleting the item',
-          variant: 'destructive',
+          title: "Error deleting item",
+          description: "There was a problem deleting the item",
+          variant: "destructive",
         });
       });
   };
@@ -78,46 +89,71 @@ const AllItems = () => {
   const handleRestore = (version: DecorItem) => {
     if (!historyItem) return;
     restoreDecorItem(historyItem.id, version)
-      .then(updated => {
-        setItems(prev => prev.map(i => i.id === updated.id ? updated : i));
+      .then((updated) => {
+        setItems((prev) =>
+          prev.map((i) => (i.id === updated.id ? updated : i)),
+        );
         setHistoryItem(updated);
         setSelectedItem(updated);
         toast({
-          title: 'Item restored',
-          description: 'The selected version has been restored',
+          title: "Item restored",
+          description: "The selected version has been restored",
         });
       })
       .catch(() => {
         toast({
-          title: 'Error restoring item',
-          description: 'There was a problem restoring this version',
-          variant: 'destructive',
+          title: "Error restoring item",
+          description: "There was a problem restoring this version",
+          variant: "destructive",
         });
       });
   };
 
   useEffect(() => {
     fetchDecorItems()
-      .then(data => setItems(data))
+      .then((data) => setItems(data))
       .catch(() => {});
   }, []);
 
-  const filteredItems = items.filter(item => {
-    const matchesSearch = item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (item.artist && item.artist.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredItems = items.filter((item) => {
+    const matchesSearch =
+      item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (item.artist &&
+        item.artist.toLowerCase().includes(searchTerm.toLowerCase()));
 
-    const matchesCategory = selectedCategory.length === 0 || selectedCategory.includes(item.category);
-    const matchesSubcategory = selectedSubcategory.length === 0 || (item.subcategory && selectedSubcategory.includes(item.subcategory));
-    const matchesHouse = selectedHouse.length === 0 || (item.house && selectedHouse.includes(item.house));
-    const matchesRoom = selectedRoom.length === 0 || (item.room && selectedRoom.includes(`${item.house}|${item.room}`));
-    const matchesYear = selectedYear.length === 0 || (item.yearPeriod && selectedYear.includes(item.yearPeriod));
-    const matchesArtist = selectedArtist.length === 0 || (item.artist && selectedArtist.includes(item.artist));
+    const matchesCategory =
+      selectedCategory.length === 0 || selectedCategory.includes(item.category);
+    const matchesSubcategory =
+      selectedSubcategory.length === 0 ||
+      (item.subcategory && selectedSubcategory.includes(item.subcategory));
+    const matchesHouse =
+      selectedHouse.length === 0 ||
+      (item.house && selectedHouse.includes(item.house));
+    const matchesRoom =
+      selectedRoom.length === 0 ||
+      (item.room && selectedRoom.includes(`${item.house}|${item.room}`));
+    const matchesYear =
+      selectedYear.length === 0 ||
+      (item.yearPeriod && selectedYear.includes(item.yearPeriod));
+    const matchesArtist =
+      selectedArtist.length === 0 ||
+      (item.artist && selectedArtist.includes(item.artist));
     const valuation = item.valuation ?? 0;
-    const matchesValuation = (valuationRange.min === undefined || valuation >= valuationRange.min) &&
-                             (valuationRange.max === undefined || valuation <= valuationRange.max);
+    const matchesValuation =
+      (valuationRange.min === undefined || valuation >= valuationRange.min) &&
+      (valuationRange.max === undefined || valuation <= valuationRange.max);
 
-    return matchesSearch && matchesCategory && matchesSubcategory && matchesHouse && matchesRoom && matchesYear && matchesArtist && matchesValuation;
+    return (
+      matchesSearch &&
+      matchesCategory &&
+      matchesSubcategory &&
+      matchesHouse &&
+      matchesRoom &&
+      matchesYear &&
+      matchesArtist &&
+      matchesValuation
+    );
   });
 
   // Sort filtered items
@@ -126,50 +162,87 @@ const AllItems = () => {
     sortField,
     sortDirection,
     houses,
-    categories
+    categories,
   );
 
-  const handleSort = (field: string, direction: 'asc' | 'desc') => {
+  const handleSort = (field: string, direction: "asc" | "desc") => {
     setSortField(field);
     setSortDirection(direction);
   };
 
   const downloadCSV = () => {
     const headers = [
-      'ID', 'Title', 'Artist', 'Category', 'Subcategory', 'Width (cm)', 'Height (cm)', 'Depth (cm)', 'Valuation',
-      'Valuation Currency', 'Quantity', 'Year/Period', 'Description',
-      'House', 'Room', 'Notes'
+      "ID",
+      "Title",
+      "Artist",
+      "Category",
+      "Subcategory",
+      "Width (cm)",
+      "Height (cm)",
+      "Depth (cm)",
+      "Valuation",
+      "Valuation Currency",
+      "Quantity",
+      "Year/Period",
+      "Description",
+      "House",
+      "Room",
+      "Notes",
     ];
 
     const csvContent = [
-      headers.join(','),
-      ...sortedItems.map(item => [
-        item.id || '',
-        `"${item.title || ''}"`,
-        `"${item.artist || ''}"`,
-        `"${item.category || ''}"`,
-        `"${item.subcategory || ''}"`,
-        item.widthCm ?? '',
-        item.heightCm ?? '',
-        item.depthCm ?? '',
-        item.valuation || '',
-        `"${item.valuationCurrency || ''}"`,
-        item.quantity || '',
-        `"${item.yearPeriod || ''}"`,
-        `"${item.description || ''}"`,
-        `"${item.house || ''}"`,
-        `"${item.room || ''}"`,
-        `"${item.notes || ''}"`
-      ].join(','))
-    ].join('\n');
+      headers.join(","),
+      ...sortedItems.map((item) =>
+        [
+          item.id || "",
+          `"${item.title || ""}"`,
+          `"${item.artist || ""}"`,
+          `"${item.category || ""}"`,
+          `"${item.subcategory || ""}"`,
+          item.widthCm ?? "",
+          item.heightCm ?? "",
+          item.depthCm ?? "",
+          item.valuation || "",
+          `"${item.valuationCurrency || ""}"`,
+          item.quantity || "",
+          `"${item.yearPeriod || ""}"`,
+          `"${item.description || ""}"`,
+          `"${item.house || ""}"`,
+          `"${item.room || ""}"`,
+          `"${item.notes || ""}"`,
+        ].join(","),
+      ),
+    ].join("\n");
 
     // Create and download the CSV file
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `inventory_${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `inventory_${new Date().toISOString().split("T")[0]}.csv`,
+    );
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const downloadJSON = () => {
+    const jsonContent = JSON.stringify(sortedItems, null, 2);
+    const blob = new Blob([jsonContent], {
+      type: "application/json;charset=utf-8;",
+    });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `inventory_${new Date().toISOString().split("T")[0]}.json`,
+    );
+    link.style.visibility = "hidden";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -179,62 +252,76 @@ const AllItems = () => {
   const handleBatchLocation = (house: string, room: string) => {
     const ids = [...selectedIds];
     downloadCSV();
-    Promise.all(ids.map(id => updateDecorItem(id, { house, room } as unknown as DecorItem)))
-      .then(updated => {
-        setItems(prev => prev.map(it => {
-          const match = updated.find(u => u.id === it.id);
-          return match ? match : it;
-        }));
+    Promise.all(
+      ids.map((id) =>
+        updateDecorItem(id, { house, room } as unknown as DecorItem),
+      ),
+    )
+      .then((updated) => {
+        setItems((prev) =>
+          prev.map((it) => {
+            const match = updated.find((u) => u.id === it.id);
+            return match ? match : it;
+          }),
+        );
         toast({
-          title: 'Items updated',
-          description: `${ids.length} item${ids.length === 1 ? '' : 's'} moved`,
+          title: "Items updated",
+          description: `${ids.length} item${ids.length === 1 ? "" : "s"} moved`,
         });
         setSelectedIds([]);
       })
       .catch(() => {
         toast({
-          title: 'Error updating items',
-          description: 'There was a problem updating the selected items',
-          variant: 'destructive',
+          title: "Error updating items",
+          description: "There was a problem updating the selected items",
+          variant: "destructive",
         });
       });
   };
 
   const handleBatchDelete = () => {
-    if (!window.confirm(`Delete ${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'}?`)) return;
+    if (
+      !window.confirm(
+        `Delete ${selectedIds.length} item${selectedIds.length === 1 ? "" : "s"}?`,
+      )
+    )
+      return;
     const ids = [...selectedIds];
     downloadCSV();
-    Promise.all(ids.map(id => deleteDecorItem(id)))
+    Promise.all(ids.map((id) => deleteDecorItem(id)))
       .then(() => {
-        setItems(prev => prev.filter(i => !ids.includes(i.id.toString())));
+        setItems((prev) => prev.filter((i) => !ids.includes(i.id.toString())));
         toast({
-          title: 'Items deleted',
-          description: `${ids.length} item${ids.length === 1 ? '' : 's'} removed`,
+          title: "Items deleted",
+          description: `${ids.length} item${ids.length === 1 ? "" : "s"} removed`,
         });
         setSelectedIds([]);
       })
       .catch(() => {
         toast({
-          title: 'Error deleting items',
-          description: 'There was a problem deleting the selected items',
-          variant: 'destructive',
+          title: "Error deleting items",
+          description: "There was a problem deleting the selected items",
+          variant: "destructive",
         });
       });
   };
-
 
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
         <AppSidebar />
-        
+
         <div className="flex-1 flex flex-col">
           <InventoryHeader />
 
           <main className="flex-1 p-6">
             <div className="mb-6">
-              <h2 className="text-xl font-semibold text-slate-900 mb-2">All Items</h2>
-              <p className="text-slate-600">Browse and manage your entire collection</p>
+              <h2 className="text-xl font-semibold text-slate-900 mb-2">
+                All Items
+              </h2>
+              <p className="text-slate-600">
+                Browse and manage your entire collection
+              </p>
             </div>
 
             <SearchFilters
@@ -259,13 +346,21 @@ const AllItems = () => {
               viewMode={viewMode}
               setViewMode={setViewMode}
               onDownloadCSV={downloadCSV}
+              onDownloadJSON={downloadJSON}
             />
 
             {selectedIds.length > 0 && (
               <div className="mb-6 flex flex-wrap items-center justify-between gap-2 bg-blue-100 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-100 px-4 py-2 rounded">
-                <span className="text-sm font-medium">{selectedIds.length} item{selectedIds.length === 1 ? '' : 's'} selected</span>
+                <span className="text-sm font-medium">
+                  {selectedIds.length} item{selectedIds.length === 1 ? "" : "s"}{" "}
+                  selected
+                </span>
                 <div className="flex items-center gap-2">
-                  <Button variant="link" size="sm" onClick={() => setLocationDialogOpen(true)}>
+                  <Button
+                    variant="link"
+                    size="sm"
+                    onClick={() => setLocationDialogOpen(true)}
+                  >
                     Change Location
                   </Button>
                   <Button
@@ -276,7 +371,11 @@ const AllItems = () => {
                   >
                     Delete
                   </Button>
-                  <Button variant="link" size="sm" onClick={() => setSelectedIds([])}>
+                  <Button
+                    variant="link"
+                    size="sm"
+                    onClick={() => setSelectedIds([])}
+                  >
                     Clear
                   </Button>
                 </div>

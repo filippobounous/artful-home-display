@@ -1,4 +1,3 @@
-
 import { ViewMode } from "@/types/inventory";
 import { FilterHeader } from "@/components/filters/FilterHeader";
 import { SearchInput } from "@/components/filters/SearchInput";
@@ -32,6 +31,7 @@ interface SearchFiltersProps {
   viewMode: ViewMode;
   setViewMode: (mode: ViewMode) => void;
   onDownloadCSV?: () => void;
+  onDownloadJSON?: () => void;
   onDownloadImages?: () => void;
   permanentCategory?: string;
   permanentHouse?: string;
@@ -59,6 +59,7 @@ export function SearchFilters({
   viewMode,
   setViewMode,
   onDownloadCSV,
+  onDownloadJSON,
   onDownloadImages,
   permanentCategory,
   permanentHouse,
@@ -80,6 +81,7 @@ export function SearchFilters({
         viewMode={viewMode}
         setViewMode={setViewMode}
         onDownloadCSV={onDownloadCSV}
+        onDownloadJSON={onDownloadJSON}
         onDownloadImages={onDownloadImages}
       />
 
@@ -87,11 +89,13 @@ export function SearchFilters({
       <div
         className={cn(
           "bg-card p-4 rounded-lg border shadow-sm relative",
-          activeCount > 0 && "border-primary"
+          activeCount > 0 && "border-primary",
         )}
       >
         {activeCount > 0 && (
-          <span className="absolute top-2 right-2 text-xs font-semibold">{activeCount}</span>
+          <span className="absolute top-2 right-2 text-xs font-semibold">
+            {activeCount}
+          </span>
         )}
         <div className="grid grid-cols-1 md:grid-cols-6 gap-6 items-end">
           {/* Search - spans 2 columns */}
@@ -137,7 +141,6 @@ export function SearchFilters({
               setRange={setValuationRange}
             />
           </div>
-
         </div>
       </div>
 
