@@ -249,7 +249,6 @@ const HousePage = () => {
 
   const handleBatchLocation = (house: string, room: string) => {
     const ids = [...selectedIds];
-    downloadCSV();
     Promise.all(
       ids.map((id) =>
         updateDecorItem(id, { house, room } as unknown as DecorItem),
@@ -285,7 +284,6 @@ const HousePage = () => {
     )
       return;
     const ids = [...selectedIds];
-    downloadCSV();
     Promise.all(ids.map((id) => deleteDecorItem(id)))
       .then(() => {
         setItems((prev) => prev.filter((i) => !ids.includes(i.id.toString())));
