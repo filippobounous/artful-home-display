@@ -6,6 +6,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Plus, Download, Images } from "lucide-react";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import { DarkModeToggle } from "@/components/DarkModeToggle";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
@@ -122,6 +123,7 @@ export function InventoryHeader() {
     <header className="border-b bg-card px-6 py-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
+          <SidebarTrigger className="md:hidden" />
           <h1 className="text-2xl font-bold text-slate-900">
             Collection Manager
           </h1>
