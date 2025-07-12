@@ -1,5 +1,5 @@
-
 import { useState } from "react";
+import Papa from "papaparse";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,33 +18,27 @@ export function CsvUploader({ onUpload }: CsvUploaderProps) {
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
-    if (selectedFile && selectedFile.type === 'text/csv') {
+    if (selectedFile && selectedFile.type === "text/csv") {
       setFile(selectedFile);
     } else {
       toast({
         title: "Invalid file type",
         description: "Please select a CSV file",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
 
   const parseCsv = (text: string) => {
-    const lines = text.split('\n');
-    const headers = lines[0].split(',').map(h => h.trim());
-    const data = [];
-
-    for (let i = 1; i < lines.length; i++) {
-      if (lines[i].trim()) {
-        const values = lines[i].split(',').map(v => v.trim());
-        const row: any = {};
-        headers.forEach((header, index) => {
-          row[header] = values[index] || '';
-        });
-        data.push(row);
-      }
+    const result = Papa.parse<Record<string, string>>(text, {
+      header: true,
+      skipEmptyLines: true,
+      newline: "",
+    });
+    if (result.errors.length) {
+      console.error("CSV parse errors", result.errors);
     }
-    return data;
+    return result.data;
   };
 
   const handleUpload = async () => {
@@ -52,7 +46,7 @@ export function CsvUploader({ onUpload }: CsvUploaderProps) {
       toast({
         title: "Missing information",
         description: "Please select a file and upload type",
-        variant: "destructive"
+        variant: "destructive",
       });
       return;
     }
@@ -61,19 +55,19 @@ export function CsvUploader({ onUpload }: CsvUploaderProps) {
       const text = await file.text();
       const data = parseCsv(text);
       onUpload(data, uploadType);
-      
+
       toast({
         title: "Upload successful",
-        description: `${data.length} ${uploadType} records uploaded`
+        description: `${data.length} ${uploadType} records uploaded`,
       });
-      
+
       setFile(null);
       setUploadType("");
     } catch (error) {
       toast({
         title: "Upload failed",
         description: "Error parsing CSV file",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
@@ -101,7 +95,7 @@ export function CsvUploader({ onUpload }: CsvUploaderProps) {
             <option value="items">Items</option>
           </select>
         </div>
-        
+
         <div>
           <Label>CSV File</Label>
           <Input
@@ -119,17 +113,32 @@ export function CsvUploader({ onUpload }: CsvUploaderProps) {
           </div>
         )}
 
-        <Button onClick={handleUpload} disabled={!file || !uploadType} className="w-full">
+        <Button
+          onClick={handleUpload}
+          disabled={!file || !uploadType}
+          className="w-full"
+        >
           <Upload className="w-4 h-4 mr-2" />
           Upload CSV
         </Button>
 
         <div className="text-xs text-gray-500">
-          <p><strong>CSV Format Examples:</strong></p>
-          <p><strong>Houses:</strong> name,city,country,address,postal_code,code</p>
-          <p><strong>Categories:</strong> name,icon</p>
-          <p><strong>Rooms:</strong> name,houseId</p>
-          <p><strong>Items:</strong> title,category,subcategory,house,room,widthCm,heightCm,depthCm,description,valuation,artist</p>
+          <p>
+            <strong>CSV Format Examples:</strong>
+          </p>
+          <p>
+            <strong>Houses:</strong> name,city,country,address,postal_code,code
+          </p>
+          <p>
+            <strong>Categories:</strong> name,icon
+          </p>
+          <p>
+            <strong>Rooms:</strong> name,houseId
+          </p>
+          <p>
+            <strong>Items:</strong>{" "}
+            title,category,subcategory,house,room,widthCm,heightCm,depthCm,description,valuation,artist
+          </p>
         </div>
       </CardContent>
     </Card>
