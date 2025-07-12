@@ -1,4 +1,3 @@
-
 import { DecorItem } from "@/types/inventory";
 
 export const sampleDecorItems: DecorItem[] = [
@@ -10,13 +9,14 @@ export const sampleDecorItems: DecorItem[] = [
     widthCm: 182.88,
     heightCm: 91.44,
     depthCm: 76.2,
-    image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop",
     description: "Beautiful vintage oak dining table from the 1960s",
     house: "main-house",
     room: "dining-room",
     yearPeriod: "1960s",
     quantity: 1,
-    condition: "good"
+    condition: "good",
   },
   {
     id: 2,
@@ -27,7 +27,8 @@ export const sampleDecorItems: DecorItem[] = [
     widthCm: 60.96,
     heightCm: 91.44,
     depthCm: 0,
-    image: "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&h=300&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=400&h=300&fit=crop",
     description: "Original abstract painting by local artist",
     house: "main-house",
     room: "living-room",
@@ -37,7 +38,7 @@ export const sampleDecorItems: DecorItem[] = [
     valuationCurrency: "USD",
     yearPeriod: "2020",
     quantity: 1,
-    condition: "excellent"
+    condition: "excellent",
   },
   {
     id: 3,
@@ -48,13 +49,14 @@ export const sampleDecorItems: DecorItem[] = [
     widthCm: 81.28,
     heightCm: 76.2,
     depthCm: 86.36,
-    image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop",
     description: "Iconic mid-century modern lounge chair",
     house: "guest-house",
     room: "living-room",
     yearPeriod: "1950s",
     quantity: 1,
-    condition: "very good"
+    condition: "very good",
   },
   {
     id: 4,
@@ -65,7 +67,8 @@ export const sampleDecorItems: DecorItem[] = [
     widthCm: 45.72,
     heightCm: 30.48,
     depthCm: 60.96,
-    image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop",
     description: "Modern bronze sculpture by renowned artist",
     house: "studio",
     room: "main-area",
@@ -75,7 +78,7 @@ export const sampleDecorItems: DecorItem[] = [
     valuationCurrency: "USD",
     yearPeriod: "2018",
     quantity: 1,
-    condition: "mint"
+    condition: "mint",
   },
   {
     id: 5,
@@ -85,13 +88,14 @@ export const sampleDecorItems: DecorItem[] = [
     widthCm: 274.32,
     heightCm: 365.76,
     depthCm: 0,
-    image: "https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=400&h=300&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=400&h=300&fit=crop",
     description: "Authentic Persian rug with intricate patterns",
     house: "main-house",
     room: "living-room",
     yearPeriod: "19th century",
     quantity: 1,
-    condition: "good"
+    condition: "good",
   },
   {
     id: 6,
@@ -102,7 +106,8 @@ export const sampleDecorItems: DecorItem[] = [
     widthCm: 76.2,
     heightCm: 101.6,
     depthCm: 0,
-    image: "https://images.unsplash.com/photo-1578321272176-b7bbc0679853?w=400&h=300&fit=crop",
+    image:
+      "https://images.unsplash.com/photo-1578321272176-b7bbc0679853?w=400&h=300&fit=crop",
     description: "Beautiful landscape oil painting",
     house: "main-house",
     room: "office",
@@ -112,6 +117,57 @@ export const sampleDecorItems: DecorItem[] = [
     valuationCurrency: "USD",
     yearPeriod: "1920s",
     quantity: 1,
-    condition: "very good"
-  }
+    condition: "very good",
+  },
+  {
+    id: 7,
+    title: "Modern Glass Vase",
+    category: "decor",
+    subcategory: "vase",
+    widthCm: 15,
+    heightCm: 40,
+    depthCm: 15,
+    image:
+      "https://images.unsplash.com/photo-1600585154340-be6161b89d14?w=400&h=300&fit=crop",
+    description: "Tall modern vase perfect for centerpieces",
+    house: "guest-house",
+    room: "dining-room",
+    yearPeriod: "2010s",
+    quantity: 2,
+    condition: "excellent",
+  },
+  {
+    id: 8,
+    title: "Handwoven Basket",
+    category: "decor",
+    subcategory: "basket",
+    widthCm: 30,
+    heightCm: 25,
+    depthCm: 30,
+    image:
+      "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=400&h=300&fit=crop",
+    description: "Rustic basket made from natural fibers",
+    house: "studio",
+    room: "storage",
+    yearPeriod: "1990s",
+    quantity: 3,
+    condition: "good",
+  },
+  {
+    id: 9,
+    title: "Ceramic Tea Set",
+    category: "kitchenware",
+    subcategory: "tea-set",
+    widthCm: 35,
+    heightCm: 20,
+    depthCm: 35,
+    image:
+      "https://images.unsplash.com/photo-1580933936488-1c296ca54f49?w=400&h=300&fit=crop",
+    description: "Hand-painted ceramic tea set from Japan",
+    house: "main-house",
+    room: "kitchen",
+    yearPeriod: "1980s",
+    quantity: 1,
+    condition: "very good",
+  },
 ];
