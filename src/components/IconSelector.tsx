@@ -1,8 +1,75 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { House, Palette, Sofa, Lamp, MapPin, Shapes, Home, Building, Building2, Warehouse, Castle, TreePine, Flower, Car, Bike, Music, Book, Camera, Watch, Shirt, Coffee, Wine, Utensils, Gamepad2 } from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  House,
+  Palette,
+  Sofa,
+  Lamp,
+  MapPin,
+  Shapes,
+  Home,
+  Building,
+  Building2,
+  Warehouse,
+  Castle,
+  TreePine,
+  Flower,
+  Car,
+  Bike,
+  Music,
+  Book,
+  Camera,
+  Watch,
+  Shirt,
+  Coffee,
+  Wine,
+  Utensils,
+  Gamepad2,
+  AlertTriangle,
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  ArrowUpDown,
+  BarChart3,
+  Calendar,
+  CalendarIcon,
+  Check,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+  Circle,
+  DollarSign,
+  Dot,
+  Download,
+  Edit,
+  FileText,
+  Grid,
+  GripVertical,
+  Hash,
+  History,
+  Image,
+  Images,
+  List,
+  Minus,
+  MoreHorizontal,
+  Package,
+  PanelLeft,
+  Plus,
+  Search,
+  Settings,
+  Table,
+  Trash2,
+  Upload,
+  X,
+  Folder,
+} from "lucide-react";
 
 const availableIcons = [
   { name: "house", icon: House },
@@ -28,7 +95,46 @@ const availableIcons = [
   { name: "coffee", icon: Coffee },
   { name: "wine", icon: Wine },
   { name: "utensils", icon: Utensils },
-  { name: "gamepad2", icon: Gamepad2 }
+  { name: "gamepad2", icon: Gamepad2 },
+  { name: "alert-triangle", icon: AlertTriangle },
+  { name: "arrow-down", icon: ArrowDown },
+  { name: "arrow-left", icon: ArrowLeft },
+  { name: "arrow-right", icon: ArrowRight },
+  { name: "arrow-up", icon: ArrowUp },
+  { name: "arrow-up-down", icon: ArrowUpDown },
+  { name: "bar-chart3", icon: BarChart3 },
+  { name: "calendar", icon: Calendar },
+  { name: "calendar-icon", icon: CalendarIcon },
+  { name: "check", icon: Check },
+  { name: "chevron-down", icon: ChevronDown },
+  { name: "chevron-left", icon: ChevronLeft },
+  { name: "chevron-right", icon: ChevronRight },
+  { name: "chevron-up", icon: ChevronUp },
+  { name: "circle", icon: Circle },
+  { name: "dollar-sign", icon: DollarSign },
+  { name: "dot", icon: Dot },
+  { name: "download", icon: Download },
+  { name: "edit", icon: Edit },
+  { name: "file-text", icon: FileText },
+  { name: "grid", icon: Grid },
+  { name: "grip-vertical", icon: GripVertical },
+  { name: "hash", icon: Hash },
+  { name: "history", icon: History },
+  { name: "image", icon: Image },
+  { name: "images", icon: Images },
+  { name: "list", icon: List },
+  { name: "minus", icon: Minus },
+  { name: "more-horizontal", icon: MoreHorizontal },
+  { name: "package", icon: Package },
+  { name: "panel-left", icon: PanelLeft },
+  { name: "plus", icon: Plus },
+  { name: "search", icon: Search },
+  { name: "settings", icon: Settings },
+  { name: "table", icon: Table },
+  { name: "trash2", icon: Trash2 },
+  { name: "upload", icon: Upload },
+  { name: "x", icon: X },
+  { name: "folder", icon: Folder },
 ];
 
 interface IconSelectorProps {
@@ -36,10 +142,14 @@ interface IconSelectorProps {
   onIconSelect: (iconName: string) => void;
 }
 
-export function IconSelector({ selectedIcon, onIconSelect }: IconSelectorProps) {
+export function IconSelector({
+  selectedIcon,
+  onIconSelect,
+}: IconSelectorProps) {
   const [open, setOpen] = useState(false);
-  
-  const SelectedIconComponent = availableIcons.find(icon => icon.name === selectedIcon)?.icon || House;
+
+  const SelectedIconComponent =
+    availableIcons.find((icon) => icon.name === selectedIcon)?.icon || House;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
