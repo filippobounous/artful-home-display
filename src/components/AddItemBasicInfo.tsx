@@ -20,9 +20,10 @@ export function AddItemBasicInfo({
         <Label htmlFor="code">Item Code</Label>
         <Input
           id="code"
-          placeholder="Inventory code"
+          placeholder="Auto-generated after save"
           value={formData.code}
-          onChange={(e) => setFormData({ ...formData, code: e.target.value })}
+          readOnly
+          disabled
         />
       </div>
 
@@ -63,7 +64,7 @@ export function AddItemBasicInfo({
             id="width"
             type="number"
             step="0.01"
-            placeholder="0"
+            placeholder="Width in cm"
             value={formData.width_cm}
             onChange={(e) =>
               setFormData({ ...formData, width_cm: e.target.value })
@@ -76,7 +77,7 @@ export function AddItemBasicInfo({
             id="height"
             type="number"
             step="0.01"
-            placeholder="0"
+            placeholder="Height in cm"
             value={formData.height_cm}
             onChange={(e) =>
               setFormData({ ...formData, height_cm: e.target.value })
@@ -89,7 +90,7 @@ export function AddItemBasicInfo({
             id="depth"
             type="number"
             step="0.01"
-            placeholder="0"
+            placeholder="Depth in cm"
             value={formData.depth_cm}
             onChange={(e) =>
               setFormData({ ...formData, depth_cm: e.target.value })
@@ -104,6 +105,7 @@ export function AddItemBasicInfo({
           id="quantity"
           type="number"
           min="1"
+          placeholder="Enter quantity"
           value={formData.quantity}
           onChange={(e) =>
             setFormData({ ...formData, quantity: e.target.value })
@@ -135,6 +137,7 @@ export function AddItemBasicInfo({
         <Label htmlFor="origin_region">Origin Region *</Label>
         <Input
           id="origin_region"
+          placeholder="Country or region"
           value={formData.origin_region}
           onChange={(e) =>
             setFormData({ ...formData, origin_region: e.target.value })
@@ -152,6 +155,7 @@ export function AddItemBasicInfo({
         <Label htmlFor="material">Material</Label>
         <Input
           id="material"
+          placeholder="e.g., wood, ceramic"
           value={formData.material}
           onChange={(e) =>
             setFormData({ ...formData, material: e.target.value })
@@ -166,6 +170,7 @@ export function AddItemBasicInfo({
             id="weight_kg"
             type="number"
             step="0.01"
+            placeholder="Weight in kg"
             value={formData.weight_kg}
             onChange={(e) =>
               setFormData({ ...formData, weight_kg: e.target.value })
@@ -176,6 +181,7 @@ export function AddItemBasicInfo({
           <Label htmlFor="provenance">Provenance</Label>
           <Input
             id="provenance"
+            placeholder="Source or previous owner"
             value={formData.provenance}
             onChange={(e) =>
               setFormData({ ...formData, provenance: e.target.value })

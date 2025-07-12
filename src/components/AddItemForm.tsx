@@ -288,6 +288,7 @@ export function AddItemForm() {
               <AddItemLocationValuation
                 formData={formData}
                 setFormData={setFormData}
+                errors={errors}
               />
             </div>
           </div>
