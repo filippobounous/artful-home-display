@@ -1,22 +1,22 @@
-import { DecorItem } from '@/types/inventory';
-import { sampleDecorItems } from '@/data/sampleData';
-import { API_URL, API_KEY } from './common';
+import { DecorItem, DecorItemInput } from "@/types/inventory";
+import { sampleDecorItems } from "@/data/sampleData";
+import { API_URL, API_KEY } from "./common";
 
 function getToken() {
-  return localStorage.getItem('authToken') || '';
+  return localStorage.getItem("authToken") || "";
 }
 
 function buildHeaders(contentType?: string) {
   const headers: Record<string, string> = {};
-  if (contentType) headers['Content-Type'] = contentType;
-  if (API_KEY) headers['X-API-Key'] = API_KEY;
+  if (contentType) headers["Content-Type"] = contentType;
+  if (API_KEY) headers["X-API-Key"] = API_KEY;
   const token = getToken();
-  if (token) headers['Authorization'] = `Bearer ${token}`;
+  if (token) headers["Authorization"] = `Bearer ${token}`;
   return headers;
 }
 
 function getAllInventory(): DecorItem[] {
-  const stored = localStorage.getItem('inventoryData');
+  const stored = localStorage.getItem("inventoryData");
   if (stored) {
     try {
       return JSON.parse(stored) as DecorItem[];
@@ -24,16 +24,42 @@ function getAllInventory(): DecorItem[] {
       // fall through to sample items
     }
   }
-  localStorage.setItem('inventoryData', JSON.stringify(sampleDecorItems));
+  localStorage.setItem("inventoryData", JSON.stringify(sampleDecorItems));
   return [...sampleDecorItems];
 }
 
 function getLocalInventory(): DecorItem[] {
-  return getAllInventory().filter(item => !item.deleted);
+  return getAllInventory().filter((item) => !item.deleted);
 }
 
 function saveLocalInventory(items: DecorItem[]) {
-  localStorage.setItem('inventoryData', JSON.stringify(items));
+  localStorage.setItem("inventoryData", JSON.stringify(items));
+}
+
+function convertInput(input: DecorItemInput, id: number): DecorItem {
+  return {
+    id,
+    title: input.name,
+    artist: input.creator,
+    category: input.category,
+    subcategory: input.subcategory,
+    widthCm: input.width_cm,
+    heightCm: input.height_cm,
+    depthCm: input.depth_cm,
+    image: "/placeholder.svg",
+    description: input.description || "",
+    house: "",
+    room: input.room_code,
+    yearPeriod: String(input.date_period),
+    quantity: input.quantity,
+    valuation: input.appraisal_value,
+    valuationDate: input.appraisal_date,
+    valuationPerson: input.appraisal_entity,
+    valuationCurrency: input.appraisal_currency,
+    notes: input.notes,
+    deleted: input.is_deleted ?? false,
+    history: [],
+  } as DecorItem;
 }
 
 export async function fetchDecorItems(): Promise<DecorItem[]> {
@@ -41,7 +67,7 @@ export async function fetchDecorItems(): Promise<DecorItem[]> {
     const response = await fetch(`${API_URL}/decoritems`, {
       headers: buildHeaders(),
     });
-    if (!response.ok) throw new Error('Failed to fetch items');
+    if (!response.ok) throw new Error("Failed to fetch items");
     const data = await response.json();
     saveLocalInventory(data);
     return data.filter((item: DecorItem) => !item.deleted);
@@ -50,46 +76,54 @@ export async function fetchDecorItems(): Promise<DecorItem[]> {
   }
 }
 
-export async function createDecorItem(item: DecorItem) {
+export async function createDecorItem(item: DecorItemInput) {
   try {
     const response = await fetch(`${API_URL}/decoritems`, {
-      method: 'POST',
-      headers: buildHeaders('application/json'),
-      body: JSON.stringify(item)
+      method: "POST",
+      headers: buildHeaders("application/json"),
+      body: JSON.stringify(item),
     });
-    if (!response.ok) throw new Error('Failed to create item');
+    if (!response.ok) throw new Error("Failed to create item");
     const data = await response.json();
     const items = getAllInventory();
-    saveLocalInventory([...items, { ...data, deleted: false, history: [] }]);
-    return data;
+    const stored = convertInput(item, data.id);
+    saveLocalInventory([...items, stored]);
+    return stored;
   } catch {
     const items = getAllInventory();
-    const newId = Math.max(0, ...items.map(i => i.id || 0)) + 1;
-    const newItem = { ...item, id: newId, deleted: false, history: [] };
+    const newId = Math.max(0, ...items.map((i) => i.id || 0)) + 1;
+    const newItem = convertInput(item, newId);
     saveLocalInventory([...items, newItem]);
     return newItem;
   }
 }
 
-export async function updateDecorItem(id: number | string, updates: DecorItem) {
+export async function updateDecorItem(
+  id: number | string,
+  updates: DecorItemInput,
+) {
   try {
     const response = await fetch(`${API_URL}/decoritems/${id}`, {
-      method: 'PUT',
-      headers: buildHeaders('application/json'),
-      body: JSON.stringify(updates)
+      method: "PUT",
+      headers: buildHeaders("application/json"),
+      body: JSON.stringify(updates),
     });
-    if (!response.ok) throw new Error('Failed to update item');
+    if (!response.ok) throw new Error("Failed to update item");
     const data = await response.json();
-    const items = getAllInventory().map(item => item.id === data.id ? data : item);
-    saveLocalInventory(items);
-    return data;
+    const items = getAllInventory();
+    const stored = convertInput({ ...updates, ...data }, data.id);
+    saveLocalInventory(items.map((i) => (i.id === data.id ? stored : i)));
+    return stored;
   } catch {
     const items = getAllInventory();
     let updatedItem: DecorItem | null = null;
-    const updated = items.map(item => {
+    const updated = items.map((item) => {
       if (item.id === Number(id)) {
-        const history = item.history ? [...item.history, { ...item }] : [{ ...item }];
-        updatedItem = { ...item, ...updates, id: Number(id), history };
+        const history = item.history
+          ? [...item.history, { ...item }]
+          : [{ ...item }];
+        const converted = convertInput({ ...item, ...updates }, Number(id));
+        updatedItem = { ...converted, history };
         return updatedItem;
       }
       return item;
@@ -99,22 +133,29 @@ export async function updateDecorItem(id: number | string, updates: DecorItem) {
   }
 }
 
-export async function restoreDecorItem(id: number | string, version: DecorItem) {
+export async function restoreDecorItem(
+  id: number | string,
+  version: DecorItemInput,
+) {
   return updateDecorItem(id, version);
 }
 
 export async function deleteDecorItem(id: number | string) {
   try {
     const response = await fetch(`${API_URL}/decoritems/${id}`, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: buildHeaders(),
     });
-    if (!response.ok) throw new Error('Failed to delete item');
-    const items = getAllInventory().map(item => item.id === Number(id) ? { ...item, deleted: true } : item);
+    if (!response.ok) throw new Error("Failed to delete item");
+    const items = getAllInventory().map((item) =>
+      item.id === Number(id) ? { ...item, deleted: true } : item,
+    );
     saveLocalInventory(items);
     return true;
   } catch {
-    const items = getAllInventory().map(item => item.id === Number(id) ? { ...item, deleted: true } : item);
+    const items = getAllInventory().map((item) =>
+      item.id === Number(id) ? { ...item, deleted: true } : item,
+    );
     saveLocalInventory(items);
     return true;
   }

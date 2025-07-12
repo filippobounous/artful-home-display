@@ -17,30 +17,42 @@ export function AddItemBasicInfo({
       <h3 className="text-lg font-medium text-slate-900">Core Information</h3>
 
       <div>
-        <Label htmlFor="title">Title *</Label>
+        <Label htmlFor="code">Item Code</Label>
         <Input
-          id="title"
-          placeholder="Enter item title"
-          value={formData.title}
-          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+          id="code"
+          placeholder="Inventory code"
+          value={formData.code}
+          onChange={(e) => setFormData({ ...formData, code: e.target.value })}
+        />
+      </div>
+
+      <div>
+        <Label htmlFor="name">Name *</Label>
+        <Input
+          id="name"
+          placeholder="Enter item name"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           required
         />
-        {errors.title && (
-          <p className="text-destructive text-sm mt-1">{errors.title}</p>
+        {errors.name && (
+          <p className="text-destructive text-sm mt-1">{errors.name}</p>
         )}
       </div>
 
       <div>
-        <Label htmlFor="artist">Artist/Maker *</Label>
+        <Label htmlFor="creator">Creator *</Label>
         <Input
-          id="artist"
+          id="creator"
           placeholder="Artist or maker name"
-          value={formData.artist}
-          onChange={(e) => setFormData({ ...formData, artist: e.target.value })}
+          value={formData.creator}
+          onChange={(e) =>
+            setFormData({ ...formData, creator: e.target.value })
+          }
           required
         />
-        {errors.artist && (
-          <p className="text-destructive text-sm mt-1">{errors.artist}</p>
+        {errors.creator && (
+          <p className="text-destructive text-sm mt-1">{errors.creator}</p>
         )}
       </div>
 
@@ -52,9 +64,9 @@ export function AddItemBasicInfo({
             type="number"
             step="0.01"
             placeholder="0"
-            value={formData.widthCm}
+            value={formData.width_cm}
             onChange={(e) =>
-              setFormData({ ...formData, widthCm: e.target.value })
+              setFormData({ ...formData, width_cm: e.target.value })
             }
           />
         </div>
@@ -65,9 +77,9 @@ export function AddItemBasicInfo({
             type="number"
             step="0.01"
             placeholder="0"
-            value={formData.heightCm}
+            value={formData.height_cm}
             onChange={(e) =>
-              setFormData({ ...formData, heightCm: e.target.value })
+              setFormData({ ...formData, height_cm: e.target.value })
             }
           />
         </div>
@@ -78,9 +90,9 @@ export function AddItemBasicInfo({
             type="number"
             step="0.01"
             placeholder="0"
-            value={formData.depthCm}
+            value={formData.depth_cm}
             onChange={(e) =>
-              setFormData({ ...formData, depthCm: e.target.value })
+              setFormData({ ...formData, depth_cm: e.target.value })
             }
           />
         </div>
@@ -104,19 +116,72 @@ export function AddItemBasicInfo({
       </div>
 
       <div>
-        <Label htmlFor="yearPeriod">Year/Period *</Label>
+        <Label htmlFor="date_period">Date/Period *</Label>
         <Input
-          id="yearPeriod"
+          id="date_period"
           placeholder="e.g., 1920s, 2023"
-          value={formData.yearPeriod}
+          value={formData.date_period}
           onChange={(e) =>
-            setFormData({ ...formData, yearPeriod: e.target.value })
+            setFormData({ ...formData, date_period: e.target.value })
           }
           required
         />
-        {errors.yearPeriod && (
-          <p className="text-destructive text-sm mt-1">{errors.yearPeriod}</p>
+        {errors.date_period && (
+          <p className="text-destructive text-sm mt-1">{errors.date_period}</p>
         )}
+      </div>
+
+      <div>
+        <Label htmlFor="origin_region">Origin Region *</Label>
+        <Input
+          id="origin_region"
+          value={formData.origin_region}
+          onChange={(e) =>
+            setFormData({ ...formData, origin_region: e.target.value })
+          }
+          required
+        />
+        {errors.origin_region && (
+          <p className="text-destructive text-sm mt-1">
+            {errors.origin_region}
+          </p>
+        )}
+      </div>
+
+      <div>
+        <Label htmlFor="material">Material</Label>
+        <Input
+          id="material"
+          value={formData.material}
+          onChange={(e) =>
+            setFormData({ ...formData, material: e.target.value })
+          }
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="weight_kg">Weight (kg)</Label>
+          <Input
+            id="weight_kg"
+            type="number"
+            step="0.01"
+            value={formData.weight_kg}
+            onChange={(e) =>
+              setFormData({ ...formData, weight_kg: e.target.value })
+            }
+          />
+        </div>
+        <div>
+          <Label htmlFor="provenance">Provenance</Label>
+          <Input
+            id="provenance"
+            value={formData.provenance}
+            onChange={(e) =>
+              setFormData({ ...formData, provenance: e.target.value })
+            }
+          />
+        </div>
       </div>
     </div>
   );

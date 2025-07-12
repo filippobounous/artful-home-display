@@ -1,4 +1,3 @@
-
 export interface ItemBase {
   id: number;
   title: string;
@@ -66,13 +65,50 @@ export interface MusicItem extends ItemBase {
   history?: MusicItem[];
 }
 
-export type InventoryItem = DecorItem | BookItem | MusicItem;
+export interface DecorItemInput {
+  id?: number;
+  code?: string;
+  name: string;
+  room_code: string;
+  creator: string;
+  origin_region: string;
+  date_period: string | number;
+  material?: string;
+  height_cm?: number;
+  width_cm?: number;
+  depth_cm?: number;
+  weight_kg?: number;
+  provenance?: string;
+  category: string;
+  subcategory: string;
+  quantity: number;
+  acquisition_date?: string;
+  acquisition_value?: number;
+  acquisition_currency?: string;
+  appraisal_date?: string;
+  appraisal_value?: number;
+  appraisal_currency?: string;
+  appraisal_entity?: string;
+  description?: string;
+  notes?: string;
+  version?: number;
+  is_deleted?: boolean;
+}
 
+export type InventoryItem = DecorItem | BookItem | MusicItem;
 
 export type ViewMode = "grid" | "list" | "table";
 export type CategoryFilter = "all" | string;
 export type HouseFilter = "all" | "main-house" | "guest-house" | "studio";
-export type RoomFilter = "all" | "living-room" | "bedroom" | "kitchen" | "dining-room" | "office" | "bathroom" | "hallway";
+export type RoomFilter =
+  | "all"
+  | "living-room"
+  | "bedroom"
+  | "kitchen"
+  | "dining-room"
+  | "office"
+  | "bathroom"
+  | "hallway";
 
 // Configuration types for settings
 export interface CategoryConfig {
@@ -141,9 +177,9 @@ export const categoryConfigs: CategoryConfig[] = [
       { id: "painting", name: "Painting", visible: true },
       { id: "sculpture", name: "Sculpture", visible: true },
       { id: "photography", name: "Photography", visible: true },
-      { id: "print", name: "Print", visible: true }
+      { id: "print", name: "Print", visible: true },
     ],
-    visible: true
+    visible: true,
   },
   {
     id: "furniture",
@@ -154,9 +190,9 @@ export const categoryConfigs: CategoryConfig[] = [
       { id: "table", name: "Table", visible: true },
       { id: "sofa", name: "Sofa", visible: true },
       { id: "cabinet", name: "Cabinet", visible: true },
-      { id: "rug", name: "Rug", visible: true }
+      { id: "rug", name: "Rug", visible: true },
     ],
-    visible: true
+    visible: true,
   },
   {
     id: "decorative",
@@ -165,10 +201,10 @@ export const categoryConfigs: CategoryConfig[] = [
     subcategories: [
       { id: "vase", name: "Vase", visible: true },
       { id: "mirror", name: "Mirror", visible: true },
-      { id: "lighting", name: "Lighting", visible: true }
+      { id: "lighting", name: "Lighting", visible: true },
     ],
-    visible: true
-  }
+    visible: true,
+  },
 ];
 
 // House configurations with icons
@@ -190,15 +226,64 @@ export const defaultHouses: HouseConfig[] = [
     is_deleted: false,
     icon: "house",
     rooms: [
-      { id: "living-room", name: "Living Room", floor: 1, version: 1, is_deleted: false, visible: true },
-      { id: "dining-room", name: "Dining Room", floor: 1, version: 1, is_deleted: false, visible: true },
-      { id: "kitchen", name: "Kitchen", floor: 1, version: 1, is_deleted: false, visible: true },
-      { id: "bedroom", name: "Bedroom", floor: 2, version: 1, is_deleted: false, visible: true },
-      { id: "office", name: "Office", floor: 2, version: 1, is_deleted: false, visible: true },
-      { id: "bathroom", name: "Bathroom", floor: 2, version: 1, is_deleted: false, visible: true },
-      { id: "hallway", name: "Hallway", floor: 1, version: 1, is_deleted: false, visible: true }
+      {
+        id: "living-room",
+        name: "Living Room",
+        floor: 1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+      {
+        id: "dining-room",
+        name: "Dining Room",
+        floor: 1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+      {
+        id: "kitchen",
+        name: "Kitchen",
+        floor: 1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+      {
+        id: "bedroom",
+        name: "Bedroom",
+        floor: 2,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+      {
+        id: "office",
+        name: "Office",
+        floor: 2,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+      {
+        id: "bathroom",
+        name: "Bathroom",
+        floor: 2,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+      {
+        id: "hallway",
+        name: "Hallway",
+        floor: 1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
     ],
-    visible: true
+    visible: true,
   },
   {
     id: "guest-house",
@@ -217,12 +302,40 @@ export const defaultHouses: HouseConfig[] = [
     is_deleted: false,
     icon: "house",
     rooms: [
-      { id: "living-room", name: "Living Room", floor: 1, version: 1, is_deleted: false, visible: true },
-      { id: "bedroom", name: "Bedroom", floor: 1, version: 1, is_deleted: false, visible: true },
-      { id: "kitchen", name: "Kitchen", floor: 1, version: 1, is_deleted: false, visible: true },
-      { id: "bathroom", name: "Bathroom", floor: 1, version: 1, is_deleted: false, visible: true }
+      {
+        id: "living-room",
+        name: "Living Room",
+        floor: 1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+      {
+        id: "bedroom",
+        name: "Bedroom",
+        floor: 1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+      {
+        id: "kitchen",
+        name: "Kitchen",
+        floor: 1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+      {
+        id: "bathroom",
+        name: "Bathroom",
+        floor: 1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
     ],
-    visible: true
+    visible: true,
   },
   {
     id: "studio",
@@ -241,9 +354,23 @@ export const defaultHouses: HouseConfig[] = [
     is_deleted: false,
     icon: "house",
     rooms: [
-      { id: "main-area", name: "Main Area", floor: 1, version: 1, is_deleted: false, visible: true },
-      { id: "storage", name: "Storage", floor: 1, version: 1, is_deleted: false, visible: true }
+      {
+        id: "main-area",
+        name: "Main Area",
+        floor: 1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+      {
+        id: "storage",
+        name: "Storage",
+        floor: 1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
     ],
-    visible: true
-  }
+    visible: true,
+  },
 ];
