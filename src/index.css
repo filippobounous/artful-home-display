@@ -119,4 +119,5 @@ All colors MUST be HSL.
   .dark .text-slate-500,
   .dark .text-slate-400 {
     @apply text-muted-foreground;
-  }}
+  }
+}
