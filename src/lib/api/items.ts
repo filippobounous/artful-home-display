@@ -62,6 +62,30 @@ function convertInput(input: DecorItemInput, id: number): DecorItem {
   } as DecorItem;
 }
 
+export function decorItemToInput(item: DecorItem): DecorItemInput {
+  return {
+    id: item.id,
+    name: item.title,
+    creator: item.artist || "",
+    room_code: item.room || "",
+    origin_region: "",
+    date_period: item.yearPeriod || "",
+    width_cm: item.widthCm,
+    height_cm: item.heightCm,
+    depth_cm: item.depthCm,
+    category: item.category,
+    subcategory: item.subcategory || "",
+    quantity: item.quantity ?? 1,
+    appraisal_value: item.valuation,
+    appraisal_date: item.valuationDate,
+    appraisal_entity: item.valuationPerson,
+    appraisal_currency: item.valuationCurrency,
+    description: item.description,
+    notes: item.notes,
+    is_deleted: item.deleted,
+  } as DecorItemInput;
+}
+
 export async function fetchDecorItems(): Promise<DecorItem[]> {
   try {
     const response = await fetch(`${API_URL}/decoritems`, {
