@@ -17,7 +17,7 @@ export function AddItemBasicInfo({
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-medium text-slate-900 flex items-center">
-        Core Information
+        Core
         {errors.core && (
           <Badge variant="destructive" className="ml-2">
             Missing Data
