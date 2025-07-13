@@ -62,6 +62,30 @@ function convertInput(input: DecorItemInput, id: number): DecorItem {
   } as DecorItem;
 }
 
+export function decorItemToInput(item: DecorItem): DecorItemInput {
+  return {
+    id: item.id,
+    name: item.title,
+    creator: item.artist || "",
+    room_code: item.room || "",
+    origin_region: "",
+    date_period: item.yearPeriod || "",
+    width_cm: item.widthCm,
+    height_cm: item.heightCm,
+    depth_cm: item.depthCm,
+    category: item.category,
+    subcategory: item.subcategory || "",
+    quantity: item.quantity ?? 1,
+    appraisal_value: item.valuation,
+    appraisal_date: item.valuationDate,
+    appraisal_entity: item.valuationPerson,
+    appraisal_currency: item.valuationCurrency,
+    description: item.description,
+    notes: item.notes,
+    is_deleted: item.deleted,
+  } as DecorItemInput;
+}
+
 export async function fetchDecorItems(): Promise<DecorItem[]> {
   try {
     const response = await fetch(`${API_URL}/decoritems`, {
@@ -100,7 +124,7 @@ export async function createDecorItem(item: DecorItemInput) {
 
 export async function updateDecorItem(
   id: number | string,
-  updates: DecorItemInput,
+  updates: Partial<DecorItemInput>,
 ) {
   try {
     const response = await fetch(`${API_URL}/decoritems/${id}`, {
@@ -111,7 +135,13 @@ export async function updateDecorItem(
     if (!response.ok) throw new Error('Failed to update item');
     const data = await response.json();
     const items = getAllInventory();
-    const stored = convertInput({ ...updates, ...data }, data.id);
+    const stored = convertInput(
+      {
+        ...updates,
+        ...data,
+      } as DecorItemInput,
+      data.id,
+    );
     saveLocalInventory(items.map((i) => (i.id === data.id ? stored : i)));
     return stored;
   } catch {
@@ -122,7 +152,13 @@ export async function updateDecorItem(
         const history = item.history
           ? [...item.history, { ...item }]
           : [{ ...item }];
-        const converted = convertInput({ ...item, ...updates }, Number(id));
+        const converted = convertInput(
+          {
+            ...item,
+            ...updates,
+          } as DecorItemInput,
+          Number(id),
+        );
         updatedItem = { ...converted, history };
         return updatedItem;
       }

@@ -15,15 +15,15 @@ import {
   fetchDecorItems,
   deleteDecorItem,
   restoreDecorItem,
+  decorItemToInput,
   updateDecorItem,
 } from '@/lib/api';
 import { BatchLocationDialog } from '@/components/BatchLocationDialog';
 import { Button } from '@/components/ui/button';
-import { DecorItem } from '@/types/inventory';
+import { DecorItem, DecorItemInput } from '@/types/inventory';
 import { useSettingsState } from '@/hooks/useSettingsState';
 import { sortInventoryItems } from '@/lib/sortUtils';
 import { useToast } from '@/hooks/use-toast';
-
 type ViewMode = 'grid' | 'list' | 'table';
 
 const HousePage = () => {
@@ -90,7 +90,7 @@ const HousePage = () => {
 
   const handleRestore = (version: DecorItem) => {
     if (!historyItem) return;
-    restoreDecorItem(historyItem.id, version)
+    restoreDecorItem(historyItem.id, decorItemToInput(version))
       .then((updated) => {
         setItems((prev) =>
           prev.map((i) => (i.id === updated.id ? updated : i)),
@@ -251,7 +251,10 @@ const HousePage = () => {
     const ids = [...selectedIds];
     Promise.all(
       ids.map((id) =>
-        updateDecorItem(id, { house, room } as unknown as DecorItem),
+        updateDecorItem(id, {
+          house_code: house,
+          room_code: room,
+        } as Partial<DecorItemInput>),
       ),
     )
       .then((updated) => {
