@@ -124,36 +124,15 @@ export function AddItemForm() {
     if (!formData.quantity || Number(formData.quantity) <= 0)
       newErrors.quantity = "This field is required";
 
-    const acquisitionFields = [
-      formData.acquisition_date,
-      formData.acquisition_value,
-      formData.acquisition_currency,
+    const coreFields = [
+      formData.name,
+      formData.creator,
+      formData.origin_region,
+      formData.date_period,
+      formData.quantity,
     ];
-    if (acquisitionFields.some((v) => v)) {
-      if (
-        !formData.acquisition_date ||
-        !formData.acquisition_value ||
-        !formData.acquisition_currency
-      ) {
-        newErrors.acquisition = "All acquisition fields are required";
-      }
-    }
-
-    const appraisalFields = [
-      formData.appraisal_date,
-      formData.appraisal_value,
-      formData.appraisal_currency,
-      formData.appraisal_entity,
-    ];
-    if (appraisalFields.some((v) => v)) {
-      if (
-        !formData.appraisal_date ||
-        !formData.appraisal_value ||
-        !formData.appraisal_currency ||
-        !formData.appraisal_entity
-      ) {
-        newErrors.appraisal = "All appraisal fields are required";
-      }
+    if (coreFields.some((v) => !v || !String(v).trim())) {
+      newErrors.core = "All core information fields are required";
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -288,6 +267,7 @@ export function AddItemForm() {
               <AddItemLocationValuation
                 formData={formData}
                 setFormData={setFormData}
+                errors={errors}
               />
             </div>
           </div>
