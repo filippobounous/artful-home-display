@@ -22,11 +22,13 @@ import { HierarchicalCategorySelector } from "@/components/HierarchicalCategoryS
 interface AddItemLocationValuationProps {
   formData: any;
   setFormData: (data: any) => void;
+  errors?: Record<string, string>;
 }
 
 export function AddItemLocationValuation({
   formData,
   setFormData,
+  errors = {},
 }: AddItemLocationValuationProps) {
   const handleLocationChange = (house: string, room: string) => {
     const room_code = room || "";
@@ -47,13 +49,23 @@ export function AddItemLocationValuation({
         selectedCategory={formData.category}
         selectedSubcategory={formData.subcategory}
         onSelectionChange={handleCategoryChange}
+        invalid={Boolean(errors.category || errors.subcategory)}
       />
+      {(errors.category || errors.subcategory) && (
+        <p className="text-destructive text-sm mt-1">
+          {errors.category || errors.subcategory}
+        </p>
+      )}
 
       <HierarchicalHouseRoomSelector
         selectedHouse={formData.house}
         selectedRoom={formData.room}
         onSelectionChange={handleLocationChange}
+        invalid={Boolean(errors.room_code)}
       />
+      {errors.room_code && (
+        <p className="text-destructive text-sm mt-1">{errors.room_code}</p>
+      )}
 
       {/* Acquisition Section */}
       <div className="space-y-4 pt-4 border-t">

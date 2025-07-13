@@ -1,5 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 interface AddItemBasicInfoProps {
   formData: any;
@@ -14,15 +16,23 @@ export function AddItemBasicInfo({
 }: AddItemBasicInfoProps) {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium text-slate-900">Core Information</h3>
+      <h3 className="text-lg font-medium text-slate-900 flex items-center">
+        Core Information
+        {errors.core && (
+          <Badge variant="destructive" className="ml-2">
+            Missing Data
+          </Badge>
+        )}
+      </h3>
 
       <div>
         <Label htmlFor="code">Item Code</Label>
         <Input
           id="code"
-          placeholder="Inventory code"
+          placeholder="Auto-generated after save"
           value={formData.code}
-          onChange={(e) => setFormData({ ...formData, code: e.target.value })}
+          readOnly
+          disabled
         />
       </div>
 
@@ -33,7 +43,9 @@ export function AddItemBasicInfo({
           placeholder="Enter item name"
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          required
+          className={cn(
+            errors.name && "border-destructive focus-visible:ring-destructive",
+          )}
         />
         {errors.name && (
           <p className="text-destructive text-sm mt-1">{errors.name}</p>
@@ -49,7 +61,10 @@ export function AddItemBasicInfo({
           onChange={(e) =>
             setFormData({ ...formData, creator: e.target.value })
           }
-          required
+          className={cn(
+            errors.creator &&
+              "border-destructive focus-visible:ring-destructive",
+          )}
         />
         {errors.creator && (
           <p className="text-destructive text-sm mt-1">{errors.creator}</p>
@@ -63,7 +78,7 @@ export function AddItemBasicInfo({
             id="width"
             type="number"
             step="0.01"
-            placeholder="0"
+            placeholder="Width in cm"
             value={formData.width_cm}
             onChange={(e) =>
               setFormData({ ...formData, width_cm: e.target.value })
@@ -76,7 +91,7 @@ export function AddItemBasicInfo({
             id="height"
             type="number"
             step="0.01"
-            placeholder="0"
+            placeholder="Height in cm"
             value={formData.height_cm}
             onChange={(e) =>
               setFormData({ ...formData, height_cm: e.target.value })
@@ -89,7 +104,7 @@ export function AddItemBasicInfo({
             id="depth"
             type="number"
             step="0.01"
-            placeholder="0"
+            placeholder="Depth in cm"
             value={formData.depth_cm}
             onChange={(e) =>
               setFormData({ ...formData, depth_cm: e.target.value })
@@ -104,11 +119,15 @@ export function AddItemBasicInfo({
           id="quantity"
           type="number"
           min="1"
+          placeholder="Enter quantity"
           value={formData.quantity}
           onChange={(e) =>
             setFormData({ ...formData, quantity: e.target.value })
           }
-          required
+          className={cn(
+            errors.quantity &&
+              "border-destructive focus-visible:ring-destructive",
+          )}
         />
         {errors.quantity && (
           <p className="text-destructive text-sm mt-1">{errors.quantity}</p>
@@ -124,7 +143,10 @@ export function AddItemBasicInfo({
           onChange={(e) =>
             setFormData({ ...formData, date_period: e.target.value })
           }
-          required
+          className={cn(
+            errors.date_period &&
+              "border-destructive focus-visible:ring-destructive",
+          )}
         />
         {errors.date_period && (
           <p className="text-destructive text-sm mt-1">{errors.date_period}</p>
@@ -135,11 +157,15 @@ export function AddItemBasicInfo({
         <Label htmlFor="origin_region">Origin Region *</Label>
         <Input
           id="origin_region"
+          placeholder="Country or region"
           value={formData.origin_region}
           onChange={(e) =>
             setFormData({ ...formData, origin_region: e.target.value })
           }
-          required
+          className={cn(
+            errors.origin_region &&
+              "border-destructive focus-visible:ring-destructive",
+          )}
         />
         {errors.origin_region && (
           <p className="text-destructive text-sm mt-1">
@@ -152,6 +178,7 @@ export function AddItemBasicInfo({
         <Label htmlFor="material">Material</Label>
         <Input
           id="material"
+          placeholder="e.g., wood, ceramic"
           value={formData.material}
           onChange={(e) =>
             setFormData({ ...formData, material: e.target.value })
@@ -166,6 +193,7 @@ export function AddItemBasicInfo({
             id="weight_kg"
             type="number"
             step="0.01"
+            placeholder="Weight in kg"
             value={formData.weight_kg}
             onChange={(e) =>
               setFormData({ ...formData, weight_kg: e.target.value })
@@ -176,6 +204,7 @@ export function AddItemBasicInfo({
           <Label htmlFor="provenance">Provenance</Label>
           <Input
             id="provenance"
+            placeholder="Source or previous owner"
             value={formData.provenance}
             onChange={(e) =>
               setFormData({ ...formData, provenance: e.target.value })
@@ -183,6 +212,10 @@ export function AddItemBasicInfo({
           />
         </div>
       </div>
+
+      {errors.core && (
+        <p className="text-destructive text-sm mt-1">{errors.core}</p>
+      )}
     </div>
   );
 }
