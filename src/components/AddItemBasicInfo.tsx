@@ -26,17 +26,6 @@ export function AddItemBasicInfo({
       </h3>
 
       <div>
-        <Label htmlFor="code">Item Code</Label>
-        <Input
-          id="code"
-          placeholder="Auto-generated after save"
-          value={formData.code}
-          readOnly
-          disabled
-        />
-      </div>
-
-      <div>
         <Label htmlFor="name">Name *</Label>
         <Input
           id="name"
