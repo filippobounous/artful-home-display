@@ -375,9 +375,8 @@ const HousePage = () => {
                     Change Location
                   </Button>
                   <Button
-                    variant="link"
+                    variant="destructive"
                     size="sm"
-                    className="text-destructive"
                     onClick={handleBatchDelete}
                   >
                     Delete
