@@ -15,6 +15,7 @@ import {
   fetchDecorItems,
   deleteDecorItem,
   restoreDecorItem,
+  decorItemToInput,
   updateDecorItem,
 } from "@/lib/api";
 import { BatchLocationDialog } from "@/components/BatchLocationDialog";
@@ -90,7 +91,7 @@ const HousePage = () => {
 
   const handleRestore = (version: DecorItem) => {
     if (!historyItem) return;
-    restoreDecorItem(historyItem.id, version)
+    restoreDecorItem(historyItem.id, decorItemToInput(version))
       .then((updated) => {
         setItems((prev) =>
           prev.map((i) => (i.id === updated.id ? updated : i)),
