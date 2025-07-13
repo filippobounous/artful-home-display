@@ -124,7 +124,7 @@ export async function createDecorItem(item: DecorItemInput) {
 
 export async function updateDecorItem(
   id: number | string,
-  updates: DecorItemInput,
+  updates: Partial<DecorItemInput>,
 ) {
   try {
     const response = await fetch(`${API_URL}/decoritems/${id}`, {
@@ -135,7 +135,13 @@ export async function updateDecorItem(
     if (!response.ok) throw new Error("Failed to update item");
     const data = await response.json();
     const items = getAllInventory();
-    const stored = convertInput({ ...updates, ...data }, data.id);
+    const stored = convertInput(
+      {
+        ...updates,
+        ...data,
+      } as DecorItemInput,
+      data.id,
+    );
     saveLocalInventory(items.map((i) => (i.id === data.id ? stored : i)));
     return stored;
   } catch {
@@ -146,7 +152,13 @@ export async function updateDecorItem(
         const history = item.history
           ? [...item.history, { ...item }]
           : [{ ...item }];
-        const converted = convertInput({ ...item, ...updates }, Number(id));
+        const converted = convertInput(
+          {
+            ...item,
+            ...updates,
+          } as DecorItemInput,
+          Number(id),
+        );
         updatedItem = { ...converted, history };
         return updatedItem;
       }
