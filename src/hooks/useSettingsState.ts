@@ -3,6 +3,7 @@ import {
   categoryConfigs,
   defaultHouses,
   CategoryConfig,
+  SubcategoryConfig,
   HouseConfig,
   RoomConfig,
 } from "@/types/inventory";
