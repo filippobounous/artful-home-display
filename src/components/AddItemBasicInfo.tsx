@@ -60,69 +60,6 @@ export function AddItemBasicInfo({
         )}
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
-        <div>
-          <Label htmlFor="width">Width (cm)</Label>
-          <Input
-            id="width"
-            type="number"
-            step="0.01"
-            placeholder="Width in cm"
-            value={formData.width_cm}
-            onChange={(e) =>
-              setFormData({ ...formData, width_cm: e.target.value })
-            }
-          />
-        </div>
-        <div>
-          <Label htmlFor="height">Height (cm)</Label>
-          <Input
-            id="height"
-            type="number"
-            step="0.01"
-            placeholder="Height in cm"
-            value={formData.height_cm}
-            onChange={(e) =>
-              setFormData({ ...formData, height_cm: e.target.value })
-            }
-          />
-        </div>
-        <div>
-          <Label htmlFor="depth">Depth (cm)</Label>
-          <Input
-            id="depth"
-            type="number"
-            step="0.01"
-            placeholder="Depth in cm"
-            value={formData.depth_cm}
-            onChange={(e) =>
-              setFormData({ ...formData, depth_cm: e.target.value })
-            }
-          />
-        </div>
-      </div>
-
-      <div>
-        <Label htmlFor="quantity">Quantity *</Label>
-        <Input
-          id="quantity"
-          type="number"
-          min="1"
-          placeholder="Enter quantity"
-          value={formData.quantity}
-          onChange={(e) =>
-            setFormData({ ...formData, quantity: e.target.value })
-          }
-          className={cn(
-            errors.quantity &&
-              'border-destructive focus-visible:ring-destructive',
-          )}
-        />
-        {errors.quantity && (
-          <p className="text-destructive text-sm mt-1">{errors.quantity}</p>
-        )}
-      </div>
-
       <div>
         <Label htmlFor="date_period">Date/Period *</Label>
         <Input
@@ -164,18 +101,66 @@ export function AddItemBasicInfo({
       </div>
 
       <div>
-        <Label htmlFor="material">Material</Label>
+        <Label htmlFor="quantity">Quantity *</Label>
         <Input
-          id="material"
-          placeholder="e.g., wood, ceramic"
-          value={formData.material}
+          id="quantity"
+          type="number"
+          min="1"
+          placeholder="Enter quantity"
+          value={formData.quantity}
           onChange={(e) =>
-            setFormData({ ...formData, material: e.target.value })
+            setFormData({ ...formData, quantity: e.target.value })
           }
+          className={cn(
+            errors.quantity &&
+              'border-destructive focus-visible:ring-destructive',
+          )}
         />
+        {errors.quantity && (
+          <p className="text-destructive text-sm mt-1">{errors.quantity}</p>
+        )}
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-4 gap-4">
+        <div>
+          <Label htmlFor="width">Width (cm)</Label>
+          <Input
+            id="width"
+            type="number"
+            step="0.01"
+            placeholder="Width in cm"
+            value={formData.width_cm}
+            onChange={(e) =>
+              setFormData({ ...formData, width_cm: e.target.value })
+            }
+          />
+        </div>
+        <div>
+          <Label htmlFor="height">Height (cm)</Label>
+          <Input
+            id="height"
+            type="number"
+            step="0.01"
+            placeholder="Height in cm"
+            value={formData.height_cm}
+            onChange={(e) =>
+              setFormData({ ...formData, height_cm: e.target.value })
+            }
+          />
+        </div>
+        <div>
+          <Label htmlFor="depth">Depth (cm)</Label>
+          <Input
+            id="depth"
+            type="number"
+            step="0.01"
+            placeholder="Depth in cm"
+            value={formData.depth_cm}
+            onChange={(e) =>
+              setFormData({ ...formData, depth_cm: e.target.value })
+            }
+          />
+        </div>
         <div>
           <Label htmlFor="weight_kg">Weight (kg)</Label>
           <Input
@@ -186,6 +171,20 @@ export function AddItemBasicInfo({
             value={formData.weight_kg}
             onChange={(e) =>
               setFormData({ ...formData, weight_kg: e.target.value })
+            }
+          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="material">Material</Label>
+          <Input
+            id="material"
+            placeholder="e.g., wood, ceramic"
+            value={formData.material}
+            onChange={(e) =>
+              setFormData({ ...formData, material: e.target.value })
             }
           />
         </div>
