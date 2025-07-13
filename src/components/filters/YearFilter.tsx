@@ -1,4 +1,5 @@
 import { MultiSelectFilter } from '@/components/MultiSelectFilter';
+import { Label } from '@/components/ui/label';
 
 interface YearFilterProps {
   yearOptions: string[];
@@ -15,9 +16,9 @@ export function YearFilter({
 
   return (
     <div>
-      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+      <Label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
         Year/Period
-      </label>
+      </Label>
       <MultiSelectFilter
         placeholder="Select year or period"
         options={options}

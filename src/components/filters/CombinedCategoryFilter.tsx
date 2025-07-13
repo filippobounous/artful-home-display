@@ -1,5 +1,6 @@
 import { MultiSelectFilter } from '@/components/MultiSelectFilter';
 import { useSettingsState } from '@/hooks/useSettingsState';
+import { Label } from '@/components/ui/label';
 import type { CheckedState } from '@radix-ui/react-checkbox';
 
 interface CombinedCategoryFilterProps {
@@ -133,9 +134,9 @@ export function CombinedCategoryFilter({
 
     return (
       <div className="md:col-span-2">
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+        <Label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
           Subcategories
-        </label>
+        </Label>
         <MultiSelectFilter
           placeholder="Select subcategories"
           options={subcategoryOptions}
@@ -148,9 +149,9 @@ export function CombinedCategoryFilter({
 
   return (
     <div className="md:col-span-2">
-      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+      <Label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
         Categories & Subcategories
-      </label>
+      </Label>
       <MultiSelectFilter
         placeholder="Select categories or subcategories"
         options={combinedOptions}
