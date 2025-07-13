@@ -1,13 +1,13 @@
-import { Label } from "@/components/ui/label";
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { useSettingsState } from "@/hooks/useSettingsState";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/select';
+import { useSettingsState } from '@/hooks/useSettingsState';
+import { cn } from '@/lib/utils';
 
 interface HierarchicalHouseRoomSelectorProps {
   selectedHouse: string;
@@ -25,14 +25,14 @@ export function HierarchicalHouseRoomSelector({
   const { houses } = useSettingsState();
 
   const currentValue =
-    selectedHouse && selectedRoom ? `${selectedHouse}|${selectedRoom}` : "";
+    selectedHouse && selectedRoom ? `${selectedHouse}|${selectedRoom}` : '';
 
   const handleSelectionChange = (value: string) => {
     if (value) {
-      const [houseId, roomId] = value.split("|");
+      const [houseId, roomId] = value.split('|');
       onSelectionChange(houseId, roomId);
     } else {
-      onSelectionChange("", "");
+      onSelectionChange('', '');
     }
   };
 
@@ -42,8 +42,8 @@ export function HierarchicalHouseRoomSelector({
       <Select value={currentValue} onValueChange={handleSelectionChange}>
         <SelectTrigger
           className={cn(
-            currentValue ? undefined : "text-muted-foreground",
-            invalid && "border-destructive focus:ring-destructive",
+            currentValue ? undefined : 'text-muted-foreground',
+            invalid && 'border-destructive focus:ring-destructive',
           )}
         >
           <SelectValue placeholder="Select house and room" />

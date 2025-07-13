@@ -1,22 +1,22 @@
-import { DecorItem, DecorItemInput } from "@/types/inventory";
-import { sampleDecorItems } from "@/data/sampleData";
-import { API_URL, API_KEY } from "./common";
+import { DecorItem, DecorItemInput } from '@/types/inventory';
+import { sampleDecorItems } from '@/data/sampleData';
+import { API_URL, API_KEY } from './common';
 
 function getToken() {
-  return localStorage.getItem("authToken") || "";
+  return localStorage.getItem('authToken') || '';
 }
 
 function buildHeaders(contentType?: string) {
   const headers: Record<string, string> = {};
-  if (contentType) headers["Content-Type"] = contentType;
-  if (API_KEY) headers["X-API-Key"] = API_KEY;
+  if (contentType) headers['Content-Type'] = contentType;
+  if (API_KEY) headers['X-API-Key'] = API_KEY;
   const token = getToken();
-  if (token) headers["Authorization"] = `Bearer ${token}`;
+  if (token) headers['Authorization'] = `Bearer ${token}`;
   return headers;
 }
 
 function getAllInventory(): DecorItem[] {
-  const stored = localStorage.getItem("inventoryData");
+  const stored = localStorage.getItem('inventoryData');
   if (stored) {
     try {
       return JSON.parse(stored) as DecorItem[];
@@ -24,7 +24,7 @@ function getAllInventory(): DecorItem[] {
       // fall through to sample items
     }
   }
-  localStorage.setItem("inventoryData", JSON.stringify(sampleDecorItems));
+  localStorage.setItem('inventoryData', JSON.stringify(sampleDecorItems));
   return [...sampleDecorItems];
 }
 
@@ -33,7 +33,7 @@ function getLocalInventory(): DecorItem[] {
 }
 
 function saveLocalInventory(items: DecorItem[]) {
-  localStorage.setItem("inventoryData", JSON.stringify(items));
+  localStorage.setItem('inventoryData', JSON.stringify(items));
 }
 
 function convertInput(input: DecorItemInput, id: number): DecorItem {
@@ -46,9 +46,9 @@ function convertInput(input: DecorItemInput, id: number): DecorItem {
     widthCm: input.width_cm,
     heightCm: input.height_cm,
     depthCm: input.depth_cm,
-    image: "/placeholder.svg",
-    description: input.description || "",
-    house: "",
+    image: '/placeholder.svg',
+    description: input.description || '',
+    house: '',
     room: input.room_code,
     yearPeriod: String(input.date_period),
     quantity: input.quantity,
@@ -91,7 +91,7 @@ export async function fetchDecorItems(): Promise<DecorItem[]> {
     const response = await fetch(`${API_URL}/decoritems`, {
       headers: buildHeaders(),
     });
-    if (!response.ok) throw new Error("Failed to fetch items");
+    if (!response.ok) throw new Error('Failed to fetch items');
     const data = await response.json();
     saveLocalInventory(data);
     return data.filter((item: DecorItem) => !item.deleted);
@@ -103,11 +103,11 @@ export async function fetchDecorItems(): Promise<DecorItem[]> {
 export async function createDecorItem(item: DecorItemInput) {
   try {
     const response = await fetch(`${API_URL}/decoritems`, {
-      method: "POST",
-      headers: buildHeaders("application/json"),
+      method: 'POST',
+      headers: buildHeaders('application/json'),
       body: JSON.stringify(item),
     });
-    if (!response.ok) throw new Error("Failed to create item");
+    if (!response.ok) throw new Error('Failed to create item');
     const data = await response.json();
     const items = getAllInventory();
     const stored = convertInput(item, data.id);
@@ -128,11 +128,11 @@ export async function updateDecorItem(
 ) {
   try {
     const response = await fetch(`${API_URL}/decoritems/${id}`, {
-      method: "PUT",
-      headers: buildHeaders("application/json"),
+      method: 'PUT',
+      headers: buildHeaders('application/json'),
       body: JSON.stringify(updates),
     });
-    if (!response.ok) throw new Error("Failed to update item");
+    if (!response.ok) throw new Error('Failed to update item');
     const data = await response.json();
     const items = getAllInventory();
     const stored = convertInput(
@@ -179,10 +179,10 @@ export async function restoreDecorItem(
 export async function deleteDecorItem(id: number | string) {
   try {
     const response = await fetch(`${API_URL}/decoritems/${id}`, {
-      method: "DELETE",
+      method: 'DELETE',
       headers: buildHeaders(),
     });
-    if (!response.ok) throw new Error("Failed to delete item");
+    if (!response.ok) throw new Error('Failed to delete item');
     const items = getAllInventory().map((item) =>
       item.id === Number(id) ? { ...item, deleted: true } : item,
     );

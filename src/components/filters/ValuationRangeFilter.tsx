@@ -1,4 +1,4 @@
-import { Input } from "@/components/ui/input";
+import { Input } from '@/components/ui/input';
 
 interface ValuationRange {
   min?: number;
@@ -23,7 +23,7 @@ export function ValuationRangeFilter({
         <Input
           type="number"
           placeholder="Min"
-          value={range.min ?? ""}
+          value={range.min ?? ''}
           onChange={(e) =>
             setRange({
               ...range,
@@ -34,7 +34,7 @@ export function ValuationRangeFilter({
         <Input
           type="number"
           placeholder="Max"
-          value={range.max ?? ""}
+          value={range.max ?? ''}
           onChange={(e) =>
             setRange({
               ...range,

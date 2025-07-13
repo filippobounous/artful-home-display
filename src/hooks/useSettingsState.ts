@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 import {
   categoryConfigs,
   defaultHouses,
@@ -6,15 +6,15 @@ import {
   SubcategoryConfig,
   HouseConfig,
   RoomConfig,
-} from "@/types/inventory";
+} from '@/types/inventory';
 
 // Load persisted settings from localStorage if available
 let storedCategories: CategoryConfig[] | null = null;
 let storedHouses: HouseConfig[] | null = null;
-if (typeof window !== "undefined") {
+if (typeof window !== 'undefined') {
   try {
-    storedCategories = JSON.parse(localStorage.getItem("categories") || "null");
-    storedHouses = JSON.parse(localStorage.getItem("houses") || "null");
+    storedCategories = JSON.parse(localStorage.getItem('categories') || 'null');
+    storedHouses = JSON.parse(localStorage.getItem('houses') || 'null');
   } catch {
     storedCategories = null;
     storedHouses = null;
@@ -31,10 +31,10 @@ const notifyListeners = () => {
 };
 
 const saveState = () => {
-  if (typeof window !== "undefined") {
+  if (typeof window !== 'undefined') {
     try {
-      localStorage.setItem("categories", JSON.stringify(globalCategories));
-      localStorage.setItem("houses", JSON.stringify(globalHouses));
+      localStorage.setItem('categories', JSON.stringify(globalCategories));
+      localStorage.setItem('houses', JSON.stringify(globalHouses));
     } catch {
       // Ignore write errors (e.g., storage quota)
     }
@@ -44,19 +44,19 @@ const saveState = () => {
 // Validation functions
 const validateHouse = (house: Partial<HouseConfig>): string[] => {
   const errors: string[] = [];
-  if (!house.name?.trim()) errors.push("House name is required");
-  if (!house.city?.trim()) errors.push("City is required");
-  if (!house.country?.trim()) errors.push("Country is required");
-  if (!house.code?.trim()) errors.push("House code is required");
+  if (!house.name?.trim()) errors.push('House name is required');
+  if (!house.city?.trim()) errors.push('City is required');
+  if (!house.country?.trim()) errors.push('Country is required');
+  if (!house.code?.trim()) errors.push('House code is required');
   return errors;
 };
 
 const validateRoom = (room: Partial<RoomConfig>): string[] => {
   const errors: string[] = [];
-  if (!room.name?.trim()) errors.push("Room name is required");
-  if (!room.house_code?.trim()) errors.push("House code is required");
+  if (!room.name?.trim()) errors.push('Room name is required');
+  if (!room.house_code?.trim()) errors.push('House code is required');
   if (room.floor === undefined || room.floor === null)
-    errors.push("Floor is required");
+    errors.push('Floor is required');
   return errors;
 };
 
@@ -66,8 +66,8 @@ const getLinkedItems = (houseId: string, roomId: string): any[] => {
   // In a real app, this would query your items database
   // For demonstration, we'll return some mock data for certain rooms
   const mockLinkedItems = [
-    { houseId: "1", roomId: "living-room", items: ["item1", "item2", "item3"] },
-    { houseId: "1", roomId: "kitchen", items: ["item4", "item5"] },
+    { houseId: '1', roomId: 'living-room', items: ['item1', 'item2', 'item3'] },
+    { houseId: '1', roomId: 'kitchen', items: ['item4', 'item5'] },
   ];
 
   const linkedData = mockLinkedItems.find(
@@ -112,7 +112,7 @@ export function useSettingsState() {
 
   const addCategory = (name: string, icon: string) => {
     const newCategory: CategoryConfig = {
-      id: name.toLowerCase().replace(/\s+/g, "-"),
+      id: name.toLowerCase().replace(/\s+/g, '-'),
       name,
       icon,
       subcategories: [],
@@ -124,10 +124,10 @@ export function useSettingsState() {
     return newCategory;
   };
 
-  const addHouse = (house: Omit<HouseConfig, "id" | "rooms">) => {
+  const addHouse = (house: Omit<HouseConfig, 'id' | 'rooms'>) => {
     const validationErrors = validateHouse(house);
     if (validationErrors.length > 0) {
-      throw new Error(validationErrors.join(", "));
+      throw new Error(validationErrors.join(', '));
     }
 
     const newHouse: HouseConfig = {
@@ -144,12 +144,12 @@ export function useSettingsState() {
 
   const editHouse = (houseId: string, updates: Partial<HouseConfig>) => {
     const house = globalHouses.find((h) => h.id === houseId);
-    if (!house) throw new Error("House not found");
+    if (!house) throw new Error('House not found');
 
     const updatedHouse = { ...house, ...updates };
     const validationErrors = validateHouse(updatedHouse);
     if (validationErrors.length > 0) {
-      throw new Error(validationErrors.join(", "));
+      throw new Error(validationErrors.join(', '));
     }
 
     globalHouses = globalHouses.map((house) => {
@@ -176,7 +176,7 @@ export function useSettingsState() {
   ) => {
     const validationErrors = validateRoom(room);
     if (validationErrors.length > 0) {
-      throw new Error(validationErrors.join(", "));
+      throw new Error(validationErrors.join(', '));
     }
 
     globalHouses = globalHouses.map((house) => {
@@ -215,12 +215,12 @@ export function useSettingsState() {
   ) => {
     const house = globalHouses.find((h) => h.id === houseId);
     const room = house?.rooms.find((r) => r.id === roomId);
-    if (!house || !room) throw new Error("House or room not found");
+    if (!house || !room) throw new Error('House or room not found');
 
     const updatedRoom = { ...room, ...updates };
     const validationErrors = validateRoom(updatedRoom);
     if (validationErrors.length > 0) {
-      throw new Error(validationErrors.join(", "));
+      throw new Error(validationErrors.join(', '));
     }
 
     globalHouses = globalHouses.map((house) => {
@@ -324,7 +324,7 @@ export function useSettingsState() {
     globalCategories = globalCategories.map((category) => {
       if (category.id === categoryId) {
         const newSubcategory = {
-          id: subcategoryName.toLowerCase().replace(/\s+/g, "-"),
+          id: subcategoryName.toLowerCase().replace(/\s+/g, '-'),
           name: subcategoryName,
           visible: true,
         };
@@ -481,13 +481,13 @@ export function useSettingsState() {
 
     const dataStr = JSON.stringify(mappings, null, 2);
     const dataUri =
-      "data:application/json;charset=utf-8," + encodeURIComponent(dataStr);
+      'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
 
-    const exportFileDefaultName = "inventory-mappings.json";
+    const exportFileDefaultName = 'inventory-mappings.json';
 
-    const linkElement = document.createElement("a");
-    linkElement.setAttribute("href", dataUri);
-    linkElement.setAttribute("download", exportFileDefaultName);
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
     linkElement.click();
   };
 

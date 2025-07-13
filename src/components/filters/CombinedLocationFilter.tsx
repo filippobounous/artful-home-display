@@ -1,6 +1,6 @@
-import { MultiSelectFilter } from "@/components/MultiSelectFilter";
-import { useSettingsState } from "@/hooks/useSettingsState";
-import type { CheckedState } from "@radix-ui/react-checkbox";
+import { MultiSelectFilter } from '@/components/MultiSelectFilter';
+import { useSettingsState } from '@/hooks/useSettingsState';
+import type { CheckedState } from '@radix-ui/react-checkbox';
 
 interface CombinedLocationFilterProps {
   selectedHouse: string[];
@@ -55,7 +55,7 @@ export function CombinedLocationFilter({
       selectedHouse.includes(house.id) || allSelected
         ? true
         : selectedRooms.length > 0
-          ? "indeterminate"
+          ? 'indeterminate'
           : false;
     return [
       {

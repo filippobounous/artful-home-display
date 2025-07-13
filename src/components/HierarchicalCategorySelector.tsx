@@ -1,13 +1,13 @@
-import { Label } from "@/components/ui/label";
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { cn } from "@/lib/utils";
-import { useSettingsState } from "@/hooks/useSettingsState";
+} from '@/components/ui/select';
+import { cn } from '@/lib/utils';
+import { useSettingsState } from '@/hooks/useSettingsState';
 
 interface HierarchicalCategorySelectorProps {
   selectedCategory: string;
@@ -25,15 +25,15 @@ export function HierarchicalCategorySelector({
   const { categories } = useSettingsState();
 
   const currentValue = selectedCategory
-    ? `${selectedCategory}|${selectedSubcategory || ""}`
-    : "";
+    ? `${selectedCategory}|${selectedSubcategory || ''}`
+    : '';
 
   const handleSelectionChange = (value: string) => {
     if (value) {
-      const [categoryId, subcategoryId] = value.split("|");
-      onSelectionChange(categoryId, subcategoryId || "");
+      const [categoryId, subcategoryId] = value.split('|');
+      onSelectionChange(categoryId, subcategoryId || '');
     } else {
-      onSelectionChange("", "");
+      onSelectionChange('', '');
     }
   };
 
@@ -43,8 +43,8 @@ export function HierarchicalCategorySelector({
       <Select value={currentValue} onValueChange={handleSelectionChange}>
         <SelectTrigger
           className={cn(
-            currentValue ? undefined : "text-muted-foreground",
-            invalid && "border-destructive focus:ring-destructive",
+            currentValue ? undefined : 'text-muted-foreground',
+            invalid && 'border-destructive focus:ring-destructive',
           )}
         >
           <SelectValue placeholder="Select category and subcategory" />

@@ -1,13 +1,13 @@
-import { ViewMode } from "@/types/inventory";
-import { FilterHeader } from "@/components/filters/FilterHeader";
-import { SearchInput } from "@/components/filters/SearchInput";
-import { CombinedCategoryFilter } from "@/components/filters/CombinedCategoryFilter";
-import { CombinedLocationFilter } from "@/components/filters/CombinedLocationFilter";
-import { YearFilter } from "@/components/filters/YearFilter";
-import { ArtistFilter } from "@/components/filters/ArtistFilter";
-import { ValuationRangeFilter } from "@/components/filters/ValuationRangeFilter";
-import { AppliedFilters } from "@/components/filters/AppliedFilters";
-import { cn } from "@/lib/utils";
+import { ViewMode } from '@/types/inventory';
+import { FilterHeader } from '@/components/filters/FilterHeader';
+import { SearchInput } from '@/components/filters/SearchInput';
+import { CombinedCategoryFilter } from '@/components/filters/CombinedCategoryFilter';
+import { CombinedLocationFilter } from '@/components/filters/CombinedLocationFilter';
+import { YearFilter } from '@/components/filters/YearFilter';
+import { ArtistFilter } from '@/components/filters/ArtistFilter';
+import { ValuationRangeFilter } from '@/components/filters/ValuationRangeFilter';
+import { AppliedFilters } from '@/components/filters/AppliedFilters';
+import { cn } from '@/lib/utils';
 
 interface SearchFiltersProps {
   searchTerm: string;
@@ -88,8 +88,8 @@ export function SearchFilters({
       {/* Search and filters in aligned grid */}
       <div
         className={cn(
-          "bg-card p-4 rounded-lg border shadow-sm relative",
-          activeCount > 0 && "border-primary",
+          'bg-card p-4 rounded-lg border shadow-sm relative',
+          activeCount > 0 && 'border-primary',
         )}
       >
         {activeCount > 0 && (

@@ -1,32 +1,31 @@
-
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Package } from "lucide-react";
-import { login } from "@/lib/api";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Package } from 'lucide-react';
+import { login } from '@/lib/api';
 
 const Login = () => {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError("");
+    setError('');
 
     try {
       const data = await login(username, password);
-      localStorage.setItem("authToken", data.access_token);
-      localStorage.setItem("isAuthenticated", "true");
-      navigate("/");
+      localStorage.setItem('authToken', data.access_token);
+      localStorage.setItem('isAuthenticated', 'true');
+      navigate('/');
     } catch {
-      setError("Invalid username or password");
+      setError('Invalid username or password');
     } finally {
       setIsLoading(false);
     }
@@ -72,13 +71,17 @@ const Login = () => {
               </div>
             )}
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Signing in..." : "Sign In"}
+              {isLoading ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
           <div className="mt-4 text-center text-sm text-slate-600">
             <p>Demo credentials:</p>
-            <p><strong>Username:</strong> admin</p>
-            <p><strong>Password:</strong> password123</p>
+            <p>
+              <strong>Username:</strong> admin
+            </p>
+            <p>
+              <strong>Password:</strong> password123
+            </p>
           </div>
         </CardContent>
       </Card>

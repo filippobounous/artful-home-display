@@ -22,7 +22,7 @@ function getAllHouses(): HouseConfig[] {
 }
 
 function getLocalHouses(): HouseConfig[] {
-  return getAllHouses().filter(h => !h.is_deleted);
+  return getAllHouses().filter((h) => !h.is_deleted);
 }
 
 function saveLocalHouses(houses: HouseConfig[]) {
@@ -46,7 +46,7 @@ export async function createHouse(house: HouseConfig) {
     const response = await fetch(`${API_URL}/houses`, {
       method: 'POST',
       headers: buildHeaders('application/json'),
-      body: JSON.stringify(house)
+      body: JSON.stringify(house),
     });
     if (!response.ok) throw new Error('Failed to create house');
     const data = await response.json();
@@ -66,20 +66,25 @@ export async function updateHouse(id: string, updates: Partial<HouseConfig>) {
     const response = await fetch(`${API_URL}/houses/${id}`, {
       method: 'PUT',
       headers: buildHeaders('application/json'),
-      body: JSON.stringify(updates)
+      body: JSON.stringify(updates),
     });
     if (!response.ok) throw new Error('Failed to update house');
     const data = await response.json();
-    const houses = getAllHouses().map(h => h.id === data.id ? data : h);
+    const houses = getAllHouses().map((h) => (h.id === data.id ? data : h));
     saveLocalHouses(houses);
     return data;
   } catch {
     const houses = getAllHouses();
     let updatedHouse: HouseConfig | null = null;
-    const updated = houses.map(h => {
+    const updated = houses.map((h) => {
       if (h.id === id) {
         const history = h.history ? [...h.history, { ...h }] : [{ ...h }];
-        updatedHouse = { ...h, ...updates, version: (h.version || 1) + 1, history };
+        updatedHouse = {
+          ...h,
+          ...updates,
+          version: (h.version || 1) + 1,
+          history,
+        };
         return updatedHouse;
       }
       return h;
@@ -92,14 +97,18 @@ export async function updateHouse(id: string, updates: Partial<HouseConfig>) {
 export async function deleteHouse(id: string) {
   try {
     const response = await fetch(`${API_URL}/houses/${id}`, {
-      method: 'DELETE'
+      method: 'DELETE',
     });
     if (!response.ok) throw new Error('Failed to delete house');
-    const houses = getAllHouses().map(h => h.id === id ? { ...h, is_deleted: true } : h);
+    const houses = getAllHouses().map((h) =>
+      h.id === id ? { ...h, is_deleted: true } : h,
+    );
     saveLocalHouses(houses);
     return true;
   } catch {
-    const houses = getAllHouses().map(h => h.id === id ? { ...h, is_deleted: true } : h);
+    const houses = getAllHouses().map((h) =>
+      h.id === id ? { ...h, is_deleted: true } : h,
+    );
     saveLocalHouses(houses);
     return true;
   }

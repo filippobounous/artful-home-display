@@ -1,8 +1,13 @@
-import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { ItemDetailDialog } from "@/components/ItemDetailDialog";
-import type { DecorItem } from "@/types/inventory";
+import { useState } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { ItemDetailDialog } from '@/components/ItemDetailDialog';
+import type { DecorItem } from '@/types/inventory';
 
 interface ItemHistoryDialogProps {
   item: DecorItem | null;
@@ -11,7 +16,12 @@ interface ItemHistoryDialogProps {
   onRestore?: (version: DecorItem) => void;
 }
 
-export function ItemHistoryDialog({ item, open, onOpenChange, onRestore }: ItemHistoryDialogProps) {
+export function ItemHistoryDialog({
+  item,
+  open,
+  onOpenChange,
+  onRestore,
+}: ItemHistoryDialogProps) {
   const [versionItem, setVersionItem] = useState<DecorItem | null>(null);
   if (!item || !item.history || item.history.length === 0) return null;
 
@@ -19,7 +29,9 @@ export function ItemHistoryDialog({ item, open, onOpenChange, onRestore }: ItemH
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">History for {item.title}</DialogTitle>
+          <DialogTitle className="text-xl font-semibold">
+            History for {item.title}
+          </DialogTitle>
         </DialogHeader>
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm">
@@ -44,7 +56,11 @@ export function ItemHistoryDialog({ item, open, onOpenChange, onRestore }: ItemH
                     {[h.house, h.room].filter(Boolean).join(' / ') || '-'}
                   </td>
                   <td className="px-4 py-2 space-x-2 text-right whitespace-nowrap">
-                    <Button size="sm" variant="outline" onClick={() => setVersionItem(h)}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setVersionItem(h)}
+                    >
                       View
                     </Button>
                     {onRestore && (

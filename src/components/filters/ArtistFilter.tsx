@@ -1,4 +1,4 @@
-import { MultiSelectFilter } from "@/components/MultiSelectFilter";
+import { MultiSelectFilter } from '@/components/MultiSelectFilter';
 
 interface ArtistFilterProps {
   artistOptions: string[];

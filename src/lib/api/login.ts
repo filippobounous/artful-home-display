@@ -1,4 +1,3 @@
-
 import { API_URL } from './common';
 
 export interface LoginResponse {
@@ -6,7 +5,10 @@ export interface LoginResponse {
   token_type: string;
 }
 
-export async function login(username: string, password: string): Promise<LoginResponse> {
+export async function login(
+  username: string,
+  password: string,
+): Promise<LoginResponse> {
   const form = new FormData();
   form.append('username', username);
   form.append('password', password);
@@ -22,7 +24,7 @@ export async function login(username: string, password: string): Promise<LoginRe
     if (username === 'admin' && password === 'password123') {
       return {
         access_token: 'demo_token_' + Date.now(),
-        token_type: 'Bearer'
+        token_type: 'Bearer',
       };
     }
     throw new Error('Unable to reach authentication server');
@@ -31,10 +33,14 @@ export async function login(username: string, password: string): Promise<LoginRe
   if (!response.ok) {
     // Fallback to offline authentication in development or when explicitly enabled
     const allowDemo = import.meta.env.VITE_ALLOW_DEMO_LOGIN === 'true';
-    if ((import.meta.env.DEV || allowDemo) && username === 'admin' && password === 'password123') {
+    if (
+      (import.meta.env.DEV || allowDemo) &&
+      username === 'admin' &&
+      password === 'password123'
+    ) {
       return {
         access_token: 'demo_token_' + Date.now(),
-        token_type: 'Bearer'
+        token_type: 'Bearer',
       };
     }
     throw new Error('Invalid credentials');

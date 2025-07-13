@@ -1,9 +1,8 @@
-
-import { AppSidebar } from "@/components/AppSidebar";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { InventoryHeader } from "@/components/InventoryHeader";
-import { AddItemForm } from "@/components/AddItemForm";
-import { useSearchParams } from "react-router-dom";
+import { AppSidebar } from '@/components/AppSidebar';
+import { SidebarProvider } from '@/components/ui/sidebar';
+import { InventoryHeader } from '@/components/InventoryHeader';
+import { AddItemForm } from '@/components/AddItemForm';
+import { useSearchParams } from 'react-router-dom';
 
 const AddItem = () => {
   const [searchParams] = useSearchParams();
@@ -13,7 +12,7 @@ const AddItem = () => {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
         <AppSidebar />
-        
+
         <div className="flex-1 flex flex-col">
           <InventoryHeader />
 
@@ -23,7 +22,9 @@ const AddItem = () => {
                 {isEditMode ? 'Edit Item' : 'Add New Item'}
               </h2>
               <p className="text-slate-600">
-                {isEditMode ? 'Update details for your item' : 'Add a new piece to your collection'}
+                {isEditMode
+                  ? 'Update details for your item'
+                  : 'Add a new piece to your collection'}
               </p>
             </div>
 

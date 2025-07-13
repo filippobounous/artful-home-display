@@ -1,9 +1,21 @@
-
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-import { DecorItem } from "@/types/inventory";
-import { Edit, MapPin, Calendar, DollarSign, Hash, Trash2, History } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
+import { DecorItem } from '@/types/inventory';
+import {
+  Edit,
+  MapPin,
+  Calendar,
+  DollarSign,
+  Hash,
+  Trash2,
+  History,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface ItemDetailDialogProps {
   item: DecorItem | null;
@@ -14,15 +26,23 @@ interface ItemDetailDialogProps {
   onHistory?: (item: DecorItem) => void;
 }
 
-export function ItemDetailDialog({ item, open, onOpenChange, onEdit, onDelete, onHistory }: ItemDetailDialogProps) {
+export function ItemDetailDialog({
+  item,
+  open,
+  onOpenChange,
+  onEdit,
+  onDelete,
+  onHistory,
+}: ItemDetailDialogProps) {
   if (!item) return null;
-
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold pr-16">{item.title}</DialogTitle>
+          <DialogTitle className="text-xl font-semibold pr-16">
+            {item.title}
+          </DialogTitle>
           <div className="flex items-center gap-2 mt-2">
             {onEdit && (
               <Button
@@ -77,24 +97,32 @@ export function ItemDetailDialog({ item, open, onOpenChange, onEdit, onDelete, o
                 <h4 className="font-medium text-slate-700 mb-1">Category</h4>
                 <p className="text-slate-900 capitalize">{item.category}</p>
               </div>
-              
+
               {item.subcategory && (
                 <div>
-                  <h4 className="font-medium text-slate-700 mb-1">Subcategory</h4>
-                  <p className="text-slate-900 capitalize">{item.subcategory}</p>
+                  <h4 className="font-medium text-slate-700 mb-1">
+                    Subcategory
+                  </h4>
+                  <p className="text-slate-900 capitalize">
+                    {item.subcategory}
+                  </p>
                 </div>
               )}
 
               {item.artist && (
                 <div>
-                  <h4 className="font-medium text-slate-700 mb-1">Artist/Maker</h4>
+                  <h4 className="font-medium text-slate-700 mb-1">
+                    Artist/Maker
+                  </h4>
                   <p className="text-slate-900">{item.artist}</p>
                 </div>
               )}
 
               {item.yearPeriod && (
                 <div>
-                  <h4 className="font-medium text-slate-700 mb-1">Year/Period</h4>
+                  <h4 className="font-medium text-slate-700 mb-1">
+                    Year/Period
+                  </h4>
                   <p className="text-slate-900">{item.yearPeriod}</p>
                 </div>
               )}
@@ -103,9 +131,12 @@ export function ItemDetailDialog({ item, open, onOpenChange, onEdit, onDelete, o
             <div className="space-y-4">
               {(item.widthCm || item.heightCm || item.depthCm) && (
                 <div>
-                  <h4 className="font-medium text-slate-700 mb-1">Dimensions</h4>
+                  <h4 className="font-medium text-slate-700 mb-1">
+                    Dimensions
+                  </h4>
                   <p className="text-slate-900">
-                    {item.widthCm ?? '-'} x {item.heightCm ?? '-'} x {item.depthCm ?? '-'} cm
+                    {item.widthCm ?? '-'} x {item.heightCm ?? '-'} x{' '}
+                    {item.depthCm ?? '-'} cm
                   </p>
                 </div>
               )}
@@ -125,9 +156,17 @@ export function ItemDetailDialog({ item, open, onOpenChange, onEdit, onDelete, o
                   <h4 className="font-medium text-slate-700 mb-1">Location</h4>
                   <p className="text-slate-900 flex items-center">
                     <MapPin className="w-4 h-4 mr-1" />
-                    {item.house && <span className="capitalize">{item.house.replace('-', ' ')}</span>}
+                    {item.house && (
+                      <span className="capitalize">
+                        {item.house.replace('-', ' ')}
+                      </span>
+                    )}
                     {item.house && item.room && <span className="mx-1">•</span>}
-                    {item.room && <span className="capitalize">{item.room.replace('-', ' ')}</span>}
+                    {item.room && (
+                      <span className="capitalize">
+                        {item.room.replace('-', ' ')}
+                      </span>
+                    )}
                   </p>
                 </div>
               )}
@@ -137,25 +176,28 @@ export function ItemDetailDialog({ item, open, onOpenChange, onEdit, onDelete, o
           {/* Valuation Information */}
           {(item.valuation || item.valuationPerson || item.valuationDate) && (
             <div className="border-t pt-4">
-              <h4 className="font-medium text-slate-700 mb-3">Valuation Information</h4>
+              <h4 className="font-medium text-slate-700 mb-3">
+                Valuation Information
+              </h4>
               <div className="grid grid-cols-2 gap-4">
                 {item.valuation && (
                   <div>
                     <p className="text-sm text-slate-600">Value</p>
                     <p className="text-slate-900 flex items-center">
                       <DollarSign className="w-4 h-4 mr-1" />
-                      {item.valuation.toLocaleString()} {item.valuationCurrency || 'EUR'}
+                      {item.valuation.toLocaleString()}{' '}
+                      {item.valuationCurrency || 'EUR'}
                     </p>
                   </div>
                 )}
-                
+
                 {item.valuationPerson && (
                   <div>
                     <p className="text-sm text-slate-600">Appraiser</p>
                     <p className="text-slate-900">{item.valuationPerson}</p>
                   </div>
                 )}
-                
+
                 {item.valuationDate && (
                   <div>
                     <p className="text-sm text-slate-600">Valuation Date</p>
