@@ -21,8 +21,8 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from '@/components/ui/sidebar';
+import { useSidebar } from '@/components/ui/use-sidebar';
 import { useSettingsState } from '@/hooks/useSettingsState';
 
 const mainItems = [
