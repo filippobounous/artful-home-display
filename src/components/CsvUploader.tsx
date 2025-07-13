@@ -86,7 +86,7 @@ export function CsvUploader({ onUpload }: CsvUploaderProps) {
           <select
             value={uploadType}
             onChange={(e) => setUploadType(e.target.value)}
-            className="w-full mt-1 px-3 py-2 border border-gray-300 rounded-md"
+            className="w-full mt-1 px-3 py-2 border border-slate-300 rounded-md"
           >
             <option value="">Select upload type</option>
             <option value="houses">Houses</option>
@@ -107,7 +107,7 @@ export function CsvUploader({ onUpload }: CsvUploaderProps) {
         </div>
 
         {file && (
-          <div className="flex items-center gap-2 text-sm text-gray-600">
+          <div className="flex items-center gap-2 text-sm text-slate-600">
             <FileText className="w-4 h-4" />
             {file.name}
           </div>
@@ -122,7 +122,7 @@ export function CsvUploader({ onUpload }: CsvUploaderProps) {
           Upload CSV
         </Button>
 
-        <div className="text-xs text-gray-500">
+        <div className="text-xs text-slate-500">
           <p>
             <strong>CSV Format Examples:</strong>
           </p>
