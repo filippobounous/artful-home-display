@@ -43,7 +43,6 @@ export function AddItemBasicInfo({
           placeholder="Enter item name"
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          required
           className={cn(
             errors.name && "border-destructive focus-visible:ring-destructive",
           )}
@@ -62,7 +61,6 @@ export function AddItemBasicInfo({
           onChange={(e) =>
             setFormData({ ...formData, creator: e.target.value })
           }
-          required
           className={cn(
             errors.creator &&
               "border-destructive focus-visible:ring-destructive",
@@ -126,7 +124,6 @@ export function AddItemBasicInfo({
           onChange={(e) =>
             setFormData({ ...formData, quantity: e.target.value })
           }
-          required
           className={cn(
             errors.quantity &&
               "border-destructive focus-visible:ring-destructive",
@@ -146,7 +143,6 @@ export function AddItemBasicInfo({
           onChange={(e) =>
             setFormData({ ...formData, date_period: e.target.value })
           }
-          required
           className={cn(
             errors.date_period &&
               "border-destructive focus-visible:ring-destructive",
@@ -166,7 +162,6 @@ export function AddItemBasicInfo({
           onChange={(e) =>
             setFormData({ ...formData, origin_region: e.target.value })
           }
-          required
           className={cn(
             errors.origin_region &&
               "border-destructive focus-visible:ring-destructive",
