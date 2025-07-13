@@ -1,5 +1,16 @@
-
-import { Home, Package, BarChart3, Settings, Palette, Sofa, MapPin, FileText, Lamp, Shapes, House } from "lucide-react";
+import {
+  Home,
+  Package,
+  BarChart3,
+  Settings,
+  Palette,
+  Sofa,
+  MapPin,
+  FileText,
+  Lamp,
+  Shapes,
+  House,
+} from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
   Sidebar,
@@ -10,8 +21,8 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "@/components/ui/sidebar";
+import { useSidebar } from "@/components/ui/use-sidebar";
 import { useSettingsState } from "@/hooks/useSettingsState";
 
 const mainItems = [
@@ -22,13 +33,19 @@ const mainItems = [
 ];
 
 const getIconComponent = (iconName: string) => {
-  switch(iconName) {
-    case 'palette': return Palette;
-    case 'sofa': return Sofa;
-    case 'lamp': return Lamp;
-    case 'house': return House;
-    case 'map-pin': return MapPin;
-    default: return Shapes;
+  switch (iconName) {
+    case "palette":
+      return Palette;
+    case "sofa":
+      return Sofa;
+    case "lamp":
+      return Lamp;
+    case "house":
+      return House;
+    case "map-pin":
+      return MapPin;
+    default:
+      return Shapes;
   }
 };
 
@@ -40,18 +57,22 @@ export function AppSidebar() {
   const { categories, houses } = useSettingsState();
 
   // Dynamic category items based on configuration
-  const categoryItems = categories.filter(c => c.visible).map(category => ({
-    title: category.name,
-    url: `/category/${encodeURIComponent(category.id)}`,
-    icon: getIconComponent(category.icon)
-  }));
+  const categoryItems = categories
+    .filter((c) => c.visible)
+    .map((category) => ({
+      title: category.name,
+      url: `/category/${encodeURIComponent(category.id)}`,
+      icon: getIconComponent(category.icon),
+    }));
 
   // Dynamic house items based on configuration
-  const houseItems = houses.filter(h => h.visible).map(house => ({
-    title: house.name,
-    url: `/house/${encodeURIComponent(house.id)}`,
-    icon: getIconComponent(house.icon)
-  }));
+  const houseItems = houses
+    .filter((h) => h.visible)
+    .map((house) => ({
+      title: house.name,
+      url: `/house/${encodeURIComponent(house.id)}`,
+      icon: getIconComponent(house.icon),
+    }));
 
   const checkActive = (path: string) => {
     if (path === "/") {
@@ -72,8 +93,12 @@ export function AppSidebar() {
         <div className="p-6 border-b border-slate-200 dark:border-slate-700">
           {!isCollapsed ? (
             <div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Murgenere</h2>
-              <p className="text-sm text-slate-600 dark:text-slate-400">Collection Manager</p>
+              <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
+                Murgenere
+              </h2>
+              <p className="text-sm text-slate-600 dark:text-slate-400">
+                Collection Manager
+              </p>
             </div>
           ) : (
             <div className="text-center">
@@ -92,7 +117,7 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {mainItems.map((item) => {
-                const active = checkActive(item.url)
+                const active = checkActive(item.url);
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={active}>
@@ -106,7 +131,7 @@ export function AppSidebar() {
                       </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
-                )
+                );
               })}
             </SidebarMenu>
           </SidebarGroupContent>
@@ -120,7 +145,7 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {categoryItems.map((item) => {
-                const active = checkActive(item.url)
+                const active = checkActive(item.url);
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={active}>
@@ -133,7 +158,7 @@ export function AppSidebar() {
                       </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
-                )
+                );
               })}
             </SidebarMenu>
           </SidebarGroupContent>
@@ -147,7 +172,7 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {houseItems.map((item) => {
-                const active = checkActive(item.url)
+                const active = checkActive(item.url);
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={active}>
@@ -160,7 +185,7 @@ export function AppSidebar() {
                       </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
-                )
+                );
               })}
             </SidebarMenu>
           </SidebarGroupContent>
@@ -172,10 +197,15 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild isActive={checkActive('/settings')}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={checkActive("/settings")}
+                  >
                     <NavLink
                       to="/settings"
-                      className={getNavCls({ isActive: checkActive('/settings') })}
+                      className={getNavCls({
+                        isActive: checkActive("/settings"),
+                      })}
                     >
                       <Settings className="w-4 h-4" />
                       {!isCollapsed && <span>Settings</span>}
