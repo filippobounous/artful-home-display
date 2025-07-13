@@ -1,4 +1,5 @@
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface ValuationRange {
   min?: number;
@@ -16,9 +17,9 @@ export function ValuationRangeFilter({
 }: ValuationRangeFilterProps) {
   return (
     <div>
-      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+      <Label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
         Valuation Range
-      </label>
+      </Label>
       <div className="flex gap-2">
         <Input
           type="number"

@@ -1,4 +1,5 @@
 import { MultiSelectFilter } from '@/components/MultiSelectFilter';
+import { Label } from '@/components/ui/label';
 
 interface ArtistFilterProps {
   artistOptions: string[];
@@ -14,9 +15,9 @@ export function ArtistFilter({
   const options = artistOptions.map((a) => ({ id: a, name: a }));
   return (
     <div>
-      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+      <Label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
         Artist
-      </label>
+      </Label>
       <MultiSelectFilter
         placeholder="Select artists"
         options={options}
