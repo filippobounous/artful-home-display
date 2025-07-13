@@ -45,27 +45,31 @@ export function AddItemLocationValuation({
         Category & Location
       </h3>
 
-      <HierarchicalCategorySelector
-        selectedCategory={formData.category}
-        selectedSubcategory={formData.subcategory}
-        onSelectionChange={handleCategoryChange}
-        invalid={Boolean(errors.category || errors.subcategory)}
-      />
-      {(errors.category || errors.subcategory) && (
-        <p className="text-destructive text-sm mt-1">
-          {errors.category || errors.subcategory}
-        </p>
-      )}
+      <div>
+        <HierarchicalCategorySelector
+          selectedCategory={formData.category}
+          selectedSubcategory={formData.subcategory}
+          onSelectionChange={handleCategoryChange}
+          invalid={Boolean(errors.category || errors.subcategory)}
+        />
+        {(errors.category || errors.subcategory) && (
+          <p className="text-destructive text-sm mt-1">
+            {errors.category || errors.subcategory}
+          </p>
+        )}
+      </div>
 
-      <HierarchicalHouseRoomSelector
-        selectedHouse={formData.house}
-        selectedRoom={formData.room}
-        onSelectionChange={handleLocationChange}
-        invalid={Boolean(errors.room_code)}
-      />
-      {errors.room_code && (
-        <p className="text-destructive text-sm mt-1">{errors.room_code}</p>
-      )}
+      <div>
+        <HierarchicalHouseRoomSelector
+          selectedHouse={formData.house}
+          selectedRoom={formData.room}
+          onSelectionChange={handleLocationChange}
+          invalid={Boolean(errors.room_code)}
+        />
+        {errors.room_code && (
+          <p className="text-destructive text-sm mt-1">{errors.room_code}</p>
+        )}
+      </div>
 
       {/* Acquisition Section */}
       <div className="space-y-4 pt-4 border-t">
