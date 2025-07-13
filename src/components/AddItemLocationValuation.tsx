@@ -130,6 +130,11 @@ export function AddItemLocationValuation({
               />
             </PopoverContent>
           </Popover>
+          {errors.acquisition && (
+            <p className="text-destructive text-sm mt-1">
+              {errors.acquisition}
+            </p>
+          )}
         </div>
       </div>
 
@@ -208,6 +213,9 @@ export function AddItemLocationValuation({
             }
           />
         </div>
+        {errors.appraisal && (
+          <p className="text-destructive text-sm mt-1">{errors.appraisal}</p>
+        )}
       </div>
     </div>
   );

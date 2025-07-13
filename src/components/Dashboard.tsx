@@ -1,4 +1,3 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DecorItem } from "@/types/inventory";
@@ -14,19 +13,26 @@ export function Dashboard({ items }: DashboardProps) {
   const { categories, houses } = useSettingsState();
 
   // Count items by category using current settings
-  const categoryStats = categories.filter(c => c.visible).map(category => ({
-    ...category,
-    count: items.filter(item => item.category === category.id).length,
-  }));
+  const categoryStats = categories
+    .filter((c) => c.visible)
+    .map((category) => ({
+      ...category,
+      count: items.filter((item) => item.category === category.id).length,
+    }));
 
   // Count items by house using current settings
-  const houseStats = houses.filter(h => h.visible).map(house => ({
-    ...house,
-    count: items.filter(item => item.house === house.id).length,
-  }));
+  const houseStats = houses
+    .filter((h) => h.visible)
+    .map((house) => ({
+      ...house,
+      count: items.filter((item) => item.house === house.id).length,
+    }));
 
   const totalItems = items.length;
-  const totalValuation = items.reduce((sum, item) => sum + (item.valuation || 0), 0);
+  const totalValuation = items.reduce(
+    (sum, item) => sum + (item.valuation || 0),
+    0,
+  );
 
   const getCategoryIcon = (categoryId: string) => {
     switch (categoryId) {
@@ -35,7 +41,7 @@ export function Dashboard({ items }: DashboardProps) {
       case "furniture":
         return <Sofa className="w-8 h-8 text-green-600" />;
       default:
-        return <Package className="w-8 h-8 text-gray-600" />;
+        return <Package className="w-8 h-8 text-slate-600" />;
     }
   };
 
@@ -48,7 +54,9 @@ export function Dashboard({ items }: DashboardProps) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-600">Total Items</p>
-                <p className="text-2xl font-bold text-slate-900">{totalItems}</p>
+                <p className="text-2xl font-bold text-slate-900">
+                  {totalItems}
+                </p>
               </div>
               <Package className="w-8 h-8 text-blue-600" />
             </div>
@@ -76,7 +84,9 @@ export function Dashboard({ items }: DashboardProps) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-600">Categories</p>
-                <p className="text-2xl font-bold text-slate-900">{categories.filter(c => c.visible).length}</p>
+                <p className="text-2xl font-bold text-slate-900">
+                  {categories.filter((c) => c.visible).length}
+                </p>
               </div>
               <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
                 <span className="text-purple-600 font-bold">#</span>
@@ -88,7 +98,9 @@ export function Dashboard({ items }: DashboardProps) {
 
       {/* Categories */}
       <div>
-        <h2 className="text-xl font-semibold text-slate-900 mb-4">Browse by Category</h2>
+        <h2 className="text-xl font-semibold text-slate-900 mb-4">
+          Browse by Category
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {categoryStats.map((category) => (
             <Link
@@ -101,8 +113,12 @@ export function Dashboard({ items }: DashboardProps) {
                     <div className="flex items-center gap-3">
                       {getCategoryIcon(category.id)}
                       <div>
-                        <h3 className="font-semibold text-slate-900">{category.name}</h3>
-                        <p className="text-sm text-slate-600">{category.count} items</p>
+                        <h3 className="font-semibold text-slate-900">
+                          {category.name}
+                        </h3>
+                        <p className="text-sm text-slate-600">
+                          {category.count} items
+                        </p>
                       </div>
                     </div>
                     <Badge variant="secondary">{category.count}</Badge>
@@ -116,21 +132,24 @@ export function Dashboard({ items }: DashboardProps) {
 
       {/* Houses */}
       <div>
-        <h2 className="text-xl font-semibold text-slate-900 mb-4">Browse by Location</h2>
+        <h2 className="text-xl font-semibold text-slate-900 mb-4">
+          Browse by Location
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {houseStats.map((house) => (
-            <Link
-              key={house.id}
-              to={`/house/${encodeURIComponent(house.id)}`}
-            >
+            <Link key={house.id} to={`/house/${encodeURIComponent(house.id)}`}>
               <Card className="hover:shadow-md transition-shadow cursor-pointer">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <Home className="w-8 h-8 text-indigo-600" />
                       <div>
-                        <h3 className="font-semibold text-slate-900">{house.name}</h3>
-                        <p className="text-sm text-slate-600">{house.count} items</p>
+                        <h3 className="font-semibold text-slate-900">
+                          {house.name}
+                        </h3>
+                        <p className="text-sm text-slate-600">
+                          {house.count} items
+                        </p>
                       </div>
                     </div>
                     <Badge variant="secondary">{house.count}</Badge>

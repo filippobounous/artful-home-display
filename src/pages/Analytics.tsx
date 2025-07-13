@@ -62,7 +62,13 @@ const Analytics = () => {
     value
   }));
 
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
+  const COLORS = [
+    'hsl(208, 100%, 49.8%)',
+    'hsl(169, 100%, 38.4%)',
+    'hsl(41, 100%, 57.8%)',
+    'hsl(20, 100%, 62.9%)',
+    'hsl(243, 51.9%, 68.2%)'
+  ];
 
   return (
     <SidebarProvider>
@@ -130,7 +136,7 @@ const Analytics = () => {
                       <XAxis dataKey="category" />
                       <YAxis />
                       <Tooltip />
-                      <Bar dataKey="count" fill="#3b82f6" />
+                      <Bar dataKey="count" fill="hsl(var(--sidebar-ring))" />
                     </BarChart>
                   </ResponsiveContainer>
                 </CardContent>
@@ -150,7 +156,7 @@ const Analytics = () => {
                         labelLine={false}
                         label={({ house, percent }) => `${house} (${(percent * 100).toFixed(0)}%)`}
                         outerRadius={80}
-                        fill="#8884d8"
+                        fill="hsl(243, 51.9%, 68.2%)"
                         dataKey="count"
                       >
                         {houseChartData.map((entry, index) => (
@@ -176,7 +182,7 @@ const Analytics = () => {
                       <XAxis dataKey="category" />
                       <YAxis />
                       <Tooltip formatter={(value) => [`$${value.toLocaleString()}`, 'Value']} />
-                      <Bar dataKey="value" fill="#10b981" />
+                      <Bar dataKey="value" fill="hsl(160, 84.1%, 39.4%)" />
                     </BarChart>
                   </ResponsiveContainer>
                 </CardContent>
