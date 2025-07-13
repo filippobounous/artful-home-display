@@ -1,21 +1,21 @@
 [user]
-    name = Filippo Bounous
-    email = filibounous@gmail.com
+  name = Filippo Bounous
+  email = filibounous@gmail.com
 [core]
-    editor = vim
-    autocrlf = input
-    excludesfile = ~/.gitignore_global
+  editor = vim
+  autocrlf = input
+  excludesfile = ~/.gitignore_global
 [color]
-    ui = auto
+  ui = auto
 [pull]
-    rebase = false
+  rebase = false
 [push]
-    default = current
+  default = current
 [alias]
-    st = status
-    co = checkout
-    br = branch
-    ci = commit
-    lg = log --graph --pretty=format:'%C(yellow)%h%Creset -%C(auto)%d%Creset %s %C(blue)(%cr) %C(green)<%an>%Creset'
+  st = status
+  co = checkout
+  br = branch
+  ci = commit
+  lg = log --graph --pretty=format:'%C(yellow)%h%Creset -%C(auto)%d%Creset %s %C(blue)(%cr) %C(green)<%an>%Creset'
 [merge]
-    conflictStyle = diff3
+  conflictStyle = diff3
