@@ -125,7 +125,10 @@ export function InventoryHeader() {
         <div className="flex items-center gap-4">
           <SidebarTrigger className="md:hidden" />
           <h1 className="text-2xl font-bold text-slate-900">
-            Collection Manager
+            Murgenere
+            <span className="block text-base font-normal text-slate-600">
+              Collection Manager
+            </span>
           </h1>
         </div>
 

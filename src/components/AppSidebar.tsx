@@ -92,14 +92,12 @@ export function AppSidebar() {
         {/* Logo Section */}
         <div className="p-6 border-b border-slate-200 dark:border-slate-700">
           {!isCollapsed ? (
-            <div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-                Murgenere
-              </h2>
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
+              Murgenere
+              <span className="block text-sm font-normal text-slate-600 dark:text-slate-400">
                 Collection Manager
-              </p>
-            </div>
+              </span>
+            </h2>
           ) : (
             <div className="text-center">
               <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
