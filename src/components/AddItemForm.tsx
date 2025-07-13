@@ -169,7 +169,7 @@ export function AddItemForm() {
       is_deleted: false,
     } as DecorItemInput;
 
-    let saveAction: Promise<DecorItemInput | null>;
+    let saveAction: Promise<DecorItem>;
     let exists = false;
 
     if (draftId) {
