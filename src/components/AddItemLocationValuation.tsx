@@ -1,23 +1,23 @@
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
+} from '@/components/ui/select';
+import { Calendar } from '@/components/ui/calendar';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { HierarchicalHouseRoomSelector } from "@/components/HierarchicalHouseRoomSelector";
-import { HierarchicalCategorySelector } from "@/components/HierarchicalCategorySelector";
+} from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
+import { CalendarIcon } from 'lucide-react';
+import { format } from 'date-fns';
+import { HierarchicalHouseRoomSelector } from '@/components/HierarchicalHouseRoomSelector';
+import { HierarchicalCategorySelector } from '@/components/HierarchicalCategorySelector';
 
 interface AddItemLocationValuationProps {
   formData: any;
@@ -31,7 +31,7 @@ export function AddItemLocationValuation({
   errors = {},
 }: AddItemLocationValuationProps) {
   const handleLocationChange = (house: string, room: string) => {
-    const room_code = room || "";
+    const room_code = room || '';
     setFormData({ ...formData, house, room, room_code });
   };
 
@@ -111,12 +111,12 @@ export function AddItemLocationValuation({
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className={`w-full justify-start text-left font-normal ${formData.acquisition_date ? "" : "text-muted-foreground"}`}
+                className={`w-full justify-start text-left font-normal ${formData.acquisition_date ? '' : 'text-muted-foreground'}`}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {formData.acquisition_date
-                  ? format(formData.acquisition_date, "PPP")
-                  : "Select date"}
+                  ? format(formData.acquisition_date, 'PPP')
+                  : 'Select date'}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
@@ -182,12 +182,12 @@ export function AddItemLocationValuation({
             <PopoverTrigger asChild>
               <Button
                 variant="outline"
-                className={`w-full justify-start text-left font-normal ${formData.appraisal_date ? "" : "text-muted-foreground"}`}
+                className={`w-full justify-start text-left font-normal ${formData.appraisal_date ? '' : 'text-muted-foreground'}`}
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {formData.appraisal_date
-                  ? format(formData.appraisal_date, "PPP")
-                  : "Select date"}
+                  ? format(formData.appraisal_date, 'PPP')
+                  : 'Select date'}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">

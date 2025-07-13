@@ -1,8 +1,7 @@
-
-import { Card, CardContent } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { cn } from "@/lib/utils";
-import { DecorItem } from "@/types/inventory";
+import { Card, CardContent } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { cn } from '@/lib/utils';
+import { DecorItem } from '@/types/inventory';
 
 interface ItemCardProps {
   item: DecorItem;
@@ -28,8 +27,8 @@ export function ItemCard({ item, onClick, selected, onSelect }: ItemCardProps) {
   return (
     <Card
       className={cn(
-        "relative group hover:shadow-lg transition-all duration-300 cursor-pointer",
-        selected && "ring-2 ring-primary"
+        'relative group hover:shadow-lg transition-all duration-300 cursor-pointer',
+        selected && 'ring-2 ring-primary',
       )}
       onClick={handleClick}
     >
@@ -50,29 +49,41 @@ export function ItemCard({ item, onClick, selected, onSelect }: ItemCardProps) {
         </div>
         <div className="p-4">
           <div className="flex items-start justify-between mb-2">
-            <h3 className="font-semibold text-slate-900 line-clamp-2">{item.title}</h3>
+            <h3 className="font-semibold text-slate-900 line-clamp-2">
+              {item.title}
+            </h3>
           </div>
-          
+
           {item.artist && (
-            <p className="text-slate-600 text-sm font-medium mb-1">by {item.artist}</p>
+            <p className="text-slate-600 text-sm font-medium mb-1">
+              by {item.artist}
+            </p>
           )}
-          
+
           {item.yearPeriod && (
             <p className="text-slate-600 text-sm mb-2">{item.yearPeriod}</p>
           )}
-          
+
           <div className="flex items-center justify-between text-sm">
             <div className="flex gap-2 text-xs text-slate-500">
               <span className="capitalize">{item.category}</span>
               {item.subcategory && <span>• {item.subcategory}</span>}
             </div>
           </div>
-          
+
           {(item.house || item.room) && (
             <div className="mt-2 text-xs text-slate-500">
-              {item.house && <span className="capitalize">{item.house.replace('-', ' ')}</span>}
+              {item.house && (
+                <span className="capitalize">
+                  {item.house.replace('-', ' ')}
+                </span>
+              )}
               {item.house && item.room && <span> • </span>}
-              {item.room && <span className="capitalize">{item.room.replace('-', ' ')}</span>}
+              {item.room && (
+                <span className="capitalize">
+                  {item.room.replace('-', ' ')}
+                </span>
+              )}
             </div>
           )}
         </div>

@@ -1,7 +1,6 @@
-
-import { useRef } from "react";
-import { ItemCard } from "./ItemCard";
-import { DecorItem } from "@/types/inventory";
+import { useRef } from 'react';
+import { ItemCard } from './ItemCard';
+import { DecorItem } from '@/types/inventory';
 
 interface ItemsGridProps {
   items: DecorItem[];
@@ -10,7 +9,12 @@ interface ItemsGridProps {
   onSelectionChange?: (ids: string[]) => void;
 }
 
-export function ItemsGrid({ items, onItemClick, selectedIds = [], onSelectionChange }: ItemsGridProps) {
+export function ItemsGrid({
+  items,
+  onItemClick,
+  selectedIds = [],
+  onSelectionChange,
+}: ItemsGridProps) {
   const lastIndex = useRef<number | null>(null);
 
   const toggle = (id: string, index: number, shift: boolean) => {
@@ -19,12 +23,12 @@ export function ItemsGrid({ items, onItemClick, selectedIds = [], onSelectionCha
     if (shift && lastIndex.current !== null) {
       const start = Math.min(lastIndex.current, index);
       const end = Math.max(lastIndex.current, index);
-      const range = items.slice(start, end + 1).map(i => i.id.toString());
-      range.forEach(rid => {
+      const range = items.slice(start, end + 1).map((i) => i.id.toString());
+      range.forEach((rid) => {
         if (!newIds.includes(rid)) newIds.push(rid);
       });
     } else {
-      if (newIds.includes(id)) newIds = newIds.filter(i => i !== id);
+      if (newIds.includes(id)) newIds = newIds.filter((i) => i !== id);
       else newIds.push(id);
       lastIndex.current = index;
     }

@@ -1,11 +1,11 @@
-import { useState } from "react";
-import Papa from "papaparse";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload, FileText } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { useState } from 'react';
+import Papa from 'papaparse';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Upload, FileText } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface CsvUploaderProps {
   onUpload: (data: any[], type: string) => void;
@@ -13,18 +13,18 @@ interface CsvUploaderProps {
 
 export function CsvUploader({ onUpload }: CsvUploaderProps) {
   const [file, setFile] = useState<File | null>(null);
-  const [uploadType, setUploadType] = useState<string>("");
+  const [uploadType, setUploadType] = useState<string>('');
   const { toast } = useToast();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
-    if (selectedFile && selectedFile.type === "text/csv") {
+    if (selectedFile && selectedFile.type === 'text/csv') {
       setFile(selectedFile);
     } else {
       toast({
-        title: "Invalid file type",
-        description: "Please select a CSV file",
-        variant: "destructive",
+        title: 'Invalid file type',
+        description: 'Please select a CSV file',
+        variant: 'destructive',
       });
     }
   };
@@ -33,10 +33,10 @@ export function CsvUploader({ onUpload }: CsvUploaderProps) {
     const result = Papa.parse<Record<string, string>>(text, {
       header: true,
       skipEmptyLines: true,
-      newline: "",
+      newline: '',
     });
     if (result.errors.length) {
-      console.error("CSV parse errors", result.errors);
+      console.error('CSV parse errors', result.errors);
     }
     return result.data;
   };
@@ -44,9 +44,9 @@ export function CsvUploader({ onUpload }: CsvUploaderProps) {
   const handleUpload = async () => {
     if (!file || !uploadType) {
       toast({
-        title: "Missing information",
-        description: "Please select a file and upload type",
-        variant: "destructive",
+        title: 'Missing information',
+        description: 'Please select a file and upload type',
+        variant: 'destructive',
       });
       return;
     }
@@ -57,17 +57,17 @@ export function CsvUploader({ onUpload }: CsvUploaderProps) {
       onUpload(data, uploadType);
 
       toast({
-        title: "Upload successful",
+        title: 'Upload successful',
         description: `${data.length} ${uploadType} records uploaded`,
       });
 
       setFile(null);
-      setUploadType("");
+      setUploadType('');
     } catch (error) {
       toast({
-        title: "Upload failed",
-        description: "Error parsing CSV file",
-        variant: "destructive",
+        title: 'Upload failed',
+        description: 'Error parsing CSV file',
+        variant: 'destructive',
       });
     }
   };
@@ -136,7 +136,7 @@ export function CsvUploader({ onUpload }: CsvUploaderProps) {
             <strong>Rooms:</strong> name,houseId
           </p>
           <p>
-            <strong>Items:</strong>{" "}
+            <strong>Items:</strong>{' '}
             title,category,subcategory,house,room,widthCm,heightCm,depthCm,description,valuation,artist
           </p>
         </div>

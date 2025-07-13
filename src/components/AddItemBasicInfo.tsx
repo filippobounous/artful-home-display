@@ -1,7 +1,7 @@
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 interface AddItemBasicInfoProps {
   formData: any;
@@ -44,7 +44,7 @@ export function AddItemBasicInfo({
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           className={cn(
-            errors.name && "border-destructive focus-visible:ring-destructive",
+            errors.name && 'border-destructive focus-visible:ring-destructive',
           )}
         />
         {errors.name && (
@@ -63,7 +63,7 @@ export function AddItemBasicInfo({
           }
           className={cn(
             errors.creator &&
-              "border-destructive focus-visible:ring-destructive",
+              'border-destructive focus-visible:ring-destructive',
           )}
         />
         {errors.creator && (
@@ -126,7 +126,7 @@ export function AddItemBasicInfo({
           }
           className={cn(
             errors.quantity &&
-              "border-destructive focus-visible:ring-destructive",
+              'border-destructive focus-visible:ring-destructive',
           )}
         />
         {errors.quantity && (
@@ -145,7 +145,7 @@ export function AddItemBasicInfo({
           }
           className={cn(
             errors.date_period &&
-              "border-destructive focus-visible:ring-destructive",
+              'border-destructive focus-visible:ring-destructive',
           )}
         />
         {errors.date_period && (
@@ -164,7 +164,7 @@ export function AddItemBasicInfo({
           }
           className={cn(
             errors.origin_region &&
-              "border-destructive focus-visible:ring-destructive",
+              'border-destructive focus-visible:ring-destructive',
           )}
         />
         {errors.origin_region && (

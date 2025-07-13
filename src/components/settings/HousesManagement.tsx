@@ -1,23 +1,23 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,16 +28,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from '@/components/ui/alert-dialog';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { Textarea } from "@/components/ui/textarea";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { IconSelector } from "@/components/IconSelector";
-import { countries } from "@/lib/countries";
+} from '@/components/ui/collapsible';
+import { Textarea } from '@/components/ui/textarea';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { IconSelector } from '@/components/IconSelector';
+import { countries } from '@/lib/countries';
 import {
   Plus,
   Edit,
@@ -48,14 +48,14 @@ import {
   ChevronDown,
   ChevronRight,
   AlertTriangle,
-} from "lucide-react";
-import { HouseConfig, RoomConfig } from "@/types/inventory";
-import { RoomDeletionDialog } from "./RoomDeletionDialog";
-import { useSettingsState } from "@/hooks/useSettingsState";
+} from 'lucide-react';
+import { HouseConfig, RoomConfig } from '@/types/inventory';
+import { RoomDeletionDialog } from './RoomDeletionDialog';
+import { useSettingsState } from '@/hooks/useSettingsState';
 
 interface HousesManagementProps {
   houses: HouseConfig[];
-  onAddHouse: (house: Omit<HouseConfig, "id" | "rooms">) => void;
+  onAddHouse: (house: Omit<HouseConfig, 'id' | 'rooms'>) => void;
   onAddRoom: (
     houseId: string,
     room: Partial<RoomConfig> & { name: string; floor: number },
@@ -89,17 +89,17 @@ export function HousesManagement({
     useSettingsState();
 
   const [newHouse, setNewHouse] = useState({
-    name: "",
-    country: "",
-    city: "",
-    address: "",
-    code: "",
-    icon: "home",
-    postal_code: "",
+    name: '',
+    country: '',
+    city: '',
+    address: '',
+    code: '',
+    icon: 'home',
+    postal_code: '',
     latitude: undefined,
     longitude: undefined,
-    description: "",
-    notes: "",
+    description: '',
+    notes: '',
     beneficiary: [] as string[],
     version: 1,
     visible: true,
@@ -108,15 +108,15 @@ export function HousesManagement({
 
   const [editingHouse, setEditingHouse] = useState<HouseConfig | null>(null);
   const [newRoom, setNewRoom] = useState({
-    name: "",
+    name: '',
     floor: 0,
-    room_type: "",
+    room_type: '',
     area_sqm: undefined,
     windows: undefined,
     doors: undefined,
-    description: "",
-    notes: "",
-    code: "",
+    description: '',
+    notes: '',
+    code: '',
   });
   const [editingRoom, setEditingRoom] = useState<{
     house: HouseConfig;
@@ -138,7 +138,7 @@ export function HousesManagement({
     new Set(),
   );
   const [draggedHouse, setDraggedHouse] = useState<number | null>(null);
-  const [roomError, setRoomError] = useState<string>("");
+  const [roomError, setRoomError] = useState<string>('');
   const [showHouseValidation, setShowHouseValidation] = useState(false);
   const [showAddRoomValidation, setShowAddRoomValidation] = useState(false);
   const [showRoomValidation, setShowRoomValidation] = useState(false);
@@ -147,17 +147,17 @@ export function HousesManagement({
     try {
       onAddHouse(newHouse);
       setNewHouse({
-        name: "",
-        country: "",
-        city: "",
-        address: "",
-        code: "",
-        icon: "home",
-        postal_code: "",
+        name: '',
+        country: '',
+        city: '',
+        address: '',
+        code: '',
+        icon: 'home',
+        postal_code: '',
         latitude: undefined,
         longitude: undefined,
-        description: "",
-        notes: "",
+        description: '',
+        notes: '',
         beneficiary: [],
         version: 1,
         visible: true,
@@ -166,7 +166,7 @@ export function HousesManagement({
       setShowAddHouse(false);
       setShowAddHouseValidation(false);
     } catch (error) {
-      console.error("Error adding house:", error);
+      console.error('Error adding house:', error);
       setShowAddHouseValidation(true);
     }
   };
@@ -179,7 +179,7 @@ export function HousesManagement({
       setShowEditHouse(false);
       setShowHouseValidation(false);
     } catch (error) {
-      console.error("Error editing house:", error);
+      console.error('Error editing house:', error);
       setShowHouseValidation(true);
     }
   };
@@ -192,20 +192,20 @@ export function HousesManagement({
         house_code: showAddRoom.houseCode,
       });
       setNewRoom({
-        name: "",
+        name: '',
         floor: 0,
-        room_type: "",
+        room_type: '',
         area_sqm: undefined,
         windows: undefined,
         doors: undefined,
-        description: "",
-        notes: "",
-        code: "",
+        description: '',
+        notes: '',
+        code: '',
       });
       setShowAddRoom(null);
       setShowAddRoomValidation(false);
     } catch (error) {
-      console.error("Error adding room:", error);
+      console.error('Error adding room:', error);
       setShowAddRoomValidation(true);
     }
   };
@@ -216,7 +216,7 @@ export function HousesManagement({
     // Validate required fields
     const validationErrors = validateRoom(editingRoom.room);
     if (validationErrors.length > 0) {
-      setRoomError(validationErrors.join(", "));
+      setRoomError(validationErrors.join(', '));
       setShowRoomValidation(true);
       return;
     }
@@ -225,12 +225,12 @@ export function HousesManagement({
       onEditRoom(editingRoom.house.id, editingRoom.room.id, editingRoom.room);
       setEditingRoom(null);
       setShowEditRoom(false);
-      setRoomError("");
+      setRoomError('');
       setShowRoomValidation(false);
     } catch (error) {
-      console.error("Error editing room:", error);
+      console.error('Error editing room:', error);
       setRoomError(
-        error instanceof Error ? error.message : "Unknown error occurred",
+        error instanceof Error ? error.message : 'Unknown error occurred',
       );
     }
   };
@@ -246,7 +246,7 @@ export function HousesManagement({
       onDeleteRoom(roomToDelete.house.id, roomToDelete.room.id);
       setRoomToDelete(null);
     } catch (error) {
-      console.error("Error deleting room:", error);
+      console.error('Error deleting room:', error);
     }
   };
 
@@ -273,12 +273,12 @@ export function HousesManagement({
 
   const handleHouseDragStart = (e: React.DragEvent, index: number) => {
     setDraggedHouse(index);
-    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.effectAllowed = 'move';
   };
 
   const handleHouseDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
+    e.dataTransfer.dropEffect = 'move';
   };
 
   const handleHouseDrop = (e: React.DragEvent, dropIndex: number) => {
@@ -294,8 +294,8 @@ export function HousesManagement({
     houseId: string,
     roomIndex: number,
   ) => {
-    e.dataTransfer.setData("text/plain", `${houseId}:${roomIndex}`);
-    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData('text/plain', `${houseId}:${roomIndex}`);
+    e.dataTransfer.effectAllowed = 'move';
   };
 
   const handleRoomDrop = (
@@ -304,8 +304,8 @@ export function HousesManagement({
     dropIndex: number,
   ) => {
     e.preventDefault();
-    const dragData = e.dataTransfer.getData("text/plain");
-    const [dragHouseId, dragRoomIndex] = dragData.split(":");
+    const dragData = e.dataTransfer.getData('text/plain');
+    const [dragHouseId, dragRoomIndex] = dragData.split(':');
 
     if (dragHouseId === houseId && parseInt(dragRoomIndex) !== dropIndex) {
       onMoveRoom(houseId, parseInt(dragRoomIndex), dropIndex);
@@ -439,7 +439,7 @@ export function HousesManagement({
                   id="house-lat"
                   type="number"
                   step="any"
-                  value={newHouse.latitude || ""}
+                  value={newHouse.latitude || ''}
                   onChange={(e) =>
                     setNewHouse({
                       ...newHouse,
@@ -457,7 +457,7 @@ export function HousesManagement({
                   id="house-lng"
                   type="number"
                   step="any"
-                  value={newHouse.longitude || ""}
+                  value={newHouse.longitude || ''}
                   onChange={(e) =>
                     setNewHouse({
                       ...newHouse,
@@ -475,12 +475,12 @@ export function HousesManagement({
                 </Label>
                 <Input
                   id="house-beneficiary"
-                  value={newHouse.beneficiary.join(", ")}
+                  value={newHouse.beneficiary.join(', ')}
                   onChange={(e) =>
                     setNewHouse({
                       ...newHouse,
                       beneficiary: e.target.value
-                        .split(",")
+                        .split(',')
                         .map((s) => s.trim())
                         .filter((s) => s),
                     })
@@ -755,7 +755,7 @@ export function HousesManagement({
                 <Label htmlFor="edit-house-address">Address</Label>
                 <Input
                   id="edit-house-address"
-                  value={editingHouse.address || ""}
+                  value={editingHouse.address || ''}
                   onChange={(e) =>
                     setEditingHouse({
                       ...editingHouse,
@@ -769,7 +769,7 @@ export function HousesManagement({
                 <Label htmlFor="edit-house-postal">Postal Code</Label>
                 <Input
                   id="edit-house-postal"
-                  value={editingHouse.postal_code || ""}
+                  value={editingHouse.postal_code || ''}
                   onChange={(e) =>
                     setEditingHouse({
                       ...editingHouse,
@@ -785,7 +785,7 @@ export function HousesManagement({
                   id="edit-house-lat"
                   type="number"
                   step="any"
-                  value={editingHouse.latitude || ""}
+                  value={editingHouse.latitude || ''}
                   onChange={(e) =>
                     setEditingHouse({
                       ...editingHouse,
@@ -803,7 +803,7 @@ export function HousesManagement({
                   id="edit-house-lng"
                   type="number"
                   step="any"
-                  value={editingHouse.longitude || ""}
+                  value={editingHouse.longitude || ''}
                   onChange={(e) =>
                     setEditingHouse({
                       ...editingHouse,
@@ -821,12 +821,12 @@ export function HousesManagement({
                 </Label>
                 <Input
                   id="edit-house-beneficiary"
-                  value={editingHouse.beneficiary?.join(", ") || ""}
+                  value={editingHouse.beneficiary?.join(', ') || ''}
                   onChange={(e) =>
                     setEditingHouse({
                       ...editingHouse,
                       beneficiary: e.target.value
-                        .split(",")
+                        .split(',')
                         .map((s) => s.trim())
                         .filter((s) => s),
                     })
@@ -838,7 +838,7 @@ export function HousesManagement({
                 <Label htmlFor="edit-house-description">Description</Label>
                 <Textarea
                   id="edit-house-description"
-                  value={editingHouse.description || ""}
+                  value={editingHouse.description || ''}
                   onChange={(e) =>
                     setEditingHouse({
                       ...editingHouse,
@@ -853,7 +853,7 @@ export function HousesManagement({
                 <Label htmlFor="edit-house-notes">Notes</Label>
                 <Textarea
                   id="edit-house-notes"
-                  value={editingHouse.notes || ""}
+                  value={editingHouse.notes || ''}
                   onChange={(e) =>
                     setEditingHouse({ ...editingHouse, notes: e.target.value })
                   }
@@ -951,7 +951,7 @@ export function HousesManagement({
                 id="room-area"
                 type="number"
                 step="0.1"
-                value={newRoom.area_sqm || ""}
+                value={newRoom.area_sqm || ''}
                 onChange={(e) =>
                   setNewRoom({
                     ...newRoom,
@@ -968,7 +968,7 @@ export function HousesManagement({
               <Input
                 id="room-windows"
                 type="number"
-                value={newRoom.windows || ""}
+                value={newRoom.windows || ''}
                 onChange={(e) =>
                   setNewRoom({
                     ...newRoom,
@@ -985,7 +985,7 @@ export function HousesManagement({
               <Input
                 id="room-doors"
                 type="number"
-                value={newRoom.doors || ""}
+                value={newRoom.doors || ''}
                 onChange={(e) =>
                   setNewRoom({
                     ...newRoom,
@@ -1034,7 +1034,7 @@ export function HousesManagement({
             </div>
             <div>
               <Label>House Code</Label>
-              <Input value={showAddRoom?.houseCode || ""} disabled />
+              <Input value={showAddRoom?.houseCode || ''} disabled />
               <p className="text-xs text-muted-foreground mt-1">
                 Code is auto-generated from the house code.
               </p>
@@ -1113,7 +1113,7 @@ export function HousesManagement({
                 <div>
                   <Label htmlFor="edit-room-type">Room Type</Label>
                   <Select
-                    value={editingRoom.room.room_type || ""}
+                    value={editingRoom.room.room_type || ''}
                     onValueChange={(value) =>
                       setEditingRoom({
                         ...editingRoom,
@@ -1143,7 +1143,7 @@ export function HousesManagement({
                     id="edit-room-area"
                     type="number"
                     step="0.1"
-                    value={editingRoom.room.area_sqm || ""}
+                    value={editingRoom.room.area_sqm || ''}
                     onChange={(e) =>
                       setEditingRoom({
                         ...editingRoom,
@@ -1163,7 +1163,7 @@ export function HousesManagement({
                   <Input
                     id="edit-room-windows"
                     type="number"
-                    value={editingRoom.room.windows || ""}
+                    value={editingRoom.room.windows || ''}
                     onChange={(e) =>
                       setEditingRoom({
                         ...editingRoom,
@@ -1183,7 +1183,7 @@ export function HousesManagement({
                   <Input
                     id="edit-room-doors"
                     type="number"
-                    value={editingRoom.room.doors || ""}
+                    value={editingRoom.room.doors || ''}
                     onChange={(e) =>
                       setEditingRoom({
                         ...editingRoom,
@@ -1202,7 +1202,7 @@ export function HousesManagement({
                   <Label htmlFor="edit-room-description">Description</Label>
                   <Textarea
                     id="edit-room-description"
-                    value={editingRoom.room.description || ""}
+                    value={editingRoom.room.description || ''}
                     onChange={(e) =>
                       setEditingRoom({
                         ...editingRoom,
@@ -1220,7 +1220,7 @@ export function HousesManagement({
                   <Label htmlFor="edit-room-notes">Notes</Label>
                   <Textarea
                     id="edit-room-notes"
-                    value={editingRoom.room.notes || ""}
+                    value={editingRoom.room.notes || ''}
                     onChange={(e) =>
                       setEditingRoom({
                         ...editingRoom,
@@ -1235,7 +1235,7 @@ export function HousesManagement({
                   <Label htmlFor="edit-room-code">Room Code</Label>
                   <Input
                     id="edit-room-code"
-                    value={editingRoom.room.code || ""}
+                    value={editingRoom.room.code || ''}
                     onChange={(e) =>
                       setEditingRoom({
                         ...editingRoom,
@@ -1260,7 +1260,7 @@ export function HousesManagement({
               variant="outline"
               onClick={() => {
                 setShowEditRoom(false);
-                setRoomError("");
+                setRoomError('');
               }}
             >
               Cancel

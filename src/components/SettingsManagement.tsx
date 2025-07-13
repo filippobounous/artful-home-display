@@ -1,14 +1,14 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Download } from "lucide-react";
-import { useSettingsState } from "@/hooks/useSettingsState";
-import { HousesManagement } from "@/components/settings/HousesManagement";
-import { CategoriesManagement } from "@/components/settings/CategoriesManagement";
-import { BulkUpload } from "@/components/settings/BulkUpload";
-import { DownloadDialog } from "@/components/settings/DownloadDialog";
-import { HouseConfig } from "@/types/inventory";
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Download } from 'lucide-react';
+import { useSettingsState } from '@/hooks/useSettingsState';
+import { HousesManagement } from '@/components/settings/HousesManagement';
+import { CategoriesManagement } from '@/components/settings/CategoriesManagement';
+import { BulkUpload } from '@/components/settings/BulkUpload';
+import { DownloadDialog } from '@/components/settings/DownloadDialog';
+import { HouseConfig } from '@/types/inventory';
 
 export function SettingsManagement() {
   const {
@@ -49,7 +49,7 @@ export function SettingsManagement() {
     // This is a placeholder for the actual implementation
   };
 
-  const handleAddHouse = (house: Omit<HouseConfig, "id" | "rooms">) => {
+  const handleAddHouse = (house: Omit<HouseConfig, 'id' | 'rooms'>) => {
     addHouse(house);
   };
 

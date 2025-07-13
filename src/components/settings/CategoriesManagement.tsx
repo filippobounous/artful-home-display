@@ -1,23 +1,23 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from '@/components/ui/select';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,13 +28,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from '@/components/ui/alert-dialog';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { IconSelector } from "@/components/IconSelector";
+} from '@/components/ui/collapsible';
+import { IconSelector } from '@/components/IconSelector';
 import {
   Plus,
   Edit,
@@ -44,8 +44,8 @@ import {
   EyeOff,
   ChevronDown,
   ChevronRight,
-} from "lucide-react";
-import { CategoryConfig, SubcategoryConfig } from "@/types/inventory";
+} from 'lucide-react';
+import { CategoryConfig, SubcategoryConfig } from '@/types/inventory';
 
 interface CategoriesManagementProps {
   categories: CategoryConfig[];
@@ -83,10 +83,10 @@ export function CategoriesManagement({
   onToggleCategory,
   onToggleSubcategory,
 }: CategoriesManagementProps) {
-  const [newCategory, setNewCategory] = useState({ name: "", icon: "folder" });
+  const [newCategory, setNewCategory] = useState({ name: '', icon: 'folder' });
   const [newSubcategory, setNewSubcategory] = useState({
-    name: "",
-    categoryId: "",
+    name: '',
+    categoryId: '',
   });
   const [showAddCategory, setShowAddCategory] = useState(false);
   const [showAddSubcategory, setShowAddSubcategory] = useState(false);
@@ -107,14 +107,14 @@ export function CategoriesManagement({
   const handleAddCategory = () => {
     if (!newCategory.name.trim()) return;
     onAddCategory(newCategory.name, newCategory.icon);
-    setNewCategory({ name: "", icon: "folder" });
+    setNewCategory({ name: '', icon: 'folder' });
     setShowAddCategory(false);
   };
 
   const handleAddSubcategory = () => {
     if (!newSubcategory.name.trim() || !newSubcategory.categoryId) return;
     onAddSubcategory(newSubcategory.categoryId, newSubcategory.name);
-    setNewSubcategory({ name: "", categoryId: "" });
+    setNewSubcategory({ name: '', categoryId: '' });
     setShowAddSubcategory(false);
   };
 
@@ -151,12 +151,12 @@ export function CategoriesManagement({
 
   const handleCategoryDragStart = (e: React.DragEvent, index: number) => {
     setDraggedCategory(index);
-    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.effectAllowed = 'move';
   };
 
   const handleCategoryDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
+    e.dataTransfer.dropEffect = 'move';
   };
 
   const handleCategoryDrop = (e: React.DragEvent, dropIndex: number) => {
@@ -172,8 +172,8 @@ export function CategoriesManagement({
     categoryId: string,
     subcategoryIndex: number,
   ) => {
-    e.dataTransfer.setData("text/plain", `${categoryId}:${subcategoryIndex}`);
-    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData('text/plain', `${categoryId}:${subcategoryIndex}`);
+    e.dataTransfer.effectAllowed = 'move';
   };
 
   const handleSubcategoryDrop = (
@@ -182,8 +182,8 @@ export function CategoriesManagement({
     dropIndex: number,
   ) => {
     e.preventDefault();
-    const dragData = e.dataTransfer.getData("text/plain");
-    const [dragCategoryId, dragSubcategoryIndex] = dragData.split(":");
+    const dragData = e.dataTransfer.getData('text/plain');
+    const [dragCategoryId, dragSubcategoryIndex] = dragData.split(':');
 
     if (
       dragCategoryId === categoryId &&
@@ -308,7 +308,7 @@ export function CategoriesManagement({
                           size="sm"
                           onClick={() =>
                             setNewSubcategory({
-                              name: "",
+                              name: '',
                               categoryId: category.id,
                             })
                           }
@@ -343,7 +343,7 @@ export function CategoriesManagement({
                             <Button
                               variant="outline"
                               onClick={() =>
-                                setNewSubcategory({ name: "", categoryId: "" })
+                                setNewSubcategory({ name: '', categoryId: '' })
                               }
                             >
                               Cancel

@@ -1,34 +1,34 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { AppSidebar } from "@/components/AppSidebar";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { InventoryHeader } from "@/components/InventoryHeader";
-import { SearchFilters } from "@/components/SearchFilters";
-import { ItemsGrid } from "@/components/ItemsGrid";
-import { ItemsList } from "@/components/ItemsList";
-import { ItemsTable } from "@/components/ItemsTable";
-import { ItemDetailDialog } from "@/components/ItemDetailDialog";
-import { ItemHistoryDialog } from "@/components/ItemHistoryDialog";
-import { EmptyState } from "@/components/EmptyState";
-import { sampleDecorItems } from "@/data/sampleData";
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AppSidebar } from '@/components/AppSidebar';
+import { SidebarProvider } from '@/components/ui/sidebar';
+import { InventoryHeader } from '@/components/InventoryHeader';
+import { SearchFilters } from '@/components/SearchFilters';
+import { ItemsGrid } from '@/components/ItemsGrid';
+import { ItemsList } from '@/components/ItemsList';
+import { ItemsTable } from '@/components/ItemsTable';
+import { ItemDetailDialog } from '@/components/ItemDetailDialog';
+import { ItemHistoryDialog } from '@/components/ItemHistoryDialog';
+import { EmptyState } from '@/components/EmptyState';
+import { sampleDecorItems } from '@/data/sampleData';
 import {
   fetchDecorItems,
   deleteDecorItem,
   restoreDecorItem,
   updateDecorItem,
-} from "@/lib/api";
-import { BatchLocationDialog } from "@/components/BatchLocationDialog";
-import { Button } from "@/components/ui/button";
-import { DecorItem } from "@/types/inventory";
-import { useSettingsState } from "@/hooks/useSettingsState";
-import { sortInventoryItems } from "@/lib/sortUtils";
-import { useToast } from "@/hooks/use-toast";
+} from '@/lib/api';
+import { BatchLocationDialog } from '@/components/BatchLocationDialog';
+import { Button } from '@/components/ui/button';
+import { DecorItem } from '@/types/inventory';
+import { useSettingsState } from '@/hooks/useSettingsState';
+import { sortInventoryItems } from '@/lib/sortUtils';
+import { useToast } from '@/hooks/use-toast';
 
-type ViewMode = "grid" | "list" | "table";
+type ViewMode = 'grid' | 'list' | 'table';
 
 const AllItems = () => {
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string[]>([]);
   const [selectedHouse, setSelectedHouse] = useState<string[]>([]);
@@ -39,14 +39,14 @@ const AllItems = () => {
     min?: number;
     max?: number;
   }>({});
-  const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [items, setItems] = useState<DecorItem[]>(sampleDecorItems);
   const [selectedItem, setSelectedItem] = useState<DecorItem | null>(null);
   const [historyItem, setHistoryItem] = useState<DecorItem | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
-  const [sortField, setSortField] = useState<string>("");
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [sortField, setSortField] = useState<string>('');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const { houses, categories } = useSettingsState();
   const { toast } = useToast();
 
@@ -58,7 +58,7 @@ const AllItems = () => {
   );
 
   const handleEdit = (item: DecorItem) => {
-    localStorage.setItem("editingDraft", JSON.stringify(item));
+    localStorage.setItem('editingDraft', JSON.stringify(item));
     navigate(`/add?draftId=${item.id}`);
   };
 
@@ -68,16 +68,16 @@ const AllItems = () => {
       .then(() => {
         setItems((prev) => prev.filter((i) => i.id !== item.id));
         toast({
-          title: "Item deleted",
-          description: "The item has been removed successfully",
+          title: 'Item deleted',
+          description: 'The item has been removed successfully',
         });
         setSelectedItem(null);
       })
       .catch(() => {
         toast({
-          title: "Error deleting item",
-          description: "There was a problem deleting the item",
-          variant: "destructive",
+          title: 'Error deleting item',
+          description: 'There was a problem deleting the item',
+          variant: 'destructive',
         });
       });
   };
@@ -96,15 +96,15 @@ const AllItems = () => {
         setHistoryItem(updated);
         setSelectedItem(updated);
         toast({
-          title: "Item restored",
-          description: "The selected version has been restored",
+          title: 'Item restored',
+          description: 'The selected version has been restored',
         });
       })
       .catch(() => {
         toast({
-          title: "Error restoring item",
-          description: "There was a problem restoring this version",
-          variant: "destructive",
+          title: 'Error restoring item',
+          description: 'There was a problem restoring this version',
+          variant: 'destructive',
         });
       });
   };
@@ -165,65 +165,65 @@ const AllItems = () => {
     categories,
   );
 
-  const handleSort = (field: string, direction: "asc" | "desc") => {
+  const handleSort = (field: string, direction: 'asc' | 'desc') => {
     setSortField(field);
     setSortDirection(direction);
   };
 
   const downloadCSV = () => {
     const headers = [
-      "ID",
-      "Title",
-      "Artist",
-      "Category",
-      "Subcategory",
-      "Width (cm)",
-      "Height (cm)",
-      "Depth (cm)",
-      "Valuation",
-      "Valuation Currency",
-      "Quantity",
-      "Year/Period",
-      "Description",
-      "House",
-      "Room",
-      "Notes",
+      'ID',
+      'Title',
+      'Artist',
+      'Category',
+      'Subcategory',
+      'Width (cm)',
+      'Height (cm)',
+      'Depth (cm)',
+      'Valuation',
+      'Valuation Currency',
+      'Quantity',
+      'Year/Period',
+      'Description',
+      'House',
+      'Room',
+      'Notes',
     ];
 
     const csvContent = [
-      headers.join(","),
+      headers.join(','),
       ...sortedItems.map((item) =>
         [
-          item.id || "",
-          `"${item.title || ""}"`,
-          `"${item.artist || ""}"`,
-          `"${item.category || ""}"`,
-          `"${item.subcategory || ""}"`,
-          item.widthCm ?? "",
-          item.heightCm ?? "",
-          item.depthCm ?? "",
-          item.valuation || "",
-          `"${item.valuationCurrency || ""}"`,
-          item.quantity || "",
-          `"${item.yearPeriod || ""}"`,
-          `"${item.description || ""}"`,
-          `"${item.house || ""}"`,
-          `"${item.room || ""}"`,
-          `"${item.notes || ""}"`,
-        ].join(","),
+          item.id || '',
+          `"${item.title || ''}"`,
+          `"${item.artist || ''}"`,
+          `"${item.category || ''}"`,
+          `"${item.subcategory || ''}"`,
+          item.widthCm ?? '',
+          item.heightCm ?? '',
+          item.depthCm ?? '',
+          item.valuation || '',
+          `"${item.valuationCurrency || ''}"`,
+          item.quantity || '',
+          `"${item.yearPeriod || ''}"`,
+          `"${item.description || ''}"`,
+          `"${item.house || ''}"`,
+          `"${item.room || ''}"`,
+          `"${item.notes || ''}"`,
+        ].join(','),
       ),
-    ].join("\n");
+    ].join('\n');
 
     // Create and download the CSV file
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
+    link.setAttribute('href', url);
     link.setAttribute(
-      "download",
-      `inventory_${new Date().toISOString().split("T")[0]}.csv`,
+      'download',
+      `inventory_${new Date().toISOString().split('T')[0]}.csv`,
     );
-    link.style.visibility = "hidden";
+    link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -233,16 +233,16 @@ const AllItems = () => {
   const downloadJSON = () => {
     const jsonContent = JSON.stringify(sortedItems, null, 2);
     const blob = new Blob([jsonContent], {
-      type: "application/json;charset=utf-8;",
+      type: 'application/json;charset=utf-8;',
     });
-    const link = document.createElement("a");
+    const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
+    link.setAttribute('href', url);
     link.setAttribute(
-      "download",
-      `inventory_${new Date().toISOString().split("T")[0]}.json`,
+      'download',
+      `inventory_${new Date().toISOString().split('T')[0]}.json`,
     );
-    link.style.visibility = "hidden";
+    link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -264,16 +264,16 @@ const AllItems = () => {
           }),
         );
         toast({
-          title: "Items updated",
-          description: `${ids.length} item${ids.length === 1 ? "" : "s"} moved`,
+          title: 'Items updated',
+          description: `${ids.length} item${ids.length === 1 ? '' : 's'} moved`,
         });
         setSelectedIds([]);
       })
       .catch(() => {
         toast({
-          title: "Error updating items",
-          description: "There was a problem updating the selected items",
-          variant: "destructive",
+          title: 'Error updating items',
+          description: 'There was a problem updating the selected items',
+          variant: 'destructive',
         });
       });
   };
@@ -281,7 +281,7 @@ const AllItems = () => {
   const handleBatchDelete = () => {
     if (
       !window.confirm(
-        `Delete ${selectedIds.length} item${selectedIds.length === 1 ? "" : "s"}?`,
+        `Delete ${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'}?`,
       )
     )
       return;
@@ -290,16 +290,16 @@ const AllItems = () => {
       .then(() => {
         setItems((prev) => prev.filter((i) => !ids.includes(i.id.toString())));
         toast({
-          title: "Items deleted",
-          description: `${ids.length} item${ids.length === 1 ? "" : "s"} removed`,
+          title: 'Items deleted',
+          description: `${ids.length} item${ids.length === 1 ? '' : 's'} removed`,
         });
         setSelectedIds([]);
       })
       .catch(() => {
         toast({
-          title: "Error deleting items",
-          description: "There was a problem deleting the selected items",
-          variant: "destructive",
+          title: 'Error deleting items',
+          description: 'There was a problem deleting the selected items',
+          variant: 'destructive',
         });
       });
   };
@@ -350,7 +350,7 @@ const AllItems = () => {
             {selectedIds.length > 0 && (
               <div className="mb-6 flex flex-wrap items-center justify-between gap-2 bg-blue-100 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-100 px-4 py-2 rounded">
                 <span className="text-sm font-medium">
-                  {selectedIds.length} item{selectedIds.length === 1 ? "" : "s"}{" "}
+                  {selectedIds.length} item{selectedIds.length === 1 ? '' : 's'}{' '}
                   selected
                 </span>
                 <div className="flex items-center gap-2">
@@ -388,14 +388,14 @@ const AllItems = () => {
 
             {sortedItems.length === 0 ? (
               <EmptyState />
-            ) : viewMode === "grid" ? (
+            ) : viewMode === 'grid' ? (
               <ItemsGrid
                 items={sortedItems}
                 onItemClick={setSelectedItem}
                 selectedIds={selectedIds}
                 onSelectionChange={setSelectedIds}
               />
-            ) : viewMode === "list" ? (
+            ) : viewMode === 'list' ? (
               <ItemsList
                 items={sortedItems}
                 onItemClick={setSelectedItem}

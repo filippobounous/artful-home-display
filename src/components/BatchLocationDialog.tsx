@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { HierarchicalHouseRoomSelector } from "@/components/HierarchicalHouseRoomSelector";
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { HierarchicalHouseRoomSelector } from '@/components/HierarchicalHouseRoomSelector';
 
 interface BatchLocationDialogProps {
   open: boolean;
@@ -15,14 +15,18 @@ interface BatchLocationDialogProps {
   onSubmit: (house: string, room: string) => void;
 }
 
-export function BatchLocationDialog({ open, onOpenChange, onSubmit }: BatchLocationDialogProps) {
-  const [house, setHouse] = useState<string>("");
-  const [room, setRoom] = useState<string>("");
+export function BatchLocationDialog({
+  open,
+  onOpenChange,
+  onSubmit,
+}: BatchLocationDialogProps) {
+  const [house, setHouse] = useState<string>('');
+  const [room, setRoom] = useState<string>('');
 
   useEffect(() => {
     if (!open) {
-      setHouse("");
-      setRoom("");
+      setHouse('');
+      setRoom('');
     }
   }, [open]);
 

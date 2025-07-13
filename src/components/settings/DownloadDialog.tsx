@@ -1,11 +1,21 @@
-
-import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Download } from "lucide-react";
-import { HouseConfig, CategoryConfig } from "@/types/inventory";
+import { useState } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Download } from 'lucide-react';
+import { HouseConfig, CategoryConfig } from '@/types/inventory';
 
 interface DownloadDialogProps {
   open: boolean;
@@ -14,19 +24,24 @@ interface DownloadDialogProps {
   categories: CategoryConfig[];
 }
 
-export function DownloadDialog({ open, onOpenChange, houses, categories }: DownloadDialogProps) {
-  const [dataType, setDataType] = useState<string>("");
-  const [format, setFormat] = useState<string>("");
+export function DownloadDialog({
+  open,
+  onOpenChange,
+  houses,
+  categories,
+}: DownloadDialogProps) {
+  const [dataType, setDataType] = useState<string>('');
+  const [format, setFormat] = useState<string>('');
 
   const handleDownload = () => {
     if (!dataType || !format) return;
 
     let data: any[] = [];
-    let filename = "";
+    let filename = '';
 
     switch (dataType) {
-      case "houses":
-        data = houses.map(h => ({
+      case 'houses':
+        data = houses.map((h) => ({
           id: h.id,
           name: h.name,
           city: h.city,
@@ -35,13 +50,13 @@ export function DownloadDialog({ open, onOpenChange, houses, categories }: Downl
           postal_code: h.postal_code || '',
           code: h.code,
           icon: h.icon || '',
-          visible: h.visible
+          visible: h.visible,
         }));
         filename = `houses.${format}`;
         break;
-      case "rooms":
-        data = houses.flatMap(h => 
-          h.rooms.map(r => ({
+      case 'rooms':
+        data = houses.flatMap((h) =>
+          h.rooms.map((r) => ({
             id: r.id,
             name: r.name,
             house_code: r.house_code,
@@ -55,61 +70,63 @@ export function DownloadDialog({ open, onOpenChange, houses, categories }: Downl
             doors: r.doors || 0,
             description: r.description || '',
             notes: r.notes || '',
-            visible: r.visible
-          }))
+            visible: r.visible,
+          })),
         );
         filename = `rooms.${format}`;
         break;
-      case "categories":
-        data = categories.map(c => ({
+      case 'categories':
+        data = categories.map((c) => ({
           id: c.id,
           name: c.name,
           icon: c.icon,
-          visible: c.visible
+          visible: c.visible,
         }));
         filename = `categories.${format}`;
         break;
-      case "subcategories":
-        data = categories.flatMap(c => 
-          c.subcategories.map(s => ({
+      case 'subcategories':
+        data = categories.flatMap((c) =>
+          c.subcategories.map((s) => ({
             id: s.id,
             name: s.name,
             categoryId: c.id,
             categoryName: c.name,
-            visible: s.visible
-          }))
+            visible: s.visible,
+          })),
         );
         filename = `subcategories.${format}`;
         break;
     }
 
-    if (format === "csv") {
+    if (format === 'csv') {
       downloadCSV(data, filename);
     } else {
       downloadJSON(data, filename);
     }
 
     onOpenChange(false);
-    setDataType("");
-    setFormat("");
+    setDataType('');
+    setFormat('');
   };
 
   const downloadCSV = (data: any[], filename: string) => {
     if (data.length === 0) return;
-    
+
     const headers = Object.keys(data[0]);
     const csvContent = [
       headers.join(','),
-      ...data.map(row => 
-        headers.map(header => {
-          const value = row[header];
-          return typeof value === 'string' && value.includes(',') 
-            ? `"${value}"` 
-            : value;
-        }).join(',')
-      )
+      ...data.map((row) =>
+        headers
+          .map((header) => {
+            const value = row[header];
+            return typeof value === 'string' && value.includes(',')
+              ? `"${value}"`
+              : value;
+          })
+          .join(','),
+      ),
     ].join('\n');
-    
+
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');

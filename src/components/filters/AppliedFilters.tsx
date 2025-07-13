@@ -1,7 +1,7 @@
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
-import { useSettingsState } from "@/hooks/useSettingsState";
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { X } from 'lucide-react';
+import { useSettingsState } from '@/hooks/useSettingsState';
 
 interface AppliedFiltersProps {
   searchTerm: string;
@@ -48,26 +48,26 @@ export function AppliedFilters({
 
   const clearFilter = (type: string, value: string) => {
     switch (type) {
-      case "category":
+      case 'category':
         if (!permanentCategory) {
           setSelectedCategory(selectedCategory.filter((c) => c !== value));
         }
         break;
-      case "house":
+      case 'house':
         if (!permanentHouse) {
           setSelectedHouse(selectedHouse.filter((h) => h !== value));
         }
         break;
-      case "subcategory":
+      case 'subcategory':
         setSelectedSubcategory(selectedSubcategory.filter((s) => s !== value));
         break;
-      case "room":
+      case 'room':
         setSelectedRoom(selectedRoom.filter((r) => r !== value));
         break;
-      case "year":
+      case 'year':
         setSelectedYear(selectedYear.filter((y) => y !== value));
         break;
-      case "artist":
+      case 'artist':
         setSelectedArtist(selectedArtist.filter((a) => a !== value));
         break;
     }
@@ -85,7 +85,7 @@ export function AppliedFilters({
     setSelectedYear([]);
     setSelectedArtist([]);
     setValuationRange({});
-    setSearchTerm("");
+    setSearchTerm('');
   };
 
   const hasActiveFilters =
@@ -117,7 +117,7 @@ export function AppliedFilters({
             Search: {searchTerm}
             <X
               className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
-              onClick={() => setSearchTerm("")}
+              onClick={() => setSearchTerm('')}
             />
           </Badge>
         )}
@@ -130,7 +130,7 @@ export function AppliedFilters({
               {!permanentCategory && (
                 <X
                   className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
-                  onClick={() => clearFilter("category", categoryId)}
+                  onClick={() => clearFilter('category', categoryId)}
                 />
               )}
             </Badge>
@@ -158,7 +158,7 @@ export function AppliedFilters({
               Subcategory: {subcategory.name}
               <X
                 className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
-                onClick={() => clearFilter("subcategory", subcategoryId)}
+                onClick={() => clearFilter('subcategory', subcategoryId)}
               />
             </Badge>
           );
@@ -172,14 +172,14 @@ export function AppliedFilters({
               {!permanentHouse && (
                 <X
                   className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
-                  onClick={() => clearFilter("house", houseId)}
+                  onClick={() => clearFilter('house', houseId)}
                 />
               )}
             </Badge>
           );
         })}
         {selectedRoom.map((roomPair) => {
-          const [houseId, roomId] = roomPair.split("|");
+          const [houseId, roomId] = roomPair.split('|');
           if (selectedHouse.includes(houseId)) return null;
           const house = houses.find((h) => h.id === houseId);
           const room = house?.rooms.find((r) => r.id === roomId);
@@ -188,7 +188,7 @@ export function AppliedFilters({
               Room: {room?.name} ({house?.name})
               <X
                 className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
-                onClick={() => clearFilter("room", roomPair)}
+                onClick={() => clearFilter('room', roomPair)}
               />
             </Badge>
           );
@@ -198,7 +198,7 @@ export function AppliedFilters({
             Year: {year}
             <X
               className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
-              onClick={() => clearFilter("year", year)}
+              onClick={() => clearFilter('year', year)}
             />
           </Badge>
         ))}
@@ -207,14 +207,14 @@ export function AppliedFilters({
             Artist: {artist}
             <X
               className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
-              onClick={() => clearFilter("artist", artist)}
+              onClick={() => clearFilter('artist', artist)}
             />
           </Badge>
         ))}
         {(valuationRange.min !== undefined ||
           valuationRange.max !== undefined) && (
           <Badge variant="secondary" className="px-3 py-1">
-            Valuation: {valuationRange.min ?? 0} - {valuationRange.max ?? "∞"}
+            Valuation: {valuationRange.min ?? 0} - {valuationRange.max ?? '∞'}
             <X
               className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
               onClick={() => setValuationRange({})}

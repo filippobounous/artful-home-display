@@ -1,6 +1,6 @@
-import { MultiSelectFilter } from "@/components/MultiSelectFilter";
-import { useSettingsState } from "@/hooks/useSettingsState";
-import type { CheckedState } from "@radix-ui/react-checkbox";
+import { MultiSelectFilter } from '@/components/MultiSelectFilter';
+import { useSettingsState } from '@/hooks/useSettingsState';
+import type { CheckedState } from '@radix-ui/react-checkbox';
 
 interface CombinedCategoryFilterProps {
   selectedCategory: string[];
@@ -35,7 +35,7 @@ export function CombinedCategoryFilter({
       selectedCategory.includes(category.id) || allSelected
         ? true
         : selectedSubs.length > 0
-          ? "indeterminate"
+          ? 'indeterminate'
           : false;
     return [
       {

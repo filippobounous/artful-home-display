@@ -1,13 +1,16 @@
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Badge } from '@/components/ui/badge';
+import { Check, ChevronDown, X } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
+import { cn } from '@/lib/utils';
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Badge } from "@/components/ui/badge";
-import { Check, ChevronDown, X } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
-import { cn } from "@/lib/utils";
-
-import type { CheckedState } from "@radix-ui/react-checkbox";
+import type { CheckedState } from '@radix-ui/react-checkbox';
 
 interface MultiSelectOption {
   id: string;
@@ -32,12 +35,18 @@ interface MultiSelectFilterProps {
   selectedCount?: number;
 }
 
-export function MultiSelectFilter({ placeholder, options, selectedValues, onSelectionChange, selectedCount }: MultiSelectFilterProps) {
+export function MultiSelectFilter({
+  placeholder,
+  options,
+  selectedValues,
+  onSelectionChange,
+  selectedCount,
+}: MultiSelectFilterProps) {
   const [open, setOpen] = useState(false);
 
   const handleToggle = (value: string) => {
     const newSelection = selectedValues.includes(value)
-      ? selectedValues.filter(v => v !== value)
+      ? selectedValues.filter((v) => v !== value)
       : [...selectedValues, value];
     onSelectionChange(newSelection);
   };
@@ -47,8 +56,8 @@ export function MultiSelectFilter({ placeholder, options, selectedValues, onSele
   };
 
   const selectedLabels = options
-    .filter(option => !option.header && selectedValues.includes(option.id))
-    .map(option => option.name);
+    .filter((option) => !option.header && selectedValues.includes(option.id))
+    .map((option) => option.name);
 
   const selectionCount = selectedCount ?? selectedLabels.length;
 
@@ -58,8 +67,8 @@ export function MultiSelectFilter({ placeholder, options, selectedValues, onSele
         <Button
           variant="outline"
           className={cn(
-            "w-full justify-between text-left font-normal",
-            selectedValues.length > 0 && "border-primary"
+            'w-full justify-between text-left font-normal',
+            selectedValues.length > 0 && 'border-primary',
           )}
         >
           <div className="flex flex-wrap gap-1">
@@ -71,19 +80,19 @@ export function MultiSelectFilter({ placeholder, options, selectedValues, onSele
               <span className="text-muted-foreground">{placeholder}</span>
             )}
           </div>
-            <div className="flex items-center gap-1">
-              {selectedValues.length > 0 && (
-                <span
-                  className="pointer-events-auto"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleClear();
-                  }}
-                >
-                  <X className="w-4 h-4 hover:text-destructive cursor-pointer" />
-                </span>
-              )}
-              <ChevronDown className="w-4 h-4" />
+          <div className="flex items-center gap-1">
+            {selectedValues.length > 0 && (
+              <span
+                className="pointer-events-auto"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleClear();
+                }}
+              >
+                <X className="w-4 h-4 hover:text-destructive cursor-pointer" />
+              </span>
+            )}
+            <ChevronDown className="w-4 h-4" />
           </div>
         </Button>
       </PopoverTrigger>
@@ -107,7 +116,9 @@ export function MultiSelectFilter({ placeholder, options, selectedValues, onSele
                 className={`flex items-center space-x-2 p-2 hover:bg-muted rounded cursor-pointer ${option.indent ? 'pl-4' : ''}`}
                 onClick={() => {
                   if (isTri && option.onCheckChange) {
-                    option.onCheckChange(option.checkState === true ? false : true);
+                    option.onCheckChange(
+                      option.checkState === true ? false : true,
+                    );
                   } else {
                     handleToggle(option.id);
                   }
@@ -115,7 +126,11 @@ export function MultiSelectFilter({ placeholder, options, selectedValues, onSele
               >
                 <Checkbox
                   onClick={(e) => e.stopPropagation()}
-                  checked={isTri ? option.checkState : selectedValues.includes(option.id)}
+                  checked={
+                    isTri
+                      ? option.checkState
+                      : selectedValues.includes(option.id)
+                  }
                   onCheckedChange={(val) => {
                     if (isTri && option.onCheckChange) {
                       option.onCheckChange(val as CheckedState);
@@ -131,7 +146,11 @@ export function MultiSelectFilter({ placeholder, options, selectedValues, onSele
                     className="w-8 h-8 object-cover rounded"
                   />
                 )}
-                <span className={`text-sm ${option.header ? 'font-medium text-slate-600' : ''}`}>{option.name}</span>
+                <span
+                  className={`text-sm ${option.header ? 'font-medium text-slate-600' : ''}`}
+                >
+                  {option.name}
+                </span>
               </div>
             );
           })}

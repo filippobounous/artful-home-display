@@ -1,9 +1,9 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { DecorItem } from "@/types/inventory";
-import { useSettingsState } from "@/hooks/useSettingsState";
-import { Palette, Sofa, Package, Home } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { DecorItem } from '@/types/inventory';
+import { useSettingsState } from '@/hooks/useSettingsState';
+import { Palette, Sofa, Package, Home } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface DashboardProps {
   items: DecorItem[];
@@ -36,9 +36,9 @@ export function Dashboard({ items }: DashboardProps) {
 
   const getCategoryIcon = (categoryId: string) => {
     switch (categoryId) {
-      case "art":
+      case 'art':
         return <Palette className="w-8 h-8 text-blue-600" />;
-      case "furniture":
+      case 'furniture':
         return <Sofa className="w-8 h-8 text-green-600" />;
       default:
         return <Package className="w-8 h-8 text-slate-600" />;
