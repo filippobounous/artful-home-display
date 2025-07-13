@@ -28,9 +28,9 @@ const Index = () => {
 
           <main className="flex-1 p-6">
             <div className="mb-6">
-              <h1 className="text-2xl font-bold text-slate-900 mb-2">
+              <h2 className="text-xl font-semibold text-slate-900 mb-2">
                 Collection Dashboard
-              </h1>
+              </h2>
               <p className="text-slate-600">
                 Overview of your art and furniture collection
               </p>
