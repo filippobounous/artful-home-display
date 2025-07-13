@@ -69,7 +69,7 @@ export function AddItemLocationValuation({
 
       {/* Acquisition Section */}
       <div className="space-y-4 pt-4 border-t">
-        <h4 className="font-medium text-slate-700">Acquisition Information</h4>
+        <h3 className="text-lg font-medium text-slate-900">Acquisition</h3>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label htmlFor="acquisition_value">Value</Label>
@@ -140,7 +140,7 @@ export function AddItemLocationValuation({
 
       {/* Appraisal Section */}
       <div className="space-y-4 pt-4 border-t">
-        <h4 className="font-medium text-slate-700">Appraisal Information</h4>
+        <h3 className="text-lg font-medium text-slate-900">Appraisal</h3>
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label htmlFor="appraisal_value">Value</Label>
