@@ -49,6 +49,7 @@ export function AddItemLocationValuation({
         selectedCategory={formData.category}
         selectedSubcategory={formData.subcategory}
         onSelectionChange={handleCategoryChange}
+        invalid={Boolean(errors.category || errors.subcategory)}
       />
       {(errors.category || errors.subcategory) && (
         <p className="text-destructive text-sm mt-1">
@@ -60,6 +61,7 @@ export function AddItemLocationValuation({
         selectedHouse={formData.house}
         selectedRoom={formData.room}
         onSelectionChange={handleLocationChange}
+        invalid={Boolean(errors.room_code)}
       />
       {errors.room_code && (
         <p className="text-destructive text-sm mt-1">{errors.room_code}</p>

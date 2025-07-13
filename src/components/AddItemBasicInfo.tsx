@@ -1,5 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 interface AddItemBasicInfoProps {
   formData: any;
@@ -14,7 +16,14 @@ export function AddItemBasicInfo({
 }: AddItemBasicInfoProps) {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium text-slate-900">Core Information</h3>
+      <h3 className="text-lg font-medium text-slate-900 flex items-center">
+        Core Information
+        {errors.core && (
+          <Badge variant="destructive" className="ml-2">
+            Missing Data
+          </Badge>
+        )}
+      </h3>
 
       <div>
         <Label htmlFor="code">Item Code</Label>
@@ -35,6 +44,9 @@ export function AddItemBasicInfo({
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           required
+          className={cn(
+            errors.name && "border-destructive focus-visible:ring-destructive",
+          )}
         />
         {errors.name && (
           <p className="text-destructive text-sm mt-1">{errors.name}</p>
@@ -51,6 +63,10 @@ export function AddItemBasicInfo({
             setFormData({ ...formData, creator: e.target.value })
           }
           required
+          className={cn(
+            errors.creator &&
+              "border-destructive focus-visible:ring-destructive",
+          )}
         />
         {errors.creator && (
           <p className="text-destructive text-sm mt-1">{errors.creator}</p>
@@ -111,6 +127,10 @@ export function AddItemBasicInfo({
             setFormData({ ...formData, quantity: e.target.value })
           }
           required
+          className={cn(
+            errors.quantity &&
+              "border-destructive focus-visible:ring-destructive",
+          )}
         />
         {errors.quantity && (
           <p className="text-destructive text-sm mt-1">{errors.quantity}</p>
@@ -127,6 +147,10 @@ export function AddItemBasicInfo({
             setFormData({ ...formData, date_period: e.target.value })
           }
           required
+          className={cn(
+            errors.date_period &&
+              "border-destructive focus-visible:ring-destructive",
+          )}
         />
         {errors.date_period && (
           <p className="text-destructive text-sm mt-1">{errors.date_period}</p>
@@ -143,6 +167,10 @@ export function AddItemBasicInfo({
             setFormData({ ...formData, origin_region: e.target.value })
           }
           required
+          className={cn(
+            errors.origin_region &&
+              "border-destructive focus-visible:ring-destructive",
+          )}
         />
         {errors.origin_region && (
           <p className="text-destructive text-sm mt-1">
@@ -189,6 +217,10 @@ export function AddItemBasicInfo({
           />
         </div>
       </div>
+
+      {errors.core && (
+        <p className="text-destructive text-sm mt-1">{errors.core}</p>
+      )}
     </div>
   );
 }
