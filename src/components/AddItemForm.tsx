@@ -124,17 +124,6 @@ export function AddItemForm() {
     if (!formData.quantity || Number(formData.quantity) <= 0)
       newErrors.quantity = "This field is required";
 
-    const coreFields = [
-      formData.name,
-      formData.creator,
-      formData.origin_region,
-      formData.date_period,
-      formData.quantity,
-    ];
-    if (coreFields.some((v) => !v || !String(v).trim())) {
-      newErrors.core = "All core information fields are required";
-    }
-
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
