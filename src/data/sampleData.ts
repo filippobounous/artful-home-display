@@ -17,6 +17,7 @@ export const sampleDecorItems: DecorItem[] = [
     yearPeriod: '1960s',
     quantity: 1,
     condition: 'good',
+    version: 1,
   },
   {
     id: 2,
@@ -39,6 +40,7 @@ export const sampleDecorItems: DecorItem[] = [
     yearPeriod: '2020',
     quantity: 1,
     condition: 'excellent',
+    version: 1,
   },
   {
     id: 3,
@@ -57,6 +59,7 @@ export const sampleDecorItems: DecorItem[] = [
     yearPeriod: '1950s',
     quantity: 1,
     condition: 'very good',
+    version: 1,
   },
   {
     id: 4,
@@ -79,6 +82,7 @@ export const sampleDecorItems: DecorItem[] = [
     yearPeriod: '2018',
     quantity: 1,
     condition: 'mint',
+    version: 1,
   },
   {
     id: 5,
@@ -96,6 +100,7 @@ export const sampleDecorItems: DecorItem[] = [
     yearPeriod: '19th century',
     quantity: 1,
     condition: 'good',
+    version: 1,
   },
   {
     id: 6,
@@ -118,6 +123,7 @@ export const sampleDecorItems: DecorItem[] = [
     yearPeriod: '1920s',
     quantity: 1,
     condition: 'very good',
+    version: 1,
   },
   {
     id: 7,
@@ -135,6 +141,7 @@ export const sampleDecorItems: DecorItem[] = [
     yearPeriod: '2010s',
     quantity: 2,
     condition: 'excellent',
+    version: 1,
   },
   {
     id: 8,
@@ -152,6 +159,7 @@ export const sampleDecorItems: DecorItem[] = [
     yearPeriod: '1990s',
     quantity: 3,
     condition: 'good',
+    version: 1,
   },
   {
     id: 9,
@@ -169,5 +177,6 @@ export const sampleDecorItems: DecorItem[] = [
     yearPeriod: '1980s',
     quantity: 1,
     condition: 'very good',
+    version: 1,
   },
 ];

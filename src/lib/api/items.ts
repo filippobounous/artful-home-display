@@ -99,6 +99,7 @@ export function decorItemToInput(item: DecorItem): DecorItemInput {
     appraisal_currency: item.valuationCurrency,
     description: item.description,
     notes: item.notes,
+    version: item.version,
     is_deleted: item.deleted,
   } as DecorItemInput;
 }

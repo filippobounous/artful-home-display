@@ -42,6 +42,9 @@ export function ItemDetailDialog({
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold pr-16">
             {item.title}
+            <span className="block text-sm font-normal text-slate-500">
+              {item.code ?? '-'} • ID {item.id} • v{item.version ?? 1}
+            </span>
           </DialogTitle>
           <div className="flex items-center gap-2 mt-2">
             {onEdit && (
@@ -98,134 +101,163 @@ export function ItemDetailDialog({
                 <p className="text-slate-900 capitalize">{item.category}</p>
               </div>
 
-              {item.subcategory && (
-                <div>
-                  <h4 className="font-medium text-slate-700 mb-1">
-                    Subcategory
-                  </h4>
-                  <p className="text-slate-900 capitalize">
-                    {item.subcategory}
-                  </p>
-                </div>
-              )}
+              <div>
+                <h4 className="font-medium text-slate-700 mb-1">Subcategory</h4>
+                <p className="text-slate-900 capitalize">
+                  {item.subcategory ?? '-'}
+                </p>
+              </div>
 
-              {item.artist && (
-                <div>
-                  <h4 className="font-medium text-slate-700 mb-1">
-                    Artist/Maker
-                  </h4>
-                  <p className="text-slate-900">{item.artist}</p>
-                </div>
-              )}
+              <div>
+                <h4 className="font-medium text-slate-700 mb-1">
+                  Artist/Maker
+                </h4>
+                <p className="text-slate-900">{item.artist ?? '-'}</p>
+              </div>
 
-              {item.yearPeriod && (
-                <div>
-                  <h4 className="font-medium text-slate-700 mb-1">
-                    Year/Period
-                  </h4>
-                  <p className="text-slate-900">{item.yearPeriod}</p>
-                </div>
-              )}
+              <div>
+                <h4 className="font-medium text-slate-700 mb-1">Year/Period</h4>
+                <p className="text-slate-900">{item.yearPeriod ?? '-'}</p>
+              </div>
+
+              <div>
+                <h4 className="font-medium text-slate-700 mb-1">
+                  Origin Region
+                </h4>
+                <p className="text-slate-900">{item.originRegion ?? '-'}</p>
+              </div>
+
+              <div>
+                <h4 className="font-medium text-slate-700 mb-1">Material</h4>
+                <p className="text-slate-900">{item.material ?? '-'}</p>
+              </div>
+
+              <div>
+                <h4 className="font-medium text-slate-700 mb-1">Provenance</h4>
+                <p className="text-slate-900">{item.provenance ?? '-'}</p>
+              </div>
             </div>
 
             <div className="space-y-4">
-              {(item.widthCm || item.heightCm || item.depthCm) && (
-                <div>
-                  <h4 className="font-medium text-slate-700 mb-1">
-                    Dimensions
-                  </h4>
-                  <p className="text-slate-900">
-                    {item.widthCm ?? '-'} x {item.heightCm ?? '-'} x{' '}
-                    {item.depthCm ?? '-'} cm
-                  </p>
-                </div>
-              )}
+              <div>
+                <h4 className="font-medium text-slate-700 mb-1">Dimensions</h4>
+                <p className="text-slate-900">
+                  {item.widthCm ?? '-'} x {item.heightCm ?? '-'} x{' '}
+                  {item.depthCm ?? '-'} cm
+                </p>
+              </div>
 
-              {item.quantity && (
-                <div>
-                  <h4 className="font-medium text-slate-700 mb-1">Quantity</h4>
-                  <p className="text-slate-900 flex items-center">
-                    <Hash className="w-4 h-4 mr-1" />
-                    {item.quantity}
-                  </p>
-                </div>
-              )}
+              <div>
+                <h4 className="font-medium text-slate-700 mb-1">Weight</h4>
+                <p className="text-slate-900">{item.weightKg ?? '-'} kg</p>
+              </div>
 
-              {(item.house || item.room) && (
-                <div>
-                  <h4 className="font-medium text-slate-700 mb-1">Location</h4>
-                  <p className="text-slate-900 flex items-center">
-                    <MapPin className="w-4 h-4 mr-1" />
-                    {item.house && (
-                      <span className="capitalize">
-                        {item.house.replace('-', ' ')}
-                      </span>
-                    )}
-                    {item.house && item.room && <span className="mx-1">•</span>}
-                    {item.room && (
-                      <span className="capitalize">
-                        {item.room.replace('-', ' ')}
-                      </span>
-                    )}
-                  </p>
-                </div>
-              )}
+              <div>
+                <h4 className="font-medium text-slate-700 mb-1">Quantity</h4>
+                <p className="text-slate-900 flex items-center">
+                  <Hash className="w-4 h-4 mr-1" />
+                  {item.quantity ?? '-'}
+                </p>
+              </div>
+
+              <div>
+                <h4 className="font-medium text-slate-700 mb-1">Location</h4>
+                <p className="text-slate-900 flex items-center">
+                  <MapPin className="w-4 h-4 mr-1" />
+                  {item.house || item.room ? (
+                    <>
+                      {item.house && (
+                        <span className="capitalize">
+                          {item.house.replace('-', ' ')}
+                        </span>
+                      )}
+                      {item.house && item.room && (
+                        <span className="mx-1">•</span>
+                      )}
+                      {item.room && (
+                        <span className="capitalize">
+                          {item.room.replace('-', ' ')}
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    '-'
+                  )}
+                </p>
+              </div>
             </div>
           </div>
 
-          {/* Valuation Information */}
-          {(item.valuation || item.valuationPerson || item.valuationDate) && (
-            <div className="border-t pt-4">
-              <h4 className="font-medium text-slate-700 mb-3">
-                Valuation Information
-              </h4>
-              <div className="grid grid-cols-2 gap-4">
-                {item.valuation && (
-                  <div>
-                    <p className="text-sm text-slate-600">Value</p>
-                    <p className="text-slate-900 flex items-center">
-                      <DollarSign className="w-4 h-4 mr-1" />
-                      {item.valuation.toLocaleString()}{' '}
-                      {item.valuationCurrency || 'EUR'}
-                    </p>
-                  </div>
-                )}
+          {/* Acquisition Information */}
+          <div className="border-t pt-4">
+            <h4 className="font-medium text-slate-700 mb-3">
+              Acquisition Information
+            </h4>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-slate-600">Value</p>
+                <p className="text-slate-900 flex items-center">
+                  <DollarSign className="w-4 h-4 mr-1" />
+                  {item.acquisitionValue?.toLocaleString() ?? '-'}{' '}
+                  {item.acquisitionCurrency || 'EUR'}
+                </p>
+              </div>
 
-                {item.valuationPerson && (
-                  <div>
-                    <p className="text-sm text-slate-600">Appraiser</p>
-                    <p className="text-slate-900">{item.valuationPerson}</p>
-                  </div>
-                )}
-
-                {item.valuationDate && (
-                  <div>
-                    <p className="text-sm text-slate-600">Valuation Date</p>
-                    <p className="text-slate-900 flex items-center">
-                      <Calendar className="w-4 h-4 mr-1" />
-                      {new Date(item.valuationDate).toLocaleDateString()}
-                    </p>
-                  </div>
-                )}
+              <div>
+                <p className="text-sm text-slate-600">Date</p>
+                <p className="text-slate-900 flex items-center">
+                  <Calendar className="w-4 h-4 mr-1" />
+                  {item.acquisitionDate
+                    ? new Date(item.acquisitionDate).toLocaleDateString()
+                    : '-'}
+                </p>
               </div>
             </div>
-          )}
+          </div>
+
+          {/* Appraisal Information */}
+          <div className="border-t pt-4">
+            <h4 className="font-medium text-slate-700 mb-3">
+              Appraisal Information
+            </h4>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-slate-600">Value</p>
+                <p className="text-slate-900 flex items-center">
+                  <DollarSign className="w-4 h-4 mr-1" />
+                  {item.valuation?.toLocaleString() ?? '-'}{' '}
+                  {item.valuationCurrency || 'EUR'}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-sm text-slate-600">Appraiser</p>
+                <p className="text-slate-900">{item.valuationPerson ?? '-'}</p>
+              </div>
+
+              <div>
+                <p className="text-sm text-slate-600">Date</p>
+                <p className="text-slate-900 flex items-center">
+                  <Calendar className="w-4 h-4 mr-1" />
+                  {item.valuationDate
+                    ? new Date(item.valuationDate).toLocaleDateString()
+                    : '-'}
+                </p>
+              </div>
+            </div>
+          </div>
 
           {/* Description */}
-          {item.description && (
-            <div className="border-t pt-4">
-              <h4 className="font-medium text-slate-700 mb-2">Description</h4>
-              <p className="text-slate-900">{item.description}</p>
-            </div>
-          )}
+          <div className="border-t pt-4">
+            <h4 className="font-medium text-slate-700 mb-2">Description</h4>
+            <p className="text-slate-900">{item.description ?? '-'}</p>
+          </div>
 
           {/* Notes */}
-          {item.notes && (
-            <div className="border-t pt-4">
-              <h4 className="font-medium text-slate-700 mb-2">Notes</h4>
-              <p className="text-slate-900">{item.notes}</p>
-            </div>
-          )}
+          <div className="border-t pt-4">
+            <h4 className="font-medium text-slate-700 mb-2">Notes</h4>
+            <p className="text-slate-900">{item.notes ?? '-'}</p>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

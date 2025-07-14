@@ -37,6 +37,7 @@ export interface DecorItem extends ItemBase {
   depthCm?: number;
   weightKg?: number;
   provenance?: string;
+  version?: number;
   condition: 'mint' | 'excellent' | 'very good' | 'good';
   acquisitionDate?: string;
   acquisitionValue?: number;

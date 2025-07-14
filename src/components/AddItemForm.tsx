@@ -174,7 +174,6 @@ export function AddItemForm() {
       appraisal_entity: formData.appraisal_entity || undefined,
       description: formData.description || undefined,
       notes: formData.notes || undefined,
-      version: 1,
       is_deleted: false,
     } as DecorItemInput;
 
