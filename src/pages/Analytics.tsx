@@ -161,7 +161,7 @@ const Analytics = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold text-blue-600">
+                  <div className="text-2xl font-bold text-primary">
                     {artItems}
                   </div>
                 </CardContent>

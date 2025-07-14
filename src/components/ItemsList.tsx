@@ -128,7 +128,7 @@ export function ItemsList({
           className={cn(
             'hover:shadow-md transition-shadow cursor-pointer',
             selectedIds.includes(item.id.toString()) &&
-              'ring-2 ring-primary bg-blue-50',
+              'ring-2 ring-primary bg-[hsl(var(--primary)/0.1)]',
           )}
           onClick={(e) => {
             if (e.shiftKey) {

@@ -35,8 +35,8 @@ const Login = () => {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="mx-auto w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mb-4">
-            <Package className="w-6 h-6 text-white" />
+          <div className="mx-auto w-12 h-12 bg-primary rounded-lg flex items-center justify-center mb-4">
+            <Package className="w-6 h-6 text-primary-foreground" />
           </div>
           <CardTitle className="text-2xl font-bold">Murgenere</CardTitle>
         </CardHeader>
@@ -65,7 +65,7 @@ const Login = () => {
               />
             </div>
             {error && (
-              <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
+              <div className="text-sm text-destructive bg-destructive/10 p-2 rounded">
                 {error}
               </div>
             )}
