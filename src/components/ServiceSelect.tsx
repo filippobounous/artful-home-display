@@ -17,6 +17,8 @@ export function ServiceSelect() {
       </SelectTrigger>
       <SelectContent>
         <SelectItem value="Inventory">Inventory</SelectItem>
+        <SelectItem value="Book">Book</SelectItem>
+        <SelectItem value="Music">Music</SelectItem>
       </SelectContent>
     </Select>
   );
