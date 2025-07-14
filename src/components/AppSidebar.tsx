@@ -84,25 +84,25 @@ export function AppSidebar() {
 
   const getNavCls = ({ isActive: active }: { isActive: boolean }) =>
     active
-      ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100 font-medium border-r-2 border-blue-600 dark:border-blue-400'
-      : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300';
+      ? 'bg-sidebar-accent text-sidebar-accent-foreground font-medium border-r-2 border-sidebar-primary'
+      : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground';
 
   return (
     <Sidebar className={isCollapsed ? 'w-14' : 'w-64'} collapsible="icon">
-      <SidebarContent className="bg-white border-r border-slate-200 dark:bg-slate-900 dark:border-slate-700">
+      <SidebarContent className="bg-sidebar border-r border-sidebar-border">
         {/* Logo Section */}
-        <div className="p-6 border-b border-slate-200 dark:border-slate-700">
+        <div className="p-6 border-b border-sidebar-border">
           {!isCollapsed ? (
             <div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
+              <h2 className="text-xl font-bold text-sidebar-foreground">
                 Murgenere
               </h2>
               <ServiceSelect />
             </div>
           ) : (
             <div className="text-center">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <Package className="w-4 h-4 text-white" />
+              <div className="w-8 h-8 bg-sidebar-primary rounded-lg flex items-center justify-center">
+                <Package className="w-4 h-4 text-sidebar-primary-foreground" />
               </div>
             </div>
           )}
@@ -110,7 +110,7 @@ export function AppSidebar() {
 
         {/* Main Navigation */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-slate-500 dark:text-slate-400 uppercase tracking-wider text-xs font-semibold">
+          <SidebarGroupLabel className="uppercase tracking-wider font-semibold">
             {!isCollapsed && 'Main Menu'}
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -138,7 +138,7 @@ export function AppSidebar() {
 
         {/* Categories */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-slate-500 dark:text-slate-400 uppercase tracking-wider text-xs font-semibold">
+          <SidebarGroupLabel className="uppercase tracking-wider font-semibold">
             {!isCollapsed && 'Categories'}
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -165,7 +165,7 @@ export function AppSidebar() {
 
         {/* Houses */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-slate-500 dark:text-slate-400 uppercase tracking-wider text-xs font-semibold">
+          <SidebarGroupLabel className="uppercase tracking-wider font-semibold">
             {!isCollapsed && 'Houses'}
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -191,7 +191,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         {/* Settings at bottom */}
-        <div className="mt-auto border-t border-slate-200 dark:border-slate-700">
+        <div className="mt-auto border-t border-sidebar-border">
           <SidebarGroup>
             <SidebarGroupContent>
               <SidebarMenu>
