@@ -206,7 +206,6 @@ export function AddItemBasicInfo({
           />
         </div>
       </div>
-
       {errors.core && (
         <p className="text-destructive text-sm mt-1">{errors.core}</p>
       )}
