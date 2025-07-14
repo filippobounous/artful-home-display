@@ -143,6 +143,8 @@ export function AddItemForm() {
       code: formData.code || undefined,
       name: formData.name,
       room_code: formData.room_code,
+      house: formData.house || undefined,
+      room: formData.room || undefined,
       creator: formData.creator,
       origin_region: formData.origin_region,
       date_period: formData.date_period,

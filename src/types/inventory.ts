@@ -25,23 +25,23 @@ export interface ItemBase {
 }
 
 export interface DecorItem extends ItemBase {
+  code?: string;
   artist?: string;
+  originRegion?: string;
   category: string;
   subcategory?: string;
+  material?: string;
   size?: string;
   widthCm?: number;
   heightCm?: number;
   depthCm?: number;
   weightKg?: number;
-  material?: string;
   provenance?: string;
-  originRegion?: string;
+  version?: number;
+  condition: 'mint' | 'excellent' | 'very good' | 'good';
   acquisitionDate?: string;
   acquisitionValue?: number;
   acquisitionCurrency?: string;
-  code?: string;
-  version?: number;
-  condition: 'mint' | 'excellent' | 'very good' | 'good';
   /**
    * Keeps previous versions of the item when edits occur.
    */
@@ -79,6 +79,8 @@ export interface DecorItemInput {
   code?: string;
   name: string;
   room_code: string;
+  house?: string;
+  room?: string;
   creator: string;
   origin_region: string;
   date_period: string | number;

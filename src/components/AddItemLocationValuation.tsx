@@ -18,6 +18,7 @@ import { CalendarIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { HierarchicalHouseRoomSelector } from '@/components/HierarchicalHouseRoomSelector';
 import { HierarchicalCategorySelector } from '@/components/HierarchicalCategorySelector';
+import { currencyOptions } from '@/data/currencies';
 
 interface AddItemLocationValuationProps {
   formData: any;
@@ -99,12 +100,11 @@ export function AddItemLocationValuation({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="USD">USD ($)</SelectItem>
-                <SelectItem value="EUR">EUR (€)</SelectItem>
-                <SelectItem value="GBP">GBP (£)</SelectItem>
-                <SelectItem value="JPY">JPY (¥)</SelectItem>
-                <SelectItem value="CAD">CAD ($)</SelectItem>
-                <SelectItem value="AUD">AUD ($)</SelectItem>
+                {currencyOptions.map(({ code, symbol }) => (
+                  <SelectItem key={code} value={code}>
+                    {code} {symbol && `(${symbol})`}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -171,12 +171,11 @@ export function AddItemLocationValuation({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="USD">USD ($)</SelectItem>
-                <SelectItem value="EUR">EUR (€)</SelectItem>
-                <SelectItem value="GBP">GBP (£)</SelectItem>
-                <SelectItem value="JPY">JPY (¥)</SelectItem>
-                <SelectItem value="CAD">CAD ($)</SelectItem>
-                <SelectItem value="AUD">AUD ($)</SelectItem>
+                {currencyOptions.map(({ code, symbol }) => (
+                  <SelectItem key={code} value={code}>
+                    {code} {symbol && `(${symbol})`}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
