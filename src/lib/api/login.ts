@@ -21,7 +21,7 @@ export async function login(
     });
   } catch {
     // If the API can't be reached, allow the demo credentials
-    if (username === 'admin' && password === 'password123') {
+    if (username === 'demo' && password === 'password123') {
       return {
         access_token: 'demo_token_' + Date.now(),
         token_type: 'Bearer',
@@ -35,7 +35,7 @@ export async function login(
     const allowDemo = import.meta.env.VITE_ALLOW_DEMO_LOGIN === 'true';
     if (
       (import.meta.env.DEV || allowDemo) &&
-      username === 'admin' &&
+      username === 'demo' &&
       password === 'password123'
     ) {
       return {

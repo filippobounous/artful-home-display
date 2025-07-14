@@ -4,13 +4,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Package } from 'lucide-react';
+import { Package, Eye, EyeOff } from 'lucide-react';
 import { login } from '@/lib/api';
 
 const Login = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -55,14 +56,29 @@ const Login = () => {
             </div>
             <div>
               <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter password"
-                required
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter password"
+                  required
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-1 top-1"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
+                </Button>
+              </div>
             </div>
             {error && (
               <div className="text-sm text-[hsl(var(--destructive-foreground))] bg-[hsl(var(--destructive))] p-2 rounded">
@@ -76,7 +92,7 @@ const Login = () => {
           <div className="mt-4 text-center text-sm text-muted-foreground">
             <p>Demo credentials:</p>
             <p>
-              <strong>Username:</strong> admin
+              <strong>Username:</strong> demo
             </p>
             <p>
               <strong>Password:</strong> password123
