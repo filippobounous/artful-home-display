@@ -6,7 +6,12 @@ import { AddItemBasicInfo } from './AddItemBasicInfo';
 import { AddItemLocationValuation } from './AddItemLocationValuation';
 import { AddItemDescriptionNotes } from './AddItemDescriptionNotes';
 import { useToast } from '@/hooks/use-toast';
-import { createDecorItem, updateDecorItem } from '@/lib/api';
+import {
+  createDecorItem,
+  updateDecorItem,
+  fetchDecorItem,
+  decorItemToInput,
+} from '@/lib/api';
 import type { DecorItem, DecorItemInput } from '@/types/inventory';
 
 export function AddItemForm() {
@@ -46,64 +51,71 @@ export function AddItemForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    if (draftId) {
-      const draftData = localStorage.getItem('editingDraft');
-      if (draftData) {
+    async function loadData() {
+      if (!draftId) return;
+      const stored = localStorage.getItem('editingDraft');
+      let draft: any = null;
+      if (stored) {
         try {
-          const draft = JSON.parse(draftData);
-          setFormData({
-            code: draft.code || '',
-            name: draft.name || '',
-            creator: draft.creator || '',
-            origin_region: draft.origin_region || '',
-            date_period: draft.date_period || '',
-            material: draft.material || '',
-            width_cm: draft.width_cm || '',
-            height_cm: draft.height_cm || '',
-            depth_cm: draft.depth_cm || '',
-            weight_kg: draft.weight_kg || '',
-            provenance: draft.provenance || '',
-            category: draft.category || '',
-            subcategory: draft.subcategory || '',
-            quantity: draft.quantity || '1',
-            house: draft.house || '',
-            room: draft.room || '',
-            room_code: draft.room_code || '',
-            acquisition_date: draft.acquisition_date || undefined,
-            acquisition_value: draft.acquisition_value || '',
-            acquisition_currency: draft.acquisition_currency || 'EUR',
-            appraisal_date: draft.appraisal_date || undefined,
-            appraisal_value: draft.appraisal_value || '',
-            appraisal_currency: draft.appraisal_currency || 'EUR',
-            appraisal_entity: draft.appraisal_entity || '',
-            description: draft.description || '',
-            notes: draft.notes || '',
-          });
+          draft = JSON.parse(stored);
+        } catch {
+          draft = null;
+        }
+      }
+      if (!draft) {
+        const item = await fetchDecorItem(draftId);
+        if (item) draft = decorItemToInput(item);
+      }
+      if (draft) {
+        setFormData({
+          code: draft.code || '',
+          name: draft.name || '',
+          creator: draft.creator || '',
+          origin_region: draft.origin_region || '',
+          date_period: draft.date_period || '',
+          material: draft.material || '',
+          width_cm: draft.width_cm || '',
+          height_cm: draft.height_cm || '',
+          depth_cm: draft.depth_cm || '',
+          weight_kg: draft.weight_kg || '',
+          provenance: draft.provenance || '',
+          category: draft.category || '',
+          subcategory: draft.subcategory || '',
+          quantity: draft.quantity || '1',
+          house: draft.house || '',
+          room: draft.room || '',
+          room_code: draft.room_code || '',
+          acquisition_date: draft.acquisition_date
+            ? new Date(draft.acquisition_date)
+            : undefined,
+          acquisition_value: draft.acquisition_value || '',
+          acquisition_currency: draft.acquisition_currency || 'EUR',
+          appraisal_date: draft.appraisal_date
+            ? new Date(draft.appraisal_date)
+            : undefined,
+          appraisal_value: draft.appraisal_value || '',
+          appraisal_currency: draft.appraisal_currency || 'EUR',
+          appraisal_entity: draft.appraisal_entity || '',
+          description: draft.description || '',
+          notes: draft.notes || '',
+        });
 
-          // Clear the draft data from localStorage
-          localStorage.removeItem('editingDraft');
+        localStorage.removeItem('editingDraft');
 
-          if ('lastModified' in draft) {
-            toast({
-              title: 'Draft loaded',
-              description: 'Your draft has been loaded successfully',
-            });
-          } else {
-            toast({
-              title: 'Edit mode',
-              description: 'Item data loaded for editing',
-            });
-          }
-        } catch (error) {
-          console.error('Error loading draft:', error);
+        if ('lastModified' in draft) {
           toast({
-            title: 'Error loading draft',
-            description: 'Failed to load the draft data',
-            variant: 'destructive',
+            title: 'Draft loaded',
+            description: 'Your draft has been loaded successfully',
+          });
+        } else {
+          toast({
+            title: 'Edit mode',
+            description: 'Item data loaded for editing',
           });
         }
       }
     }
+    loadData();
   }, [draftId, toast]);
 
   const handleSubmit = (e: React.FormEvent) => {

@@ -118,6 +118,13 @@ export async function fetchDecorItems(): Promise<DecorItem[]> {
   }
 }
 
+export async function fetchDecorItem(
+  id: number | string,
+): Promise<DecorItem | null> {
+  const items = await fetchDecorItems();
+  return items.find((item) => item.id === Number(id)) || null;
+}
+
 export async function createDecorItem(item: DecorItemInput) {
   try {
     const response = await fetch(`${API_URL}/decoritems`, {
