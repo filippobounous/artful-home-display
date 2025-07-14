@@ -109,6 +109,8 @@ login with `demo` / `password123`.
    under `${VITE_API_URL}/houses/{houseId}/rooms`.
 4. If any of these requests fail, the app falls back to the sample data shipped
    with the frontend.
+   The bundled dataset now covers houses, rooms, categories, subcategories and
+   a variety of decor items for local testing.
 5. Optionally adjust `VITE_TOAST_REMOVE_DELAY` to change how long dismissed
    toasts stay visible.
 
