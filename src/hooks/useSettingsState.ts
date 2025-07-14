@@ -7,6 +7,7 @@ import {
   HouseConfig,
   RoomConfig,
 } from '@/types/inventory';
+import { fetchCategories, fetchHouses } from '@/lib/api';
 
 // Load persisted settings from localStorage if available
 let storedCategories: CategoryConfig[] | null = null;
@@ -92,6 +93,24 @@ export function useSettingsState() {
     useState<CategoryConfig[]>(globalCategories);
   const [houses, setHouses] = useState<HouseConfig[]>(globalHouses);
   const [, forceUpdate] = useState({});
+
+  useEffect(() => {
+    async function load() {
+      try {
+        globalCategories = await fetchCategories();
+      } catch {
+        // ignore
+      }
+      try {
+        globalHouses = await fetchHouses();
+      } catch {
+        // ignore
+      }
+      setCategories([...globalCategories]);
+      setHouses([...globalHouses]);
+    }
+    load();
+  }, []);
 
   useEffect(() => {
     const listener = () => {

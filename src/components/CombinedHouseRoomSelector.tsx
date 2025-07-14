@@ -6,7 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { defaultHouses } from '@/types/inventory';
+import { useSettingsState } from '@/hooks/useSettingsState';
 
 interface CombinedHouseRoomSelectorProps {
   selectedHouse: string;
@@ -19,8 +19,9 @@ export function CombinedHouseRoomSelector({
   selectedRoom,
   onSelectionChange,
 }: CombinedHouseRoomSelectorProps) {
-  // Create combined options
-  const combinedOptions = defaultHouses.flatMap((house) =>
+  const { houses } = useSettingsState();
+
+  const combinedOptions = houses.flatMap((house) =>
     house.rooms.map((room) => ({
       value: `${house.id}|${room.id}`,
       label: `${house.name} - ${room.name}`,

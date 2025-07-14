@@ -11,9 +11,9 @@ import { DarkModeToggle } from '@/components/DarkModeToggle';
 import { LogoutButton } from '@/components/LogoutButton';
 import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
-import { sampleDecorItems } from '@/data/sampleData';
 import { useService } from '@/context/ServiceContext';
 import { fetchDecorItems } from '@/lib/api';
+import type { DecorItem } from '@/types/inventory';
 import { useToast } from '@/hooks/use-toast';
 
 export function InventoryHeader() {
@@ -42,12 +42,12 @@ export function InventoryHeader() {
       'Notes',
     ];
 
-    // Use sample items as fallback if API fails
-    let items = sampleDecorItems;
+    // Fallback to an empty list if API fails
+    let items: DecorItem[] = [];
     try {
       items = await fetchDecorItems();
     } catch (err) {
-      console.error('Failed to fetch items for CSV, using sample data:', err);
+      console.error('Failed to fetch items for CSV:', err);
     }
 
     const csvContent = [
@@ -91,11 +91,11 @@ export function InventoryHeader() {
   };
 
   const downloadJSON = async () => {
-    let items = sampleDecorItems;
+    let items: DecorItem[] = [];
     try {
       items = await fetchDecorItems();
     } catch (err) {
-      console.error('Failed to fetch items for JSON, using sample data:', err);
+      console.error('Failed to fetch items for JSON:', err);
     }
 
     const jsonContent = JSON.stringify(items, null, 2);
