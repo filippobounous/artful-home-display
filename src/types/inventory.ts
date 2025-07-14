@@ -216,6 +216,25 @@ export const categoryConfigs: CategoryConfig[] = [
     ],
     visible: true,
   },
+  {
+    id: 'decor',
+    name: 'Decor',
+    icon: 'brush',
+    subcategories: [
+      { id: 'vase', name: 'Vase', visible: true },
+      { id: 'basket', name: 'Basket', visible: true },
+      { id: 'mirror', name: 'Mirror', visible: true },
+      { id: 'lighting', name: 'Lighting', visible: true },
+    ],
+    visible: true,
+  },
+  {
+    id: 'kitchenware',
+    name: 'Kitchenware',
+    icon: 'utensils',
+    subcategories: [{ id: 'tea-set', name: 'Tea Set', visible: true }],
+    visible: true,
+  },
 ];
 
 // House configurations with icons
