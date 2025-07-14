@@ -63,6 +63,21 @@ export function AddItemForm() {
           draft = null;
         }
       }
+
+      if (!draft) {
+        try {
+          const inventory = JSON.parse(
+            localStorage.getItem('inventoryData') || '[]',
+          );
+          const item = inventory.find(
+            (i: DecorItem) => i.id === Number(draftId),
+          );
+          if (item) draft = decorItemToInput(item);
+        } catch {
+          draft = null;
+        }
+      }
+
       if (!draft) {
         const item = await fetchDecorItem(draftId);
         if (item) draft = decorItemToInput(item);
