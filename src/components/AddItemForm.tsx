@@ -67,6 +67,13 @@ export function AddItemForm() {
         if (item) draft = decorItemToInput(item);
       }
       if (draft) {
+        const acquisitionDate = draft.acquisition_date
+          ? new Date(draft.acquisition_date)
+          : undefined;
+        const appraisalDate = draft.appraisal_date
+          ? new Date(draft.appraisal_date)
+          : undefined;
+
         setFormData({
           code: draft.code || '',
           name: draft.name || '',
@@ -85,14 +92,10 @@ export function AddItemForm() {
           house: draft.house || '',
           room: draft.room || '',
           room_code: draft.room_code || '',
-          acquisition_date: draft.acquisition_date
-            ? new Date(draft.acquisition_date)
-            : undefined,
+          acquisition_date: acquisitionDate,
           acquisition_value: draft.acquisition_value || '',
           acquisition_currency: draft.acquisition_currency || 'EUR',
-          appraisal_date: draft.appraisal_date
-            ? new Date(draft.appraisal_date)
-            : undefined,
+          appraisal_date: appraisalDate,
           appraisal_value: draft.appraisal_value || '',
           appraisal_currency: draft.appraisal_currency || 'EUR',
           appraisal_entity: draft.appraisal_entity || '',
