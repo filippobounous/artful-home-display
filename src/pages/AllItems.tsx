@@ -319,10 +319,10 @@ const AllItems = () => {
 
           <main className="flex-1 p-6">
             <div className="mb-6">
-              <h2 className="text-xl font-semibold text-slate-900 mb-2">
+              <h2 className="text-xl font-semibold text-foreground mb-2">
                 All Items
               </h2>
-              <p className="text-slate-600">
+              <p className="text-muted-foreground">
                 Browse and manage your entire collection
               </p>
             </div>
@@ -385,7 +385,7 @@ const AllItems = () => {
             )}
 
             <div className="mb-6">
-              <p className="text-slate-600">
+              <p className="text-muted-foreground">
                 Showing {sortedItems.length} of {items.length} items
               </p>
             </div>

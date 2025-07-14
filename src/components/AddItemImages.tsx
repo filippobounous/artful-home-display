@@ -120,8 +120,8 @@ export function AddItemImages({ formData, setFormData }: AddItemImagesProps) {
 
       {formData.images.length === 0 && (
         <div className="border-2 border-dashed border-slate-300 rounded-lg p-8 text-center">
-          <Image className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-          <p className="text-slate-500 text-sm">No images added yet</p>
+          <Image className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+          <p className="text-muted-foreground text-sm">No images added yet</p>
         </div>
       )}
     </div>

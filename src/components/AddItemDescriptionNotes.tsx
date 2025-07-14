@@ -12,7 +12,7 @@ export function AddItemDescriptionNotes({
 }: AddItemDescriptionNotesProps) {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium text-slate-900">
+      <h3 className="text-lg font-medium text-foreground">
         Description &amp; Notes
       </h3>
       <div>

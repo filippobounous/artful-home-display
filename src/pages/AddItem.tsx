@@ -18,10 +18,10 @@ const AddItem = () => {
 
           <main className="flex-1 p-6">
             <div className="mb-6">
-              <h2 className="text-xl font-semibold text-slate-900 mb-2">
+              <h2 className="text-xl font-semibold text-foreground mb-2">
                 {isEditMode ? 'Edit Item' : 'Add New Item'}
               </h2>
-              <p className="text-slate-600">
+              <p className="text-muted-foreground">
                 {isEditMode
                   ? 'Update details for your item'
                   : 'Add a new piece to your collection'}

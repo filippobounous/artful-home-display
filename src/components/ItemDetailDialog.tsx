@@ -42,7 +42,7 @@ export function ItemDetailDialog({
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold pr-16">
             {item.title}
-            <span className="block text-sm font-normal text-slate-500">
+            <span className="block text-sm font-normal text-muted-foreground">
               {item.code ?? '-'} • ID {item.id} • v{item.version ?? 1}
             </span>
           </DialogTitle>
@@ -97,72 +97,76 @@ export function ItemDetailDialog({
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-4">
               <div>
-                <h4 className="font-medium text-slate-700 mb-1">Category</h4>
-                <p className="text-slate-900 capitalize">{item.category}</p>
+                <h4 className="font-medium text-foreground mb-1">Category</h4>
+                <p className="text-foreground capitalize">{item.category}</p>
               </div>
 
               <div>
-                <h4 className="font-medium text-slate-700 mb-1">Subcategory</h4>
-                <p className="text-slate-900 capitalize">
+                <h4 className="font-medium text-foreground mb-1">
+                  Subcategory
+                </h4>
+                <p className="text-foreground capitalize">
                   {item.subcategory ?? '-'}
                 </p>
               </div>
 
               <div>
-                <h4 className="font-medium text-slate-700 mb-1">
+                <h4 className="font-medium text-foreground mb-1">
                   Artist/Maker
                 </h4>
-                <p className="text-slate-900">{item.artist ?? '-'}</p>
+                <p className="text-foreground">{item.artist ?? '-'}</p>
               </div>
 
               <div>
-                <h4 className="font-medium text-slate-700 mb-1">Year/Period</h4>
-                <p className="text-slate-900">{item.yearPeriod ?? '-'}</p>
+                <h4 className="font-medium text-foreground mb-1">
+                  Year/Period
+                </h4>
+                <p className="text-foreground">{item.yearPeriod ?? '-'}</p>
               </div>
 
               <div>
-                <h4 className="font-medium text-slate-700 mb-1">
+                <h4 className="font-medium text-foreground mb-1">
                   Origin Region
                 </h4>
-                <p className="text-slate-900">{item.originRegion ?? '-'}</p>
+                <p className="text-foreground">{item.originRegion ?? '-'}</p>
               </div>
 
               <div>
-                <h4 className="font-medium text-slate-700 mb-1">Material</h4>
-                <p className="text-slate-900">{item.material ?? '-'}</p>
+                <h4 className="font-medium text-foreground mb-1">Material</h4>
+                <p className="text-foreground">{item.material ?? '-'}</p>
               </div>
 
               <div>
-                <h4 className="font-medium text-slate-700 mb-1">Provenance</h4>
-                <p className="text-slate-900">{item.provenance ?? '-'}</p>
+                <h4 className="font-medium text-foreground mb-1">Provenance</h4>
+                <p className="text-foreground">{item.provenance ?? '-'}</p>
               </div>
             </div>
 
             <div className="space-y-4">
               <div>
-                <h4 className="font-medium text-slate-700 mb-1">Dimensions</h4>
-                <p className="text-slate-900">
+                <h4 className="font-medium text-foreground mb-1">Dimensions</h4>
+                <p className="text-foreground">
                   {item.widthCm ?? '-'} x {item.heightCm ?? '-'} x{' '}
                   {item.depthCm ?? '-'} cm
                 </p>
               </div>
 
               <div>
-                <h4 className="font-medium text-slate-700 mb-1">Weight</h4>
-                <p className="text-slate-900">{item.weightKg ?? '-'} kg</p>
+                <h4 className="font-medium text-foreground mb-1">Weight</h4>
+                <p className="text-foreground">{item.weightKg ?? '-'} kg</p>
               </div>
 
               <div>
-                <h4 className="font-medium text-slate-700 mb-1">Quantity</h4>
-                <p className="text-slate-900 flex items-center">
+                <h4 className="font-medium text-foreground mb-1">Quantity</h4>
+                <p className="text-foreground flex items-center">
                   <Hash className="w-4 h-4 mr-1" />
                   {item.quantity ?? '-'}
                 </p>
               </div>
 
               <div>
-                <h4 className="font-medium text-slate-700 mb-1">Location</h4>
-                <p className="text-slate-900 flex items-center">
+                <h4 className="font-medium text-foreground mb-1">Location</h4>
+                <p className="text-foreground flex items-center">
                   <MapPin className="w-4 h-4 mr-1" />
                   {item.house || item.room ? (
                     <>
@@ -190,13 +194,13 @@ export function ItemDetailDialog({
 
           {/* Acquisition Information */}
           <div className="border-t pt-4">
-            <h4 className="font-medium text-slate-700 mb-3">
+            <h4 className="font-medium text-foreground mb-3">
               Acquisition Information
             </h4>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-slate-600">Value</p>
-                <p className="text-slate-900 flex items-center">
+                <p className="text-sm text-muted-foreground">Value</p>
+                <p className="text-foreground flex items-center">
                   <DollarSign className="w-4 h-4 mr-1" />
                   {item.acquisitionValue?.toLocaleString() ?? '-'}{' '}
                   {item.acquisitionCurrency || 'EUR'}
@@ -204,8 +208,8 @@ export function ItemDetailDialog({
               </div>
 
               <div>
-                <p className="text-sm text-slate-600">Date</p>
-                <p className="text-slate-900 flex items-center">
+                <p className="text-sm text-muted-foreground">Date</p>
+                <p className="text-foreground flex items-center">
                   <Calendar className="w-4 h-4 mr-1" />
                   {item.acquisitionDate
                     ? new Date(item.acquisitionDate).toLocaleDateString()
@@ -217,13 +221,13 @@ export function ItemDetailDialog({
 
           {/* Appraisal Information */}
           <div className="border-t pt-4">
-            <h4 className="font-medium text-slate-700 mb-3">
+            <h4 className="font-medium text-foreground mb-3">
               Appraisal Information
             </h4>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-slate-600">Value</p>
-                <p className="text-slate-900 flex items-center">
+                <p className="text-sm text-muted-foreground">Value</p>
+                <p className="text-foreground flex items-center">
                   <DollarSign className="w-4 h-4 mr-1" />
                   {item.valuation?.toLocaleString() ?? '-'}{' '}
                   {item.valuationCurrency || 'EUR'}
@@ -231,13 +235,13 @@ export function ItemDetailDialog({
               </div>
 
               <div>
-                <p className="text-sm text-slate-600">Appraiser</p>
-                <p className="text-slate-900">{item.valuationPerson ?? '-'}</p>
+                <p className="text-sm text-muted-foreground">Appraiser</p>
+                <p className="text-foreground">{item.valuationPerson ?? '-'}</p>
               </div>
 
               <div>
-                <p className="text-sm text-slate-600">Date</p>
-                <p className="text-slate-900 flex items-center">
+                <p className="text-sm text-muted-foreground">Date</p>
+                <p className="text-foreground flex items-center">
                   <Calendar className="w-4 h-4 mr-1" />
                   {item.valuationDate
                     ? new Date(item.valuationDate).toLocaleDateString()
@@ -249,14 +253,14 @@ export function ItemDetailDialog({
 
           {/* Description */}
           <div className="border-t pt-4">
-            <h4 className="font-medium text-slate-700 mb-2">Description</h4>
-            <p className="text-slate-900">{item.description ?? '-'}</p>
+            <h4 className="font-medium text-foreground mb-2">Description</h4>
+            <p className="text-foreground">{item.description ?? '-'}</p>
           </div>
 
           {/* Notes */}
           <div className="border-t pt-4">
-            <h4 className="font-medium text-slate-700 mb-2">Notes</h4>
-            <p className="text-slate-900">{item.notes ?? '-'}</p>
+            <h4 className="font-medium text-foreground mb-2">Notes</h4>
+            <p className="text-foreground">{item.notes ?? '-'}</p>
           </div>
         </div>
       </DialogContent>

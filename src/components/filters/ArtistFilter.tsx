@@ -15,7 +15,7 @@ export function ArtistFilter({
   const options = artistOptions.map((a) => ({ id: a, name: a }));
   return (
     <div>
-      <Label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+      <Label className="block text-sm font-medium text-foreground mb-2">
         Artist
       </Label>
       <MultiSelectFilter

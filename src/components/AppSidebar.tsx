@@ -85,7 +85,7 @@ export function AppSidebar() {
   const getNavCls = ({ isActive: active }: { isActive: boolean }) =>
     active
       ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100 font-medium border-r-2 border-blue-600 dark:border-blue-400'
-      : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300';
+      : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-foreground';
 
   return (
     <Sidebar className={isCollapsed ? 'w-14' : 'w-64'} collapsible="icon">
@@ -94,9 +94,7 @@ export function AppSidebar() {
         <div className="p-6 border-b border-slate-200 dark:border-slate-700">
           {!isCollapsed ? (
             <div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-                Murgenere
-              </h2>
+              <h2 className="text-xl font-bold text-foreground">Murgenere</h2>
               <ServiceSelect />
             </div>
           ) : (
@@ -110,7 +108,7 @@ export function AppSidebar() {
 
         {/* Main Navigation */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-slate-500 dark:text-slate-400 uppercase tracking-wider text-xs font-semibold">
+          <SidebarGroupLabel className="text-muted-foreground dark:text-muted-foreground uppercase tracking-wider text-xs font-semibold">
             {!isCollapsed && 'Main Menu'}
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -138,7 +136,7 @@ export function AppSidebar() {
 
         {/* Categories */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-slate-500 dark:text-slate-400 uppercase tracking-wider text-xs font-semibold">
+          <SidebarGroupLabel className="text-muted-foreground dark:text-muted-foreground uppercase tracking-wider text-xs font-semibold">
             {!isCollapsed && 'Categories'}
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -165,7 +163,7 @@ export function AppSidebar() {
 
         {/* Houses */}
         <SidebarGroup>
-          <SidebarGroupLabel className="text-slate-500 dark:text-slate-400 uppercase tracking-wider text-xs font-semibold">
+          <SidebarGroupLabel className="text-muted-foreground dark:text-muted-foreground uppercase tracking-wider text-xs font-semibold">
             {!isCollapsed && 'Houses'}
           </SidebarGroupLabel>
           <SidebarGroupContent>

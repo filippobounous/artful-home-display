@@ -53,7 +53,7 @@ export function HierarchicalHouseRoomSelector({
             .filter((h) => h.visible)
             .map((house) => (
               <div key={house.id}>
-                <div className="px-2 py-1 text-sm font-medium text-slate-600 bg-muted">
+                <div className="px-2 py-1 text-sm font-medium text-muted-foreground bg-muted">
                   {house.name}
                 </div>
                 {house.rooms
