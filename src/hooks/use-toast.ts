@@ -3,7 +3,11 @@ import * as React from 'react';
 import type { ToastActionElement, ToastProps } from '@/components/ui/toast';
 
 const TOAST_LIMIT = 1;
-const TOAST_REMOVE_DELAY = 1000000;
+// Time before a dismissed toast is removed from state
+const TOAST_REMOVE_DELAY = parseInt(
+  import.meta.env.VITE_TOAST_REMOVE_DELAY || '5000',
+  10,
+);
 
 type ToasterToast = ToastProps & {
   id: string;
