@@ -39,7 +39,6 @@ const Login = () => {
             <Package className="w-6 h-6 text-white" />
           </div>
           <CardTitle className="text-2xl font-bold">Murgenere</CardTitle>
-          <p className="text-slate-600">Collection Manager</p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">

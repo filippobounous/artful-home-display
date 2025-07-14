@@ -126,12 +126,7 @@ export function InventoryHeader() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <SidebarTrigger className="md:hidden" />
-          <h1 className="text-2xl font-bold text-slate-900">
-            Murgenere
-            <span className="block text-base font-normal text-slate-600">
-              {service}
-            </span>
-          </h1>
+          <h1 className="text-2xl font-bold text-slate-900">{service}</h1>
         </div>
 
         <div className="flex items-center gap-3">
