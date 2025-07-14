@@ -62,19 +62,19 @@ const Drafts = () => {
 
           <main className="flex-1 p-6">
             <div className="mb-6">
-              <h2 className="text-xl font-semibold text-slate-900 mb-2">
+              <h2 className="text-xl font-semibold text-foreground mb-2">
                 Drafts
               </h2>
-              <p className="text-slate-600">Your saved draft items</p>
+              <p className="text-muted-foreground">Your saved draft items</p>
             </div>
 
             {drafts.length === 0 ? (
               <div className="text-center py-12">
-                <FileText className="w-12 h-12 text-slate-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-slate-900 mb-2">
+                <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">
                   No drafts yet
                 </h3>
-                <p className="text-slate-600">
+                <p className="text-muted-foreground">
                   Start adding items and save them as drafts
                 </p>
               </div>
@@ -85,13 +85,13 @@ const Drafts = () => {
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
-                          <h3 className="font-medium text-slate-900">
+                          <h3 className="font-medium text-foreground">
                             {draft.title}
                           </h3>
-                          <p className="text-sm text-slate-600 mt-1">
+                          <p className="text-sm text-muted-foreground mt-1">
                             {draft.description}
                           </p>
-                          <div className="flex gap-4 text-xs text-slate-500 mt-2">
+                          <div className="flex gap-4 text-xs text-muted-foreground mt-2">
                             <span>Last modified: {draft.lastModified}</span>
                             <span>Category: {draft.category}</span>
                             {draft.data.house && (

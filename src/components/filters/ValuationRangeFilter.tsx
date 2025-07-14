@@ -17,7 +17,7 @@ export function ValuationRangeFilter({
 }: ValuationRangeFilterProps) {
   return (
     <div>
-      <Label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+      <Label className="block text-sm font-medium text-muted-foreground mb-2">
         Valuation Range
       </Label>
       <div className="flex gap-2">

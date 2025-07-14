@@ -54,7 +54,7 @@ export function HierarchicalCategorySelector({
             .filter((c) => c.visible)
             .map((category) => (
               <div key={category.id}>
-                <div className="px-2 py-1 text-sm font-medium text-slate-600 bg-muted">
+                <div className="px-2 py-1 text-sm font-medium text-muted-foreground bg-muted">
                   {category.name}
                 </div>
                 <SelectItem

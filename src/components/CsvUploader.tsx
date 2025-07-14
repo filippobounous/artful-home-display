@@ -107,7 +107,7 @@ export function CsvUploader({ onUpload }: CsvUploaderProps) {
         </div>
 
         {file && (
-          <div className="flex items-center gap-2 text-sm text-slate-600">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <FileText className="w-4 h-4" />
             {file.name}
           </div>
@@ -122,7 +122,7 @@ export function CsvUploader({ onUpload }: CsvUploaderProps) {
           Upload CSV
         </Button>
 
-        <div className="text-xs text-slate-500">
+        <div className="text-xs text-muted-foreground">
           <p>
             <strong>CSV Format Examples:</strong>
           </p>

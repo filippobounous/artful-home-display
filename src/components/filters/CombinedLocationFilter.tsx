@@ -30,7 +30,7 @@ export function CombinedLocationFilter({
 
     return (
       <div className="md:col-span-2">
-        <Label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+        <Label className="block text-sm font-medium text-muted-foreground mb-2">
           Rooms
         </Label>
         <MultiSelectFilter
@@ -141,7 +141,7 @@ export function CombinedLocationFilter({
 
   return (
     <div className="md:col-span-2">
-      <Label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+      <Label className="block text-sm font-medium text-muted-foreground mb-2">
         Houses & Rooms
       </Label>
       <MultiSelectFilter

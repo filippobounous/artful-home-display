@@ -354,10 +354,10 @@ const CategoryPage = () => {
 
           <main className="flex-1 p-6">
             <div className="mb-6">
-              <h2 className="text-xl font-semibold text-slate-900 mb-2">
+              <h2 className="text-xl font-semibold text-foreground mb-2">
                 {categoryName} Collection
               </h2>
-              <p className="text-slate-600">
+              <p className="text-muted-foreground">
                 Browse and manage your {categoryName} pieces
               </p>
             </div>
@@ -422,7 +422,7 @@ const CategoryPage = () => {
             )}
 
             <div className="mb-6">
-              <p className="text-slate-600">
+              <p className="text-muted-foreground">
                 Showing {sortedItems.length} {categoryName} pieces
               </p>
             </div>

@@ -41,7 +41,7 @@ export function Dashboard({ items }: DashboardProps) {
       case 'furniture':
         return <Sofa className="w-8 h-8 text-dashboard-green" />;
       default:
-        return <Package className="w-8 h-8 text-slate-600" />;
+        return <Package className="w-8 h-8 text-muted-foreground" />;
     }
   };
 
@@ -53,8 +53,8 @@ export function Dashboard({ items }: DashboardProps) {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-600">Total Items</p>
-                <p className="text-2xl font-bold text-slate-900">
+                <p className="text-sm text-muted-foreground">Total Items</p>
+                <p className="text-2xl font-bold text-foreground">
                   {totalItems}
                 </p>
               </div>
@@ -67,8 +67,8 @@ export function Dashboard({ items }: DashboardProps) {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-600">Total Valuation</p>
-                <p className="text-2xl font-bold text-slate-900">
+                <p className="text-sm text-muted-foreground">Total Valuation</p>
+                <p className="text-2xl font-bold text-foreground">
                   ${totalValuation.toLocaleString()}
                 </p>
               </div>
@@ -86,8 +86,8 @@ export function Dashboard({ items }: DashboardProps) {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-600">Categories</p>
-                <p className="text-2xl font-bold text-slate-900">
+                <p className="text-sm text-muted-foreground">Categories</p>
+                <p className="text-2xl font-bold text-foreground">
                   {categories.filter((c) => c.visible).length}
                 </p>
               </div>
@@ -106,7 +106,7 @@ export function Dashboard({ items }: DashboardProps) {
 
       {/* Categories */}
       <div>
-        <h2 className="text-xl font-semibold text-slate-900 mb-4">
+        <h2 className="text-xl font-semibold text-foreground mb-4">
           Browse by Category
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -121,10 +121,10 @@ export function Dashboard({ items }: DashboardProps) {
                     <div className="flex items-center gap-3">
                       {getCategoryIcon(category.id)}
                       <div>
-                        <h3 className="font-semibold text-slate-900">
+                        <h3 className="font-semibold text-foreground">
                           {category.name}
                         </h3>
-                        <p className="text-sm text-slate-600">
+                        <p className="text-sm text-muted-foreground">
                           {category.count} items
                         </p>
                       </div>
@@ -140,7 +140,7 @@ export function Dashboard({ items }: DashboardProps) {
 
       {/* Houses */}
       <div>
-        <h2 className="text-xl font-semibold text-slate-900 mb-4">
+        <h2 className="text-xl font-semibold text-foreground mb-4">
           Browse by Location
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -152,10 +152,10 @@ export function Dashboard({ items }: DashboardProps) {
                     <div className="flex items-center gap-3">
                       <Home className="w-8 h-8 text-dashboard-indigo" />
                       <div>
-                        <h3 className="font-semibold text-slate-900">
+                        <h3 className="font-semibold text-foreground">
                           {house.name}
                         </h3>
-                        <p className="text-sm text-slate-600">
+                        <p className="text-sm text-muted-foreground">
                           {house.count} items
                         </p>
                       </div>

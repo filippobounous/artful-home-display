@@ -112,7 +112,7 @@ export function ItemsList({
     <div className="space-y-4">
       {/* Sort Controls */}
       <div className="flex flex-wrap gap-2 p-4 bg-card border rounded-lg">
-        <span className="text-sm text-slate-600 mr-2">Sort by:</span>
+        <span className="text-sm text-muted-foreground mr-2">Sort by:</span>
         <SortButton field="title">Title</SortButton>
         <SortButton field="artist">Artist</SortButton>
         <SortButton field="category">Category</SortButton>
@@ -160,11 +160,11 @@ export function ItemsList({
               <div className="flex-1 space-y-2">
                 <div className="flex items-start justify-between">
                   <div>
-                    <h3 className="text-lg font-semibold text-slate-900">
+                    <h3 className="text-lg font-semibold text-foreground">
                       {item.title}
                     </h3>
                     {item.artist && (
-                      <p className="text-slate-600 text-sm font-medium">
+                      <p className="text-muted-foreground text-sm font-medium">
                         by {item.artist}
                       </p>
                     )}
@@ -180,12 +180,12 @@ export function ItemsList({
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                   <div>
-                    <span className="font-medium text-slate-600">
+                    <span className="font-medium text-muted-foreground">
                       Category:
                     </span>
                     <span className="ml-2 capitalize">{item.category}</span>
                     {item.subcategory && (
-                      <span className="text-slate-500">
+                      <span className="text-muted-foreground">
                         {' '}
                         • {item.subcategory}
                       </span>
@@ -194,7 +194,7 @@ export function ItemsList({
 
                   {(item.house || item.room) && (
                     <div>
-                      <span className="font-medium text-slate-600">
+                      <span className="font-medium text-muted-foreground">
                         Location:
                       </span>
                       {item.house && (
@@ -203,7 +203,7 @@ export function ItemsList({
                         </span>
                       )}
                       {item.house && item.room && (
-                        <span className="text-slate-500"> • </span>
+                        <span className="text-muted-foreground"> • </span>
                       )}
                       {item.room && (
                         <span className="capitalize">
@@ -215,7 +215,7 @@ export function ItemsList({
 
                   {item.yearPeriod && (
                     <div>
-                      <span className="font-medium text-slate-600">
+                      <span className="font-medium text-muted-foreground">
                         Period:
                       </span>
                       <span className="ml-2">{item.yearPeriod}</span>
@@ -224,7 +224,7 @@ export function ItemsList({
 
                   {(item.widthCm || item.heightCm || item.depthCm) && (
                     <div>
-                      <span className="font-medium text-slate-600">
+                      <span className="font-medium text-muted-foreground">
                         Dimensions:
                       </span>
                       <span className="ml-2">
@@ -236,7 +236,7 @@ export function ItemsList({
 
                   {item.quantity && item.quantity > 1 && (
                     <div>
-                      <span className="font-medium text-slate-600">
+                      <span className="font-medium text-muted-foreground">
                         Quantity:
                       </span>
                       <span className="ml-2">{item.quantity}</span>
@@ -245,12 +245,12 @@ export function ItemsList({
 
                   {item.valuationDate && (
                     <div>
-                      <span className="font-medium text-slate-600">
+                      <span className="font-medium text-muted-foreground">
                         Valued:
                       </span>
                       <span className="ml-2">{item.valuationDate}</span>
                       {item.valuationPerson && (
-                        <span className="text-slate-500">
+                        <span className="text-muted-foreground">
                           {' '}
                           by {item.valuationPerson}
                         </span>
@@ -260,17 +260,19 @@ export function ItemsList({
                 </div>
 
                 {item.description && (
-                  <p className="text-slate-600 text-sm line-clamp-2">
+                  <p className="text-muted-foreground text-sm line-clamp-2">
                     {item.description}
                   </p>
                 )}
 
                 {item.notes && (
                   <div className="pt-2 border-t">
-                    <span className="font-medium text-slate-600 text-sm">
+                    <span className="font-medium text-muted-foreground text-sm">
                       Notes:
                     </span>
-                    <p className="text-slate-500 text-sm mt-1">{item.notes}</p>
+                    <p className="text-muted-foreground text-sm mt-1">
+                      {item.notes}
+                    </p>
                   </div>
                 )}
               </div>
