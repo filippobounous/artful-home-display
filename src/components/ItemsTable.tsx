@@ -124,7 +124,8 @@ export function ItemsTable({
               key={item.id}
               className={cn(
                 'cursor-pointer hover:bg-muted/50',
-                selectedIds.includes(item.id.toString()) && 'bg-blue-50',
+                selectedIds.includes(item.id.toString()) &&
+                  'bg-[hsl(var(--primary)/0.1)]',
               )}
               onClick={(e) => {
                 if (e.shiftKey) {
