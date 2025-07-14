@@ -15,17 +15,16 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-import { sampleDecorItems } from '@/data/sampleData';
 import { fetchDecorItems } from '@/lib/api';
 import { DecorItem } from '@/types/inventory';
 
 const Analytics = () => {
-  const [items, setItems] = useState<DecorItem[]>(sampleDecorItems);
+  const [items, setItems] = useState<DecorItem[]>([]);
 
   useEffect(() => {
     fetchDecorItems()
       .then((data) => setItems(data))
-      .catch(() => {});
+      .catch(() => setItems([]));
   }, []);
 
   // Basic statistics

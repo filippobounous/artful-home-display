@@ -10,7 +10,6 @@ import { ItemsTable } from '@/components/ItemsTable';
 import { ItemDetailDialog } from '@/components/ItemDetailDialog';
 import { ItemHistoryDialog } from '@/components/ItemHistoryDialog';
 import { EmptyState } from '@/components/EmptyState';
-import { sampleDecorItems } from '@/data/sampleData';
 import {
   fetchDecorItems,
   deleteDecorItem,
@@ -43,7 +42,7 @@ const HousePage = () => {
     max?: number;
   }>({});
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
-  const [items, setItems] = useState<DecorItem[]>(sampleDecorItems);
+  const [items, setItems] = useState<DecorItem[]>([]);
   const [selectedItem, setSelectedItem] = useState<DecorItem | null>(null);
   const [historyItem, setHistoryItem] = useState<DecorItem | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -115,7 +114,7 @@ const HousePage = () => {
   useEffect(() => {
     fetchDecorItems()
       .then((data) => setItems(data))
-      .catch(() => {});
+      .catch(() => setItems([]));
   }, []);
 
   useEffect(() => {

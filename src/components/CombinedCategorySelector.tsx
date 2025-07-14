@@ -6,7 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { categoryConfigs } from '@/types/inventory';
+import { useSettingsState } from '@/hooks/useSettingsState';
 
 interface CombinedCategorySelectorProps {
   selectedCategory: string;
@@ -19,8 +19,9 @@ export function CombinedCategorySelector({
   selectedSubcategory,
   onSelectionChange,
 }: CombinedCategorySelectorProps) {
-  // Create combined options
-  const combinedOptions = categoryConfigs.flatMap((category) =>
+  const { categories } = useSettingsState();
+
+  const combinedOptions = categories.flatMap((category) =>
     category.subcategories.map((subcategory) => ({
       value: `${category.id}|${subcategory.id}`,
       label: `${category.name} - ${subcategory.name}`,
@@ -29,8 +30,7 @@ export function CombinedCategorySelector({
     })),
   );
 
-  // Also add category-only options
-  const categoryOnlyOptions = categoryConfigs.map((category) => ({
+  const categoryOnlyOptions = categories.map((category) => ({
     value: `${category.id}|`,
     label: `${category.name} (General)`,
     categoryId: category.id,

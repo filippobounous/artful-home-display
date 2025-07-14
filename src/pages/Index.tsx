@@ -3,18 +3,17 @@ import { AppSidebar } from '@/components/AppSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { InventoryHeader } from '@/components/InventoryHeader';
 import { Dashboard } from '@/components/Dashboard';
-import { sampleDecorItems } from '@/data/sampleData';
 import { fetchDecorItems } from '@/lib/api';
 import { DecorItem } from '@/types/inventory';
 
 const Index = () => {
-  const [items, setItems] = useState<DecorItem[]>(sampleDecorItems);
+  const [items, setItems] = useState<DecorItem[]>([]);
 
   useEffect(() => {
     fetchDecorItems()
       .then((data) => setItems(data))
       .catch(() => {
-        // keep sample data if request fails
+        setItems([]);
       });
   }, []);
 
