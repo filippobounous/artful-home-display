@@ -1,8 +1,18 @@
 import React from 'react';
 
+export type ServiceType = 'Decor' | 'Book' | 'Music';
+
+export interface ServiceItemMap {
+  Decor: import('@/types/inventory').DecorItem;
+  Book: import('@/types/inventory').BookItem;
+  Music: import('@/types/inventory').MusicItem;
+}
+
+export type ServiceItem<T extends ServiceType> = ServiceItemMap[T];
+
 interface ServiceContextValue {
-  service: string;
-  setService: (service: string) => void;
+  service: ServiceType;
+  setService: (service: ServiceType) => void;
 }
 
 const ServiceContext = React.createContext<ServiceContextValue | undefined>(
@@ -10,7 +20,7 @@ const ServiceContext = React.createContext<ServiceContextValue | undefined>(
 );
 
 export function ServiceProvider({ children }: { children: React.ReactNode }) {
-  const [service, setService] = React.useState('Inventory');
+  const [service, setService] = React.useState<ServiceType>('Decor');
   return (
     <ServiceContext.Provider value={{ service, setService }}>
       {children}
