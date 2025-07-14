@@ -62,6 +62,12 @@ export default {
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))',
         },
+        dashboard: {
+          blue: 'hsl(var(--dashboard-blue))',
+          green: 'hsl(var(--dashboard-green))',
+          purple: 'hsl(var(--dashboard-purple))',
+          indigo: 'hsl(var(--dashboard-indigo))',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',

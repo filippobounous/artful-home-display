@@ -37,9 +37,9 @@ export function Dashboard({ items }: DashboardProps) {
   const getCategoryIcon = (categoryId: string) => {
     switch (categoryId) {
       case 'art':
-        return <Palette className="w-8 h-8 text-blue-600" />;
+        return <Palette className="w-8 h-8 text-dashboard-blue" />;
       case 'furniture':
-        return <Sofa className="w-8 h-8 text-green-600" />;
+        return <Sofa className="w-8 h-8 text-dashboard-green" />;
       default:
         return <Package className="w-8 h-8 text-slate-600" />;
     }
@@ -58,7 +58,7 @@ export function Dashboard({ items }: DashboardProps) {
                   {totalItems}
                 </p>
               </div>
-              <Package className="w-8 h-8 text-blue-600" />
+              <Package className="w-8 h-8 text-dashboard-blue" />
             </div>
           </CardContent>
         </Card>
@@ -72,8 +72,11 @@ export function Dashboard({ items }: DashboardProps) {
                   ${totalValuation.toLocaleString()}
                 </p>
               </div>
-              <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                <span className="text-green-600 font-bold">$</span>
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: 'hsl(var(--dashboard-green) / 0.2)' }}
+              >
+                <span className="text-dashboard-green font-bold">$</span>
               </div>
             </div>
           </CardContent>
@@ -88,8 +91,13 @@ export function Dashboard({ items }: DashboardProps) {
                   {categories.filter((c) => c.visible).length}
                 </p>
               </div>
-              <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
-                <span className="text-purple-600 font-bold">#</span>
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center"
+                style={{
+                  backgroundColor: 'hsl(var(--dashboard-purple) / 0.2)',
+                }}
+              >
+                <span className="text-dashboard-purple font-bold">#</span>
               </div>
             </div>
           </CardContent>
@@ -142,7 +150,7 @@ export function Dashboard({ items }: DashboardProps) {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <Home className="w-8 h-8 text-indigo-600" />
+                      <Home className="w-8 h-8 text-dashboard-indigo" />
                       <div>
                         <h3 className="font-semibold text-slate-900">
                           {house.name}
