@@ -8,6 +8,7 @@ import { AddItemDescriptionNotes } from './AddItemDescriptionNotes';
 import { useToast } from '@/hooks/use-toast';
 import { createDecorItem, updateDecorItem } from '@/lib/api';
 import type { DecorItem, DecorItemInput } from '@/types/inventory';
+import type { AddItemFormData } from '@/types/forms';
 
 export function AddItemForm() {
   const [searchParams] = useSearchParams();
@@ -15,7 +16,7 @@ export function AddItemForm() {
   const { toast } = useToast();
   const draftId = searchParams.get('draftId');
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<AddItemFormData>({
     code: '',
     name: '',
     creator: '',
@@ -42,6 +43,7 @@ export function AddItemForm() {
     appraisal_entity: '',
     description: '',
     notes: '',
+    images: [],
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -78,6 +80,7 @@ export function AddItemForm() {
             appraisal_entity: draft.appraisal_entity || '',
             description: draft.description || '',
             notes: draft.notes || '',
+            images: draft.images || [],
           });
 
           // Clear the draft data from localStorage

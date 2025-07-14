@@ -9,6 +9,7 @@ import { CategoriesManagement } from '@/components/settings/CategoriesManagement
 import { BulkUpload } from '@/components/settings/BulkUpload';
 import { DownloadDialog } from '@/components/settings/DownloadDialog';
 import { HouseConfig } from '@/types/inventory';
+import type { UploadRow } from '@/types/upload';
 
 export function SettingsManagement() {
   const {
@@ -37,13 +38,13 @@ export function SettingsManagement() {
 
   const [showDownloadDialog, setShowDownloadDialog] = useState(false);
 
-  const handleCsvUpload = (data: any[], type: string) => {
+  const handleCsvUpload = (data: UploadRow[], type: string) => {
     console.log(`Processing ${type} upload:`, data);
     // Here you would process the CSV data and add to your state
     // This is a placeholder for the actual implementation
   };
 
-  const handleJsonUpload = (data: any[], type: string) => {
+  const handleJsonUpload = (data: UploadRow[], type: string) => {
     console.log(`Processing ${type} JSON upload:`, data);
     // Here you would process the JSON data and add to your state
     // This is a placeholder for the actual implementation

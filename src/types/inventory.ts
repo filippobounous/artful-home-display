@@ -79,6 +79,7 @@ export interface DecorItemInput {
   code?: string;
   name: string;
   room_code: string;
+  house_code?: string;
   house?: string;
   room?: string;
   creator: string;

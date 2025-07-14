@@ -3,10 +3,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Plus, X, Upload, Image } from 'lucide-react';
+import type { AddItemFormData } from '@/types/forms';
 
 interface AddItemImagesProps {
-  formData: any;
-  setFormData: (updater: (prev: any) => any) => void;
+  formData: AddItemFormData;
+  setFormData: (updater: (prev: AddItemFormData) => AddItemFormData) => void;
 }
 
 export function AddItemImages({ formData, setFormData }: AddItemImagesProps) {

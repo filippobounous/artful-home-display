@@ -6,9 +6,10 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Upload, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import type { UploadRow } from '@/types/upload';
 
 interface CsvUploaderProps {
-  onUpload: (data: any[], type: string) => void;
+  onUpload: (data: UploadRow[], type: string) => void;
 }
 
 export function CsvUploader({ onUpload }: CsvUploaderProps) {
@@ -29,8 +30,8 @@ export function CsvUploader({ onUpload }: CsvUploaderProps) {
     }
   };
 
-  const parseCsv = (text: string) => {
-    const result = Papa.parse<Record<string, string>>(text, {
+  const parseCsv = (text: string): UploadRow[] => {
+    const result = Papa.parse<UploadRow>(text, {
       header: true,
       skipEmptyLines: true,
       newline: '',

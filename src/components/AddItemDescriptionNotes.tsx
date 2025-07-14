@@ -1,9 +1,10 @@
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import type { AddItemFormData } from '@/types/forms';
 
 interface AddItemDescriptionNotesProps {
-  formData: any;
-  setFormData: (updater: (prev: any) => any) => void;
+  formData: AddItemFormData;
+  setFormData: (updater: (prev: AddItemFormData) => AddItemFormData) => void;
 }
 
 export function AddItemDescriptionNotes({

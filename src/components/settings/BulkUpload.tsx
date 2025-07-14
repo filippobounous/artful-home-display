@@ -13,9 +13,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
+import type { UploadRow } from '@/types/upload';
+
 interface BulkUploadProps {
-  onCsvUpload: (data: any[], type: string) => void;
-  onJsonUpload: (data: any[], type: string) => void;
+  onCsvUpload: (data: UploadRow[], type: string) => void;
+  onJsonUpload: (data: UploadRow[], type: string) => void;
 }
 
 export function BulkUpload({ onCsvUpload, onJsonUpload }: BulkUploadProps) {
@@ -41,7 +43,7 @@ export function BulkUpload({ onCsvUpload, onJsonUpload }: BulkUploadProps) {
     }
   };
 
-  const parseCsv = (text: string) => {
+  const parseCsv = (text: string): UploadRow[] => {
     const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
     if (lines.length === 0) return [];
     const parseLine = (line: string) => {
@@ -69,10 +71,10 @@ export function BulkUpload({ onCsvUpload, onJsonUpload }: BulkUploadProps) {
     };
 
     const headers = parseLine(lines[0]);
-    const data: any[] = [];
+    const data: UploadRow[] = [];
     for (let i = 1; i < lines.length; i++) {
       const values = parseLine(lines[i]);
-      const row: any = {};
+      const row: UploadRow = {} as UploadRow;
       headers.forEach((header, index) => {
         row[header] = values[index] || '';
       });
@@ -81,7 +83,7 @@ export function BulkUpload({ onCsvUpload, onJsonUpload }: BulkUploadProps) {
     return data;
   };
 
-  const parseJson = (text: string) => {
+  const parseJson = (text: string): UploadRow[] => {
     try {
       const data = JSON.parse(text);
       return Array.isArray(data) ? data : [data];
@@ -102,7 +104,7 @@ export function BulkUpload({ onCsvUpload, onJsonUpload }: BulkUploadProps) {
 
     try {
       const text = await file.text();
-      let data: any[];
+      let data: UploadRow[];
 
       if (file.name.endsWith('.json') || file.type === 'application/json') {
         data = parseJson(text);
@@ -129,7 +131,7 @@ export function BulkUpload({ onCsvUpload, onJsonUpload }: BulkUploadProps) {
   };
 
   const downloadTemplate = (type: string, format: 'csv' | 'json') => {
-    let data: any[] = [];
+    let data: UploadRow[] = [];
     let filename = '';
 
     switch (type) {

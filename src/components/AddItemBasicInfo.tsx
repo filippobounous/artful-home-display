@@ -2,10 +2,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import type { AddItemFormData } from '@/types/forms';
 
 interface AddItemBasicInfoProps {
-  formData: any;
-  setFormData: (data: any) => void;
+  formData: AddItemFormData;
+  setFormData: (data: AddItemFormData) => void;
   errors?: Record<string, string>;
 }
 

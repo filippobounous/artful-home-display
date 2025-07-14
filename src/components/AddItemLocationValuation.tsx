@@ -19,10 +19,11 @@ import { format } from 'date-fns';
 import { HierarchicalHouseRoomSelector } from '@/components/HierarchicalHouseRoomSelector';
 import { HierarchicalCategorySelector } from '@/components/HierarchicalCategorySelector';
 import { currencyOptions } from '@/data/currencies';
+import type { AddItemFormData } from '@/types/forms';
 
 interface AddItemLocationValuationProps {
-  formData: any;
-  setFormData: (data: any) => void;
+  formData: AddItemFormData;
+  setFormData: (data: AddItemFormData) => void;
   errors?: Record<string, string>;
 }
 
