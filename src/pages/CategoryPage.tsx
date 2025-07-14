@@ -206,10 +206,11 @@ const CategoryPage = () => {
   };
 
   const downloadSelectedImages = () => {
-    console.log('Downloading selected images...');
-    alert(
-      'Selected images download functionality requires backend implementation',
-    );
+    toast({
+      title: 'Download not available',
+      description:
+        'Selected images download functionality requires backend implementation',
+    });
   };
 
   useEffect(() => {
