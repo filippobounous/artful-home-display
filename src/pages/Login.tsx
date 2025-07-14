@@ -65,7 +65,7 @@ const Login = () => {
               />
             </div>
             {error && (
-              <div className="text-sm text-red-600 bg-red-50 p-2 rounded">
+              <div className="text-sm text-[hsl(var(--destructive-foreground))] bg-[hsl(var(--destructive))] p-2 rounded">
                 {error}
               </div>
             )}
