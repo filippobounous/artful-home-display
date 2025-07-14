@@ -9,6 +9,7 @@ import { CategoriesManagement } from '@/components/settings/CategoriesManagement
 import { BulkUpload } from '@/components/settings/BulkUpload';
 import { DownloadDialog } from '@/components/settings/DownloadDialog';
 import { HouseConfig } from '@/types/inventory';
+import type { BulkRow } from '@/types/bulk';
 import { useToast } from '@/hooks/use-toast';
 
 export function SettingsManagement() {
@@ -39,7 +40,7 @@ export function SettingsManagement() {
 
   const [showDownloadDialog, setShowDownloadDialog] = useState(false);
 
-  const handleCsvUpload = (data: any[], type: string) => {
+  const handleCsvUpload = (data: BulkRow[], type: string) => {
     toast({
       title: 'Upload received',
       description: `${data.length} ${type} records processed`,
@@ -48,7 +49,7 @@ export function SettingsManagement() {
     // This is a placeholder for the actual implementation
   };
 
-  const handleJsonUpload = (data: any[], type: string) => {
+  const handleJsonUpload = (data: BulkRow[], type: string) => {
     toast({
       title: 'Upload received',
       description: `${data.length} ${type} records processed`,

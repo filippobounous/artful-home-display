@@ -1,9 +1,11 @@
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 
+import type { DecorItemFormData } from '@/types/forms';
+
 interface AddItemDescriptionNotesProps {
-  formData: any;
-  setFormData: (updater: (prev: any) => any) => void;
+  formData: DecorItemFormData;
+  setFormData: React.Dispatch<React.SetStateAction<DecorItemFormData>>;
 }
 
 export function AddItemDescriptionNotes({

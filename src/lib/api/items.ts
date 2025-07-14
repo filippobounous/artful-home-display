@@ -53,7 +53,7 @@ function convertInput(input: DecorItemInput, id: number): DecorItem {
     provenance: input.provenance,
     image: '/placeholder.svg',
     description: input.description || '',
-    house: input.house ?? (input as any).house_code,
+    house: input.house ?? input.house_code,
     room: input.room ?? input.room_code,
     yearPeriod: String(input.date_period),
     quantity: input.quantity,

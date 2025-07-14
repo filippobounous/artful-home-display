@@ -13,6 +13,7 @@ import {
   decorItemToInput,
 } from '@/lib/api';
 import type { DecorItem, DecorItemInput } from '@/types/inventory';
+import type { DecorItemFormData } from '@/types/forms';
 
 export function AddItemForm() {
   const [searchParams] = useSearchParams();
@@ -20,7 +21,7 @@ export function AddItemForm() {
   const { toast } = useToast();
   const draftId = searchParams.get('draftId');
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<DecorItemFormData>({
     code: '',
     name: '',
     creator: '',
@@ -54,7 +55,7 @@ export function AddItemForm() {
     async function loadData() {
       if (!draftId) return;
       const stored = localStorage.getItem('editingDraft');
-      let draft: any = null;
+      let draft: DecorItemInput | null = null;
       if (stored) {
         try {
           draft = JSON.parse(stored);

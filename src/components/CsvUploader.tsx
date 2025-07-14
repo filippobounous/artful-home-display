@@ -6,9 +6,10 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Upload, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import type { BulkRow } from '@/types/bulk';
 
 interface CsvUploaderProps {
-  onUpload: (data: any[], type: string) => void;
+  onUpload: (data: BulkRow[], type: string) => void;
 }
 
 export function CsvUploader({ onUpload }: CsvUploaderProps) {
@@ -29,8 +30,8 @@ export function CsvUploader({ onUpload }: CsvUploaderProps) {
     }
   };
 
-  const parseCsv = (text: string) => {
-    const result = Papa.parse<Record<string, string>>(text, {
+  const parseCsv = (text: string): BulkRow[] => {
+    const result = Papa.parse<Record<string, string | number | boolean>>(text, {
       header: true,
       skipEmptyLines: true,
       newline: '',
@@ -38,7 +39,7 @@ export function CsvUploader({ onUpload }: CsvUploaderProps) {
     if (result.errors.length) {
       console.error('CSV parse errors', result.errors);
     }
-    return result.data;
+    return result.data as BulkRow[];
   };
 
   const handleUpload = async () => {

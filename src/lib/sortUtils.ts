@@ -1,8 +1,9 @@
 import { DecorItem, HouseConfig, CategoryConfig } from '@/types/inventory';
 
 function locationIndex(item: DecorItem, houses: HouseConfig[]): number {
-  if ((item as any) && (item as any).locationSort !== undefined) {
-    const val = (item as any).locationSort;
+  const withSort = item as DecorItem & { locationSort?: number | string };
+  if (withSort.locationSort !== undefined) {
+    const val = withSort.locationSort;
     const num = typeof val === 'number' ? val : Number(val);
     if (!Number.isNaN(num)) return num;
   }
@@ -38,8 +39,8 @@ export function sortInventoryItems(
 ): DecorItem[] {
   return [...items].sort((a, b) => {
     if (!sortField) return 0;
-    let aValue: any;
-    let bValue: any;
+    let aValue: string | number;
+    let bValue: string | number;
     if (sortField === 'location') {
       aValue = locationIndex(a, houses);
       bValue = locationIndex(b, houses);
