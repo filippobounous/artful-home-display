@@ -169,7 +169,6 @@ export function InventoryHeader() {
           )}
 
           <DarkModeToggle />
-          <LogoutButton />
         </div>
       </div>
     </header>
