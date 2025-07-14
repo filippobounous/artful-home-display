@@ -8,6 +8,7 @@ import {
 import { Plus, Download, Images } from 'lucide-react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { DarkModeToggle } from '@/components/DarkModeToggle';
+import { LogoutButton } from '@/components/LogoutButton';
 import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import { sampleDecorItems } from '@/data/sampleData';
@@ -164,6 +165,7 @@ export function InventoryHeader() {
           )}
 
           <DarkModeToggle />
+          <LogoutButton />
         </div>
       </div>
     </header>
