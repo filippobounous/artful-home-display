@@ -100,15 +100,14 @@ export function ItemDetailDialog({
                 <h4 className="font-medium text-muted-foreground mb-1">
                   Category
                 </h4>
-                <p className="text-foreground capitalize">{item.category}</p>
-              </div>
-
-              <div>
-                <h4 className="font-medium text-muted-foreground mb-1">
-                  Subcategory
-                </h4>
-                <p className="text-foreground capitalize">
-                  {item.subcategory ?? '-'}
+                <p className="text-foreground flex items-center">
+                  <span className="capitalize">{item.category}</span>
+                  {item.subcategory && (
+                    <>
+                      <span className="mx-1">•</span>
+                      <span className="capitalize">{item.subcategory}</span>
+                    </>
+                  )}
                 </p>
               </div>
 
