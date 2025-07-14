@@ -119,8 +119,10 @@ const AllItems = () => {
 
   const filteredItems = items.filter((item) => {
     const matchesSearch =
-      item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (item.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (item.description || '')
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
       (item.artist &&
         item.artist.toLowerCase().includes(searchTerm.toLowerCase()));
 
