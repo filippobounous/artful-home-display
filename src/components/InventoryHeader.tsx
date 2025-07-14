@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import { sampleDecorItems } from '@/data/sampleData';
 import { useService } from '@/context/ServiceContext';
+import { fetchDecorItems } from '@/lib/api';
 
 export function InventoryHeader() {
   const navigate = useNavigate();
@@ -42,7 +43,6 @@ export function InventoryHeader() {
     // Use sample items as fallback if API fails
     let items = sampleDecorItems;
     try {
-      const { fetchDecorItems } = await import('@/lib/api');
       items = await fetchDecorItems();
     } catch (err) {
       console.error('Failed to fetch items for CSV, using sample data:', err);
@@ -91,7 +91,6 @@ export function InventoryHeader() {
   const downloadJSON = async () => {
     let items = sampleDecorItems;
     try {
-      const { fetchDecorItems } = await import('@/lib/api');
       items = await fetchDecorItems();
     } catch (err) {
       console.error('Failed to fetch items for JSON, using sample data:', err);
