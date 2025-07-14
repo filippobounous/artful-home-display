@@ -84,10 +84,7 @@ const reassignItems = (
   toRoomId: string,
 ): void => {
   // This would update your items database to reassign items
-  // For now, we'll just log the action
-  console.log(
-    `Reassigning items from ${fromHouseId}/${fromRoomId} to ${toHouseId}/${toRoomId}`,
-  );
+  // Implementation pending
 };
 
 export function useSettingsState() {

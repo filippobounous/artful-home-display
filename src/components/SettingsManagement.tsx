@@ -9,6 +9,7 @@ import { CategoriesManagement } from '@/components/settings/CategoriesManagement
 import { BulkUpload } from '@/components/settings/BulkUpload';
 import { DownloadDialog } from '@/components/settings/DownloadDialog';
 import { HouseConfig } from '@/types/inventory';
+import { useToast } from '@/hooks/use-toast';
 
 export function SettingsManagement() {
   const {
@@ -34,17 +35,24 @@ export function SettingsManagement() {
     toggleCategoryVisibility,
     toggleSubcategoryVisibility,
   } = useSettingsState();
+  const { toast } = useToast();
 
   const [showDownloadDialog, setShowDownloadDialog] = useState(false);
 
   const handleCsvUpload = (data: any[], type: string) => {
-    console.log(`Processing ${type} upload:`, data);
+    toast({
+      title: 'Upload received',
+      description: `${data.length} ${type} records processed`,
+    });
     // Here you would process the CSV data and add to your state
     // This is a placeholder for the actual implementation
   };
 
   const handleJsonUpload = (data: any[], type: string) => {
-    console.log(`Processing ${type} JSON upload:`, data);
+    toast({
+      title: 'Upload received',
+      description: `${data.length} ${type} records processed`,
+    });
     // Here you would process the JSON data and add to your state
     // This is a placeholder for the actual implementation
   };

@@ -137,8 +137,6 @@ export function AddItemForm() {
     }
     setErrors({});
 
-    console.log('Form submitted:', formData);
-
     const decorItem = {
       code: formData.code || undefined,
       name: formData.name,

@@ -13,11 +13,13 @@ import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import { sampleDecorItems } from '@/data/sampleData';
 import { useService } from '@/context/ServiceContext';
+import { useToast } from '@/hooks/use-toast';
 
 export function InventoryHeader() {
   const navigate = useNavigate();
   const location = useLocation();
   const { service } = useService();
+  const { toast } = useToast();
 
   const downloadCSV = async () => {
     const headers = [
@@ -118,8 +120,11 @@ export function InventoryHeader() {
   const downloadImages = async () => {
     // This is a simplified version - in a real app you'd need a backend service
     // to create and serve the zip file with all images
-    console.log('Downloading images zip...');
-    alert('Image download functionality requires backend implementation');
+    toast({
+      title: 'Download not available',
+      description:
+        'Image download functionality requires backend implementation',
+    });
   };
 
   return (
