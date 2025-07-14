@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/sidebar';
 import { useSidebar } from '@/components/ui/use-sidebar';
 import { useSettingsState } from '@/hooks/useSettingsState';
+import { ServiceSelect } from './ServiceSelect';
 
 const mainItems = [
   { title: 'Dashboard', url: '/', icon: Home },
@@ -99,6 +100,7 @@ export function AppSidebar() {
               <p className="text-sm text-slate-600 dark:text-slate-400">
                 Collection Manager
               </p>
+              <ServiceSelect />
             </div>
           ) : (
             <div className="text-center">
