@@ -74,7 +74,7 @@ export function ItemDetailDialog({
                 size="sm"
                 variant="destructive"
                 onClick={() => onDelete(item)}
-                className="h-8 px-2 bg-red-600 hover:bg-red-700 text-white"
+                className="h-8 px-2 bg-[hsl(var(--destructive))] hover:bg-[hsl(var(--destructive))]/90 text-[hsl(var(--destructive-foreground))]"
               >
                 <Trash2 className="w-4 h-4 mr-1" />
                 Delete
