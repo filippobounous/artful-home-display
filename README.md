@@ -130,12 +130,16 @@ docker compose up --build
 ```
 
 The application will be available at `http://localhost:3000`.
+Re-run the command whenever you change code to rebuild the image.
 
-To run the development server inside Docker, build with the `dev` target and
-uncomment the `command: npm run dev -- --host` line in `docker-compose.yml`:
+3. _(Optional)_ enable automatic reload during development:
+   - Uncomment the dev port mapping and `volumes` lines in `docker-compose.yml`.
+   - Also uncomment `command: npm run dev -- --host` to start the Vite dev server.
+   - Build with the `dev` target and start the container:
 
 ```bash
 docker compose build --target dev frontend
+docker compose up
 ```
 
 ## Permanent filters
