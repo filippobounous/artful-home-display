@@ -107,10 +107,10 @@ const Analytics = () => {
 
           <main className="flex-1 p-6">
             <div className="mb-6">
-              <h2 className="text-xl font-semibold text-slate-900 mb-2">
+              <h2 className="text-xl font-semibold text-foreground mb-2">
                 Collection Analytics
               </h2>
-              <p className="text-slate-600">
+              <p className="text-muted-foreground">
                 Comprehensive overview of your collection statistics
               </p>
             </div>
@@ -119,7 +119,7 @@ const Analytics = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-sm font-medium text-slate-600">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
                     Total Items
                   </CardTitle>
                 </CardHeader>
@@ -130,7 +130,7 @@ const Analytics = () => {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-sm font-medium text-slate-600">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
                     Total Valuation
                   </CardTitle>
                 </CardHeader>
@@ -143,7 +143,7 @@ const Analytics = () => {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-sm font-medium text-slate-600">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
                     Average Value
                   </CardTitle>
                 </CardHeader>
@@ -156,7 +156,7 @@ const Analytics = () => {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-sm font-medium text-slate-600">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
                     Art Pieces
                   </CardTitle>
                 </CardHeader>

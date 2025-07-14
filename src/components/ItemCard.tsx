@@ -49,30 +49,32 @@ export function ItemCard({ item, onClick, selected, onSelect }: ItemCardProps) {
         </div>
         <div className="p-4">
           <div className="flex items-start justify-between mb-2">
-            <h3 className="font-semibold text-slate-900 line-clamp-2">
+            <h3 className="font-semibold text-foreground line-clamp-2">
               {item.title}
             </h3>
           </div>
 
           {item.artist && (
-            <p className="text-slate-600 text-sm font-medium mb-1">
+            <p className="text-muted-foreground text-sm font-medium mb-1">
               by {item.artist}
             </p>
           )}
 
           {item.yearPeriod && (
-            <p className="text-slate-600 text-sm mb-2">{item.yearPeriod}</p>
+            <p className="text-muted-foreground text-sm mb-2">
+              {item.yearPeriod}
+            </p>
           )}
 
           <div className="flex items-center justify-between text-sm">
-            <div className="flex gap-2 text-xs text-slate-500">
+            <div className="flex gap-2 text-xs text-muted-foreground">
               <span className="capitalize">{item.category}</span>
               {item.subcategory && <span>• {item.subcategory}</span>}
             </div>
           </div>
 
           {(item.house || item.room) && (
-            <div className="mt-2 text-xs text-slate-500">
+            <div className="mt-2 text-xs text-muted-foreground">
               {item.house && (
                 <span className="capitalize">
                   {item.house.replace('-', ' ')}

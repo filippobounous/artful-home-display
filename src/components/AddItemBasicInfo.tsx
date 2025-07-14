@@ -16,7 +16,7 @@ export function AddItemBasicInfo({
 }: AddItemBasicInfoProps) {
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-medium text-slate-900 flex items-center">
+      <h3 className="text-lg font-medium text-foreground flex items-center">
         Core
         {errors.core && (
           <Badge variant="destructive" className="ml-2">
@@ -123,7 +123,7 @@ export function AddItemBasicInfo({
 
       {/* Physical Section */}
       <div className="space-y-4 pt-4 border-t">
-        <h3 className="text-lg font-medium text-slate-900">Physical</h3>
+        <h3 className="text-lg font-medium text-foreground">Physical</h3>
 
         <div className="grid grid-cols-3 gap-4">
           <div>

@@ -104,7 +104,7 @@ export function MultiSelectFilter({
               return (
                 <div
                   key={option.id}
-                  className="px-2 py-1 text-sm font-medium text-slate-600 bg-muted"
+                  className="px-2 py-1 text-sm font-medium text-muted-foreground bg-muted"
                 >
                   {option.name}
                 </div>
@@ -147,7 +147,7 @@ export function MultiSelectFilter({
                   />
                 )}
                 <span
-                  className={`text-sm ${option.header ? 'font-medium text-slate-600' : ''}`}
+                  className={`text-sm ${option.header ? 'font-medium text-muted-foreground' : ''}`}
                 >
                   {option.name}
                 </span>

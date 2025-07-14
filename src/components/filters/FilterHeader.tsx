@@ -25,7 +25,7 @@ export function FilterHeader({
 }: FilterHeaderProps) {
   return (
     <div className="flex items-center justify-between bg-card p-4 rounded-lg border shadow-sm">
-      <h3 className="text-lg font-semibold text-slate-900">
+      <h3 className="text-lg font-semibold text-foreground">
         Filter & View Options
       </h3>
       <div className="flex items-center gap-2">

@@ -134,7 +134,7 @@ export function CombinedCategoryFilter({
 
     return (
       <div className="md:col-span-2">
-        <Label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+        <Label className="block text-sm font-medium text-muted-foreground mb-2">
           Subcategories
         </Label>
         <MultiSelectFilter
@@ -149,7 +149,7 @@ export function CombinedCategoryFilter({
 
   return (
     <div className="md:col-span-2">
-      <Label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+      <Label className="block text-sm font-medium text-muted-foreground mb-2">
         Categories & Subcategories
       </Label>
       <MultiSelectFilter
