@@ -135,6 +135,20 @@ export function AddItemBasicInfo({
             }
           />
         </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="material">Material</Label>
+          <Input
+            id="material"
+            placeholder="e.g., wood, ceramic"
+            value={formData.material}
+            onChange={(e) =>
+              setFormData({ ...formData, material: e.target.value })
+            }
+          />
+        </div>
         <div>
           <Label htmlFor="height">Height (cm)</Label>
           <Input

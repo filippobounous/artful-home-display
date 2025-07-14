@@ -138,7 +138,6 @@ docker compose build --target dev frontend
 
 Certain pages lock a specific category or house so that browsing focuses on a single subset of the inventory. Category pages are accessed under `/category/:categoryId` and automatically reflect any categories you configure. House pages available under `/house/:houseId` are restricted to the selected house. When a category or house is fixed, the search filters only show the relevant subfilters (e.g. subcategories or rooms) and the locked filter cannot be removed.
 
-
 ## Inventory item fields
 
 Items track dimensions individually using `widthCm`, `heightCm`, and `depthCm` measured in centimeters. The old `size` field and all condition tracking have been removed.
