@@ -135,6 +135,20 @@ export function AddItemBasicInfo({
             }
           />
         </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <Label htmlFor="material">Material</Label>
+          <Input
+            id="material"
+            placeholder="e.g., wood, ceramic"
+            value={formData.material}
+            onChange={(e) =>
+              setFormData({ ...formData, material: e.target.value })
+            }
+          />
+        </div>
         <div>
           <Label htmlFor="height">Height (cm)</Label>
           <Input
@@ -176,29 +190,28 @@ export function AddItemBasicInfo({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="material">Material</Label>
-          <Input
-            id="material"
-            placeholder="e.g., wood, ceramic"
-            value={formData.material}
-            onChange={(e) =>
-              setFormData({ ...formData, material: e.target.value })
-            }
-          />
-        </div>
-        <div>
-          <Label htmlFor="provenance">Provenance</Label>
-          <Input
-            id="provenance"
-            placeholder="Source or previous owner"
-            value={formData.provenance}
-            onChange={(e) =>
-              setFormData({ ...formData, provenance: e.target.value })
-            }
-          />
-        </div>
+      <div>
+        <Label htmlFor="material">Material</Label>
+        <Input
+          id="material"
+          placeholder="e.g., wood, ceramic"
+          value={formData.material}
+          onChange={(e) =>
+            setFormData({ ...formData, material: e.target.value })
+          }
+        />
+      </div>
+
+      <div>
+        <Label htmlFor="provenance">Provenance</Label>
+        <Input
+          id="provenance"
+          placeholder="Source or previous owner"
+          value={formData.provenance}
+          onChange={(e) =>
+            setFormData({ ...formData, provenance: e.target.value })
+          }
+        />
       </div>
 
       {errors.core && (
