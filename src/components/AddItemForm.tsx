@@ -124,6 +124,13 @@ export function AddItemForm() {
     if (!formData.quantity || Number(formData.quantity) <= 0)
       newErrors.quantity = 'This field is required';
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (formData.acquisition_date && formData.acquisition_date > today)
+      newErrors.acquisition = 'Date cannot be in the future';
+    if (formData.appraisal_date && formData.appraisal_date > today)
+      newErrors.appraisal = 'Date cannot be in the future';
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;

@@ -130,6 +130,7 @@ export function AddItemLocationValuation({
                 onSelect={(date) =>
                   setFormData({ ...formData, acquisition_date: date })
                 }
+                disabled={(date) => date > new Date()}
                 initialFocus
               />
             </PopoverContent>
@@ -201,6 +202,7 @@ export function AddItemLocationValuation({
                 onSelect={(date) =>
                   setFormData({ ...formData, appraisal_date: date })
                 }
+                disabled={(date) => date > new Date()}
                 initialFocus
               />
             </PopoverContent>
