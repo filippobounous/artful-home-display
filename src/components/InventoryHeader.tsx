@@ -11,10 +11,12 @@ import { DarkModeToggle } from '@/components/DarkModeToggle';
 import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import { sampleDecorItems } from '@/data/sampleData';
+import { useService } from '@/context/ServiceContext';
 
 export function InventoryHeader() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { service } = useService();
 
   const downloadCSV = async () => {
     const headers = [
@@ -125,7 +127,10 @@ export function InventoryHeader() {
         <div className="flex items-center gap-4">
           <SidebarTrigger className="md:hidden" />
           <h1 className="text-2xl font-bold text-slate-900">
-            Collection Manager
+            Murgenere
+            <span className="block text-base font-normal text-slate-600">
+              {service}
+            </span>
           </h1>
         </div>
 
