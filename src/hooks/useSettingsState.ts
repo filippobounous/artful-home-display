@@ -61,7 +61,7 @@ const validateRoom = (room: Partial<RoomConfig>): string[] => {
 };
 
 // Enhanced function to check for linked items - simulates checking for items in a room
-const getLinkedItems = (houseId: string, roomId: string): any[] => {
+const getLinkedItems = (houseId: string, roomId: string): string[] => {
   // This simulates items being linked to a room
   // In a real app, this would query your items database
   // For demonstration, we'll return some mock data for certain rooms

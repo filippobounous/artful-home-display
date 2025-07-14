@@ -12,10 +12,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import type { BulkRow } from '@/types/bulk';
 
 interface BulkUploadProps {
-  onCsvUpload: (data: any[], type: string) => void;
-  onJsonUpload: (data: any[], type: string) => void;
+  onCsvUpload: (data: BulkRow[], type: string) => void;
+  onJsonUpload: (data: BulkRow[], type: string) => void;
 }
 
 export function BulkUpload({ onCsvUpload, onJsonUpload }: BulkUploadProps) {
@@ -69,10 +70,10 @@ export function BulkUpload({ onCsvUpload, onJsonUpload }: BulkUploadProps) {
     };
 
     const headers = parseLine(lines[0]);
-    const data: any[] = [];
+    const data: BulkRow[] = [];
     for (let i = 1; i < lines.length; i++) {
       const values = parseLine(lines[i]);
-      const row: any = {};
+      const row: BulkRow = {};
       headers.forEach((header, index) => {
         row[header] = values[index] || '';
       });
@@ -81,10 +82,10 @@ export function BulkUpload({ onCsvUpload, onJsonUpload }: BulkUploadProps) {
     return data;
   };
 
-  const parseJson = (text: string) => {
+  const parseJson = (text: string): BulkRow[] => {
     try {
       const data = JSON.parse(text);
-      return Array.isArray(data) ? data : [data];
+      return Array.isArray(data) ? (data as BulkRow[]) : [data as BulkRow];
     } catch (error) {
       throw new Error('Invalid JSON format');
     }
@@ -102,7 +103,7 @@ export function BulkUpload({ onCsvUpload, onJsonUpload }: BulkUploadProps) {
 
     try {
       const text = await file.text();
-      let data: any[];
+      let data: BulkRow[];
 
       if (file.name.endsWith('.json') || file.type === 'application/json') {
         data = parseJson(text);
@@ -129,7 +130,7 @@ export function BulkUpload({ onCsvUpload, onJsonUpload }: BulkUploadProps) {
   };
 
   const downloadTemplate = (type: string, format: 'csv' | 'json') => {
-    let data: any[] = [];
+    let data: BulkRow[] = [];
     let filename = '';
 
     switch (type) {

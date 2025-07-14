@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/select';
 import { Download } from 'lucide-react';
 import { HouseConfig, CategoryConfig } from '@/types/inventory';
+import type { BulkRow } from '@/types/bulk';
 
 interface DownloadDialogProps {
   open: boolean;
@@ -36,7 +37,7 @@ export function DownloadDialog({
   const handleDownload = () => {
     if (!dataType || !format) return;
 
-    let data: any[] = [];
+    let data: BulkRow[] = [];
     let filename = '';
 
     switch (dataType) {
@@ -109,7 +110,7 @@ export function DownloadDialog({
     setFormat('');
   };
 
-  const downloadCSV = (data: any[], filename: string) => {
+  const downloadCSV = (data: BulkRow[], filename: string) => {
     if (data.length === 0) return;
 
     const headers = Object.keys(data[0]);
@@ -136,7 +137,7 @@ export function DownloadDialog({
     URL.revokeObjectURL(url);
   };
 
-  const downloadJSON = (data: any[], filename: string) => {
+  const downloadJSON = (data: BulkRow[], filename: string) => {
     const jsonContent = JSON.stringify(data, null, 2);
     const blob = new Blob([jsonContent], { type: 'application/json' });
     const url = URL.createObjectURL(blob);

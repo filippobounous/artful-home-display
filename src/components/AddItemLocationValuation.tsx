@@ -20,9 +20,11 @@ import { HierarchicalHouseRoomSelector } from '@/components/HierarchicalHouseRoo
 import { HierarchicalCategorySelector } from '@/components/HierarchicalCategorySelector';
 import { currencyOptions } from '@/data/currencies';
 
+import type { DecorItemFormData } from '@/types/forms';
+
 interface AddItemLocationValuationProps {
-  formData: any;
-  setFormData: (data: any) => void;
+  formData: DecorItemFormData;
+  setFormData: React.Dispatch<React.SetStateAction<DecorItemFormData>>;
   errors?: Record<string, string>;
 }
 

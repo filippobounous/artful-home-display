@@ -3,9 +3,11 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
+import type { DecorItemFormData } from '@/types/forms';
+
 interface AddItemBasicInfoProps {
-  formData: any;
-  setFormData: (data: any) => void;
+  formData: DecorItemFormData;
+  setFormData: React.Dispatch<React.SetStateAction<DecorItemFormData>>;
   errors?: Record<string, string>;
 }
 

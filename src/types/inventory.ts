@@ -81,6 +81,7 @@ export interface DecorItemInput {
   room_code: string;
   house?: string;
   room?: string;
+  house_code?: string;
   creator: string;
   origin_region: string;
   date_period: string | number;

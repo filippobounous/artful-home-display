@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Plus, X, Upload, Image } from 'lucide-react';
 
 interface AddItemImagesProps {
-  formData: any;
-  setFormData: (updater: (prev: any) => any) => void;
+  formData: { images: string[] };
+  setFormData: React.Dispatch<React.SetStateAction<{ images: string[] }>>;
 }
 
 export function AddItemImages({ formData, setFormData }: AddItemImagesProps) {
