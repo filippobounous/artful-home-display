@@ -121,34 +121,7 @@ export function AddItemBasicInfo({
         )}
       </div>
 
-      <div className="grid grid-cols-4 gap-4">
-        <div>
-          <Label htmlFor="width">Width (cm)</Label>
-          <Input
-            id="width"
-            type="number"
-            step="0.01"
-            placeholder="Width in cm"
-            value={formData.width_cm}
-            onChange={(e) =>
-              setFormData({ ...formData, width_cm: e.target.value })
-            }
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="material">Material</Label>
-          <Input
-            id="material"
-            placeholder="e.g., wood, ceramic"
-            value={formData.material}
-            onChange={(e) =>
-              setFormData({ ...formData, material: e.target.value })
-            }
-          />
-        </div>
+      <div className="grid grid-cols-3 gap-4">
         <div>
           <Label htmlFor="height">Height (cm)</Label>
           <Input
@@ -159,6 +132,19 @@ export function AddItemBasicInfo({
             value={formData.height_cm}
             onChange={(e) =>
               setFormData({ ...formData, height_cm: e.target.value })
+            }
+          />
+        </div>
+        <div>
+          <Label htmlFor="width">Width (cm)</Label>
+          <Input
+            id="width"
+            type="number"
+            step="0.01"
+            placeholder="Width in cm"
+            value={formData.width_cm}
+            onChange={(e) =>
+              setFormData({ ...formData, width_cm: e.target.value })
             }
           />
         </div>
@@ -175,43 +161,45 @@ export function AddItemBasicInfo({
             }
           />
         </div>
+      </div>
+
+      <div>
+        <Label htmlFor="weight_kg">Mass (kg)</Label>
+        <Input
+          id="weight_kg"
+          type="number"
+          step="0.01"
+          placeholder="Mass in kg"
+          value={formData.weight_kg}
+          onChange={(e) =>
+            setFormData({ ...formData, weight_kg: e.target.value })
+          }
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
         <div>
-          <Label htmlFor="weight_kg">Weight (kg)</Label>
+          <Label htmlFor="material">Material</Label>
           <Input
-            id="weight_kg"
-            type="number"
-            step="0.01"
-            placeholder="Weight in kg"
-            value={formData.weight_kg}
+            id="material"
+            placeholder="e.g., wood, ceramic"
+            value={formData.material}
             onChange={(e) =>
-              setFormData({ ...formData, weight_kg: e.target.value })
+              setFormData({ ...formData, material: e.target.value })
             }
           />
         </div>
-      </div>
-
-      <div>
-        <Label htmlFor="material">Material</Label>
-        <Input
-          id="material"
-          placeholder="e.g., wood, ceramic"
-          value={formData.material}
-          onChange={(e) =>
-            setFormData({ ...formData, material: e.target.value })
-          }
-        />
-      </div>
-
-      <div>
-        <Label htmlFor="provenance">Provenance</Label>
-        <Input
-          id="provenance"
-          placeholder="Source or previous owner"
-          value={formData.provenance}
-          onChange={(e) =>
-            setFormData({ ...formData, provenance: e.target.value })
-          }
-        />
+        <div>
+          <Label htmlFor="provenance">Provenance</Label>
+          <Input
+            id="provenance"
+            placeholder="Source or previous owner"
+            value={formData.provenance}
+            onChange={(e) =>
+              setFormData({ ...formData, provenance: e.target.value })
+            }
+          />
+        </div>
       </div>
 
       {errors.core && (
