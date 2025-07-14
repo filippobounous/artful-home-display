@@ -5,7 +5,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Plus, Download, Images } from 'lucide-react';
+import { Plus, Download, Images, LogOut } from 'lucide-react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { DarkModeToggle } from '@/components/DarkModeToggle';
 import { useNavigate } from 'react-router-dom';
@@ -121,6 +121,12 @@ export function InventoryHeader() {
     alert('Image download functionality requires backend implementation');
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('isAuthenticated');
+    navigate('/login');
+  };
+
   return (
     <header className="border-b bg-card px-6 py-4">
       <div className="flex items-center justify-between">
@@ -163,6 +169,10 @@ export function InventoryHeader() {
             </Button>
           )}
 
+          <Button variant="ghost" onClick={handleLogout}>
+            <LogOut className="w-4 h-4 mr-2" />
+            Logout
+          </Button>
           <DarkModeToggle />
         </div>
       </div>

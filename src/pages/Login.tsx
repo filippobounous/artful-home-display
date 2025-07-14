@@ -76,7 +76,7 @@ const Login = () => {
           <div className="mt-4 text-center text-sm text-slate-600">
             <p>Demo credentials:</p>
             <p>
-              <strong>Username:</strong> admin
+              <strong>Username:</strong> test
             </p>
             <p>
               <strong>Password:</strong> password123
