@@ -59,7 +59,8 @@ const AllItems = () => {
   );
 
   const handleEdit = (item: DecorItem) => {
-    localStorage.setItem('editingDraft', JSON.stringify(item));
+    const input = decorItemToInput(item);
+    localStorage.setItem('editingDraft', JSON.stringify(input));
     navigate(`/add?draftId=${item.id}`);
   };
 
