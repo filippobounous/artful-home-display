@@ -10,8 +10,9 @@ import {
   Lamp,
   Shapes,
   House,
+  LogOut,
 } from 'lucide-react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   Sidebar,
   SidebarContent,
@@ -54,6 +55,7 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const location = useLocation();
   const currentPath = location.pathname;
+  const navigate = useNavigate();
   const isCollapsed = state === 'collapsed';
   const { categories, houses } = useSettingsState();
 
@@ -86,6 +88,12 @@ export function AppSidebar() {
     active
       ? 'bg-sidebar-accent text-sidebar-accent-foreground font-medium border-r-2 border-sidebar-primary'
       : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground';
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('isAuthenticated');
+    navigate('/login');
+  };
 
   return (
     <Sidebar className={isCollapsed ? 'w-14' : 'w-64'} collapsible="icon">
@@ -209,6 +217,13 @@ export function AppSidebar() {
                       <Settings className="w-4 h-4" />
                       {!isCollapsed && <span>Settings</span>}
                     </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+
+                <SidebarMenuItem>
+                  <SidebarMenuButton onClick={handleLogout}>
+                    <LogOut className="w-4 h-4" />
+                    {!isCollapsed && <span>Logout</span>}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               </SidebarMenu>
