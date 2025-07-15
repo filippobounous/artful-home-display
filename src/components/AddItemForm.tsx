@@ -15,6 +15,31 @@ import {
 import type { DecorItem, DecorItemInput } from '@/types/inventory';
 import type { DecorItemFormData } from '@/types/forms';
 
+function validateRequiredFields(data: DecorItemFormData) {
+  const errs: Record<string, string> = {};
+  if (!data.name.trim()) errs.name = 'This field is required';
+  if (!data.room_code.trim()) errs.room_code = 'This field is required';
+  if (!data.creator.trim()) errs.creator = 'This field is required';
+  if (!data.origin_region.trim()) errs.origin_region = 'This field is required';
+  if (!data.date_period.toString().trim())
+    errs.date_period = 'This field is required';
+  if (!data.category.trim()) errs.category = 'This field is required';
+  if (!data.subcategory.trim()) errs.subcategory = 'This field is required';
+  if (!data.quantity || Number(data.quantity) <= 0)
+    errs.quantity = 'This field is required';
+
+  if (
+    errs.name ||
+    errs.creator ||
+    errs.origin_region ||
+    errs.date_period ||
+    errs.quantity
+  ) {
+    errs.core = 'Required fields missing';
+  }
+  return errs;
+}
+
 export function AddItemForm() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -90,7 +115,7 @@ export function AddItemForm() {
           ? new Date(draft.appraisal_date)
           : undefined;
 
-        setFormData({
+        const loaded = {
           code: draft.code || '',
           name: draft.name || '',
           creator: draft.creator || '',
@@ -117,7 +142,10 @@ export function AddItemForm() {
           appraisal_entity: draft.appraisal_entity || '',
           description: draft.description || '',
           notes: draft.notes || '',
-        });
+        } as DecorItemFormData;
+
+        setFormData(loaded);
+        setErrors(validateRequiredFields(loaded));
 
         localStorage.removeItem('editingDraft');
 
@@ -139,21 +167,7 @@ export function AddItemForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const newErrors: Record<string, string> = {};
-    if (!formData.name.trim()) newErrors.name = 'This field is required';
-    if (!formData.room_code.trim())
-      newErrors.room_code = 'This field is required';
-    if (!formData.creator.trim()) newErrors.creator = 'This field is required';
-    if (!formData.origin_region.trim())
-      newErrors.origin_region = 'This field is required';
-    if (!formData.date_period.trim())
-      newErrors.date_period = 'This field is required';
-    if (!formData.category.trim())
-      newErrors.category = 'This field is required';
-    if (!formData.subcategory.trim())
-      newErrors.subcategory = 'This field is required';
-    if (!formData.quantity || Number(formData.quantity) <= 0)
-      newErrors.quantity = 'This field is required';
+    const newErrors = validateRequiredFields(formData);
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
