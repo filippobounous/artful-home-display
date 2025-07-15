@@ -751,69 +751,73 @@ export function HousesManagement({
                   </p>
                 )}
               </div>
-              <div className="col-span-2">
-                <Label htmlFor="edit-house-address">Address</Label>
-                <Input
-                  id="edit-house-address"
-                  value={editingHouse.address || ''}
-                  onChange={(e) =>
-                    setEditingHouse({
-                      ...editingHouse,
-                      address: e.target.value,
-                    })
-                  }
-                  placeholder="e.g., 123 Main Street"
-                />
+              <div className="col-span-2 grid grid-cols-3 gap-4">
+                <div className="col-span-2">
+                  <Label htmlFor="edit-house-address">Address</Label>
+                  <Input
+                    id="edit-house-address"
+                    value={editingHouse.address || ''}
+                    onChange={(e) =>
+                      setEditingHouse({
+                        ...editingHouse,
+                        address: e.target.value,
+                      })
+                    }
+                    placeholder="e.g., 123 Main Street"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-house-postal">Postal Code</Label>
+                  <Input
+                    id="edit-house-postal"
+                    value={editingHouse.postal_code || ''}
+                    onChange={(e) =>
+                      setEditingHouse({
+                        ...editingHouse,
+                        postal_code: e.target.value,
+                      })
+                    }
+                    placeholder="e.g., 10001"
+                  />
+                </div>
               </div>
-              <div>
-                <Label htmlFor="edit-house-postal">Postal Code</Label>
-                <Input
-                  id="edit-house-postal"
-                  value={editingHouse.postal_code || ''}
-                  onChange={(e) =>
-                    setEditingHouse({
-                      ...editingHouse,
-                      postal_code: e.target.value,
-                    })
-                  }
-                  placeholder="e.g., 10001"
-                />
-              </div>
-              <div>
-                <Label htmlFor="edit-house-lat">Latitude</Label>
-                <Input
-                  id="edit-house-lat"
-                  type="number"
-                  step="any"
-                  value={editingHouse.latitude || ''}
-                  onChange={(e) =>
-                    setEditingHouse({
-                      ...editingHouse,
-                      latitude: e.target.value
-                        ? parseFloat(e.target.value)
-                        : undefined,
-                    })
-                  }
-                  placeholder="e.g., 40.7128"
-                />
-              </div>
-              <div>
-                <Label htmlFor="edit-house-lng">Longitude</Label>
-                <Input
-                  id="edit-house-lng"
-                  type="number"
-                  step="any"
-                  value={editingHouse.longitude || ''}
-                  onChange={(e) =>
-                    setEditingHouse({
-                      ...editingHouse,
-                      longitude: e.target.value
-                        ? parseFloat(e.target.value)
-                        : undefined,
-                    })
-                  }
-                  placeholder="e.g., -74.0060"
-                />
+              <div className="col-span-2 grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="edit-house-lat">Latitude</Label>
+                  <Input
+                    id="edit-house-lat"
+                    type="number"
+                    step="any"
+                    value={editingHouse.latitude || ''}
+                    onChange={(e) =>
+                      setEditingHouse({
+                        ...editingHouse,
+                        latitude: e.target.value
+                          ? parseFloat(e.target.value)
+                          : undefined,
+                      })
+                    }
+                    placeholder="e.g., 40.7128"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="edit-house-lng">Longitude</Label>
+                  <Input
+                    id="edit-house-lng"
+                    type="number"
+                    step="any"
+                    value={editingHouse.longitude || ''}
+                    onChange={(e) =>
+                      setEditingHouse({
+                        ...editingHouse,
+                        longitude: e.target.value
+                          ? parseFloat(e.target.value)
+                          : undefined,
+                      })
+                    }
+                    placeholder="e.g., -74.0060"
+                  />
+                </div>
               </div>
               <div className="col-span-2">
                 <Label htmlFor="edit-house-beneficiary">
