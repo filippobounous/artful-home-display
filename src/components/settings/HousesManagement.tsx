@@ -52,6 +52,7 @@ import {
 import { HouseConfig, RoomConfig } from '@/types/inventory';
 import { RoomDeletionDialog } from './RoomDeletionDialog';
 import { useSettingsState } from '@/hooks/useSettingsState';
+import { useRoomTypes } from '@/hooks/useRoomTypes';
 
 interface HousesManagementProps {
   houses: HouseConfig[];
@@ -87,6 +88,7 @@ export function HousesManagement({
 }: HousesManagementProps) {
   const { getLinkedItems, deleteRoomWithReassignment, validateRoom } =
     useSettingsState();
+  const roomTypes = useRoomTypes();
 
   const [newHouse, setNewHouse] = useState({
     name: '',
@@ -935,15 +937,11 @@ export function HousesManagement({
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="living">Living Room</SelectItem>
-                  <SelectItem value="bedroom">Bedroom</SelectItem>
-                  <SelectItem value="kitchen">Kitchen</SelectItem>
-                  <SelectItem value="bathroom">Bathroom</SelectItem>
-                  <SelectItem value="dining">Dining Room</SelectItem>
-                  <SelectItem value="office">Office</SelectItem>
-                  <SelectItem value="storage">Storage</SelectItem>
-                  <SelectItem value="garage">Garage</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
+                  {roomTypes.map((t) => (
+                    <SelectItem key={t.id} value={t.id}>
+                      {t.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -1116,15 +1114,11 @@ export function HousesManagement({
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="living">Living Room</SelectItem>
-                      <SelectItem value="bedroom">Bedroom</SelectItem>
-                      <SelectItem value="kitchen">Kitchen</SelectItem>
-                      <SelectItem value="bathroom">Bathroom</SelectItem>
-                      <SelectItem value="dining">Dining Room</SelectItem>
-                      <SelectItem value="office">Office</SelectItem>
-                      <SelectItem value="storage">Storage</SelectItem>
-                      <SelectItem value="garage">Garage</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
+                      {roomTypes.map((t) => (
+                        <SelectItem key={t.id} value={t.id}>
+                          {t.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
