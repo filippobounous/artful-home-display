@@ -116,7 +116,6 @@ export function HousesManagement({
     doors: undefined,
     description: '',
     notes: '',
-    code: '',
   });
   const [editingRoom, setEditingRoom] = useState<{
     house: HouseConfig;
@@ -200,7 +199,6 @@ export function HousesManagement({
         doors: undefined,
         description: '',
         notes: '',
-        code: '',
       });
       setShowAddRoom(null);
       setShowAddRoomValidation(false);
@@ -1026,17 +1024,6 @@ export function HousesManagement({
               />
             </div>
             <div>
-              <Label htmlFor="room-code">Room Code</Label>
-              <Input
-                id="room-code"
-                value={newRoom.code}
-                onChange={(e) =>
-                  setNewRoom({ ...newRoom, code: e.target.value })
-                }
-                placeholder="Auto-generated if empty"
-              />
-            </div>
-            <div>
               <Label>House Code</Label>
               <Input value={showAddRoom?.houseCode || ''} disabled />
               <p className="text-xs text-muted-foreground mt-1">
@@ -1240,13 +1227,7 @@ export function HousesManagement({
                   <Input
                     id="edit-room-code"
                     value={editingRoom.room.code || ''}
-                    onChange={(e) =>
-                      setEditingRoom({
-                        ...editingRoom,
-                        room: { ...editingRoom.room, code: e.target.value },
-                      })
-                    }
-                    placeholder="Auto-generated if empty"
+                    disabled
                   />
                 </div>
                 <div>
