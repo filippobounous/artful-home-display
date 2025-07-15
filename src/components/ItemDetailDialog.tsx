@@ -98,6 +98,20 @@ export function ItemDetailDialog({
             <div className="space-y-4">
               <div>
                 <h4 className="font-medium text-muted-foreground mb-1">
+                  Artist/Maker
+                </h4>
+                <p className="text-foreground">{item.artist ?? '-'}</p>
+              </div>
+
+              <div>
+                <h4 className="font-medium text-muted-foreground mb-1">
+                  Year/Period
+                </h4>
+                <p className="text-foreground">{item.yearPeriod ?? '-'}</p>
+              </div>
+
+              <div>
+                <h4 className="font-medium text-muted-foreground mb-1">
                   Category
                 </h4>
                 <p className="text-foreground flex items-center">
@@ -113,20 +127,6 @@ export function ItemDetailDialog({
 
               <div>
                 <h4 className="font-medium text-muted-foreground mb-1">
-                  Artist/Maker
-                </h4>
-                <p className="text-foreground">{item.artist ?? '-'}</p>
-              </div>
-
-              <div>
-                <h4 className="font-medium text-muted-foreground mb-1">
-                  Year/Period
-                </h4>
-                <p className="text-foreground">{item.yearPeriod ?? '-'}</p>
-              </div>
-
-              <div>
-                <h4 className="font-medium text-muted-foreground mb-1">
                   Origin Region
                 </h4>
                 <p className="text-foreground">{item.originRegion ?? '-'}</p>
@@ -138,43 +138,9 @@ export function ItemDetailDialog({
                 </h4>
                 <p className="text-foreground">{item.material ?? '-'}</p>
               </div>
-
-              <div>
-                <h4 className="font-medium text-muted-foreground mb-1">
-                  Provenance
-                </h4>
-                <p className="text-foreground">{item.provenance ?? '-'}</p>
-              </div>
             </div>
 
             <div className="space-y-4">
-              <div>
-                <h4 className="font-medium text-muted-foreground mb-1">
-                  Dimensions
-                </h4>
-                <p className="text-foreground">
-                  {item.widthCm ?? '-'} x {item.heightCm ?? '-'} x{' '}
-                  {item.depthCm ?? '-'} cm
-                </p>
-              </div>
-
-              <div>
-                <h4 className="font-medium text-muted-foreground mb-1">
-                  Weight
-                </h4>
-                <p className="text-foreground">{item.weightKg ?? '-'} kg</p>
-              </div>
-
-              <div>
-                <h4 className="font-medium text-muted-foreground mb-1">
-                  Quantity
-                </h4>
-                <p className="text-foreground flex items-center">
-                  <Hash className="w-4 h-4 mr-1" />
-                  {item.quantity ?? '-'}
-                </p>
-              </div>
-
               <div>
                 <h4 className="font-medium text-muted-foreground mb-1">
                   Location
@@ -201,6 +167,40 @@ export function ItemDetailDialog({
                     '-'
                   )}
                 </p>
+              </div>
+
+              <div>
+                <h4 className="font-medium text-muted-foreground mb-1">
+                  Provenance
+                </h4>
+                <p className="text-foreground">{item.provenance ?? '-'}</p>
+              </div>
+
+              <div>
+                <h4 className="font-medium text-muted-foreground mb-1">
+                  Quantity
+                </h4>
+                <p className="text-foreground flex items-center">
+                  <Hash className="w-4 h-4 mr-1" />
+                  {item.quantity ?? '-'}
+                </p>
+              </div>
+
+              <div>
+                <h4 className="font-medium text-muted-foreground mb-1">
+                  Dimensions
+                </h4>
+                <p className="text-foreground">
+                  {item.widthCm ?? '-'} x {item.heightCm ?? '-'} x{' '}
+                  {item.depthCm ?? '-'} cm
+                </p>
+              </div>
+
+              <div>
+                <h4 className="font-medium text-muted-foreground mb-1">
+                  Weight
+                </h4>
+                <p className="text-foreground">{item.weightKg ?? '-'} kg</p>
               </div>
             </div>
           </div>
