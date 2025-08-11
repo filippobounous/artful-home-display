@@ -48,15 +48,16 @@ export function sortInventoryItems(
       aValue = categoryIndex(a, categories);
       bValue = categoryIndex(b, categories);
     } else {
-      aValue = a[sortField as keyof DecorItem];
-
-      bValue = b[sortField as keyof DecorItem];
+      const aFieldValue = a[sortField as keyof DecorItem];
+      const bFieldValue = b[sortField as keyof DecorItem];
+      
       if (sortField === 'valuation') {
-        aValue = Number(aValue) || 0;
-        bValue = Number(bValue) || 0;
+        aValue = Number(aFieldValue) || 0;
+        bValue = Number(bFieldValue) || 0;
       } else {
-        aValue = String(aValue || '').toLowerCase();
-        bValue = String(bValue || '').toLowerCase();
+        // Convert any type to string for text comparison
+        aValue = String(aFieldValue || '').toLowerCase();
+        bValue = String(bFieldValue || '').toLowerCase();
       }
     }
     if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;

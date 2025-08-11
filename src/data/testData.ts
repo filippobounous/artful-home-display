@@ -105,6 +105,8 @@ export const generateTestData = (): DecorItem[] => {
     return `${year}-${month}-${day}`;
   };
 
+  const conditions: ('mint' | 'excellent' | 'very good' | 'good')[] = ['mint', 'excellent', 'very good', 'good'];
+
   const generateItem = (id: number): DecorItem => {
     const category = getRandomElement(categories);
     const subcategory = getRandomElement(category.subcategories);
@@ -192,6 +194,7 @@ export const generateTestData = (): DecorItem[] => {
       ]),
       valuationCurrency: currency,
       notes: getRandomElement(notes),
+      condition: getRandomElement(conditions),
       deleted: false,
       history: [],
     };
