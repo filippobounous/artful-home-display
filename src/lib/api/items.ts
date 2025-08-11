@@ -1,5 +1,6 @@
+
 import { DecorItem, DecorItemInput } from '@/types/inventory';
-import { sampleDecorItems } from '@/data/sampleData';
+import { testDecorItems } from '@/data/testData';
 import { API_URL, API_KEY } from './common';
 
 function getToken() {
@@ -21,11 +22,11 @@ function getAllInventory(): DecorItem[] {
     try {
       return JSON.parse(stored) as DecorItem[];
     } catch {
-      // fall through to sample items
+      // fall through to test items
     }
   }
-  localStorage.setItem('inventoryData', JSON.stringify(sampleDecorItems));
-  return [...sampleDecorItems];
+  localStorage.setItem('inventoryData', JSON.stringify(testDecorItems));
+  return [...testDecorItems];
 }
 
 function getLocalInventory(): DecorItem[] {

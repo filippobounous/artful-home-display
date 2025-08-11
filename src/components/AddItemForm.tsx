@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
@@ -5,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { AddItemBasicInfo } from './AddItemBasicInfo';
 import { AddItemLocationValuation } from './AddItemLocationValuation';
 import { AddItemDescriptionNotes } from './AddItemDescriptionNotes';
+import { AddItemImages } from './AddItemImages';
 import { useToast } from '@/hooks/use-toast';
 import {
   createDecorItem,
@@ -17,26 +19,17 @@ import type { DecorItemFormData } from '@/types/forms';
 
 function validateRequiredFields(data: DecorItemFormData) {
   const errs: Record<string, string> = {};
-  if (!data.name.trim()) errs.name = 'This field is required';
-  if (!data.room_code.trim()) errs.room_code = 'This field is required';
-  if (!data.creator.trim()) errs.creator = 'This field is required';
-  if (!data.origin_region.trim()) errs.origin_region = 'This field is required';
+  if (!data.name.trim()) errs.name = 'Name is required';
+  if (!data.room_code.trim()) errs.room_code = 'Room is required';
+  if (!data.creator.trim()) errs.creator = 'Creator is required';
+  if (!data.origin_region.trim()) errs.origin_region = 'Origin region is required';
   if (!data.date_period.toString().trim())
-    errs.date_period = 'This field is required';
-  if (!data.category.trim()) errs.category = 'This field is required';
-  if (!data.subcategory.trim()) errs.subcategory = 'This field is required';
+    errs.date_period = 'Date period is required';
+  if (!data.category.trim()) errs.category = 'Category is required';
+  if (!data.subcategory.trim()) errs.subcategory = 'Subcategory is required';
   if (!data.quantity || Number(data.quantity) <= 0)
-    errs.quantity = 'This field is required';
+    errs.quantity = 'Quantity must be greater than 0';
 
-  if (
-    errs.name ||
-    errs.creator ||
-    errs.origin_region ||
-    errs.date_period ||
-    errs.quantity
-  ) {
-    errs.core = 'Required fields missing';
-  }
   return errs;
 }
 
@@ -46,7 +39,7 @@ export function AddItemForm() {
   const { toast } = useToast();
   const draftId = searchParams.get('draftId');
 
-  const [formData, setFormData] = useState<DecorItemFormData>({
+  const [formData, setFormData] = useState<DecorItemFormData & { images: string[] }>({
     code: '',
     name: '',
     creator: '',
@@ -73,6 +66,7 @@ export function AddItemForm() {
     appraisal_entity: '',
     description: '',
     notes: '',
+    images: [],
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -142,7 +136,8 @@ export function AddItemForm() {
           appraisal_entity: draft.appraisal_entity || '',
           description: draft.description || '',
           notes: draft.notes || '',
-        } as DecorItemFormData;
+          images: [],
+        };
 
         setFormData(loaded);
         setErrors(validateRequiredFields(loaded));
@@ -172,12 +167,17 @@ export function AddItemForm() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     if (formData.acquisition_date && formData.acquisition_date > today)
-      newErrors.acquisition = 'Date cannot be in the future';
+      newErrors.acquisition_date = 'Acquisition date cannot be in the future';
     if (formData.appraisal_date && formData.appraisal_date > today)
-      newErrors.appraisal = 'Date cannot be in the future';
+      newErrors.appraisal_date = 'Appraisal date cannot be in the future';
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
+      toast({
+        title: 'Please fix the errors',
+        description: 'Some required fields are missing or invalid',
+        variant: 'destructive',
+      });
       return;
     }
     setErrors({});
@@ -311,6 +311,12 @@ export function AddItemForm() {
               />
             </div>
           </div>
+
+          {/* Images Section */}
+          <AddItemImages
+            formData={formData}
+            setFormData={setFormData}
+          />
 
           {/* Description and Notes */}
           <AddItemDescriptionNotes

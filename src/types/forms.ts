@@ -1,3 +1,4 @@
+
 export interface DecorItemFormData {
   code: string;
   name: string;
@@ -25,4 +26,5 @@ export interface DecorItemFormData {
   appraisal_entity: string;
   description: string;
   notes: string;
+  images?: string[];
 }

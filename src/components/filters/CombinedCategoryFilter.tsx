@@ -1,3 +1,4 @@
+
 import { MultiSelectFilter } from '@/components/MultiSelectFilter';
 import { useSettingsState } from '@/hooks/useSettingsState';
 import { Label } from '@/components/ui/label';
@@ -47,16 +48,19 @@ export function CombinedCategoryFilter({
         onCheckChange: (checked: CheckedState) => {
           if (!permanentCategory) {
             if (checked) {
-              if (!selectedCategory.includes(category.id)) {
-                setSelectedCategory([...selectedCategory, category.id]);
-              }
-              setSelectedSubcategory([
-                ...selectedSubcategory.filter(
-                  (s) => !subcategoryIds.includes(s),
-                ),
+              // When checking a category, add it to selected categories and select all its subcategories
+              const newCategories = selectedCategory.includes(category.id) 
+                ? selectedCategory 
+                : [...selectedCategory, category.id];
+              setSelectedCategory(newCategories);
+              
+              const newSubcategories = [
+                ...selectedSubcategory.filter((s) => !subcategoryIds.includes(s)),
                 ...subcategoryIds,
-              ]);
+              ];
+              setSelectedSubcategory(newSubcategories);
             } else {
+              // When unchecking a category, remove it and its subcategories
               setSelectedCategory(
                 selectedCategory.filter((c) => c !== category.id),
               );
@@ -103,13 +107,12 @@ export function CombinedCategoryFilter({
         selectedSubs.length === subIds.length && subIds.length > 0;
       const hasCategory = values.includes(category.id);
 
-      if (allSelected || (hasCategory && selectedSubs.length === 0)) {
+      // Only add category if explicitly selected or all subcategories are selected
+      if (hasCategory || allSelected) {
         categoryIds.push(category.id);
-      }
-
-      if (allSelected) {
         subcategoryIds.push(...subIds);
       } else {
+        // Add only the individually selected subcategories
         subcategoryIds.push(...selectedSubs);
       }
     });
