@@ -22,9 +22,19 @@ export default function HousePage() {
   const [selectedRoom, setSelectedRoom] = useState<string[]>([]);
   const [selectedYear, setSelectedYear] = useState<string[]>([]);
   const [selectedArtist, setSelectedArtist] = useState<string[]>([]);
-  const [valuationRange, setValuationRange] = useState<{ min?: number; max?: number }>({});
+  const [valuationRange, setValuationRange] = useState<{
+    min?: number;
+    max?: number;
+  }>({});
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
-  const [sortField, setSortField] = useState('');
+  type SortField =
+    | 'title'
+    | 'artist'
+    | 'category'
+    | 'valuation'
+    | 'yearPeriod'
+    | 'location';
+  const [sortField, setSortField] = useState<SortField>('title');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   const decodedHouseId = houseId ? decodeURIComponent(houseId) : '';
@@ -49,7 +59,8 @@ export default function HousePage() {
           item.description.toLowerCase().includes(searchTerm.toLowerCase()));
 
       const matchesCategory =
-        selectedCategory.length === 0 || selectedCategory.includes(item.category);
+        selectedCategory.length === 0 ||
+        selectedCategory.includes(item.category);
 
       const matchesSubcategory =
         selectedSubcategory.length === 0 ||
@@ -64,8 +75,10 @@ export default function HousePage() {
         (item.artist && selectedArtist.includes(item.artist));
 
       const matchesValuation =
-        (!valuationRange.min || (item.valuation && item.valuation >= valuationRange.min)) &&
-        (!valuationRange.max || (item.valuation && item.valuation <= valuationRange.max));
+        (!valuationRange.min ||
+          (item.valuation && item.valuation >= valuationRange.min)) &&
+        (!valuationRange.max ||
+          (item.valuation && item.valuation <= valuationRange.max));
 
       const roomKey = `${item.house}|${item.room}`;
       const matchesRoom =
@@ -156,15 +169,7 @@ export default function HousePage() {
         <EmptyState />
       ) : (
         <div>
-          {viewMode === 'grid' && (
-            <ItemsGrid
-              items={sortedItems}
-              onSort={(field, direction) => {
-                setSortField(field);
-                setSortDirection(direction);
-              }}
-            />
-          )}
+          {viewMode === 'grid' && <ItemsGrid items={sortedItems} />}
           {viewMode === 'list' && (
             <ItemsList
               items={sortedItems}
@@ -172,6 +177,8 @@ export default function HousePage() {
                 setSortField(field);
                 setSortDirection(direction);
               }}
+              sortField={sortField}
+              sortDirection={sortDirection}
             />
           )}
           {viewMode === 'table' && (
@@ -181,6 +188,8 @@ export default function HousePage() {
                 setSortField(field);
                 setSortDirection(direction);
               }}
+              sortField={sortField}
+              sortDirection={sortDirection}
             />
           )}
         </div>

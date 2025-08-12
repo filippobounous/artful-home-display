@@ -14,6 +14,9 @@ interface ItemsListProps {
   onItemClick?: (item: DecorItem) => void;
   selectedIds?: string[];
   onSelectionChange?: (ids: string[]) => void;
+  onSort?: (field: SortField, direction: SortDirection) => void;
+  sortField?: SortField;
+  sortDirection?: SortDirection;
 }
 
 type SortField =
@@ -30,9 +33,16 @@ export function ItemsList({
   onItemClick,
   selectedIds = [],
   onSelectionChange,
+  onSort,
+  sortField,
+  sortDirection,
 }: ItemsListProps) {
-  const [sortField, setSortField] = useState<SortField>('title');
-  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+  const [internalSortField, setInternalSortField] =
+    useState<SortField>('title');
+  const [internalSortDirection, setInternalSortDirection] =
+    useState<SortDirection>('asc');
+  const activeSortField = sortField ?? internalSortField;
+  const activeSortDirection = sortDirection ?? internalSortDirection;
   const { houses, categories } = useSettingsState();
   const lastIndex = useRef<number | null>(null);
 
@@ -46,21 +56,31 @@ export function ItemsList({
   };
 
   const handleSort = (field: SortField) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    if (onSort) {
+      const newDirection =
+        activeSortField === field && activeSortDirection === 'asc'
+          ? 'desc'
+          : 'asc';
+      onSort(field, newDirection);
+    } else if (internalSortField === field) {
+      setInternalSortDirection(
+        internalSortDirection === 'asc' ? 'desc' : 'asc',
+      );
     } else {
-      setSortField(field);
-      setSortDirection('asc');
+      setInternalSortField(field);
+      setInternalSortDirection('asc');
     }
   };
 
-  const sortedItems = sortInventoryItems(
-    items,
-    sortField,
-    sortDirection,
-    houses,
-    categories,
-  );
+  const sortedItems = onSort
+    ? items
+    : sortInventoryItems(
+        items,
+        activeSortField,
+        activeSortDirection,
+        houses,
+        categories,
+      );
 
   const SortButton = ({
     field,
@@ -76,13 +96,13 @@ export function ItemsList({
       className="h-6 px-2 text-xs font-medium"
     >
       {children}
-      {sortField === field &&
-        (sortDirection === 'asc' ? (
+      {activeSortField === field &&
+        (activeSortDirection === 'asc' ? (
           <ArrowUp className="w-3 h-3 ml-1" />
         ) : (
           <ArrowDown className="w-3 h-3 ml-1" />
         ))}
-      {sortField !== field && (
+      {activeSortField !== field && (
         <ArrowUpDown className="w-3 h-3 ml-1 opacity-50" />
       )}
     </Button>
