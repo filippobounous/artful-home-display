@@ -8,6 +8,7 @@ import { ApiNotConfigured } from '@/components/ApiNotConfigured';
 import { fetchDecorItems } from '@/lib/api';
 import { DecorItem } from '@/types/inventory';
 import { useTestDataToggle } from '@/hooks/useTestDataToggle';
+import { API_URL, API_KEY } from '@/lib/api/common';
 
 const Index = () => {
   const [items, setItems] = useState<DecorItem[]>([]);
@@ -29,10 +30,29 @@ const Index = () => {
   }, [useTestData]); // Re-fetch when test data toggle changes
 
   const isApiConfigured = () => {
-    return !!(import.meta.env.VITE_API_URL && import.meta.env.VITE_API_KEY);
+    return !!(API_URL && API_KEY);
   };
 
   const showEmptyState = !useTestData && !isApiConfigured() && items.length === 0;
+
+  if (isLoading) {
+    return (
+      <SidebarProvider>
+        <div className="min-h-screen flex w-full bg-background">
+          <AppSidebar />
+          <div className="flex-1 flex flex-col">
+            <InventoryHeader />
+            <main className="flex-1 p-6">
+              <div className="space-y-6">
+                <div className="h-8 bg-muted animate-pulse rounded" />
+                <div className="h-64 bg-muted animate-pulse rounded" />
+              </div>
+            </main>
+          </div>
+        </div>
+      </SidebarProvider>
+    );
+  }
 
   return (
     <SidebarProvider>

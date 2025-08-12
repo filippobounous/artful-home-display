@@ -1,314 +1,195 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useMemo } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { AppSidebar } from '@/components/AppSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { InventoryHeader } from '@/components/InventoryHeader';
-import { SearchFilters } from '@/components/SearchFilters';
 import { ItemsGrid } from '@/components/ItemsGrid';
 import { ItemsList } from '@/components/ItemsList';
 import { ItemsTable } from '@/components/ItemsTable';
-import { ItemDetailDialog } from '@/components/ItemDetailDialog';
-import { ItemHistoryDialog } from '@/components/ItemHistoryDialog';
+import { SearchFilters } from '@/components/SearchFilters';
 import { EmptyState } from '@/components/EmptyState';
-import {
-  fetchDecorItems,
-  deleteDecorItem,
-  restoreDecorItem,
-  decorItemToInput,
-  updateDecorItem,
-} from '@/lib/api';
-import { BatchLocationDialog } from '@/components/BatchLocationDialog';
 import { Button } from '@/components/ui/button';
-import { DecorItem, DecorItemInput } from '@/types/inventory';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { Plus, Grid, List, Table2, Download, Upload } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { 
+  fetchDecorItems, 
+  updateDecorItem, 
+  deleteDecorItem, 
+  decorItemToInput,
+  type DecorItemInput 
+} from '@/lib/api';
+import { DecorItem } from '@/types/inventory';
 import { useSettingsState } from '@/hooks/useSettingsState';
-import { sortInventoryItems } from '@/lib/sortUtils';
+import { BatchLocationDialog } from '@/components/BatchLocationDialog';
 import { useToast } from '@/hooks/use-toast';
-
-type ViewMode = 'grid' | 'list' | 'table';
+import { formatNumber } from '@/lib/currencyUtils';
 
 const AllItems = () => {
-  const navigate = useNavigate();
+  const [view, setView] = useState<'grid' | 'list' | 'table'>('grid');
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string[]>([]);
-  const [selectedHouse, setSelectedHouse] = useState<string[]>([]);
-  const [selectedRoom, setSelectedRoom] = useState<string[]>([]); // stores "houseId|roomId"
-  const [selectedYear, setSelectedYear] = useState<string[]>([]);
-  const [selectedArtist, setSelectedArtist] = useState<string[]>([]);
-  const [valuationRange, setValuationRange] = useState<{
-    min?: number;
-    max?: number;
-  }>({});
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
-  const [items, setItems] = useState<DecorItem[]>([]);
-  const [selectedItem, setSelectedItem] = useState<DecorItem | null>(null);
-  const [historyItem, setHistoryItem] = useState<DecorItem | null>(null);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [locationDialogOpen, setLocationDialogOpen] = useState(false);
-  const [sortField, setSortField] = useState<string>('');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
-  const { houses, categories } = useSettingsState();
+  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
+  const [locationFilter, setLocationFilter] = useState<{ houses: string[], rooms: string[] }>({ houses: [], rooms: [] });
+  const [artistFilter, setArtistFilter] = useState<string[]>([]);
+  const [yearFilter, setYearFilter] = useState<{ min: number | null, max: number | null }>({ min: null, max: null });
+  const [valuationFilter, setValuationFilter] = useState<{ min: number | null, max: number | null, currencies: string[] }>({ min: null, max: null, currencies: [] });
+  const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [showBatchDialog, setShowBatchDialog] = useState(false);
+
+  const { categories, houses } = useSettingsState();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  const yearOptions = Array.from(
-    new Set(items.map((i) => i.yearPeriod).filter(Boolean)),
-  );
-  const artistOptions = Array.from(
-    new Set(items.map((i) => i.artist).filter(Boolean)),
-  );
-
-  const handleEdit = (item: DecorItem) => {
-    const input = decorItemToInput(item);
-    localStorage.setItem('editingDraft', JSON.stringify(input));
-    navigate(`/add?draftId=${item.id}`);
-  };
-
-  const handleDelete = (item: DecorItem) => {
-    if (!window.confirm(`Delete "${item.title}"?`)) return;
-    deleteDecorItem(item.id)
-      .then(() => {
-        setItems((prev) => prev.filter((i) => i.id !== item.id));
-        toast({
-          title: 'Item deleted',
-          description: 'The item has been removed successfully',
-        });
-        setSelectedItem(null);
-      })
-      .catch(() => {
-        toast({
-          title: 'Error deleting item',
-          description: 'There was a problem deleting the item',
-          variant: 'destructive',
-        });
-      });
-  };
-
-  const handleHistory = (item: DecorItem) => {
-    setHistoryItem(item);
-  };
-
-  const handleRestore = (version: DecorItem) => {
-    if (!historyItem) return;
-    restoreDecorItem(historyItem.id, decorItemToInput(version))
-      .then((updated) => {
-        setItems((prev) =>
-          prev.map((i) => (i.id === updated.id ? updated : i)),
-        );
-        setHistoryItem(updated);
-        setSelectedItem(updated);
-        toast({
-          title: 'Item restored',
-          description: 'The selected version has been restored',
-        });
-      })
-      .catch(() => {
-        toast({
-          title: 'Error restoring item',
-          description: 'There was a problem restoring this version',
-          variant: 'destructive',
-        });
-      });
-  };
-
-  useEffect(() => {
-    fetchDecorItems()
-      .then((data) => setItems(data))
-      .catch(() => setItems([]));
-  }, []);
-
-  const filteredItems = items.filter((item) => {
-    const matchesSearch =
-      (item.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (item.description || '')
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      (item.artist &&
-        item.artist.toLowerCase().includes(searchTerm.toLowerCase()));
-
-    const matchesCategory =
-      selectedCategory.length === 0 || selectedCategory.includes(item.category);
-    const matchesSubcategory =
-      selectedSubcategory.length === 0 ||
-      (item.subcategory && selectedSubcategory.includes(item.subcategory));
-    const matchesHouse =
-      selectedHouse.length === 0 ||
-      (item.house && selectedHouse.includes(item.house));
-    const matchesRoom =
-      selectedRoom.length === 0 ||
-      (item.room && selectedRoom.includes(`${item.house}|${item.room}`));
-    const matchesYear =
-      selectedYear.length === 0 ||
-      (item.yearPeriod && selectedYear.includes(item.yearPeriod));
-    const matchesArtist =
-      selectedArtist.length === 0 ||
-      (item.artist && selectedArtist.includes(item.artist));
-    const valuation = item.valuation ?? 0;
-    const matchesValuation =
-      (valuationRange.min === undefined || valuation >= valuationRange.min) &&
-      (valuationRange.max === undefined || valuation <= valuationRange.max);
-
-    return (
-      matchesSearch &&
-      matchesCategory &&
-      matchesSubcategory &&
-      matchesHouse &&
-      matchesRoom &&
-      matchesYear &&
-      matchesArtist &&
-      matchesValuation
-    );
+  const { data: items = [], isLoading, error } = useQuery({
+    queryKey: ['decorItems'],
+    queryFn: fetchDecorItems,
   });
 
-  // Sort filtered items
-  const sortedItems = sortInventoryItems(
-    filteredItems,
-    sortField,
-    sortDirection,
-    houses,
-    categories,
-  );
-
-  const handleSort = (field: string, direction: 'asc' | 'desc') => {
-    setSortField(field);
-    setSortDirection(direction);
-  };
-
-  const downloadCSV = () => {
-    const headers = [
-      'ID',
-      'Title',
-      'Artist',
-      'Category',
-      'Subcategory',
-      'Width (cm)',
-      'Height (cm)',
-      'Depth (cm)',
-      'Valuation',
-      'Valuation Currency',
-      'Quantity',
-      'Year/Period',
-      'Description',
-      'House',
-      'Room',
-      'Notes',
-    ];
-
-    const csvContent = [
-      headers.join(','),
-      ...sortedItems.map((item) =>
-        [
-          item.id || '',
-          `"${item.title || ''}"`,
-          `"${item.artist || ''}"`,
-          `"${item.category || ''}"`,
-          `"${item.subcategory || ''}"`,
-          item.widthCm ?? '',
-          item.heightCm ?? '',
-          item.depthCm ?? '',
-          item.valuation || '',
-          `"${item.valuationCurrency || ''}"`,
-          item.quantity || '',
-          `"${item.yearPeriod || ''}"`,
-          `"${item.description || ''}"`,
-          `"${item.house || ''}"`,
-          `"${item.room || ''}"`,
-          `"${item.notes || ''}"`,
-        ].join(','),
-      ),
-    ].join('\n');
-
-    // Create and download the CSV file
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute(
-      'download',
-      `inventory_${new Date().toISOString().split('T')[0]}.csv`,
-    );
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
-
-  const downloadJSON = () => {
-    const jsonContent = JSON.stringify(sortedItems, null, 2);
-    const blob = new Blob([jsonContent], {
-      type: 'application/json;charset=utf-8;',
+  const filteredItems = useMemo(() => {
+    return items.filter(item => {
+      if (item.deleted) return false;
+      
+      const matchesSearch = !searchTerm || 
+        item.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.artist?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.code?.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesCategory = categoryFilter.length === 0 || 
+        categoryFilter.includes(item.category);
+      
+      const matchesLocation = (locationFilter.houses.length === 0 || locationFilter.houses.includes(item.house)) &&
+        (locationFilter.rooms.length === 0 || locationFilter.rooms.includes(item.room));
+      
+      const matchesArtist = artistFilter.length === 0 || 
+        (item.artist && artistFilter.includes(item.artist));
+      
+      const itemYear = parseInt(item.yearPeriod || '0');
+      const matchesYear = (yearFilter.min === null || itemYear >= yearFilter.min) &&
+        (yearFilter.max === null || itemYear <= yearFilter.max);
+      
+      const itemValue = item.valuation || 0;
+      const itemCurrency = item.valuationCurrency || 'GBP';
+      const matchesValuation = (valuationFilter.min === null || itemValue >= valuationFilter.min) &&
+        (valuationFilter.max === null || itemValue <= valuationFilter.max) &&
+        (valuationFilter.currencies.length === 0 || valuationFilter.currencies.includes(itemCurrency));
+      
+      return matchesSearch && matchesCategory && matchesLocation && matchesArtist && matchesYear && matchesValuation;
     });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute(
-      'download',
-      `inventory_${new Date().toISOString().split('T')[0]}.json`,
+  }, [items, searchTerm, categoryFilter, locationFilter, artistFilter, yearFilter, valuationFilter]);
+
+  const handleEdit = async (item: DecorItem) => {
+    try {
+      const input: DecorItemInput = decorItemToInput(item);
+      await updateDecorItem(item.id, input);
+      queryClient.invalidateQueries({ queryKey: ['decorItems'] });
+      toast({
+        title: 'Success',
+        description: 'Item updated successfully',
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to update item',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteDecorItem(id);
+      queryClient.invalidateQueries({ queryKey: ['decorItems'] });
+      toast({
+        title: 'Success',
+        description: 'Item deleted successfully',
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to delete item',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleBatchLocationUpdate = async (houseId: string, roomId: string) => {
+    try {
+      const updatePromises = selectedItems.map(async (itemId) => {
+        const item = items.find(i => i.id === itemId);
+        if (item) {
+          const input: DecorItemInput = {
+            ...decorItemToInput(item),
+            house: houseId,
+            room: roomId,
+          };
+          return updateDecorItem(itemId, input);
+        }
+      });
+
+      await Promise.all(updatePromises);
+      queryClient.invalidateQueries({ queryKey: ['decorItems'] });
+      setSelectedItems([]);
+      setShowBatchDialog(false);
+      
+      toast({
+        title: 'Success',
+        description: `Updated location for ${selectedItems.length} items`,
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to update item locations',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleClearFilters = () => {
+    setSearchTerm('');
+    setCategoryFilter([]);
+    setLocationFilter({ houses: [], rooms: [] });
+    setArtistFilter([]);
+    setYearFilter({ min: null, max: null });
+    setValuationFilter({ min: null, max: null, currencies: [] });
+  };
+
+  if (isLoading) {
+    return (
+      <SidebarProvider>
+        <div className="min-h-screen flex w-full bg-background">
+          <AppSidebar />
+          <div className="flex-1 flex flex-col">
+            <InventoryHeader />
+            <main className="flex-1 p-6">
+              <div className="space-y-6">
+                <div className="h-8 bg-muted animate-pulse rounded" />
+                <div className="h-64 bg-muted animate-pulse rounded" />
+              </div>
+            </main>
+          </div>
+        </div>
+      </SidebarProvider>
     );
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
+  }
 
-  const handleBatchLocation = (house: string, room: string) => {
-    const ids = [...selectedIds];
-    Promise.all(
-      ids.map((id) =>
-        updateDecorItem(id, {
-          house_code: house,
-          room_code: room,
-        } as Partial<DecorItemInput>),
-      ),
-    )
-      .then((updated) => {
-        setItems((prev) =>
-          prev.map((it) => {
-            const match = updated.find((u) => u.id === it.id);
-            return match ? match : it;
-          }),
-        );
-        toast({
-          title: 'Items updated',
-          description: `${ids.length} item${ids.length === 1 ? '' : 's'} moved`,
-        });
-        setSelectedIds([]);
-      })
-      .catch(() => {
-        toast({
-          title: 'Error updating items',
-          description: 'There was a problem updating the selected items',
-          variant: 'destructive',
-        });
-      });
-  };
-
-  const handleBatchDelete = () => {
-    if (
-      !window.confirm(
-        `Delete ${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'}?`,
-      )
-    )
-      return;
-    const ids = [...selectedIds];
-    Promise.all(ids.map((id) => deleteDecorItem(id)))
-      .then(() => {
-        setItems((prev) => prev.filter((i) => !ids.includes(i.id.toString())));
-        toast({
-          title: 'Items deleted',
-          description: `${ids.length} item${ids.length === 1 ? '' : 's'} removed`,
-        });
-        setSelectedIds([]);
-      })
-      .catch(() => {
-        toast({
-          title: 'Error deleting items',
-          description: 'There was a problem deleting the selected items',
-          variant: 'destructive',
-        });
-      });
-  };
+  if (error) {
+    return (
+      <SidebarProvider>
+        <div className="min-h-screen flex w-full bg-background">
+          <AppSidebar />
+          <div className="flex-1 flex flex-col">
+            <InventoryHeader />
+            <main className="flex-1 p-6">
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">Failed to load items</p>
+              </div>
+            </main>
+          </div>
+        </div>
+      </SidebarProvider>
+    );
+  }
 
   return (
     <SidebarProvider>
@@ -319,128 +200,128 @@ const AllItems = () => {
           <InventoryHeader />
 
           <main className="flex-1 p-6">
-            <div className="mb-6">
-              <h2 className="text-xl font-semibold text-foreground mb-2">
-                All Items
-              </h2>
-              <p className="text-muted-foreground">
-                Browse and manage your entire collection
-              </p>
-            </div>
+            <div className="space-y-6">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                  <h2 className="text-xl font-semibold text-foreground">
+                    All Items
+                  </h2>
+                  <p className="text-muted-foreground">
+                    {formatNumber(filteredItems.length)} items in your collection
+                  </p>
+                </div>
 
-            <SearchFilters
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-              selectedCategory={selectedCategory}
-              setSelectedCategory={setSelectedCategory}
-              selectedSubcategory={selectedSubcategory}
-              setSelectedSubcategory={setSelectedSubcategory}
-              selectedHouse={selectedHouse}
-              setSelectedHouse={setSelectedHouse}
-              selectedRoom={selectedRoom}
-              setSelectedRoom={setSelectedRoom}
-              yearOptions={yearOptions}
-              selectedYear={selectedYear}
-              setSelectedYear={setSelectedYear}
-              artistOptions={artistOptions}
-              selectedArtist={selectedArtist}
-              setSelectedArtist={setSelectedArtist}
-              valuationRange={valuationRange}
-              setValuationRange={setValuationRange}
-              viewMode={viewMode}
-              setViewMode={setViewMode}
-              onDownloadCSV={downloadCSV}
-              onDownloadJSON={downloadJSON}
-            />
+                <div className="flex flex-wrap gap-2">
+                  {selectedItems.length > 0 && (
+                    <Button
+                      onClick={() => setShowBatchDialog(true)}
+                      variant="secondary"
+                      size="sm"
+                    >
+                      Update Location ({selectedItems.length})
+                    </Button>
+                  )}
+                  
+                  <div className="flex gap-1 bg-muted rounded-lg p-1">
+                    <Button
+                      variant={view === 'grid' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setView('grid')}
+                    >
+                      <Grid className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant={view === 'list' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setView('list')}
+                    >
+                      <List className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant={view === 'table' ? 'default' : 'ghost'}
+                      size="sm"
+                      onClick={() => setView('table')}
+                    >
+                      <Table2 className="w-4 h-4" />
+                    </Button>
+                  </div>
 
-            {selectedIds.length > 0 && (
-              <div className="mb-6 flex flex-wrap items-center justify-between gap-2 bg-accent border border-accent text-accent-foreground px-4 py-2 rounded">
-                <span className="text-sm font-medium">
-                  {selectedIds.length} item{selectedIds.length === 1 ? '' : 's'}{' '}
-                  selected
-                </span>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="link"
-                    size="sm"
-                    onClick={() => setLocationDialogOpen(true)}
-                  >
-                    Change Location
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={handleBatchDelete}
-                  >
-                    Delete
-                  </Button>
-                  <Button
-                    variant="link"
-                    size="sm"
-                    onClick={() => setSelectedIds([])}
-                  >
-                    Clear
-                  </Button>
+                  <Link to="/add-item">
+                    <Button>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Item
+                    </Button>
+                  </Link>
                 </div>
               </div>
-            )}
 
-            <div className="mb-6">
-              <p className="text-muted-foreground">
-                Showing {sortedItems.length} of {items.length} items
-              </p>
+              <SearchFilters
+                searchTerm={searchTerm}
+                onSearchChange={setSearchTerm}
+                categoryFilter={categoryFilter}
+                onCategoryFilterChange={setCategoryFilter}
+                locationFilter={locationFilter}
+                onLocationFilterChange={setLocationFilter}
+                artistFilter={artistFilter}
+                onArtistFilterChange={setArtistFilter}
+                yearFilter={yearFilter}
+                onYearFilterChange={setYearFilter}
+                valuationFilter={valuationFilter}
+                onValuationFilterChange={setValuationFilter}
+                onClearFilters={handleClearFilters}
+                items={items}
+                categories={categories}
+                houses={houses}
+              />
+
+              {filteredItems.length === 0 ? (
+                <EmptyState
+                  title="No items found"
+                  description="Try adjusting your search criteria or add your first item."
+                />
+              ) : (
+                <>
+                  {view === 'grid' && (
+                    <ItemsGrid
+                      items={filteredItems}
+                      onEdit={handleEdit}
+                      onDelete={handleDelete}
+                      selectedItems={selectedItems}
+                      onSelectionChange={setSelectedItems}
+                    />
+                  )}
+                  {view === 'list' && (
+                    <ItemsList
+                      items={filteredItems}
+                      onEdit={handleEdit}
+                      onDelete={handleDelete}
+                      selectedItems={selectedItems}
+                      onSelectionChange={setSelectedItems}
+                    />
+                  )}
+                  {view === 'table' && (
+                    <ItemsTable
+                      items={filteredItems}
+                      onEdit={handleEdit}
+                      onDelete={handleDelete}
+                      selectedItems={selectedItems}
+                      onSelectionChange={setSelectedItems}
+                    />
+                  )}
+                </>
+              )}
             </div>
-
-            {sortedItems.length === 0 ? (
-              <EmptyState />
-            ) : viewMode === 'grid' ? (
-              <ItemsGrid
-                items={sortedItems}
-                onItemClick={setSelectedItem}
-                selectedIds={selectedIds}
-                onSelectionChange={setSelectedIds}
-              />
-            ) : viewMode === 'list' ? (
-              <ItemsList
-                items={sortedItems}
-                onItemClick={setSelectedItem}
-                selectedIds={selectedIds}
-                onSelectionChange={setSelectedIds}
-              />
-            ) : (
-              <ItemsTable
-                items={sortedItems}
-                onItemClick={setSelectedItem}
-                onSort={handleSort}
-                sortField={sortField}
-                sortDirection={sortDirection}
-                selectedIds={selectedIds}
-                onSelectionChange={setSelectedIds}
-              />
-            )}
-
-            <ItemDetailDialog
-              item={selectedItem}
-              open={!!selectedItem}
-              onOpenChange={(open) => !open && setSelectedItem(null)}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              onHistory={handleHistory}
-            />
-            <ItemHistoryDialog
-              item={historyItem}
-              open={!!historyItem}
-              onOpenChange={(open) => !open && setHistoryItem(null)}
-              onRestore={handleRestore}
-            />
-            <BatchLocationDialog
-              open={locationDialogOpen}
-              onOpenChange={setLocationDialogOpen}
-              onSubmit={handleBatchLocation}
-            />
           </main>
         </div>
       </div>
+
+      <BatchLocationDialog
+        open={showBatchDialog}
+        onOpenChange={setShowBatchDialog}
+        selectedCount={selectedItems.length}
+        houses={houses}
+        onConfirm={handleBatchLocationUpdate}
+      />
     </SidebarProvider>
   );
 };

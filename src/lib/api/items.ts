@@ -1,3 +1,4 @@
+
 import {
   DecorItem,
   BookItem,
@@ -10,7 +11,7 @@ import { testMusic } from '@/data/musicTestData';
 import { API_URL, API_KEY } from './common';
 
 const isApiConfigured = () => {
-  return API_URL && API_KEY;
+  return !!(API_URL && API_KEY);
 };
 
 const isTestDataEnabled = () => {
@@ -106,12 +107,16 @@ export function decorItemToInput(item: DecorItem): DecorItemInput {
 }
 
 export async function fetchDecorItems(): Promise<DecorItem[]> {
-  if (isTestDataEnabled()) {
+  const testDataEnabled = isTestDataEnabled();
+  
+  if (testDataEnabled) {
     return Promise.resolve(testDecorItems);
   }
+  
   if (!isApiConfigured()) {
-    return Promise.resolve(getLocalItems());
+    return Promise.resolve([]);
   }
+  
   try {
     const response = await fetch(`${API_URL}/items`, {
       headers: {
@@ -130,15 +135,18 @@ export async function fetchDecorItems(): Promise<DecorItem[]> {
 export async function fetchDecorItem(
   id: number | string,
 ): Promise<DecorItem | null> {
-  if (isTestDataEnabled()) {
+  const testDataEnabled = isTestDataEnabled();
+  
+  if (testDataEnabled) {
     return Promise.resolve(
       testDecorItems.find((i) => i.id === Number(id)) || null,
     );
   }
+  
   if (!isApiConfigured()) {
-    const items = getLocalItems();
-    return Promise.resolve(items.find((i) => i.id === Number(id)) || null);
+    return Promise.resolve(null);
   }
+  
   try {
     const response = await fetch(`${API_URL}/items/${id}`, {
       headers: {
@@ -155,12 +163,16 @@ export async function fetchDecorItem(
 }
 
 export async function fetchBookItems(): Promise<BookItem[]> {
-  if (isTestDataEnabled()) {
+  const testDataEnabled = isTestDataEnabled();
+  
+  if (testDataEnabled) {
     return Promise.resolve(testBooks);
   }
+  
   if (!isApiConfigured()) {
     return Promise.resolve([]);
   }
+  
   try {
     const response = await fetch(`${API_URL}/books`, {
       headers: {
@@ -177,12 +189,16 @@ export async function fetchBookItems(): Promise<BookItem[]> {
 }
 
 export async function fetchMusicItems(): Promise<MusicItem[]> {
-  if (isTestDataEnabled()) {
+  const testDataEnabled = isTestDataEnabled();
+  
+  if (testDataEnabled) {
     return Promise.resolve(testMusic);
   }
+  
   if (!isApiConfigured()) {
     return Promise.resolve([]);
   }
+  
   try {
     const response = await fetch(`${API_URL}/music`, {
       headers: {
@@ -201,7 +217,9 @@ export async function fetchMusicItems(): Promise<MusicItem[]> {
 export async function createDecorItem(
   input: DecorItemInput,
 ): Promise<DecorItem> {
-  if (isTestDataEnabled() || !isApiConfigured()) {
+  const testDataEnabled = isTestDataEnabled();
+  
+  if (testDataEnabled || !isApiConfigured()) {
     const items = getLocalItems();
     const newItem = inputToDecorItem(input);
     const nextId =
@@ -211,6 +229,7 @@ export async function createDecorItem(
     saveLocalItems(items);
     return Promise.resolve(newItem);
   }
+  
   try {
     const response = await fetch(`${API_URL}/items`, {
       method: 'POST',
@@ -232,7 +251,9 @@ export async function updateDecorItem(
   id: number | string,
   input: DecorItemInput,
 ): Promise<DecorItem> {
-  if (isTestDataEnabled() || !isApiConfigured()) {
+  const testDataEnabled = isTestDataEnabled();
+  
+  if (testDataEnabled || !isApiConfigured()) {
     const items = getLocalItems();
     const idx = items.findIndex((i) => i.id === Number(id));
     const existing = idx >= 0 ? items[idx] : null;
@@ -250,6 +271,7 @@ export async function updateDecorItem(
     saveLocalItems(items);
     return Promise.resolve(updated);
   }
+  
   try {
     const response = await fetch(`${API_URL}/items/${id}`, {
       method: 'PUT',
@@ -268,13 +290,16 @@ export async function updateDecorItem(
 }
 
 export async function deleteDecorItem(id: number): Promise<void> {
-  if (isTestDataEnabled() || !isApiConfigured()) {
+  const testDataEnabled = isTestDataEnabled();
+  
+  if (testDataEnabled || !isApiConfigured()) {
     const items = getLocalItems().map((i) =>
       i.id === id ? { ...i, deleted: true } : i,
     );
     saveLocalItems(items);
     return Promise.resolve();
   }
+  
   try {
     const response = await fetch(`${API_URL}/items/${id}`, {
       method: 'DELETE',
@@ -293,7 +318,9 @@ export async function restoreDecorItem(
   id: number,
   version: DecorItemInput,
 ): Promise<DecorItem> {
-  if (isTestDataEnabled() || !isApiConfigured()) {
+  const testDataEnabled = isTestDataEnabled();
+  
+  if (testDataEnabled || !isApiConfigured()) {
     const items = getLocalItems();
     const idx = items.findIndex((i) => i.id === id);
     if (idx < 0) throw new Error('Item not found');
@@ -309,6 +336,7 @@ export async function restoreDecorItem(
     saveLocalItems(items);
     return Promise.resolve(restored);
   }
+  
   try {
     const response = await fetch(`${API_URL}/items/${id}/restore`, {
       method: 'POST',
