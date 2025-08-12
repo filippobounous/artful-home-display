@@ -1,3 +1,4 @@
+
 import { useParams } from 'react-router-dom';
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -127,6 +128,11 @@ export default function HousePage() {
     );
   }, [filteredItems, sortField, sortDirection, houses, categories]);
 
+  const handleSort = (field: string, direction: 'asc' | 'desc') => {
+    setSortField(field as SortField);
+    setSortDirection(direction);
+  };
+
   if (!house) {
     return <div>House not found</div>;
   }
@@ -176,10 +182,7 @@ export default function HousePage() {
                 {viewMode === 'list' && (
                   <ItemsList
                     items={sortedItems}
-                    onSort={(field, direction) => {
-                      setSortField(field);
-                      setSortDirection(direction);
-                    }}
+                    onSort={handleSort}
                     sortField={sortField}
                     sortDirection={sortDirection}
                   />
@@ -187,10 +190,7 @@ export default function HousePage() {
                 {viewMode === 'table' && (
                   <ItemsTable
                     items={sortedItems}
-                    onSort={(field, direction) => {
-                      setSortField(field);
-                      setSortDirection(direction);
-                    }}
+                    onSort={handleSort}
                     sortField={sortField}
                     sortDirection={sortDirection}
                   />

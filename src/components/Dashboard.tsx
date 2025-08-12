@@ -1,9 +1,13 @@
+
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { DecorItem } from '@/types/inventory';
 import { useSettingsState } from '@/hooks/useSettingsState';
+import { ValuationSummary } from '@/components/dashboard/ValuationSummary';
+import { CollectionOverview } from '@/components/dashboard/CollectionOverview';
 import { Palette, Sofa, Package, Home } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { formatNumber } from '@/lib/currencyUtils';
 
 interface DashboardProps {
   items: DecorItem[];
@@ -29,10 +33,6 @@ export function Dashboard({ items }: DashboardProps) {
     }));
 
   const totalItems = items.length;
-  const totalValuation = items.reduce(
-    (sum, item) => sum + (item.valuation || 0),
-    0,
-  );
 
   const getCategoryIcon = (categoryId: string) => {
     switch (categoryId) {
@@ -47,15 +47,16 @@ export function Dashboard({ items }: DashboardProps) {
 
   return (
     <div className="space-y-8">
-      {/* Overview Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Enhanced Overview Section */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Basic Total Items Card */}
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Total Items</p>
                 <p className="text-2xl font-bold text-foreground">
-                  {totalItems}
+                  {formatNumber(totalItems)}
                 </p>
               </div>
               <Package className="w-8 h-8 text-dashboard-blue" />
@@ -63,45 +64,11 @@ export function Dashboard({ items }: DashboardProps) {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Total Valuation</p>
-                <p className="text-2xl font-bold text-foreground">
-                  ${totalValuation.toLocaleString()}
-                </p>
-              </div>
-              <div
-                className="w-8 h-8 rounded-full flex items-center justify-center"
-                style={{ backgroundColor: 'hsl(var(--dashboard-green) / 0.2)' }}
-              >
-                <span className="text-dashboard-green font-bold">$</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Collection Overview */}
+        <CollectionOverview items={items} />
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Categories</p>
-                <p className="text-2xl font-bold text-foreground">
-                  {categories.filter((c) => c.visible).length}
-                </p>
-              </div>
-              <div
-                className="w-8 h-8 rounded-full flex items-center justify-center"
-                style={{
-                  backgroundColor: 'hsl(var(--dashboard-purple) / 0.2)',
-                }}
-              >
-                <span className="text-dashboard-purple font-bold">#</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Valuation Summary */}
+        <ValuationSummary items={items} />
       </div>
 
       {/* Categories */}
@@ -125,11 +92,11 @@ export function Dashboard({ items }: DashboardProps) {
                           {category.name}
                         </h3>
                         <p className="text-sm text-muted-foreground">
-                          {category.count} items
+                          {formatNumber(category.count)} items
                         </p>
                       </div>
                     </div>
-                    <Badge variant="secondary">{category.count}</Badge>
+                    <Badge variant="secondary">{formatNumber(category.count)}</Badge>
                   </div>
                 </CardContent>
               </Card>
@@ -156,11 +123,11 @@ export function Dashboard({ items }: DashboardProps) {
                           {house.name}
                         </h3>
                         <p className="text-sm text-muted-foreground">
-                          {house.count} items
+                          {formatNumber(house.count)} items
                         </p>
                       </div>
                     </div>
-                    <Badge variant="secondary">{house.count}</Badge>
+                    <Badge variant="secondary">{formatNumber(house.count)}</Badge>
                   </div>
                 </CardContent>
               </Card>

@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,6 +9,7 @@ import { HousesManagement } from '@/components/settings/HousesManagement';
 import { CategoriesManagement } from '@/components/settings/CategoriesManagement';
 import { BulkUpload } from '@/components/settings/BulkUpload';
 import { DownloadDialog } from '@/components/settings/DownloadDialog';
+import { AdvancedSettings } from '@/components/settings/AdvancedSettings';
 import { HouseConfig } from '@/types/inventory';
 import type { BulkRow } from '@/types/bulk';
 import { useToast } from '@/hooks/use-toast';
@@ -75,12 +77,13 @@ export function SettingsManagement() {
       </div>
 
       <Tabs defaultValue="houses" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="houses">Houses & Rooms</TabsTrigger>
           <TabsTrigger value="categories">
             Categories & Subcategories
           </TabsTrigger>
           <TabsTrigger value="upload">Bulk Upload</TabsTrigger>
+          <TabsTrigger value="advanced">Advanced</TabsTrigger>
         </TabsList>
 
         <TabsContent value="houses">
@@ -118,6 +121,10 @@ export function SettingsManagement() {
             onCsvUpload={handleCsvUpload}
             onJsonUpload={handleJsonUpload}
           />
+        </TabsContent>
+
+        <TabsContent value="advanced">
+          <AdvancedSettings />
         </TabsContent>
       </Tabs>
 
