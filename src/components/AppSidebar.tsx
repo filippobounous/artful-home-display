@@ -1,3 +1,4 @@
+
 import {
   Home,
   Package,
@@ -59,9 +60,12 @@ export function AppSidebar() {
   const isCollapsed = state === 'collapsed';
   const { categories, houses } = useSettingsState();
 
-  // Dynamic category items based on configuration
+  // Dynamic category items based on configuration - ensure unique categories only
   const categoryItems = categories
     .filter((c) => c.visible)
+    .filter((category, index, arr) => 
+      arr.findIndex(c => c.id === category.id) === index
+    )
     .map((category) => ({
       title: category.name,
       url: `/category/${encodeURIComponent(category.id)}`,

@@ -1,459 +1,190 @@
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { AppSidebar } from '@/components/AppSidebar';
-import { SidebarProvider } from '@/components/ui/sidebar';
-import { InventoryHeader } from '@/components/InventoryHeader';
+import { useParams } from 'react-router-dom';
+import { useState, useMemo, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { fetchDecorItems } from '@/lib/api/items';
 import { SearchFilters } from '@/components/SearchFilters';
 import { ItemsGrid } from '@/components/ItemsGrid';
 import { ItemsList } from '@/components/ItemsList';
 import { ItemsTable } from '@/components/ItemsTable';
-import { ItemDetailDialog } from '@/components/ItemDetailDialog';
-import { ItemHistoryDialog } from '@/components/ItemHistoryDialog';
 import { EmptyState } from '@/components/EmptyState';
-import {
-  fetchDecorItems,
-  deleteDecorItem,
-  restoreDecorItem,
-  decorItemToInput,
-  updateDecorItem,
-} from '@/lib/api';
-import { BatchLocationDialog } from '@/components/BatchLocationDialog';
-import { Button } from '@/components/ui/button';
-import { DecorItem, DecorItemInput } from '@/types/inventory';
 import { useSettingsState } from '@/hooks/useSettingsState';
 import { sortInventoryItems } from '@/lib/sortUtils';
-import { useToast } from '@/hooks/use-toast';
-type ViewMode = 'grid' | 'list' | 'table';
+import { SidebarTrigger } from '@/components/ui/sidebar';
+import type { ViewMode, DecorItem } from '@/types/inventory';
 
-const HousePage = () => {
+export default function HousePage() {
   const { houseId } = useParams<{ houseId: string }>();
-  const navigate = useNavigate();
+  const { houses, categories } = useSettingsState();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string[]>([]);
-  const [selectedHouse, setSelectedHouse] = useState<string[]>(
-    houseId ? [houseId] : [],
-  );
-  const [selectedRoom, setSelectedRoom] = useState<string[]>([]); // stores "houseId|roomId"
+  const [selectedHouse, setSelectedHouse] = useState<string[]>([]);
+  const [selectedRoom, setSelectedRoom] = useState<string[]>([]);
   const [selectedYear, setSelectedYear] = useState<string[]>([]);
   const [selectedArtist, setSelectedArtist] = useState<string[]>([]);
-  const [valuationRange, setValuationRange] = useState<{
-    min?: number;
-    max?: number;
-  }>({});
+  const [valuationRange, setValuationRange] = useState<{ min?: number; max?: number }>({});
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
-  const [items, setItems] = useState<DecorItem[]>([]);
-  const [selectedItem, setSelectedItem] = useState<DecorItem | null>(null);
-  const [historyItem, setHistoryItem] = useState<DecorItem | null>(null);
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [locationDialogOpen, setLocationDialogOpen] = useState(false);
-  const [sortField, setSortField] = useState<string>('');
+  const [sortField, setSortField] = useState('');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
-  const { houses, categories } = useSettingsState();
-  const { toast } = useToast();
-  const yearOptions = Array.from(
-    new Set(items.map((i) => i.yearPeriod).filter(Boolean)),
-  );
-  const artistOptions = Array.from(
-    new Set(items.map((i) => i.artist).filter(Boolean)),
-  );
 
-  const handleEdit = (item: DecorItem) => {
-    const input = decorItemToInput(item);
-    localStorage.setItem('editingDraft', JSON.stringify(input));
-    navigate(`/add?draftId=${item.id}`);
-  };
+  const decodedHouseId = houseId ? decodeURIComponent(houseId) : '';
+  const house = houses.find((h) => h.id === decodedHouseId);
 
-  const handleDelete = (item: DecorItem) => {
-    if (!window.confirm(`Delete "${item.title}"?`)) return;
-    deleteDecorItem(item.id)
-      .then(() => {
-        setItems((prev) => prev.filter((i) => i.id !== item.id));
-        toast({
-          title: 'Item deleted',
-          description: 'The item has been removed successfully',
-        });
-        setSelectedItem(null);
-      })
-      .catch(() => {
-        toast({
-          title: 'Error deleting item',
-          description: 'There was a problem deleting the item',
-          variant: 'destructive',
-        });
-      });
-  };
-
-  const handleHistory = (item: DecorItem) => {
-    setHistoryItem(item);
-  };
-
-  const handleRestore = (version: DecorItem) => {
-    if (!historyItem) return;
-    restoreDecorItem(historyItem.id, decorItemToInput(version))
-      .then((updated) => {
-        setItems((prev) =>
-          prev.map((i) => (i.id === updated.id ? updated : i)),
-        );
-        setHistoryItem(updated);
-        setSelectedItem(updated);
-        toast({
-          title: 'Item restored',
-          description: 'The selected version has been restored',
-        });
-      })
-      .catch(() => {
-        toast({
-          title: 'Error restoring item',
-          description: 'There was a problem restoring this version',
-          variant: 'destructive',
-        });
-      });
-  };
-
-  useEffect(() => {
-    fetchDecorItems()
-      .then((data) => setItems(data))
-      .catch(() => setItems([]));
-  }, []);
-
-  useEffect(() => {
-    if (houseId) {
-      setSelectedHouse([houseId]);
-    }
-    // Reset other filters when navigating between houses
-    setSelectedCategory([]);
-    setSelectedSubcategory([]);
-    setSelectedRoom([]);
-    setSearchTerm('');
-  }, [houseId]);
-
-  const currentHouse = houses.find((h) => h.id === houseId);
-  const houseName = currentHouse?.name || 'Unknown House';
-
-  const filteredItems = items.filter((item) => {
-    const matchesSearch =
-      (item.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (item.description || '')
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      (item.artist &&
-        item.artist.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesCategory =
-      selectedCategory.length === 0 || selectedCategory.includes(item.category);
-    const matchesSubcategory =
-      selectedSubcategory.length === 0 ||
-      (item.subcategory && selectedSubcategory.includes(item.subcategory));
-    const matchesHouse = item.house === houseId;
-    const matchesRoom =
-      selectedRoom.length === 0 ||
-      (item.room && selectedRoom.includes(`${item.house}|${item.room}`));
-    const matchesYear =
-      selectedYear.length === 0 ||
-      (item.yearPeriod && selectedYear.includes(item.yearPeriod));
-    const matchesArtist =
-      selectedArtist.length === 0 ||
-      (item.artist && selectedArtist.includes(item.artist));
-    const valuation = item.valuation ?? 0;
-    const matchesValuation =
-      (valuationRange.min === undefined || valuation >= valuationRange.min) &&
-      (valuationRange.max === undefined || valuation <= valuationRange.max);
-
-    return (
-      matchesSearch &&
-      matchesCategory &&
-      matchesSubcategory &&
-      matchesHouse &&
-      matchesRoom &&
-      matchesYear &&
-      matchesArtist &&
-      matchesValuation
-    );
+  const { data: items = [], isLoading } = useQuery({
+    queryKey: ['decor-items'],
+    queryFn: fetchDecorItems,
   });
 
-  const downloadCSV = () => {
-    const headers = [
-      'ID',
-      'Title',
-      'Artist',
-      'Category',
-      'Subcategory',
-      'Width (cm)',
-      'Height (cm)',
-      'Depth (cm)',
-      'Valuation',
-      'Valuation Currency',
-      'Quantity',
-      'Year/Period',
-      'Description',
-      'House',
-      'Room',
-      'Notes',
-    ];
+  // Filter items for this house
+  const houseItems = useMemo(() => {
+    return items.filter((item) => item.house === decodedHouseId);
+  }, [items, decodedHouseId]);
 
-    const csvContent = [
-      headers.join(','),
-      ...filteredItems.map((item) =>
-        [
-          item.id || '',
-          `"${item.title || ''}"`,
-          `"${item.artist || ''}"`,
-          `"${item.category || ''}"`,
-          `"${item.subcategory || ''}"`,
-          item.widthCm ?? '',
-          item.heightCm ?? '',
-          item.depthCm ?? '',
-          item.valuation || '',
-          `"${item.valuationCurrency || ''}"`,
-          item.quantity || '',
-          `"${item.yearPeriod || ''}"`,
-          `"${item.description || ''}"`,
-          `"${item.house || ''}"`,
-          `"${item.room || ''}"`,
-          `"${item.notes || ''}"`,
-        ].join(','),
-      ),
-    ].join('\n');
+  const filteredItems = useMemo(() => {
+    return houseItems.filter((item) => {
+      const matchesSearch =
+        searchTerm === '' ||
+        item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (item.description &&
+          item.description.toLowerCase().includes(searchTerm.toLowerCase()));
 
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute(
-      'download',
-      `inventory_${new Date().toISOString().split('T')[0]}.csv`,
-    );
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
+      const matchesCategory =
+        selectedCategory.length === 0 || selectedCategory.includes(item.category);
 
-  const downloadJSON = () => {
-    const jsonContent = JSON.stringify(filteredItems, null, 2);
-    const blob = new Blob([jsonContent], {
-      type: 'application/json;charset=utf-8;',
+      const matchesSubcategory =
+        selectedSubcategory.length === 0 ||
+        (item.subcategory && selectedSubcategory.includes(item.subcategory));
+
+      const matchesYear =
+        selectedYear.length === 0 ||
+        (item.yearPeriod && selectedYear.includes(item.yearPeriod));
+
+      const matchesArtist =
+        selectedArtist.length === 0 ||
+        (item.artist && selectedArtist.includes(item.artist));
+
+      const matchesValuation =
+        (!valuationRange.min || (item.valuation && item.valuation >= valuationRange.min)) &&
+        (!valuationRange.max || (item.valuation && item.valuation <= valuationRange.max));
+
+      const roomKey = `${item.house}|${item.room}`;
+      const matchesRoom =
+        selectedRoom.length === 0 || selectedRoom.includes(roomKey);
+
+      return (
+        matchesSearch &&
+        matchesCategory &&
+        matchesSubcategory &&
+        matchesYear &&
+        matchesArtist &&
+        matchesValuation &&
+        matchesRoom
+      );
     });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute(
-      'download',
-      `inventory_${new Date().toISOString().split('T')[0]}.json`,
-    );
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
+  }, [
+    houseItems,
+    searchTerm,
+    selectedCategory,
+    selectedSubcategory,
+    selectedHouse,
+    selectedRoom,
+    selectedYear,
+    selectedArtist,
+    valuationRange,
+  ]);
 
-  const handleBatchLocation = (house: string, room: string) => {
-    const ids = [...selectedIds];
-    Promise.all(
-      ids.map((id) =>
-        updateDecorItem(id, {
-          house_code: house,
-          room_code: room,
-        } as Partial<DecorItemInput>),
-      ),
-    )
-      .then((updated) => {
-        setItems((prev) =>
-          prev.map((it) => {
-            const match = updated.find((u) => u.id === it.id);
-            return match ? match : it;
-          }),
-        );
-        toast({
-          title: 'Items updated',
-          description: `${ids.length} item${ids.length === 1 ? '' : 's'} moved`,
-        });
-        setSelectedIds([]);
-      })
-      .catch(() => {
-        toast({
-          title: 'Error updating items',
-          description: 'There was a problem updating the selected items',
-          variant: 'destructive',
-        });
-      });
-  };
-
-  const handleBatchDelete = () => {
-    if (
-      !window.confirm(
-        `Delete ${selectedIds.length} item${selectedIds.length === 1 ? '' : 's'}?`,
-      )
-    )
-      return;
-    const ids = [...selectedIds];
-    Promise.all(ids.map((id) => deleteDecorItem(id)))
-      .then(() => {
-        setItems((prev) => prev.filter((i) => !ids.includes(i.id.toString())));
-        toast({
-          title: 'Items deleted',
-          description: `${ids.length} item${ids.length === 1 ? '' : 's'} removed`,
-        });
-        setSelectedIds([]);
-      })
-      .catch(() => {
-        toast({
-          title: 'Error deleting items',
-          description: 'There was a problem deleting the selected items',
-          variant: 'destructive',
-        });
-      });
-  };
-
-  const sortedItems = sortInventoryItems(
-    filteredItems,
-    sortField,
-    sortDirection,
-    houses,
-    categories,
+  const yearOptions = useMemo(
+    () => [...new Set(items.map((item) => item.yearPeriod || ''))].sort(),
+    [items],
   );
 
-  const handleSort = (field: string, direction: 'asc' | 'desc') => {
-    setSortField(field);
-    setSortDirection(direction);
-  };
+  const artistOptions = useMemo(
+    () => [...new Set(items.map((item) => item.artist || ''))].sort(),
+    [items],
+  );
+
+  const sortedItems = useMemo(() => {
+    return sortInventoryItems(
+      filteredItems,
+      sortField,
+      sortDirection,
+      houses,
+      categories,
+    );
+  }, [filteredItems, sortField, sortDirection, houses, categories]);
+
+  if (!house) {
+    return <div>House not found</div>;
+  }
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-background">
-        <AppSidebar />
-
-        <div className="flex-1 flex flex-col">
-          <InventoryHeader />
-
-          <main className="flex-1 p-6">
-            <div className="mb-6">
-              <h2 className="text-xl font-semibold text-foreground mb-2">
-                {houseName}
-              </h2>
-              <p className="text-muted-foreground">
-                Items located in {houseName}
-              </p>
-            </div>
-
-            <SearchFilters
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-              selectedCategory={selectedCategory}
-              setSelectedCategory={setSelectedCategory}
-              selectedSubcategory={selectedSubcategory}
-              setSelectedSubcategory={setSelectedSubcategory}
-              selectedHouse={selectedHouse}
-              setSelectedHouse={setSelectedHouse}
-              selectedRoom={selectedRoom}
-              setSelectedRoom={setSelectedRoom}
-              yearOptions={yearOptions}
-              selectedYear={selectedYear}
-              setSelectedYear={setSelectedYear}
-              artistOptions={artistOptions}
-              selectedArtist={selectedArtist}
-              setSelectedArtist={setSelectedArtist}
-              valuationRange={valuationRange}
-              setValuationRange={setValuationRange}
-              viewMode={viewMode}
-              setViewMode={setViewMode}
-              onDownloadCSV={downloadCSV}
-              onDownloadJSON={downloadJSON}
-              permanentHouse={houseId}
-            />
-
-            {selectedIds.length > 0 && (
-              <div className="mb-6 flex flex-wrap items-center justify-between gap-2 bg-accent border border-accent text-accent-foreground px-4 py-2 rounded">
-                <span className="text-sm font-medium">
-                  {selectedIds.length} item{selectedIds.length === 1 ? '' : 's'}{' '}
-                  selected
-                </span>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="link"
-                    size="sm"
-                    onClick={() => setLocationDialogOpen(true)}
-                  >
-                    Change Location
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={handleBatchDelete}
-                  >
-                    Delete
-                  </Button>
-                  <Button
-                    variant="link"
-                    size="sm"
-                    onClick={() => setSelectedIds([])}
-                  >
-                    Clear
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            <div className="mb-6">
-              <p className="text-muted-foreground">
-                Showing {sortedItems.length} items in {houseName}
-              </p>
-            </div>
-
-            {sortedItems.length === 0 ? (
-              <EmptyState />
-            ) : viewMode === 'grid' ? (
-              <ItemsGrid
-                items={sortedItems}
-                onItemClick={setSelectedItem}
-                selectedIds={selectedIds}
-                onSelectionChange={setSelectedIds}
-              />
-            ) : viewMode === 'list' ? (
-              <ItemsList
-                items={sortedItems}
-                onItemClick={setSelectedItem}
-                selectedIds={selectedIds}
-                onSelectionChange={setSelectedIds}
-              />
-            ) : (
-              <ItemsTable
-                items={sortedItems}
-                onItemClick={setSelectedItem}
-                onSort={handleSort}
-                sortField={sortField}
-                sortDirection={sortDirection}
-                selectedIds={selectedIds}
-                onSelectionChange={setSelectedIds}
-              />
-            )}
-
-            <ItemDetailDialog
-              item={selectedItem}
-              open={!!selectedItem}
-              onOpenChange={(open) => !open && setSelectedItem(null)}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              onHistory={handleHistory}
-            />
-            <ItemHistoryDialog
-              item={historyItem}
-              open={!!historyItem}
-              onOpenChange={(open) => !open && setHistoryItem(null)}
-              onRestore={handleRestore}
-            />
-            <BatchLocationDialog
-              open={locationDialogOpen}
-              onOpenChange={setLocationDialogOpen}
-              onSubmit={handleBatchLocation}
-            />
-          </main>
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+      <div className="flex items-center gap-4">
+        <SidebarTrigger />
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+            {house.name}
+          </h1>
         </div>
       </div>
-    </SidebarProvider>
-  );
-};
 
-export default HousePage;
+      <SearchFilters
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
+        selectedSubcategory={selectedSubcategory}
+        setSelectedSubcategory={setSelectedSubcategory}
+        selectedHouse={selectedHouse}
+        setSelectedHouse={setSelectedHouse}
+        selectedRoom={selectedRoom}
+        setSelectedRoom={setSelectedRoom}
+        yearOptions={yearOptions}
+        selectedYear={selectedYear}
+        setSelectedYear={setSelectedYear}
+        artistOptions={artistOptions}
+        selectedArtist={selectedArtist}
+        setSelectedArtist={setSelectedArtist}
+        valuationRange={valuationRange}
+        setValuationRange={setValuationRange}
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+        permanentHouse={decodedHouseId}
+      />
+
+      {filteredItems.length === 0 ? (
+        <EmptyState />
+      ) : (
+        <div>
+          {viewMode === 'grid' && (
+            <ItemsGrid
+              items={sortedItems}
+              onSort={(field, direction) => {
+                setSortField(field);
+                setSortDirection(direction);
+              }}
+            />
+          )}
+          {viewMode === 'list' && (
+            <ItemsList
+              items={sortedItems}
+              onSort={(field, direction) => {
+                setSortField(field);
+                setSortDirection(direction);
+              }}
+            />
+          )}
+          {viewMode === 'table' && (
+            <ItemsTable
+              items={sortedItems}
+              onSort={(field, direction) => {
+                setSortField(field);
+                setSortDirection(direction);
+              }}
+            />
+          )}
+        </div>
+      )}
+    </div>
+  );
+}

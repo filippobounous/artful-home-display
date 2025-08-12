@@ -1,5 +1,5 @@
-
 import type { DecorItem } from '@/types/inventory';
+import { defaultHouses } from '@/types/inventory';
 
 export const generateTestData = (): DecorItem[] => {
   const creators = [
@@ -16,22 +16,21 @@ export const generateTestData = (): DecorItem[] => {
   ];
 
   const categories = [
-    { id: 'paintings', name: 'Paintings', subcategories: ['oil', 'watercolor', 'acrylic', 'pastel', 'mixed'] },
-    { id: 'sculptures', name: 'Sculptures', subcategories: ['bronze', 'marble', 'ceramic', 'wood', 'modern'] },
-    { id: 'decorative', name: 'Decorative Arts', subcategories: ['vases', 'frames', 'mirrors', 'clocks', 'ornaments'] },
-    { id: 'furniture', name: 'Furniture', subcategories: ['chairs', 'tables', 'cabinets', 'chests', 'desks'] },
-    { id: 'textiles', name: 'Textiles', subcategories: ['tapestries', 'rugs', 'fabrics', 'embroidery', 'lace'] },
-    { id: 'ceramics', name: 'Ceramics', subcategories: ['porcelain', 'pottery', 'faience', 'stoneware', 'earthenware'] },
-    { id: 'metalwork', name: 'Metalwork', subcategories: ['silver', 'gold', 'bronze', 'iron', 'pewter'] },
-    { id: 'glass', name: 'Glass', subcategories: ['venetian', 'crystal', 'stained', 'blown', 'pressed'] }
+    { id: 'art', name: 'Art', subcategories: ['painting', 'sculpture', 'photography', 'print'] },
+    { id: 'furniture', name: 'Furniture', subcategories: ['chair', 'table', 'sofa', 'cabinet', 'rug'] },
+    { id: 'decorative', name: 'Decorative', subcategories: ['vase', 'basket', 'mirror', 'lighting'] },
+    { id: 'kitchenware', name: 'Kitchenware', subcategories: ['tea-set'] }
   ];
 
-  const houses = ['Villa Montecarlo', 'Château de Versailles', 'Manor House Essex', 'Palazzo Venezia', 'Country Estate'];
-  const rooms = [
-    'Grand Salon', 'Drawing Room', 'Library', 'Dining Room', 'Master Bedroom',
-    'Guest Room', 'Study', 'Music Room', 'Gallery', 'Foyer', 'Conservatory',
-    'Morning Room', 'Billiard Room', 'Wine Cellar', 'Garden Room', 'Attic Storage'
-  ];
+  // Use only houses and rooms from defaultHouses
+  const validHouses = defaultHouses.map(house => ({
+    id: house.id,
+    name: house.name,
+    rooms: house.rooms.map(room => ({
+      id: room.id,
+      name: room.name
+    }))
+  }));
 
   const regions = [
     'France', 'Italy', 'England', 'Germany', 'Spain', 'Netherlands', 'Belgium',
@@ -114,22 +113,17 @@ export const generateTestData = (): DecorItem[] => {
     const material = getRandomElement(materials);
     const region = getRandomElement(regions);
     const period = getRandomElement(periods);
-    const house = getRandomElement(houses);
-    const room = getRandomElement(rooms);
+    const house = getRandomElement(validHouses);
+    const room = getRandomElement(house.rooms);
     const currency = getRandomElement(currencies);
     
     // Generate realistic dimensions based on category
     let width, height, depth, weight;
-    if (category.id === 'paintings') {
+    if (category.id === 'art') {
       width = getRandomNumber(30, 200);
       height = getRandomNumber(20, 150);
       depth = getRandomNumber(2, 8);
       weight = getRandomNumber(1, 15);
-    } else if (category.id === 'sculptures') {
-      width = getRandomNumber(15, 100);
-      height = getRandomNumber(20, 180);
-      depth = getRandomNumber(15, 80);
-      weight = getRandomNumber(5, 200);
     } else if (category.id === 'furniture') {
       width = getRandomNumber(40, 200);
       height = getRandomNumber(60, 180);
@@ -142,18 +136,15 @@ export const generateTestData = (): DecorItem[] => {
       weight = getRandomNumber(0.5, 25);
     }
 
+    // Remove currency symbols - store as numbers only
     const acquisitionValue = getRandomNumber(500, 50000);
     const valuationValue = Math.round(acquisitionValue * (0.8 + Math.random() * 0.4));
 
     const itemNames = {
-      paintings: ['Portrait', 'Landscape', 'Still Life', 'Abstract Composition', 'Study'],
-      sculptures: ['Figure', 'Bust', 'Relief', 'Abstract Form', 'Monument'],
-      decorative: ['Vase', 'Bowl', 'Ornament', 'Decorative Panel', 'Centerpiece'],
+      art: ['Portrait', 'Landscape', 'Still Life', 'Abstract Composition', 'Study'],
       furniture: ['Chair', 'Table', 'Cabinet', 'Chest', 'Desk'],
-      textiles: ['Tapestry', 'Rug', 'Textile Panel', 'Embroidered Panel', 'Fabric Sample'],
-      ceramics: ['Plate', 'Bowl', 'Figurine', 'Tile', 'Vessel'],
-      metalwork: ['Candlestick', 'Tray', 'Box', 'Sculpture', 'Vessel'],
-      glass: ['Vase', 'Bowl', 'Goblet', 'Window Panel', 'Ornament']
+      decorative: ['Vase', 'Bowl', 'Ornament', 'Decorative Panel', 'Centerpiece'],
+      kitchenware: ['Plate', 'Bowl', 'Figurine', 'Tile', 'Vessel']
     };
 
     const baseName = getRandomElement(itemNames[category.id as keyof typeof itemNames] || ['Object']);
@@ -176,9 +167,9 @@ export const generateTestData = (): DecorItem[] => {
       weightKg: weight,
       provenance: `${region}, ${period}`,
       image: '/placeholder.svg',
-      description: getRandomElement(descriptions),
-      house,
-      room,
+      description: 'A magnificent example of period craftsmanship, showcasing exceptional attention to detail and artistic mastery.',
+      house: house.id,
+      room: room.id,
       yearPeriod: period,
       quantity: getRandomNumber(1, 3),
       acquisitionDate: getRandomDate(2010, 2023),
@@ -193,7 +184,7 @@ export const generateTestData = (): DecorItem[] => {
         'European Art Consultants', 'Fine Arts Appraisal Services'
       ]),
       valuationCurrency: currency,
-      notes: getRandomElement(notes),
+      notes: 'Acquired from a private European collection with excellent provenance.',
       condition: getRandomElement(conditions),
       deleted: false,
       history: [],

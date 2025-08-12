@@ -1,16 +1,18 @@
-import React from 'react';
 
-interface ServiceContextValue {
-  service: string;
-  setService: (service: string) => void;
+import React, { createContext, useContext, useState, ReactNode } from 'react';
+
+type ServiceType = 'Inventory' | 'Books' | 'Music';
+
+interface ServiceContextType {
+  service: ServiceType;
+  setService: (service: ServiceType) => void;
 }
 
-const ServiceContext = React.createContext<ServiceContextValue | undefined>(
-  undefined,
-);
+const ServiceContext = createContext<ServiceContextType | undefined>(undefined);
 
-export function ServiceProvider({ children }: { children: React.ReactNode }) {
-  const [service, setService] = React.useState('Inventory');
+export function ServiceProvider({ children }: { children: ReactNode }) {
+  const [service, setService] = useState<ServiceType>('Inventory');
+
   return (
     <ServiceContext.Provider value={{ service, setService }}>
       {children}
@@ -18,10 +20,9 @@ export function ServiceProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function useService() {
-  const context = React.useContext(ServiceContext);
-  if (!context) {
+  const context = useContext(ServiceContext);
+  if (context === undefined) {
     throw new Error('useService must be used within a ServiceProvider');
   }
   return context;

@@ -179,7 +179,7 @@ export interface RoomConfig {
   history?: RoomConfig[];
 }
 
-// Category configurations with icons
+// Category configurations with icons - removed duplicate "decor" category
 export const categoryConfigs: CategoryConfig[] = [
   {
     id: 'art',
@@ -210,17 +210,6 @@ export const categoryConfigs: CategoryConfig[] = [
     id: 'decorative',
     name: 'Decorative',
     icon: 'lamp',
-    subcategories: [
-      { id: 'vase', name: 'Vase', visible: true },
-      { id: 'mirror', name: 'Mirror', visible: true },
-      { id: 'lighting', name: 'Lighting', visible: true },
-    ],
-    visible: true,
-  },
-  {
-    id: 'decor',
-    name: 'Decor',
-    icon: 'brush',
     subcategories: [
       { id: 'vase', name: 'Vase', visible: true },
       { id: 'basket', name: 'Basket', visible: true },

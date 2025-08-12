@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
   Select,
@@ -17,6 +18,8 @@ export function ServiceSelect() {
       </SelectTrigger>
       <SelectContent>
         <SelectItem value="Inventory">Inventory</SelectItem>
+        <SelectItem value="Books">Books</SelectItem>
+        <SelectItem value="Music">Music</SelectItem>
       </SelectContent>
     </Select>
   );
