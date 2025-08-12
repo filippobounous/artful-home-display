@@ -22,9 +22,19 @@ export default function CategoryPage() {
   const [selectedRoom, setSelectedRoom] = useState<string[]>([]);
   const [selectedYear, setSelectedYear] = useState<string[]>([]);
   const [selectedArtist, setSelectedArtist] = useState<string[]>([]);
-  const [valuationRange, setValuationRange] = useState<{ min?: number; max?: number }>({});
+  const [valuationRange, setValuationRange] = useState<{
+    min?: number;
+    max?: number;
+  }>({});
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
-  const [sortField, setSortField] = useState('');
+  type SortField =
+    | 'title'
+    | 'artist'
+    | 'category'
+    | 'valuation'
+    | 'yearPeriod'
+    | 'location';
+  const [sortField, setSortField] = useState<SortField>('title');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   const decodedCategoryId = categoryId ? decodeURIComponent(categoryId) : '';
@@ -185,15 +195,7 @@ export default function CategoryPage() {
         <EmptyState />
       ) : (
         <div>
-          {viewMode === 'grid' && (
-            <ItemsGrid
-              items={sortedItems}
-              onSort={(field, direction) => {
-                setSortField(field);
-                setSortDirection(direction);
-              }}
-            />
-          )}
+          {viewMode === 'grid' && <ItemsGrid items={sortedItems} />}
           {viewMode === 'list' && (
             <ItemsList
               items={sortedItems}
@@ -201,6 +203,8 @@ export default function CategoryPage() {
                 setSortField(field);
                 setSortDirection(direction);
               }}
+              sortField={sortField}
+              sortDirection={sortDirection}
             />
           )}
           {viewMode === 'table' && (
@@ -210,6 +214,8 @@ export default function CategoryPage() {
                 setSortField(field);
                 setSortDirection(direction);
               }}
+              sortField={sortField}
+              sortDirection={sortDirection}
             />
           )}
         </div>
