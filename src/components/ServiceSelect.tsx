@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   Select,
@@ -7,7 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useService } from '@/context/ServiceContext';
+import { useService } from '@/context/useService';
 
 export function ServiceSelect() {
   const { service, setService } = useService();

@@ -11,7 +11,7 @@ import { DarkModeToggle } from '@/components/DarkModeToggle';
 import { LogoutButton } from '@/components/LogoutButton';
 import { useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
-import { useService } from '@/context/ServiceContext';
+import { useService } from '@/context/useService';
 import { fetchDecorItems } from '@/lib/api';
 import type { DecorItem } from '@/types/inventory';
 import { useToast } from '@/hooks/use-toast';
