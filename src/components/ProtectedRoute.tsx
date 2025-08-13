@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
+import { checkAuth } from '@/lib/api';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -9,8 +10,15 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const authStatus = localStorage.getItem('isAuthenticated');
-    setIsAuthenticated(authStatus === 'true');
+    async function verify() {
+      try {
+        const authenticated = await checkAuth();
+        setIsAuthenticated(authenticated);
+      } catch {
+        setIsAuthenticated(false);
+      }
+    }
+    verify();
   }, []);
 
   if (isAuthenticated === null) {

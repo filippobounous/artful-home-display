@@ -21,9 +21,7 @@ const Login = () => {
     setError('');
 
     try {
-      const data = await login(username, password);
-      localStorage.setItem('authToken', data.access_token);
-      localStorage.setItem('isAuthenticated', 'true');
+      await login(username, password);
       navigate('/');
     } catch {
       setError('Invalid username or password');

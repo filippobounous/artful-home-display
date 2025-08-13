@@ -1,14 +1,6 @@
 import { API_URL } from './common';
 
-export interface LoginResponse {
-  access_token: string;
-  token_type: string;
-}
-
-export async function login(
-  username: string,
-  password: string,
-): Promise<LoginResponse> {
+export async function login(username: string, password: string): Promise<void> {
   const form = new FormData();
   form.append('username', username);
   form.append('password', password);
@@ -18,33 +10,27 @@ export async function login(
     response = await fetch(`${API_URL}/login`, {
       method: 'POST',
       body: form,
+      credentials: 'include',
     });
   } catch {
-    // If the API can't be reached, allow the demo credentials
-    if (username === 'demo' && password === 'password123') {
-      return {
-        access_token: 'demo_token_' + Date.now(),
-        token_type: 'Bearer',
-      };
-    }
     throw new Error('Unable to reach authentication server');
   }
 
   if (!response.ok) {
-    // Fallback to offline authentication in development or when explicitly enabled
-    const allowDemo = import.meta.env.VITE_ALLOW_DEMO_LOGIN === 'true';
-    if (
-      (import.meta.env.DEV || allowDemo) &&
-      username === 'demo' &&
-      password === 'password123'
-    ) {
-      return {
-        access_token: 'demo_token_' + Date.now(),
-        token_type: 'Bearer',
-      };
-    }
     throw new Error('Invalid credentials');
   }
+}
 
-  return response.json();
+export async function logout(): Promise<void> {
+  await fetch(`${API_URL}/logout`, {
+    method: 'POST',
+    credentials: 'include',
+  });
+}
+
+export async function checkAuth(): Promise<boolean> {
+  const response = await fetch(`${API_URL}/auth/status`, {
+    credentials: 'include',
+  });
+  return response.ok;
 }
