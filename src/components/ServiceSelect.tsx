@@ -12,7 +12,7 @@ export function ServiceSelect() {
   const { service, setService } = useService();
   return (
     <Select value={service} onValueChange={setService}>
-      <SelectTrigger className="mt-2 w-full">
+      <SelectTrigger className="w-full">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
