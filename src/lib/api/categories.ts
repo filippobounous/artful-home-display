@@ -26,7 +26,7 @@ function getAllCategories(): CategoryConfig[] {
 }
 
 function getLocalCategories(): CategoryConfig[] {
-  return getAllCategories().filter((c) => !c.visible === false);
+  return getAllCategories().filter((c) => c.visible);
 }
 
 function saveLocalCategories(categories: CategoryConfig[]) {
