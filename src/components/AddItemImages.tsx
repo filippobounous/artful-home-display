@@ -14,13 +14,14 @@ export function AddItemImages({ formData, setFormData }: AddItemImagesProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const addImageUrl = () => {
-    if (newImageUrl.trim()) {
+    const url = newImageUrl.trim();
+    if (url && /^https?:\/\/.+\.(jpg|jpeg|png|gif|svg)$/i.test(url)) {
       setFormData((prev) => ({
         ...prev,
-        images: [...prev.images, newImageUrl.trim()],
+        images: [...prev.images, url],
       }));
-      setNewImageUrl('');
     }
+    setNewImageUrl('');
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
