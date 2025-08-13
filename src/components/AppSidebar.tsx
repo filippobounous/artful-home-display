@@ -1,4 +1,3 @@
-
 import {
   Home,
   Package,
@@ -27,6 +26,7 @@ import {
 import { useSidebar } from '@/components/ui/use-sidebar';
 import { useSettingsState } from '@/hooks/useSettingsState';
 import { ServiceSelect } from './ServiceSelect';
+import { logout } from '@/lib/api';
 
 const mainItems = [
   { title: 'Dashboard', url: '/', icon: Home },
@@ -63,8 +63,9 @@ export function AppSidebar() {
   // Dynamic category items based on configuration - ensure unique categories only
   const categoryItems = categories
     .filter((c) => c.visible)
-    .filter((category, index, arr) => 
-      arr.findIndex(c => c.id === category.id) === index
+    .filter(
+      (category, index, arr) =>
+        arr.findIndex((c) => c.id === category.id) === index,
     )
     .map((category) => ({
       title: category.name,
@@ -93,9 +94,8 @@ export function AppSidebar() {
       ? 'bg-sidebar-accent text-sidebar-accent-foreground font-medium border-r-2 border-sidebar-primary'
       : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground';
 
-  const handleLogout = () => {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('isAuthenticated');
+  const handleLogout = async () => {
+    await logout();
     navigate('/login');
   };
 

@@ -1,13 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
+import { logout } from '@/lib/api';
 
 export function LogoutButton() {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem('authToken');
-    localStorage.removeItem('isAuthenticated');
+  const handleLogout = async () => {
+    await logout();
     navigate('/login');
   };
 
