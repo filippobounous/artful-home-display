@@ -11,7 +11,7 @@ interface ItemCardProps {
 }
 
 export function ItemCard({ item, onClick, selected, onSelect }: ItemCardProps) {
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClick = (e: React.MouseEvent | React.KeyboardEvent) => {
     if (e.shiftKey && onSelect) {
       onSelect(true);
       return;
@@ -26,11 +26,14 @@ export function ItemCard({ item, onClick, selected, onSelect }: ItemCardProps) {
 
   return (
     <Card
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && handleClick(e)}
+      onClick={handleClick}
       className={cn(
         'relative group hover:shadow-lg transition-all duration-300 cursor-pointer',
         selected && 'ring-2 ring-primary',
       )}
-      onClick={handleClick}
     >
       <CardContent className="p-0">
         {onSelect && (

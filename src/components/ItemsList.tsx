@@ -128,6 +128,18 @@ export function ItemsList({
     onSelectionChange(newIds);
   };
 
+  const handleClick = (
+    e: React.MouseEvent | React.KeyboardEvent,
+    item: DecorItem,
+    idx: number,
+  ) => {
+    if (e.shiftKey) {
+      toggle(item.id.toString(), idx, true);
+    } else {
+      onItemClick?.(item);
+    }
+  };
+
   return (
     <div className="space-y-4">
       {/* Sort Controls */}
@@ -145,18 +157,17 @@ export function ItemsList({
       {sortedItems.map((item, idx) => (
         <Card
           key={item.id}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) =>
+            (e.key === 'Enter' || e.key === ' ') && handleClick(e, item, idx)
+          }
+          onClick={(e) => handleClick(e, item, idx)}
           className={cn(
             'hover:shadow-md transition-shadow cursor-pointer',
             selectedIds.includes(item.id.toString()) &&
               'ring-2 ring-primary bg-blue-50',
           )}
-          onClick={(e) => {
-            if (e.shiftKey) {
-              toggle(item.id.toString(), idx, true);
-            } else {
-              onItemClick?.(item);
-            }
-          }}
         >
           <CardContent className="p-6">
             <div className="flex gap-4">
