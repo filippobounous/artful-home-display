@@ -6,6 +6,7 @@ import {
   SubcategoryConfig,
   HouseConfig,
   RoomConfig,
+  DecorItem,
 } from '@/types/inventory';
 import { fetchCategories, fetchHouses } from '@/lib/api';
 
@@ -84,8 +85,14 @@ const reassignItems = (
   toHouseId: string,
   toRoomId: string,
 ): void => {
-  // This would update your items database to reassign items
-  // Implementation pending
+  const raw = localStorage.getItem('inventoryData');
+  const items: DecorItem[] = raw ? JSON.parse(raw) : [];
+  const updated = items.map((i) =>
+    i.house === fromHouseId && i.room === fromRoomId
+      ? { ...i, house: toHouseId, room: toRoomId }
+      : i,
+  );
+  localStorage.setItem('inventoryData', JSON.stringify(updated));
 };
 
 export function useSettingsState() {
