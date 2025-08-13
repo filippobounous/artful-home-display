@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { AppSidebar } from '@/components/AppSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
@@ -9,114 +9,155 @@ import { ItemsTable } from '@/components/ItemsTable';
 import { SearchFilters } from '@/components/SearchFilters';
 import { EmptyState } from '@/components/EmptyState';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { Plus, Grid, List, Table2, Download, Upload } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { 
-  fetchDecorItems, 
-  updateDecorItem, 
-  deleteDecorItem, 
-  decorItemToInput,
-  type DecorItemInput 
-} from '@/lib/api';
-import { DecorItem } from '@/types/inventory';
+import { fetchDecorItems, updateDecorItem, decorItemToInput } from '@/lib/api';
+import type { DecorItemInput, ViewMode } from '@/types/inventory';
 import { useSettingsState } from '@/hooks/useSettingsState';
 import { BatchLocationDialog } from '@/components/BatchLocationDialog';
 import { useToast } from '@/hooks/use-toast';
 import { formatNumber } from '@/lib/currencyUtils';
+import { sortInventoryItems } from '@/lib/sortUtils';
 
 const AllItems = () => {
-  const [view, setView] = useState<'grid' | 'list' | 'table'>('grid');
   const [searchTerm, setSearchTerm] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState<string[]>([]);
-  const [locationFilter, setLocationFilter] = useState<{ houses: string[], rooms: string[] }>({ houses: [], rooms: [] });
-  const [artistFilter, setArtistFilter] = useState<string[]>([]);
-  const [yearFilter, setYearFilter] = useState<{ min: number | null, max: number | null }>({ min: null, max: null });
-  const [valuationFilter, setValuationFilter] = useState<{ min: number | null, max: number | null, currencies: string[] }>({ min: null, max: null, currencies: [] });
-  const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string[]>([]);
+  const [selectedHouse, setSelectedHouse] = useState<string[]>([]);
+  const [selectedRoom, setSelectedRoom] = useState<string[]>([]);
+  const [selectedYear, setSelectedYear] = useState<string[]>([]);
+  const [selectedArtist, setSelectedArtist] = useState<string[]>([]);
+  const [valuationRange, setValuationRange] = useState<{
+    min?: number;
+    max?: number;
+  }>({});
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [showBatchDialog, setShowBatchDialog] = useState(false);
 
   const { categories, houses } = useSettingsState();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: items = [], isLoading, error } = useQuery({
-    queryKey: ['decorItems'],
+  const {
+    data: items = [],
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['decor-items'],
     queryFn: fetchDecorItems,
   });
 
-  const filteredItems = useMemo(() => {
-    return items.filter(item => {
-      if (item.deleted) return false;
-      
-      const matchesSearch = !searchTerm || 
-        item.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.artist?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.code?.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchesCategory = categoryFilter.length === 0 || 
-        categoryFilter.includes(item.category);
-      
-      const matchesLocation = (locationFilter.houses.length === 0 || locationFilter.houses.includes(item.house)) &&
-        (locationFilter.rooms.length === 0 || locationFilter.rooms.includes(item.room));
-      
-      const matchesArtist = artistFilter.length === 0 || 
-        (item.artist && artistFilter.includes(item.artist));
-      
-      const itemYear = parseInt(item.yearPeriod || '0');
-      const matchesYear = (yearFilter.min === null || itemYear >= yearFilter.min) &&
-        (yearFilter.max === null || itemYear <= yearFilter.max);
-      
-      const itemValue = item.valuation || 0;
-      const itemCurrency = item.valuationCurrency || 'GBP';
-      const matchesValuation = (valuationFilter.min === null || itemValue >= valuationFilter.min) &&
-        (valuationFilter.max === null || itemValue <= valuationFilter.max) &&
-        (valuationFilter.currencies.length === 0 || valuationFilter.currencies.includes(itemCurrency));
-      
-      return matchesSearch && matchesCategory && matchesLocation && matchesArtist && matchesYear && matchesValuation;
+  const yearOptions = useMemo(() => {
+    const years = new Set<string>();
+    items.forEach((item) => {
+      if (item.yearPeriod) years.add(item.yearPeriod);
     });
-  }, [items, searchTerm, categoryFilter, locationFilter, artistFilter, yearFilter, valuationFilter]);
+    return Array.from(years);
+  }, [items]);
 
-  const handleEdit = async (item: DecorItem) => {
-    try {
-      const input: DecorItemInput = decorItemToInput(item);
-      await updateDecorItem(item.id, input);
-      queryClient.invalidateQueries({ queryKey: ['decorItems'] });
-      toast({
-        title: 'Success',
-        description: 'Item updated successfully',
-      });
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to update item',
-        variant: 'destructive',
-      });
-    }
-  };
+  const artistOptions = useMemo(() => {
+    const artists = new Set<string>();
+    items.forEach((item) => {
+      if (item.artist) artists.add(item.artist);
+    });
+    return Array.from(artists);
+  }, [items]);
 
-  const handleDelete = async (id: number) => {
-    try {
-      await deleteDecorItem(id);
-      queryClient.invalidateQueries({ queryKey: ['decorItems'] });
-      toast({
-        title: 'Success',
-        description: 'Item deleted successfully',
-      });
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to delete item',
-        variant: 'destructive',
-      });
-    }
+  const filteredItems = useMemo(() => {
+    return items.filter((item) => {
+      if (item.deleted) return false;
+
+      const term = searchTerm.toLowerCase();
+      const matchesSearch =
+        term === '' ||
+        item.title.toLowerCase().includes(term) ||
+        (item.description && item.description.toLowerCase().includes(term)) ||
+        (item.notes && item.notes.toLowerCase().includes(term)) ||
+        (item.artist && item.artist.toLowerCase().includes(term));
+
+      const matchesCategory =
+        selectedCategory.length === 0 ||
+        selectedCategory.includes(item.category);
+
+      const matchesSubcategory =
+        selectedSubcategory.length === 0 ||
+        (item.subcategory && selectedSubcategory.includes(item.subcategory));
+
+      const matchesHouse =
+        selectedHouse.length === 0 || selectedHouse.includes(item.house || '');
+
+      const roomKey = `${item.house}|${item.room}`;
+      const matchesRoom =
+        selectedRoom.length === 0 || selectedRoom.includes(roomKey);
+
+      const matchesYear =
+        selectedYear.length === 0 ||
+        (item.yearPeriod && selectedYear.includes(item.yearPeriod));
+
+      const matchesArtist =
+        selectedArtist.length === 0 ||
+        (item.artist && selectedArtist.includes(item.artist));
+
+      const matchesValuation =
+        (!valuationRange.min ||
+          (item.valuation && item.valuation >= valuationRange.min)) &&
+        (!valuationRange.max ||
+          (item.valuation && item.valuation <= valuationRange.max));
+
+      return (
+        matchesSearch &&
+        matchesCategory &&
+        matchesSubcategory &&
+        matchesHouse &&
+        matchesRoom &&
+        matchesYear &&
+        matchesArtist &&
+        matchesValuation
+      );
+    });
+  }, [
+    items,
+    searchTerm,
+    selectedCategory,
+    selectedSubcategory,
+    selectedHouse,
+    selectedRoom,
+    selectedYear,
+    selectedArtist,
+    valuationRange,
+  ]);
+
+  type SortField =
+    | 'title'
+    | 'artist'
+    | 'category'
+    | 'valuation'
+    | 'yearPeriod'
+    | 'location';
+  const [sortField, setSortField] = useState<SortField>('title');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+
+  const sortedItems = useMemo(() => {
+    return sortInventoryItems(
+      filteredItems,
+      sortField,
+      sortDirection,
+      houses,
+      categories,
+    );
+  }, [filteredItems, sortField, sortDirection, houses, categories]);
+
+  const handleSort = (field: string, direction: 'asc' | 'desc') => {
+    setSortField(field as SortField);
+    setSortDirection(direction);
   };
 
   const handleBatchLocationUpdate = async (houseId: string, roomId: string) => {
     try {
-      const updatePromises = selectedItems.map(async (itemId) => {
-        const item = items.find(i => i.id === itemId);
+      const updatePromises = selectedItems.map(async (id) => {
+        const itemId = Number(id);
+        const item = items.find((i) => i.id === itemId);
         if (item) {
           const input: DecorItemInput = {
             ...decorItemToInput(item),
@@ -128,10 +169,10 @@ const AllItems = () => {
       });
 
       await Promise.all(updatePromises);
-      queryClient.invalidateQueries({ queryKey: ['decorItems'] });
+      queryClient.invalidateQueries({ queryKey: ['decor-items'] });
       setSelectedItems([]);
       setShowBatchDialog(false);
-      
+
       toast({
         title: 'Success',
         description: `Updated location for ${selectedItems.length} items`,
@@ -143,15 +184,6 @@ const AllItems = () => {
         variant: 'destructive',
       });
     }
-  };
-
-  const handleClearFilters = () => {
-    setSearchTerm('');
-    setCategoryFilter([]);
-    setLocationFilter({ houses: [], rooms: [] });
-    setArtistFilter([]);
-    setYearFilter({ min: null, max: null });
-    setValuationFilter({ min: null, max: null, currencies: [] });
   };
 
   if (isLoading) {
@@ -199,118 +231,91 @@ const AllItems = () => {
         <div className="flex-1 flex flex-col">
           <InventoryHeader />
 
-          <main className="flex-1 p-6">
-            <div className="space-y-6">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div>
-                  <h2 className="text-xl font-semibold text-foreground">
-                    All Items
-                  </h2>
-                  <p className="text-muted-foreground">
-                    {formatNumber(filteredItems.length)} items in your collection
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  {selectedItems.length > 0 && (
-                    <Button
-                      onClick={() => setShowBatchDialog(true)}
-                      variant="secondary"
-                      size="sm"
-                    >
-                      Update Location ({selectedItems.length})
-                    </Button>
-                  )}
-                  
-                  <div className="flex gap-1 bg-muted rounded-lg p-1">
-                    <Button
-                      variant={view === 'grid' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setView('grid')}
-                    >
-                      <Grid className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant={view === 'list' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setView('list')}
-                    >
-                      <List className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant={view === 'table' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setView('table')}
-                    >
-                      <Table2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-
-                  <Link to="/add-item">
-                    <Button>
-                      <Plus className="w-4 h-4 mr-2" />
-                      Add Item
-                    </Button>
-                  </Link>
-                </div>
+          <main className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div>
+                <h1 className="text-3xl font-bold tracking-tight text-foreground">
+                  All Items
+                </h1>
+                <p className="text-muted-foreground">
+                  {formatNumber(filteredItems.length)} items in your collection
+                </p>
               </div>
-
-              <SearchFilters
-                searchTerm={searchTerm}
-                onSearchChange={setSearchTerm}
-                categoryFilter={categoryFilter}
-                onCategoryFilterChange={setCategoryFilter}
-                locationFilter={locationFilter}
-                onLocationFilterChange={setLocationFilter}
-                artistFilter={artistFilter}
-                onArtistFilterChange={setArtistFilter}
-                yearFilter={yearFilter}
-                onYearFilterChange={setYearFilter}
-                valuationFilter={valuationFilter}
-                onValuationFilterChange={setValuationFilter}
-                onClearFilters={handleClearFilters}
-                items={items}
-                categories={categories}
-                houses={houses}
-              />
-
-              {filteredItems.length === 0 ? (
-                <EmptyState
-                  title="No items found"
-                  description="Try adjusting your search criteria or add your first item."
-                />
-              ) : (
-                <>
-                  {view === 'grid' && (
-                    <ItemsGrid
-                      items={filteredItems}
-                      onEdit={handleEdit}
-                      onDelete={handleDelete}
-                      selectedItems={selectedItems}
-                      onSelectionChange={setSelectedItems}
-                    />
-                  )}
-                  {view === 'list' && (
-                    <ItemsList
-                      items={filteredItems}
-                      onEdit={handleEdit}
-                      onDelete={handleDelete}
-                      selectedItems={selectedItems}
-                      onSelectionChange={setSelectedItems}
-                    />
-                  )}
-                  {view === 'table' && (
-                    <ItemsTable
-                      items={filteredItems}
-                      onEdit={handleEdit}
-                      onDelete={handleDelete}
-                      selectedItems={selectedItems}
-                      onSelectionChange={setSelectedItems}
-                    />
-                  )}
-                </>
-              )}
+              <div className="flex flex-wrap gap-2">
+                {selectedItems.length > 0 && (
+                  <Button
+                    onClick={() => setShowBatchDialog(true)}
+                    variant="secondary"
+                    size="sm"
+                  >
+                    Update Location ({selectedItems.length})
+                  </Button>
+                )}
+                <Link to="/add-item">
+                  <Button>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Item
+                  </Button>
+                </Link>
+              </div>
             </div>
+
+            <SearchFilters
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+              selectedSubcategory={selectedSubcategory}
+              setSelectedSubcategory={setSelectedSubcategory}
+              selectedHouse={selectedHouse}
+              setSelectedHouse={setSelectedHouse}
+              selectedRoom={selectedRoom}
+              setSelectedRoom={setSelectedRoom}
+              yearOptions={yearOptions}
+              selectedYear={selectedYear}
+              setSelectedYear={setSelectedYear}
+              artistOptions={artistOptions}
+              selectedArtist={selectedArtist}
+              setSelectedArtist={setSelectedArtist}
+              valuationRange={valuationRange}
+              setValuationRange={setValuationRange}
+              viewMode={viewMode}
+              setViewMode={setViewMode}
+            />
+
+            {filteredItems.length === 0 ? (
+              <EmptyState />
+            ) : (
+              <div>
+                {viewMode === 'grid' && (
+                  <ItemsGrid
+                    items={sortedItems}
+                    selectedIds={selectedItems}
+                    onSelectionChange={(ids) => setSelectedItems(ids)}
+                  />
+                )}
+                {viewMode === 'list' && (
+                  <ItemsList
+                    items={sortedItems}
+                    selectedIds={selectedItems}
+                    onSelectionChange={(ids) => setSelectedItems(ids)}
+                    onSort={handleSort}
+                    sortField={sortField}
+                    sortDirection={sortDirection}
+                  />
+                )}
+                {viewMode === 'table' && (
+                  <ItemsTable
+                    items={sortedItems}
+                    selectedIds={selectedItems}
+                    onSelectionChange={(ids) => setSelectedItems(ids)}
+                    onSort={handleSort}
+                    sortField={sortField}
+                    sortDirection={sortDirection}
+                  />
+                )}
+              </div>
+            )}
           </main>
         </div>
       </div>
@@ -318,9 +323,7 @@ const AllItems = () => {
       <BatchLocationDialog
         open={showBatchDialog}
         onOpenChange={setShowBatchDialog}
-        selectedCount={selectedItems.length}
-        houses={houses}
-        onConfirm={handleBatchLocationUpdate}
+        onSubmit={handleBatchLocationUpdate}
       />
     </SidebarProvider>
   );
