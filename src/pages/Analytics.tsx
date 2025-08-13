@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { AppSidebar } from '@/components/AppSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
@@ -21,6 +20,12 @@ import { DecorItem } from '@/types/inventory';
 import { StatisticsTable } from '@/components/analytics/StatisticsTable';
 import { formatCurrency, formatNumber } from '@/lib/currencyUtils';
 
+interface TooltipProps {
+  active?: boolean;
+  payload?: { payload: { value?: number; currency?: string } }[];
+  label?: string;
+}
+
 const Analytics = () => {
   const [items, setItems] = useState<DecorItem[]>([]);
 
@@ -32,20 +37,25 @@ const Analytics = () => {
 
   // Basic statistics
   const totalItems = items.length;
-  const valuedItems = items.filter(item => item.valuation && item.valuation > 0);
-  
+  const valuedItems = items.filter(
+    (item) => item.valuation && item.valuation > 0,
+  );
+
   // Group valuations by currency
-  const valuationsByCurrency = valuedItems.reduce((acc, item) => {
-    if (item.valuation && item.valuationCurrency) {
-      const currency = item.valuationCurrency;
-      if (!acc[currency]) {
-        acc[currency] = { total: 0, count: 0 };
+  const valuationsByCurrency = valuedItems.reduce(
+    (acc, item) => {
+      if (item.valuation && item.valuationCurrency) {
+        const currency = item.valuationCurrency;
+        if (!acc[currency]) {
+          acc[currency] = { total: 0, count: 0 };
+        }
+        acc[currency].total += item.valuation;
+        acc[currency].count += 1;
       }
-      acc[currency].total += item.valuation;
-      acc[currency].count += 1;
-    }
-    return acc;
-  }, {} as Record<string, { total: number; count: number }>);
+      return acc;
+    },
+    {} as Record<string, { total: number; count: number }>,
+  );
 
   // Items by category
   const categoryData = items.reduce(
@@ -85,7 +95,8 @@ const Analytics = () => {
         const key = `${item.category}-${item.valuationCurrency}`;
         if (!acc[key]) {
           acc[key] = {
-            category: item.category.charAt(0).toUpperCase() + item.category.slice(1),
+            category:
+              item.category.charAt(0).toUpperCase() + item.category.slice(1),
             currency: item.valuationCurrency,
             value: 0,
           };
@@ -107,7 +118,7 @@ const Analytics = () => {
     'hsl(243, 51.9%, 68.2%)',
   ];
 
-  const customTooltip = ({ active, payload, label }: any) => {
+  const customTooltip = ({ active, payload, label }: TooltipProps) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       if (data.value !== undefined) {
@@ -159,7 +170,9 @@ const Analytics = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{formatNumber(totalItems)} items</div>
+                  <div className="text-2xl font-bold">
+                    {formatNumber(totalItems)} items
+                  </div>
                 </CardContent>
               </Card>
 
@@ -170,9 +183,12 @@ const Analytics = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{formatNumber(valuedItems.length)} items</div>
+                  <div className="text-2xl font-bold">
+                    {formatNumber(valuedItems.length)} items
+                  </div>
                   <p className="text-sm text-muted-foreground">
-                    {formatNumber(((valuedItems.length / totalItems) * 100), 1)}% of collection
+                    {formatNumber((valuedItems.length / totalItems) * 100, 1)}%
+                    of collection
                   </p>
                 </CardContent>
               </Card>
@@ -184,7 +200,9 @@ const Analytics = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{Object.keys(valuationsByCurrency).length}</div>
+                  <div className="text-2xl font-bold">
+                    {Object.keys(valuationsByCurrency).length}
+                  </div>
                   <p className="text-sm text-muted-foreground">
                     {Object.keys(valuationsByCurrency).join(', ') || 'None'}
                   </p>
@@ -198,7 +216,9 @@ const Analytics = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{Object.keys(categoryData).length}</div>
+                  <div className="text-2xl font-bold">
+                    {Object.keys(categoryData).length}
+                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -212,16 +232,21 @@ const Analytics = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {Object.entries(valuationsByCurrency).map(([currency, data]) => (
-                        <div key={currency} className="text-center p-4 border rounded-lg">
-                          <div className="text-2xl font-bold">
-                            {formatCurrency(data.total, currency)}
+                      {Object.entries(valuationsByCurrency).map(
+                        ([currency, data]) => (
+                          <div
+                            key={currency}
+                            className="text-center p-4 border rounded-lg"
+                          >
+                            <div className="text-2xl font-bold">
+                              {formatCurrency(data.total, currency)}
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                              {formatNumber(data.count)} items in {currency}
+                            </p>
                           </div>
-                          <p className="text-sm text-muted-foreground">
-                            {formatNumber(data.count)} items in {currency}
-                          </p>
-                        </div>
-                      ))}
+                        ),
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -239,7 +264,13 @@ const Analytics = () => {
                     <BarChart data={categoryChartData}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="category" />
-                      <YAxis label={{ value: 'Items', angle: -90, position: 'insideLeft' }} />
+                      <YAxis
+                        label={{
+                          value: 'Items',
+                          angle: -90,
+                          position: 'insideLeft',
+                        }}
+                      />
                       <Tooltip content={customTooltip} />
                       <Bar dataKey="count" fill="hsl(var(--sidebar-ring))" />
                     </BarChart>
@@ -291,7 +322,13 @@ const Analytics = () => {
                       <BarChart data={valuationChartData}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="category" />
-                        <YAxis label={{ value: 'Value', angle: -90, position: 'insideLeft' }} />
+                        <YAxis
+                          label={{
+                            value: 'Value',
+                            angle: -90,
+                            position: 'insideLeft',
+                          }}
+                        />
                         <Tooltip content={customTooltip} />
                         <Bar dataKey="value" fill="hsl(160, 84.1%, 39.4%)" />
                       </BarChart>
