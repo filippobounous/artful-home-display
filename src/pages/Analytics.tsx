@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { AppSidebar } from '@/components/AppSidebar';
 import { SidebarProvider } from '@/components/ui/sidebar';
@@ -19,25 +20,61 @@ import { fetchDecorItems } from '@/lib/api';
 import { DecorItem } from '@/types/inventory';
 import { StatisticsTable } from '@/components/analytics/StatisticsTable';
 import { formatCurrency, formatNumber } from '@/lib/currencyUtils';
+import { AnalyticsFilters } from '@/components/analytics/AnalyticsFilters';
 
 interface TooltipProps {
   active?: boolean;
-  payload?: { payload: { value?: number; currency?: string } }[];
+  payload?: { payload: { value?: number; currency?: string; count?: number } }[];
   label?: string;
 }
 
 const Analytics = () => {
   const [items, setItems] = useState<DecorItem[]>([]);
+  const [filteredItems, setFilteredItems] = useState<DecorItem[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedHouses, setSelectedHouses] = useState<string[]>([]);
+  const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>([]);
 
   useEffect(() => {
     fetchDecorItems()
-      .then((data) => setItems(data))
-      .catch(() => setItems([]));
+      .then((data) => {
+        setItems(data);
+        setFilteredItems(data);
+      })
+      .catch(() => {
+        setItems([]);
+        setFilteredItems([]);
+      });
   }, []);
 
+  // Apply filters
+  useEffect(() => {
+    let filtered = items;
+
+    if (selectedCategories.length > 0) {
+      filtered = filtered.filter(item => 
+        selectedCategories.includes(item.category)
+      );
+    }
+
+    if (selectedHouses.length > 0) {
+      filtered = filtered.filter(item => 
+        item.house && selectedHouses.includes(item.house)
+      );
+    }
+
+    if (selectedCurrencies.length > 0) {
+      filtered = filtered.filter(item => 
+        item.valuationCurrency && selectedCurrencies.includes(item.valuationCurrency)
+      );
+    }
+
+    setFilteredItems(filtered);
+  }, [items, selectedCategories, selectedHouses, selectedCurrencies]);
+
   // Basic statistics
-  const totalItems = items.length;
-  const valuedItems = items.filter(
+  const totalItems = filteredItems.length;
+  const valuedItems = filteredItems.filter(
     (item) => item.valuation && item.valuation > 0,
   );
 
@@ -58,7 +95,7 @@ const Analytics = () => {
   );
 
   // Items by category
-  const categoryData = items.reduce(
+  const categoryData = filteredItems.reduce(
     (acc, item) => {
       acc[item.category] = (acc[item.category] || 0) + 1;
       return acc;
@@ -74,7 +111,7 @@ const Analytics = () => {
   );
 
   // Items by house
-  const houseData = items.reduce(
+  const houseData = filteredItems.reduce(
     (acc, item) => {
       const house = item.house || 'Unassigned';
       acc[house] = (acc[house] || 0) + 1;
@@ -89,7 +126,7 @@ const Analytics = () => {
   }));
 
   // Valuation by category (grouped by currency)
-  const valuationByCategory = items.reduce(
+  const valuationByCategory = filteredItems.reduce(
     (acc, item) => {
       if (item.valuation && item.valuationCurrency) {
         const key = `${item.category}-${item.valuationCurrency}`;
@@ -131,14 +168,16 @@ const Analytics = () => {
           </div>
         );
       }
-      return (
-        <div className="bg-background border rounded-lg p-3 shadow-md">
-          <p className="font-medium">{label}</p>
-          <p className="text-primary">
-            Count: {formatNumber(payload[0].value)} items
-          </p>
-        </div>
-      );
+      if (data.count !== undefined) {
+        return (
+          <div className="bg-background border rounded-lg p-3 shadow-md">
+            <p className="font-medium">{label}</p>
+            <p className="text-primary">
+              Count: {formatNumber(data.count)} items
+            </p>
+          </div>
+        );
+      }
     }
     return null;
   };
@@ -160,6 +199,17 @@ const Analytics = () => {
                 Comprehensive overview of your collection statistics
               </p>
             </div>
+
+            {/* Analytics Filters */}
+            <AnalyticsFilters
+              items={items}
+              selectedCategories={selectedCategories}
+              setSelectedCategories={setSelectedCategories}
+              selectedHouses={selectedHouses}
+              setSelectedHouses={setSelectedHouses}
+              selectedCurrencies={selectedCurrencies}
+              setSelectedCurrencies={setSelectedCurrencies}
+            />
 
             {/* Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -187,7 +237,7 @@ const Analytics = () => {
                     {formatNumber(valuedItems.length)} items
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    {formatNumber((valuedItems.length / totalItems) * 100, 1)}%
+                    {totalItems > 0 ? formatNumber((valuedItems.length / totalItems) * 100, 1) : 0}%
                     of collection
                   </p>
                 </CardContent>
@@ -339,7 +389,7 @@ const Analytics = () => {
             )}
 
             {/* Statistics Table */}
-            <StatisticsTable items={items} />
+            <StatisticsTable items={filteredItems} />
           </main>
         </div>
       </div>

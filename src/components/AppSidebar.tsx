@@ -1,3 +1,4 @@
+
 import {
   Home,
   Package,
@@ -71,6 +72,7 @@ export function AppSidebar() {
       title: category.name,
       url: `/category/${encodeURIComponent(category.id)}`,
       icon: getIconComponent(category.icon),
+      categoryId: category.id,
     }));
 
   // Dynamic house items based on configuration
@@ -158,7 +160,7 @@ export function AppSidebar() {
               {categoryItems.map((item) => {
                 const active = checkActive(item.url);
                 return (
-                  <SidebarMenuItem key={item.title}>
+                  <SidebarMenuItem key={`category-${item.categoryId}`}>
                     <SidebarMenuButton asChild isActive={active}>
                       <NavLink
                         to={item.url}
