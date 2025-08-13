@@ -1,4 +1,3 @@
-
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { DecorItem } from '@/types/inventory';
@@ -16,12 +15,26 @@ interface DashboardProps {
 export function Dashboard({ items }: DashboardProps) {
   const { categories, houses } = useSettingsState();
 
+  const counts = items.reduce(
+    (acc, item) => {
+      acc.categories[item.category] = (acc.categories[item.category] ?? 0) + 1;
+      if (item.house) {
+        acc.houses[item.house] = (acc.houses[item.house] ?? 0) + 1;
+      }
+      return acc;
+    },
+    { categories: {}, houses: {} } as {
+      categories: Record<string, number>;
+      houses: Record<string, number>;
+    },
+  );
+
   // Count items by category using current settings
   const categoryStats = categories
     .filter((c) => c.visible)
     .map((category) => ({
       ...category,
-      count: items.filter((item) => item.category === category.id).length,
+      count: counts.categories[category.id] ?? 0,
     }));
 
   // Count items by house using current settings
@@ -29,7 +42,7 @@ export function Dashboard({ items }: DashboardProps) {
     .filter((h) => h.visible)
     .map((house) => ({
       ...house,
-      count: items.filter((item) => item.house === house.id).length,
+      count: counts.houses[house.id] ?? 0,
     }));
 
   const totalItems = items.length;
@@ -96,7 +109,9 @@ export function Dashboard({ items }: DashboardProps) {
                         </p>
                       </div>
                     </div>
-                    <Badge variant="secondary">{formatNumber(category.count)}</Badge>
+                    <Badge variant="secondary">
+                      {formatNumber(category.count)}
+                    </Badge>
                   </div>
                 </CardContent>
               </Card>
@@ -127,7 +142,9 @@ export function Dashboard({ items }: DashboardProps) {
                         </p>
                       </div>
                     </div>
-                    <Badge variant="secondary">{formatNumber(house.count)}</Badge>
+                    <Badge variant="secondary">
+                      {formatNumber(house.count)}
+                    </Badge>
                   </div>
                 </CardContent>
               </Card>
