@@ -1,4 +1,5 @@
-import { useState } from 'react';
+
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,6 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Package, Eye, EyeOff } from 'lucide-react';
 import { login } from '@/lib/api';
+import DemoCredentialsToggle from '@/components/DemoCredentialsToggle';
+import DemoCredentialsPanel from '@/components/DemoCredentialsPanel';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -14,6 +17,20 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showDemoCredentials, setShowDemoCredentials] = useState(false);
+
+  // Load demo credentials visibility from sessionStorage
+  useEffect(() => {
+    const savedState = sessionStorage.getItem('showDemoCredentials');
+    if (savedState === 'true') {
+      setShowDemoCredentials(true);
+    }
+  }, []);
+
+  // Save demo credentials visibility to sessionStorage
+  useEffect(() => {
+    sessionStorage.setItem('showDemoCredentials', showDemoCredentials.toString());
+  }, [showDemoCredentials]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,8 +47,22 @@ const Login = () => {
     }
   };
 
+  const handleAutoFill = (demoUsername: string, demoPassword: string) => {
+    setUsername(demoUsername);
+    setPassword(demoPassword);
+    setError('');
+    
+    // Auto-submit the form
+    setTimeout(() => {
+      const form = document.querySelector('form');
+      if (form) {
+        form.requestSubmit();
+      }
+    }, 100);
+  };
+
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4 relative">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="mx-auto w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mb-4">
@@ -87,17 +118,21 @@ const Login = () => {
               {isLoading ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
-          <div className="mt-4 text-center text-sm text-muted-foreground">
-            <p>Demo credentials:</p>
-            <p>
-              <strong>Username:</strong> demo
-            </p>
-            <p>
-              <strong>Password:</strong> password123
-            </p>
-          </div>
         </CardContent>
       </Card>
+
+      {/* Demo Credentials Toggle - only on login page */}
+      <DemoCredentialsToggle
+        isVisible={showDemoCredentials}
+        onToggle={setShowDemoCredentials}
+      />
+
+      {/* Demo Credentials Panel */}
+      <DemoCredentialsPanel
+        isVisible={showDemoCredentials}
+        onAutoFill={handleAutoFill}
+        toggleId="demo-credentials-toggle"
+      />
     </div>
   );
 };
