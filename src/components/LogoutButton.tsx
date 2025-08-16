@@ -1,3 +1,4 @@
+
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
@@ -8,6 +9,8 @@ export function LogoutButton() {
 
   const handleLogout = async () => {
     await logout();
+    // Clear any demo-related data
+    localStorage.removeItem('useTestData');
     navigate('/login');
   };
 
