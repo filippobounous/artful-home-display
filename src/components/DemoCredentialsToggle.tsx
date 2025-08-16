@@ -11,13 +11,6 @@ interface DemoCredentialsToggleProps {
 const DemoCredentialsToggle = ({ isVisible, onToggle }: DemoCredentialsToggleProps) => {
   const toggleId = useId();
 
-  // Don't render if demo login is not enabled
-  const isDemoEnabled = import.meta.env.VITE_ENABLE_DEMO_LOGIN === 'true';
-  
-  if (!isDemoEnabled) {
-    return null;
-  }
-
   return (
     <Button
       type="button"
