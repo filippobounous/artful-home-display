@@ -1,7 +1,5 @@
-
 import { useEffect, useState } from 'react';
 import { AppSidebar } from '@/components/AppSidebar';
-import { SidebarProvider } from '@/components/ui/sidebar';
 import { InventoryHeader } from '@/components/InventoryHeader';
 import { Dashboard } from '@/components/Dashboard';
 import { ApiNotConfigured } from '@/components/ApiNotConfigured';
@@ -33,54 +31,47 @@ const Index = () => {
     return !!(API_URL && API_KEY);
   };
 
-  const showEmptyState = !useTestData && !isApiConfigured() && items.length === 0;
+  const showEmptyState =
+    !useTestData && !isApiConfigured() && items.length === 0;
 
   if (isLoading) {
     return (
-      <SidebarProvider>
-        <div className="min-h-screen flex w-full bg-background">
-          <AppSidebar />
-          <div className="flex-1 flex flex-col">
-            <InventoryHeader />
-            <main className="flex-1 p-6">
-              <div className="space-y-6">
-                <div className="h-8 bg-muted animate-pulse rounded" />
-                <div className="h-64 bg-muted animate-pulse rounded" />
-              </div>
-            </main>
-          </div>
+      <div className="min-h-screen flex w-full bg-background">
+        <AppSidebar />
+        <div className="flex-1 flex flex-col">
+          <InventoryHeader />
+          <main className="flex-1 p-6">
+            <div className="space-y-6">
+              <div className="h-8 bg-muted animate-pulse rounded" />
+              <div className="h-64 bg-muted animate-pulse rounded" />
+            </div>
+          </main>
         </div>
-      </SidebarProvider>
+      </div>
     );
   }
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-background">
-        <AppSidebar />
+    <div className="min-h-screen flex w-full bg-background">
+      <AppSidebar />
 
-        <div className="flex-1 flex flex-col">
-          <InventoryHeader />
+      <div className="flex-1 flex flex-col">
+        <InventoryHeader />
 
-          <main className="flex-1 p-6">
-            <div className="mb-6">
-              <h2 className="text-xl font-semibold text-foreground mb-2">
-                Collection Dashboard
-              </h2>
-              <p className="text-muted-foreground">
-                Overview of your art and furniture collection
-              </p>
-            </div>
+        <main className="flex-1 p-6">
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold text-foreground mb-2">
+              Collection Dashboard
+            </h2>
+            <p className="text-muted-foreground">
+              Overview of your art and furniture collection
+            </p>
+          </div>
 
-            {showEmptyState ? (
-              <ApiNotConfigured />
-            ) : (
-              <Dashboard items={items} />
-            )}
-          </main>
-        </div>
+          {showEmptyState ? <ApiNotConfigured /> : <Dashboard items={items} />}
+        </main>
       </div>
-    </SidebarProvider>
+    </div>
   );
 };
 
