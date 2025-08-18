@@ -31,12 +31,12 @@ export function InventoryHeader() {
   return (
     <header
       className={cn(
-        'border-b backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40 h-12',
+        'border-b backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40 topbar',
         'border-[hsl(var(--tb-border))]',
         getTopBarClasses(),
       )}
     >
-      <div className="flex h-full items-center justify-between px-4">
+      <div className="flex w-full items-center justify-between px-4">
         <div className="flex items-center gap-4">
           <SidebarTrigger />
           {showApiHealth && <ApiHealthIndicator enablePolling={true} />}

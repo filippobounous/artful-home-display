@@ -1,5 +1,4 @@
-import { AppSidebar } from '@/components/AppSidebar';
-import { InventoryHeader } from '@/components/InventoryHeader';
+import { AppLayout } from '@/components/AppLayout';
 import { Dashboard } from '@/components/Dashboard';
 import { useQuery } from '@tanstack/react-query';
 import { fetchDecorItems } from '@/lib/api/items';
@@ -13,17 +12,9 @@ const Index = () => {
   const activeItems = items.filter((item) => !item.deleted);
 
   return (
-    <div className="min-h-screen flex w-full bg-background">
-      <AppSidebar />
-
-      <div className="flex-1 flex flex-col">
-        <InventoryHeader />
-
-        <main className="flex-1">
-          <Dashboard items={activeItems} />
-        </main>
-      </div>
-    </div>
+    <AppLayout>
+      <Dashboard items={activeItems} />
+    </AppLayout>
   );
 };
 

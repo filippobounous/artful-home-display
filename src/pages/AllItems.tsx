@@ -1,7 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { AppSidebar } from '@/components/AppSidebar';
-import { InventoryHeader } from '@/components/InventoryHeader';
+import { AppLayout } from '@/components/AppLayout';
 import { ItemsGrid } from '@/components/ItemsGrid';
 import { ItemsList } from '@/components/ItemsList';
 import { ItemsTable } from '@/components/ItemsTable';
@@ -205,45 +204,33 @@ const AllItems = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex w-full bg-background">
-        <AppSidebar />
-        <div className="flex-1 flex flex-col">
-          <InventoryHeader />
-          <main className="flex-1 p-6">
-            <div className="space-y-6">
-              <div className="h-8 bg-muted animate-pulse rounded" />
-              <div className="h-64 bg-muted animate-pulse rounded" />
-            </div>
-          </main>
+      <AppLayout>
+        <div className="p-6">
+          <div className="space-y-6">
+            <div className="h-8 bg-muted animate-pulse rounded" />
+            <div className="h-64 bg-muted animate-pulse rounded" />
+          </div>
         </div>
-      </div>
+      </AppLayout>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex w-full bg-background">
-        <AppSidebar />
-        <div className="flex-1 flex flex-col">
-          <InventoryHeader />
-          <main className="flex-1 p-6">
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">Failed to load items</p>
-            </div>
-          </main>
+      <AppLayout>
+        <div className="p-6">
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Failed to load items</p>
+          </div>
         </div>
-      </div>
+      </AppLayout>
     );
   }
 
   return (
-    <div className="min-h-screen flex w-full bg-background">
-      <AppSidebar />
-
-      <div className="flex-1 flex flex-col">
-        <InventoryHeader />
-
-        <main className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+    <>
+      <AppLayout>
+        <div className="space-y-4 p-4 md:p-8 pt-6">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
               <h1 className="text-3xl font-bold tracking-tight text-foreground">
@@ -331,8 +318,8 @@ const AllItems = () => {
               )}
             </div>
           )}
-        </main>
-      </div>
+        </div>
+      </AppLayout>
 
       <BatchLocationDialog
         open={showBatchDialog}
@@ -354,7 +341,7 @@ const AllItems = () => {
           }
         }}
       />
-    </div>
+    </>
   );
 };
 

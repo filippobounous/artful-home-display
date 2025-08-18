@@ -1,8 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { AppSidebar } from '@/components/AppSidebar';
-import { InventoryHeader } from '@/components/InventoryHeader';
+import { AppLayout } from '@/components/AppLayout';
 import { fetchDecorItems } from '@/lib/api/items';
 import { SearchFilters } from '@/components/SearchFilters';
 import { ItemsGrid } from '@/components/ItemsGrid';
@@ -164,73 +163,69 @@ export default function CategoryPage() {
   }
 
   return (
-    <div className="min-h-screen flex w-full bg-background">
-      <AppSidebar />
-      <div className="flex-1 flex flex-col">
-        <InventoryHeader />
-        <main className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+    <AppLayout>
+      <div className="space-y-4 p-4 md:p-8 pt-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+            {category.name}
+          </h1>
+        </div>
+
+        <SearchFilters
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          selectedSubcategory={selectedSubcategory}
+          setSelectedSubcategory={setSelectedSubcategory}
+          selectedHouse={selectedHouse}
+          setSelectedHouse={setSelectedHouse}
+          selectedRoom={selectedRoom}
+          setSelectedRoom={setSelectedRoom}
+          yearOptions={yearOptions}
+          selectedYear={selectedYear}
+          setSelectedYear={setSelectedYear}
+          artistOptions={artistOptions}
+          selectedArtist={selectedArtist}
+          setSelectedArtist={setSelectedArtist}
+          valuationRange={valuationRange}
+          setValuationRange={setValuationRange}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+          permanentCategory={decodedCategoryId}
+        />
+
+        {filteredItems.length === 0 ? (
+          <EmptyState />
+        ) : (
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-foreground">
-              {category.name}
-            </h1>
+            {viewMode === 'grid' && (
+              <ItemsGrid
+                items={sortedItems}
+                onItemClick={(item) => navigate(`/items/${item.id}`)}
+              />
+            )}
+            {viewMode === 'list' && (
+              <ItemsList
+                items={sortedItems}
+                onSort={handleSort}
+                sortField={sortField}
+                sortDirection={sortDirection}
+                onItemClick={(item) => navigate(`/items/${item.id}`)}
+              />
+            )}
+            {viewMode === 'table' && (
+              <ItemsTable
+                items={sortedItems}
+                onSort={handleSort}
+                sortField={sortField}
+                sortDirection={sortDirection}
+                onItemClick={(item) => navigate(`/items/${item.id}`)}
+              />
+            )}
           </div>
-
-          <SearchFilters
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            selectedCategory={selectedCategory}
-            setSelectedCategory={setSelectedCategory}
-            selectedSubcategory={selectedSubcategory}
-            setSelectedSubcategory={setSelectedSubcategory}
-            selectedHouse={selectedHouse}
-            setSelectedHouse={setSelectedHouse}
-            selectedRoom={selectedRoom}
-            setSelectedRoom={setSelectedRoom}
-            yearOptions={yearOptions}
-            selectedYear={selectedYear}
-            setSelectedYear={setSelectedYear}
-            artistOptions={artistOptions}
-            selectedArtist={selectedArtist}
-            setSelectedArtist={setSelectedArtist}
-            valuationRange={valuationRange}
-            setValuationRange={setValuationRange}
-            viewMode={viewMode}
-            setViewMode={setViewMode}
-            permanentCategory={decodedCategoryId}
-          />
-
-          {filteredItems.length === 0 ? (
-            <EmptyState />
-          ) : (
-            <div>
-              {viewMode === 'grid' && (
-                <ItemsGrid
-                  items={sortedItems}
-                  onItemClick={(item) => navigate(`/items/${item.id}`)}
-                />
-              )}
-              {viewMode === 'list' && (
-                <ItemsList
-                  items={sortedItems}
-                  onSort={handleSort}
-                  sortField={sortField}
-                  sortDirection={sortDirection}
-                  onItemClick={(item) => navigate(`/items/${item.id}`)}
-                />
-              )}
-              {viewMode === 'table' && (
-                <ItemsTable
-                  items={sortedItems}
-                  onSort={handleSort}
-                  sortField={sortField}
-                  sortDirection={sortDirection}
-                  onItemClick={(item) => navigate(`/items/${item.id}`)}
-                />
-              )}
-            </div>
-          )}
-        </main>
+        )}
       </div>
-    </div>
+    </AppLayout>
   );
 }

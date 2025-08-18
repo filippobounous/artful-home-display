@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { AppSidebar } from '@/components/AppSidebar';
-import { InventoryHeader } from '@/components/InventoryHeader';
+import { AppLayout } from '@/components/AppLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   BarChart,
@@ -185,217 +184,197 @@ const Analytics = () => {
   };
 
   return (
-    <div className="min-h-screen flex w-full bg-background">
-      <AppSidebar />
+    <AppLayout>
+      <div className="p-6">
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold text-foreground mb-2">
+            Collection Analytics
+          </h2>
+          <p className="text-muted-foreground">
+            Comprehensive overview of your collection statistics
+          </p>
+        </div>
 
-      <div className="flex-1 flex flex-col">
-        <InventoryHeader />
+        {/* Analytics Filters */}
+        <AnalyticsFilters
+          items={items}
+          selectedCategories={selectedCategories}
+          setSelectedCategories={setSelectedCategories}
+          selectedHouses={selectedHouses}
+          setSelectedHouses={setSelectedHouses}
+          selectedCurrencies={selectedCurrencies}
+          setSelectedCurrencies={setSelectedCurrencies}
+        />
 
-        <main className="flex-1 p-6">
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold text-foreground mb-2">
-              Collection Analytics
-            </h2>
-            <p className="text-muted-foreground">
-              Comprehensive overview of your collection statistics
-            </p>
-          </div>
+        {/* Overview Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Total Items
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {formatNumber(totalItems)} items
+              </div>
+            </CardContent>
+          </Card>
 
-          {/* Analytics Filters */}
-          <AnalyticsFilters
-            items={items}
-            selectedCategories={selectedCategories}
-            setSelectedCategories={setSelectedCategories}
-            selectedHouses={selectedHouses}
-            setSelectedHouses={setSelectedHouses}
-            selectedCurrencies={selectedCurrencies}
-            setSelectedCurrencies={setSelectedCurrencies}
-          />
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Valued Items
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {formatNumber(valuedItems.length)} items
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {totalItems > 0
+                  ? formatNumber((valuedItems.length / totalItems) * 100, 1)
+                  : 0}
+                % of collection
+              </p>
+            </CardContent>
+          </Card>
 
-          {/* Overview Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Total Items
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {formatNumber(totalItems)} items
-                </div>
-              </CardContent>
-            </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Currencies
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {Object.keys(valuationsByCurrency).length}
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {Object.keys(valuationsByCurrency).join(', ') || 'None'}
+              </p>
+            </CardContent>
+          </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Valued Items
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {formatNumber(valuedItems.length)} items
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  {totalItems > 0
-                    ? formatNumber((valuedItems.length / totalItems) * 100, 1)
-                    : 0}
-                  % of collection
-                </p>
-              </CardContent>
-            </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Total Valuation
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">
+                {formatCurrency(totalValuation, baseCurrency)}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Currencies
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {Object.keys(valuationsByCurrency).length}
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  {Object.keys(valuationsByCurrency).join(', ') || 'None'}
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Categories
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {Object.keys(categoryData).length}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Valuation Summary by Currency */}
-          {Object.keys(valuationsByCurrency).length > 0 && (
-            <div className="mb-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Total Valuations by Currency</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {Object.entries(valuationsByCurrency).map(
-                      ([currency, data]) => (
-                        <div
-                          key={currency}
-                          className="text-center p-4 border rounded-lg"
-                        >
-                          <div className="text-2xl font-bold">
-                            {formatCurrency(data.total, currency)}
-                          </div>
-                          <p className="text-sm text-muted-foreground">
-                            {formatNumber(data.count)} items in {currency}
+        {/* Valuation Distribution */}
+        <div className="mb-8">
+          <h3 className="text-lg font-medium text-foreground mb-4">
+            Valuation Distribution by Currency
+          </h3>
+          <div className="w-full h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={Object.entries(valuationsByCurrency).map(
+                  ([currency, total]) => ({ currency, total }),
+                )}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="currency" stroke="currentColor" />
+                <YAxis stroke="currentColor" />
+                <Tooltip
+                  content={({ active, payload, label }: TooltipProps) => {
+                    if (active && payload && payload.length) {
+                      const value = payload[0]?.payload?.value;
+                      const currency = payload[0]?.payload?.currency;
+                      return (
+                        <div className="bg-background p-2 rounded shadow text-foreground">
+                          <p className="font-medium">
+                            {label}: {formatCurrency(value || 0, currency)}
+                          </p>
+                          <p className="text-muted-foreground text-sm">
+                            Items: {payload[0]?.payload?.count}
                           </p>
                         </div>
-                      ),
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
-
-          {/* Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <Card>
-              <CardHeader>
-                <CardTitle>Items by Category</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={categoryChartData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="category" />
-                    <YAxis
-                      label={{
-                        value: 'Items',
-                        angle: -90,
-                        position: 'insideLeft',
-                      }}
-                    />
-                    <Tooltip content={customTooltip} />
-                    <Bar dataKey="count" fill="hsl(var(--sidebar-ring))" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Items by House</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={houseChartData}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ house, percent }) =>
-                        `${house} (${(percent * 100).toFixed(1)}%)`
-                      }
-                      outerRadius={80}
-                      fill="hsl(243, 51.9%, 68.2%)"
-                      dataKey="count"
-                    >
-                      {houseChartData.map((entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={COLORS[index % COLORS.length]}
-                        />
-                      ))}
-                    </Pie>
-                    <Tooltip content={customTooltip} />
-                  </PieChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <Bar dataKey="total" fill="hsl(var(--dashboard-blue))" />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
+        </div>
 
-          {valuationChartData.length > 0 && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Valuation by Category</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <BarChart data={valuationChartData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="category" />
-                      <YAxis
-                        label={{
-                          value: 'Value',
-                          angle: -90,
-                          position: 'insideLeft',
-                        }}
-                      />
-                      <Tooltip content={customTooltip} />
-                      <Bar dataKey="value" fill="hsl(160, 84.1%, 39.4%)" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            </div>
-          )}
+        {/* Category Distribution */}
+        <div className="mb-8">
+          <h3 className="text-lg font-medium text-foreground mb-4">
+            Items by Category
+          </h3>
+          <div className="w-full h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={Object.entries(itemsByCategory).map(
+                    ([category, count]) => ({ name: category, value: count }),
+                  )}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  label
+                >
+                  {Object.keys(itemsByCategory).map((category, index) => (
+                    <Cell
+                      key={`cell-${category}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip
+                  content={({ active, payload }: TooltipProps) => {
+                    if (active && payload && payload.length) {
+                      const value = payload[0]?.value;
+                      const name = payload[0]?.name;
+                      const percent = payload[0]?.payload?.percent || 0;
+                      return (
+                        <div className="bg-background p-2 rounded shadow text-foreground">
+                          <p className="font-medium">
+                            {name}: {formatNumber(value || 0)} items
+                          </p>
+                          <p className="text-muted-foreground text-sm">
+                            {formatNumber(percent * 100, 1)}%
+                          </p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
 
-          {/* Statistics Table */}
-          <StatisticsTable items={filteredItems} />
-        </main>
+        {/* Statistics Table */}
+        <div>
+          <h3 className="text-lg font-medium text-foreground mb-4">
+            Detailed Statistics
+          </h3>
+          <StatisticsTable
+            items={filteredItems}
+            selectedCategories={selectedCategories}
+            selectedHouses={selectedHouses}
+            selectedCurrencies={selectedCurrencies}
+          />
+        </div>
       </div>
-    </div>
+    </AppLayout>
   );
 };
 

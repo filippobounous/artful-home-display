@@ -106,13 +106,15 @@ export function AppSidebar() {
 
   return (
     <Sidebar
-      className="flex flex-col border-r border-sidebar-border"
+      className="sidebar flex flex-col border-r border-sidebar-border"
       collapsible="icon"
     >
       <SidebarContent className="bg-sidebar flex flex-col">
         {/* Logo Section */}
         <div
-          className={`${isCollapsed ? 'p-2' : 'p-4'} border-b border-sidebar-border flex-shrink-0 h-16 flex items-center`}
+          className={`${
+            isCollapsed ? 'px-2' : 'px-4'
+          } border-b border-sidebar-border flex-shrink-0 sidebar-top`}
         >
           {!isCollapsed ? (
             <div>
@@ -247,7 +249,7 @@ export function AppSidebar() {
       </SidebarContent>
 
       {/* Footer Section */}
-      <SidebarFooter className="border-t border-sidebar-border bg-sidebar p-2 space-y-2">
+      <SidebarFooter className="border-t border-sidebar-border bg-sidebar sticky bottom-0">
         <SidebarStatus />
 
         <SidebarMenu>
