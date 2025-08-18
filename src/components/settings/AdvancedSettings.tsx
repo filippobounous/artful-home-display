@@ -29,7 +29,7 @@ export function AdvancedSettings() {
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
             <Label htmlFor="test-data-toggle" className={isDemoMode ? 'text-muted-foreground' : ''}>
-              Use test data
+              Use Test Data
             </Label>
             <p className="text-sm text-muted-foreground">
               {isDemoMode 

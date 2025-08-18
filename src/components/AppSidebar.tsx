@@ -1,4 +1,3 @@
-
 import {
   Home,
   Package,
@@ -102,7 +101,7 @@ export function AppSidebar() {
       <SidebarContent className="bg-sidebar flex flex-col">
         {/* Logo Section */}
         <div
-          className={`${isCollapsed ? 'p-2' : 'p-4'} border-b border-sidebar-border flex-shrink-0 h-16 flex items-center`}
+          className={`${isCollapsed ? 'p-2' : 'p-4'} border-b border-sidebar-border flex-shrink-0 h-12 flex items-center`}
         >
           {!isCollapsed ? (
             <div>
