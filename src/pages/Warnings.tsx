@@ -2,36 +2,23 @@ import { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { AppSidebar } from '@/components/AppSidebar';
 import { InventoryHeader } from '@/components/InventoryHeader';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Copy, Download, Edit, AlertTriangle } from 'lucide-react';
+import { Copy, Download, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { fetchDecorItems } from '@/lib/api/items';
 import { DecorItem, ViewMode } from '@/types/inventory';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { SearchFilters } from '@/components/SearchFilters';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { ItemsGrid } from '@/components/ItemsGrid';
+import { ItemsList } from '@/components/ItemsList';
+import { ItemsTable } from '@/components/ItemsTable';
+import { EmptyState } from '@/components/EmptyState';
+import { useSettingsState } from '@/hooks/useSettingsState';
+import { sortInventoryItems } from '@/lib/sortUtils';
 
-interface WarningItem {
-  id: number;
-  code: string;
-  title: string;
-  type: string;
-  category: string;
-  subcategory?: string;
-  house?: string;
-  room?: string;
-  yearPeriod?: string;
+interface WarningItem extends DecorItem {
   missingFields: string[];
-  lastUpdated: string;
 }
 
 const Warnings = () => {
@@ -48,15 +35,25 @@ const Warnings = () => {
     min?: number;
     max?: number;
   }>({});
-  const [viewMode, setViewMode] = useState<ViewMode>('table');
+  const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [searchParams, setSearchParams] = useSearchParams();
+  const { houses, categories } = useSettingsState();
+  type SortField =
+    | 'title'
+    | 'artist'
+    | 'category'
+    | 'valuation'
+    | 'yearPeriod'
+    | 'location';
+  const [sortField, setSortField] = useState<SortField>('title');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   const { data: items = [], isLoading } = useQuery({
     queryKey: ['decor-items-warnings'],
     queryFn: fetchDecorItems,
   });
 
-  const getWarnings = (items: DecorItem[]): WarningItem[] => {
+  const getWarningItems = (items: DecorItem[]): WarningItem[] => {
     return items
       .map((item) => {
         const missingFields: string[] = [];
@@ -73,26 +70,14 @@ const Warnings = () => {
           missingFields.push('Quantity');
 
         if (missingFields.length > 0) {
-          return {
-            id: item.id,
-            code: item.code || `#${item.id}`,
-            title: item.title || 'Untitled Item',
-            type: 'Decor',
-            category: item.category || '',
-            subcategory: item.subcategory,
-            house: item.house,
-            room: item.room,
-            yearPeriod: item.yearPeriod,
-            missingFields,
-            lastUpdated: item.acquisitionDate || 'Unknown',
-          };
+          return { ...item, missingFields } as WarningItem;
         }
         return null;
       })
       .filter((item): item is WarningItem => item !== null);
   };
 
-  const warnings = getWarnings(items);
+  const warningItems = getWarningItems(items);
 
   const yearOptions = useMemo(() => {
     const years = new Set<string>();
@@ -139,34 +124,46 @@ const Warnings = () => {
     setSearchParams,
   ]);
 
-  const filteredWarnings = useMemo(() => {
-    return warnings.filter((warning) => {
+  const filteredItems = useMemo(() => {
+    return warningItems.filter((item) => {
+      if (item.deleted) return false;
+
       const term = searchTerm.toLowerCase();
       const matchesSearch =
         term === '' ||
-        warning.title.toLowerCase().includes(term) ||
-        warning.code.toLowerCase().includes(term);
+        item.title.toLowerCase().includes(term) ||
+        (item.description && item.description.toLowerCase().includes(term)) ||
+        (item.notes && item.notes.toLowerCase().includes(term)) ||
+        (item.artist && item.artist.toLowerCase().includes(term));
 
       const matchesCategory =
         selectedCategory.length === 0 ||
-        selectedCategory.includes(warning.category);
+        selectedCategory.includes(item.category);
 
       const matchesSubcategory =
         selectedSubcategory.length === 0 ||
-        (warning.subcategory &&
-          selectedSubcategory.includes(warning.subcategory));
+        (item.subcategory && selectedSubcategory.includes(item.subcategory));
 
       const matchesHouse =
-        selectedHouse.length === 0 ||
-        selectedHouse.includes(warning.house || '');
+        selectedHouse.length === 0 || selectedHouse.includes(item.house || '');
 
-      const roomKey = `${warning.house}|${warning.room}`;
+      const roomKey = `${item.house}|${item.room}`;
       const matchesRoom =
         selectedRoom.length === 0 || selectedRoom.includes(roomKey);
 
       const matchesYear =
         selectedYear.length === 0 ||
-        (warning.yearPeriod && selectedYear.includes(warning.yearPeriod));
+        (item.yearPeriod && selectedYear.includes(item.yearPeriod));
+
+      const matchesArtist =
+        selectedArtist.length === 0 ||
+        (item.artist && selectedArtist.includes(item.artist));
+
+      const matchesValuation =
+        (!valuationRange.min ||
+          (item.valuation && item.valuation >= valuationRange.min)) &&
+        (!valuationRange.max ||
+          (item.valuation && item.valuation <= valuationRange.max));
 
       return (
         matchesSearch &&
@@ -174,22 +171,49 @@ const Warnings = () => {
         matchesSubcategory &&
         matchesHouse &&
         matchesRoom &&
-        matchesYear
+        matchesYear &&
+        matchesArtist &&
+        matchesValuation
       );
     });
   }, [
-    warnings,
+    warningItems,
     searchTerm,
     selectedCategory,
     selectedSubcategory,
     selectedHouse,
     selectedRoom,
     selectedYear,
+    selectedArtist,
+    valuationRange,
   ]);
 
-  const handleEdit = (id: number) => {
-    navigate(`/item/${id}/edit?returnTo=warnings`);
+  const sortedItems = useMemo(() => {
+    return sortInventoryItems(
+      filteredItems,
+      sortField,
+      sortDirection,
+      houses,
+      categories,
+    );
+  }, [filteredItems, sortField, sortDirection, houses, categories]);
+
+  const handleSort = (field: string, direction: 'asc' | 'desc') => {
+    setSortField(field as SortField);
+    setSortDirection(direction);
   };
+
+  const filteredWarnings = useMemo(
+    () =>
+      filteredItems.map((item) => ({
+        type: 'Decor',
+        code: item.code || `#${item.id}`,
+        title: item.title || 'Untitled Item',
+        missingFields: item.missingFields,
+        lastUpdated: item.acquisitionDate || 'Unknown',
+      })),
+    [filteredItems],
+  );
 
   const handleExportCsv = () => {
     const csvContent = [
@@ -234,6 +258,23 @@ const Warnings = () => {
     });
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex w-full bg-background">
+        <AppSidebar />
+        <div className="flex-1 flex flex-col">
+          <InventoryHeader />
+          <main className="flex-1 p-6">
+            <div className="space-y-6">
+              <div className="h-8 bg-muted animate-pulse rounded" />
+              <div className="h-64 bg-muted animate-pulse rounded" />
+            </div>
+          </main>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex w-full bg-background">
       <AppSidebar />
@@ -249,7 +290,7 @@ const Warnings = () => {
                 Warnings
               </h1>
               <Badge variant="secondary" className="ml-2">
-                {filteredWarnings.length}
+                {filteredItems.length}
               </Badge>
             </div>
             <div className="flex gap-2">
@@ -291,73 +332,35 @@ const Warnings = () => {
             setViewMode={setViewMode}
           />
 
-          {isLoading ? (
-            <Card>
-              <CardContent className="p-6">
-                <div className="text-center">Loading warnings...</div>
-              </CardContent>
-            </Card>
-          ) : filteredWarnings.length === 0 ? (
-            <Card>
-              <CardContent className="p-6">
-                <div className="text-center space-y-4">
-                  <div className="text-6xl">🎉</div>
-                  <h3 className="text-lg font-semibold">No warnings found!</h3>
-                  <p className="text-muted-foreground">
-                    {warnings.length === 0
-                      ? 'All items have complete mandatory information.'
-                      : 'No items match your current filter criteria.'}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+          {filteredItems.length === 0 ? (
+            <EmptyState />
           ) : (
-            <Card>
-              <CardContent className="p-0">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Item ID/Code</TableHead>
-                      <TableHead>Missing Fields</TableHead>
-                      <TableHead>Last Updated</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredWarnings.map((warning) => (
-                      <TableRow key={warning.id}>
-                        <TableCell>
-                          <Badge variant="outline">{warning.type}</Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="font-medium">{warning.code}</div>
-                          <div className="text-sm text-muted-foreground">
-                            {warning.title}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          {warning.missingFields.join(', ')}
-                        </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {warning.lastUpdated}
-                        </TableCell>
-                        <TableCell>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleEdit(warning.id)}
-                          >
-                            <Edit className="w-4 h-4 mr-1" />
-                            Edit
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
+            <div>
+              {viewMode === 'grid' && (
+                <ItemsGrid
+                  items={sortedItems}
+                  onItemClick={(item) => navigate(`/items/${item.id}`)}
+                />
+              )}
+              {viewMode === 'list' && (
+                <ItemsList
+                  items={sortedItems}
+                  onSort={handleSort}
+                  sortField={sortField}
+                  sortDirection={sortDirection}
+                  onItemClick={(item) => navigate(`/items/${item.id}`)}
+                />
+              )}
+              {viewMode === 'table' && (
+                <ItemsTable
+                  items={sortedItems}
+                  onSort={handleSort}
+                  sortField={sortField}
+                  sortDirection={sortDirection}
+                  onItemClick={(item) => navigate(`/items/${item.id}`)}
+                />
+              )}
+            </div>
           )}
         </main>
       </div>
