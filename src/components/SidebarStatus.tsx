@@ -8,8 +8,8 @@ export function SidebarStatus() {
   const isCollapsed = state === 'collapsed';
 
   return (
-    <div className="mt-auto p-2 border-t border-sidebar-border">
-      <div className={`flex ${isCollapsed ? 'flex-col gap-1' : 'gap-2'} items-center`}>
+    <div className="mt-auto p-3 border-t border-sidebar-border bg-sidebar">
+      <div className={`flex ${isCollapsed ? 'flex-col gap-2' : 'flex-row gap-2'} items-center justify-center`}>
         <TestModeIndicator />
         <ApiHealthIndicator 
           enablePolling={true} 

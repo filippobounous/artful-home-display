@@ -1,7 +1,6 @@
 
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { DarkModeToggle } from '@/components/DarkModeToggle';
-import { TestModeIndicator } from '@/components/TestModeIndicator';
 import { ApiHealthIndicator } from '@/components/ApiHealthIndicator';
 import { useDashboardApiHealth } from '@/hooks/useDashboardApiHealth';
 
@@ -19,7 +18,6 @@ export function InventoryHeader() {
         </div>
         
         <div className="flex items-center gap-3">
-          <TestModeIndicator />
           <DarkModeToggle />
         </div>
       </div>
