@@ -191,11 +191,11 @@ const Analytics = () => {
       <div className="flex-1 flex flex-col">
         <InventoryHeader />
 
-        <main className="flex-1 p-6">
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold text-foreground mb-2">
-              Collection Analytics
-            </h2>
+        <main className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-foreground mb-2">
+              Analytics
+            </h1>
             <p className="text-muted-foreground">
               Comprehensive overview of your collection statistics
             </p>
