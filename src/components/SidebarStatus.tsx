@@ -1,4 +1,4 @@
-import { useSidebar } from '@/components/ui/sidebar';
+import { useSidebar } from '@/hooks/use-sidebar';
 
 export function SidebarStatus() {
   const { state } = useSidebar();
