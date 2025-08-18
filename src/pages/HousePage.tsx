@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { AppSidebar } from '@/components/AppSidebar';
@@ -15,6 +15,7 @@ import type { ViewMode } from '@/types/inventory';
 
 export default function HousePage() {
   const { houseId } = useParams<{ houseId: string }>();
+  const navigate = useNavigate();
   const { houses, categories } = useSettingsState();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
@@ -175,13 +176,19 @@ export default function HousePage() {
             <EmptyState />
           ) : (
             <div>
-              {viewMode === 'grid' && <ItemsGrid items={sortedItems} />}
+              {viewMode === 'grid' && (
+                <ItemsGrid
+                  items={sortedItems}
+                  onItemClick={(item) => navigate(`/items/${item.id}`)}
+                />
+              )}
               {viewMode === 'list' && (
                 <ItemsList
                   items={sortedItems}
                   onSort={handleSort}
                   sortField={sortField}
                   sortDirection={sortDirection}
+                  onItemClick={(item) => navigate(`/items/${item.id}`)}
                 />
               )}
               {viewMode === 'table' && (
@@ -190,6 +197,7 @@ export default function HousePage() {
                   onSort={handleSort}
                   sortField={sortField}
                   sortDirection={sortDirection}
+                  onItemClick={(item) => navigate(`/items/${item.id}`)}
                 />
               )}
             </div>
