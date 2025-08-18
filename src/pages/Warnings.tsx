@@ -1,10 +1,10 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { AppSidebar } from '@/components/AppSidebar';
 import { InventoryHeader } from '@/components/InventoryHeader';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Copy, Download, AlertTriangle } from 'lucide-react';
+import { SidebarLayout } from '@/components/SidebarLayout';
 import { useToast } from '@/hooks/use-toast';
 import { fetchDecorItems } from '@/lib/api/items';
 import { DecorItem, ViewMode } from '@/types/inventory';
@@ -260,111 +260,100 @@ const Warnings = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex w-full bg-background">
-        <AppSidebar />
-        <div className="flex-1 flex flex-col">
-          <InventoryHeader />
-          <main className="flex-1 p-6">
-            <div className="space-y-6">
-              <div className="h-8 bg-muted animate-pulse rounded" />
-              <div className="h-64 bg-muted animate-pulse rounded" />
-            </div>
-          </main>
-        </div>
-      </div>
+      <SidebarLayout>
+        <InventoryHeader />
+        <main className="flex-1 p-6">
+          <div className="space-y-6">
+            <div className="h-8 bg-muted animate-pulse rounded" />
+            <div className="h-64 bg-muted animate-pulse rounded" />
+          </div>
+        </main>
+      </SidebarLayout>
     );
   }
 
   return (
-    <div className="min-h-screen flex w-full bg-background">
-      <AppSidebar />
+    <SidebarLayout>
+      <InventoryHeader />
 
-      <div className="flex-1 flex flex-col">
-        <InventoryHeader />
-
-        <main className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-amber-600" />
-              <h1 className="text-3xl font-bold tracking-tight text-foreground">
-                Warnings
-              </h1>
-              <Badge variant="secondary" className="ml-2">
-                {filteredItems.length}
-              </Badge>
-            </div>
-            <div className="flex gap-2">
-              <Button onClick={handleExportCsv} variant="outline" size="sm">
-                <Download className="w-4 h-4 mr-2" />
-                Export CSV
-              </Button>
-              <Button
-                onClick={handleCopyToClipboard}
-                variant="outline"
-                size="sm"
-              >
-                <Copy className="w-4 h-4 mr-2" />
-                Copy to Clipboard
-              </Button>
-            </div>
+      <main className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-5 h-5 text-amber-600" />
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">
+              Warnings
+            </h1>
+            <Badge variant="secondary" className="ml-2">
+              {filteredItems.length}
+            </Badge>
           </div>
+          <div className="flex gap-2">
+            <Button onClick={handleExportCsv} variant="outline" size="sm">
+              <Download className="w-4 h-4 mr-2" />
+              Export CSV
+            </Button>
+            <Button onClick={handleCopyToClipboard} variant="outline" size="sm">
+              <Copy className="w-4 h-4 mr-2" />
+              Copy to Clipboard
+            </Button>
+          </div>
+        </div>
 
-          <SearchFilters
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            selectedCategory={selectedCategory}
-            setSelectedCategory={setSelectedCategory}
-            selectedSubcategory={selectedSubcategory}
-            setSelectedSubcategory={setSelectedSubcategory}
-            selectedHouse={selectedHouse}
-            setSelectedHouse={setSelectedHouse}
-            selectedRoom={selectedRoom}
-            setSelectedRoom={setSelectedRoom}
-            yearOptions={yearOptions}
-            selectedYear={selectedYear}
-            setSelectedYear={setSelectedYear}
-            artistOptions={artistOptions}
-            selectedArtist={selectedArtist}
-            setSelectedArtist={setSelectedArtist}
-            valuationRange={valuationRange}
-            setValuationRange={setValuationRange}
-            viewMode={viewMode}
-            setViewMode={setViewMode}
-          />
+        <SearchFilters
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          selectedSubcategory={selectedSubcategory}
+          setSelectedSubcategory={setSelectedSubcategory}
+          selectedHouse={selectedHouse}
+          setSelectedHouse={setSelectedHouse}
+          selectedRoom={selectedRoom}
+          setSelectedRoom={setSelectedRoom}
+          yearOptions={yearOptions}
+          selectedYear={selectedYear}
+          setSelectedYear={setSelectedYear}
+          artistOptions={artistOptions}
+          selectedArtist={selectedArtist}
+          setSelectedArtist={setSelectedArtist}
+          valuationRange={valuationRange}
+          setValuationRange={setValuationRange}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+        />
 
-          {filteredItems.length === 0 ? (
-            <EmptyState />
-          ) : (
-            <div>
-              {viewMode === 'grid' && (
-                <ItemsGrid
-                  items={sortedItems}
-                  onItemClick={(item) => navigate(`/items/${item.id}`)}
-                />
-              )}
-              {viewMode === 'list' && (
-                <ItemsList
-                  items={sortedItems}
-                  onSort={handleSort}
-                  sortField={sortField}
-                  sortDirection={sortDirection}
-                  onItemClick={(item) => navigate(`/items/${item.id}`)}
-                />
-              )}
-              {viewMode === 'table' && (
-                <ItemsTable
-                  items={sortedItems}
-                  onSort={handleSort}
-                  sortField={sortField}
-                  sortDirection={sortDirection}
-                  onItemClick={(item) => navigate(`/items/${item.id}`)}
-                />
-              )}
-            </div>
-          )}
-        </main>
-      </div>
-    </div>
+        {filteredItems.length === 0 ? (
+          <EmptyState />
+        ) : (
+          <div>
+            {viewMode === 'grid' && (
+              <ItemsGrid
+                items={sortedItems}
+                onItemClick={(item) => navigate(`/items/${item.id}`)}
+              />
+            )}
+            {viewMode === 'list' && (
+              <ItemsList
+                items={sortedItems}
+                onSort={handleSort}
+                sortField={sortField}
+                sortDirection={sortDirection}
+                onItemClick={(item) => navigate(`/items/${item.id}`)}
+              />
+            )}
+            {viewMode === 'table' && (
+              <ItemsTable
+                items={sortedItems}
+                onSort={handleSort}
+                sortField={sortField}
+                sortDirection={sortDirection}
+                onItemClick={(item) => navigate(`/items/${item.id}`)}
+              />
+            )}
+          </div>
+        )}
+      </main>
+    </SidebarLayout>
   );
 };
 

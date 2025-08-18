@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { AppSidebar } from '@/components/AppSidebar';
 import { InventoryHeader } from '@/components/InventoryHeader';
 import { ItemsGrid } from '@/components/ItemsGrid';
 import { ItemsList } from '@/components/ItemsList';
@@ -23,6 +22,7 @@ import { BatchLocationDialog } from '@/components/BatchLocationDialog';
 import { useToast } from '@/hooks/use-toast';
 import { formatNumber } from '@/lib/currencyUtils';
 import { sortInventoryItems } from '@/lib/sortUtils';
+import { SidebarLayout } from '@/components/SidebarLayout';
 
 const AllItems = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -205,135 +205,123 @@ const AllItems = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex w-full bg-background">
-        <AppSidebar />
-        <div className="flex-1 flex flex-col">
-          <InventoryHeader />
-          <main className="flex-1 p-6">
-            <div className="space-y-6">
-              <div className="h-8 bg-muted animate-pulse rounded" />
-              <div className="h-64 bg-muted animate-pulse rounded" />
-            </div>
-          </main>
-        </div>
-      </div>
+      <SidebarLayout>
+        <InventoryHeader />
+        <main className="flex-1 p-6">
+          <div className="space-y-6">
+            <div className="h-8 bg-muted animate-pulse rounded" />
+            <div className="h-64 bg-muted animate-pulse rounded" />
+          </div>
+        </main>
+      </SidebarLayout>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex w-full bg-background">
-        <AppSidebar />
-        <div className="flex-1 flex flex-col">
-          <InventoryHeader />
-          <main className="flex-1 p-6">
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">Failed to load items</p>
-            </div>
-          </main>
-        </div>
-      </div>
+      <SidebarLayout>
+        <InventoryHeader />
+        <main className="flex-1 p-6">
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Failed to load items</p>
+          </div>
+        </main>
+      </SidebarLayout>
     );
   }
 
   return (
-    <div className="min-h-screen flex w-full bg-background">
-      <AppSidebar />
-
-      <div className="flex-1 flex flex-col">
-        <InventoryHeader />
-
-        <main className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight text-foreground">
-                All Items
-              </h1>
-              <p className="text-muted-foreground">
-                {formatNumber(filteredItems.length)} items in your collection
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {selectedItems.length > 0 && (
-                <Button
-                  onClick={() => setShowBatchDialog(true)}
-                  variant="secondary"
-                  size="sm"
-                >
-                  Update Location ({selectedItems.length})
-                </Button>
-              )}
-              <Link to="/add-item">
-                <Button>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Item
-                </Button>
-              </Link>
-            </div>
+    <SidebarLayout>
+      <InventoryHeader />
+      <main className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">
+              All Items
+            </h1>
+            <p className="text-muted-foreground">
+              {formatNumber(filteredItems.length)} items in your collection
+            </p>
           </div>
+          <div className="flex flex-wrap gap-2">
+            {selectedItems.length > 0 && (
+              <Button
+                onClick={() => setShowBatchDialog(true)}
+                variant="secondary"
+                size="sm"
+              >
+                Update Location ({selectedItems.length})
+              </Button>
+            )}
+            <Link to="/add-item">
+              <Button>
+                <Plus className="w-4 h-4 mr-2" />
+                Add Item
+              </Button>
+            </Link>
+          </div>
+        </div>
 
-          <SearchFilters
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            selectedCategory={selectedCategory}
-            setSelectedCategory={setSelectedCategory}
-            selectedSubcategory={selectedSubcategory}
-            setSelectedSubcategory={setSelectedSubcategory}
-            selectedHouse={selectedHouse}
-            setSelectedHouse={setSelectedHouse}
-            selectedRoom={selectedRoom}
-            setSelectedRoom={setSelectedRoom}
-            yearOptions={yearOptions}
-            selectedYear={selectedYear}
-            setSelectedYear={setSelectedYear}
-            artistOptions={artistOptions}
-            selectedArtist={selectedArtist}
-            setSelectedArtist={setSelectedArtist}
-            valuationRange={valuationRange}
-            setValuationRange={setValuationRange}
-            viewMode={viewMode}
-            setViewMode={setViewMode}
-          />
+        <SearchFilters
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          selectedSubcategory={selectedSubcategory}
+          setSelectedSubcategory={setSelectedSubcategory}
+          selectedHouse={selectedHouse}
+          setSelectedHouse={setSelectedHouse}
+          selectedRoom={selectedRoom}
+          setSelectedRoom={setSelectedRoom}
+          yearOptions={yearOptions}
+          selectedYear={selectedYear}
+          setSelectedYear={setSelectedYear}
+          artistOptions={artistOptions}
+          selectedArtist={selectedArtist}
+          setSelectedArtist={setSelectedArtist}
+          valuationRange={valuationRange}
+          setValuationRange={setValuationRange}
+          viewMode={viewMode}
+          setViewMode={setViewMode}
+        />
 
-          {filteredItems.length === 0 ? (
-            <EmptyState />
-          ) : (
-            <div>
-              {viewMode === 'grid' && (
-                <ItemsGrid
-                  items={sortedItems}
-                  selectedIds={selectedItems}
-                  onSelectionChange={(ids) => setSelectedItems(ids)}
-                  onItemClick={(item) => navigate(`/items/${item.id}`)}
-                />
-              )}
-              {viewMode === 'list' && (
-                <ItemsList
-                  items={sortedItems}
-                  selectedIds={selectedItems}
-                  onSelectionChange={(ids) => setSelectedItems(ids)}
-                  onSort={handleSort}
-                  sortField={sortField}
-                  sortDirection={sortDirection}
-                  onItemClick={(item) => navigate(`/items/${item.id}`)}
-                />
-              )}
-              {viewMode === 'table' && (
-                <ItemsTable
-                  items={sortedItems}
-                  selectedIds={selectedItems}
-                  onSelectionChange={(ids) => setSelectedItems(ids)}
-                  onSort={handleSort}
-                  sortField={sortField}
-                  sortDirection={sortDirection}
-                  onItemClick={(item) => navigate(`/items/${item.id}`)}
-                />
-              )}
-            </div>
-          )}
-        </main>
-      </div>
-
+        {filteredItems.length === 0 ? (
+          <EmptyState />
+        ) : (
+          <div>
+            {viewMode === 'grid' && (
+              <ItemsGrid
+                items={sortedItems}
+                selectedIds={selectedItems}
+                onSelectionChange={(ids) => setSelectedItems(ids)}
+                onItemClick={(item) => navigate(`/items/${item.id}`)}
+              />
+            )}
+            {viewMode === 'list' && (
+              <ItemsList
+                items={sortedItems}
+                selectedIds={selectedItems}
+                onSelectionChange={(ids) => setSelectedItems(ids)}
+                onSort={handleSort}
+                sortField={sortField}
+                sortDirection={sortDirection}
+                onItemClick={(item) => navigate(`/items/${item.id}`)}
+              />
+            )}
+            {viewMode === 'table' && (
+              <ItemsTable
+                items={sortedItems}
+                selectedIds={selectedItems}
+                onSelectionChange={(ids) => setSelectedItems(ids)}
+                onSort={handleSort}
+                sortField={sortField}
+                sortDirection={sortDirection}
+                onItemClick={(item) => navigate(`/items/${item.id}`)}
+              />
+            )}
+          </div>
+        )}
+      </main>
       <BatchLocationDialog
         open={showBatchDialog}
         onOpenChange={setShowBatchDialog}
@@ -354,7 +342,7 @@ const AllItems = () => {
           }
         }}
       />
-    </div>
+    </SidebarLayout>
   );
 };
 
