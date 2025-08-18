@@ -138,7 +138,7 @@ Re-run the command whenever you change code to rebuild the image.
    - Build with the `dev` target and start the container:
 
 ```bash
-docker compose build --target dev frontend
+docker compose build --target dev inventory
 docker compose up
 ```
 
