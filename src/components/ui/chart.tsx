@@ -65,42 +65,37 @@ const ChartContainer = React.forwardRef<
 });
 ChartContainer.displayName = 'Chart';
 
-const sanitizeCssId = (value: string): string =>
-  value.replace(/[^a-zA-Z0-9-_]/g, '');
-
-const sanitizeCssValue = (value: string): string =>
-  value.replace(/[^#a-zA-Z0-9(),.%\s-]/g, '');
-
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
   const colorConfig = Object.entries(config).filter(
-    ([_, chartItem]) => chartItem.theme || chartItem.color,
+    ([_, config]) => config.theme || config.color,
   );
 
   if (!colorConfig.length) {
     return null;
   }
 
-  const styleString = Object.entries(THEMES)
-    .map(([theme, prefix]) => {
-      const selector = `${prefix} [data-chart='${sanitizeCssId(id)}']`;
-      const declarations = colorConfig
-        .map(([key, itemConfig]) => {
-          const color =
-            itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
-            itemConfig.color;
-          if (!color) {
-            return null;
-          }
-          return `  --color-${sanitizeCssId(key)}: ${sanitizeCssValue(color)};`;
-        })
-        .filter(Boolean)
-        .join('\n');
-
-      return `${selector} {\n${declarations}\n}`;
-    })
-    .join('\n');
-
-  return <style>{styleString}</style>;
+  return (
+    <style
+      dangerouslySetInnerHTML={{
+        __html: Object.entries(THEMES)
+          .map(
+            ([theme, prefix]) => `
+${prefix} [data-chart=${id}] {
+${colorConfig
+  .map(([key, itemConfig]) => {
+    const color =
+      itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
+      itemConfig.color;
+    return color ? `  --color-${key}: ${color};` : null;
+  })
+  .join('\n')}
+}
+`,
+          )
+          .join('\n'),
+      }}
+    />
+  );
 };
 
 const ChartTooltip = RechartsPrimitive.Tooltip;

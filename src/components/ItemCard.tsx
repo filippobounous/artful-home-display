@@ -1,157 +1,98 @@
-import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Edit, Eye, Trash2, MoreHorizontal } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { ItemDetailDialog } from './ItemDetailDialog';
-import type { InventoryItem } from '@/types/inventory';
+import { Checkbox } from '@/components/ui/checkbox';
+import { cn } from '@/lib/utils';
+import { DecorItem } from '@/types/inventory';
 
 interface ItemCardProps {
-  item: InventoryItem;
-  onEdit?: (item: InventoryItem) => void;
-  onDelete?: (itemId: string) => void;
-  onView?: (item: InventoryItem) => void;
+  item: DecorItem;
+  onClick?: (item: DecorItem) => void;
+  selected?: boolean;
+  onSelect?: (shift: boolean) => void;
 }
 
-export function ItemCard({ item, onEdit, onDelete, onView }: ItemCardProps) {
-  const [showDetail, setShowDetail] = useState(false);
-
-  const handleCardClick = () => {
-    setShowDetail(true);
+export function ItemCard({ item, onClick, selected, onSelect }: ItemCardProps) {
+  const handleClick = (e: React.MouseEvent | React.KeyboardEvent) => {
+    if (e.shiftKey && onSelect) {
+      onSelect(true);
+      return;
+    }
+    onClick?.(item);
   };
 
-  const handleEdit = (e: React.MouseEvent) => {
+  const handleCheckbox = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (onEdit) {
-      onEdit(item);
-    }
-  };
-
-  const handleDelete = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (onDelete) {
-      onDelete(item.id);
-    }
-  };
-
-  const handleView = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (onView) {
-      onView(item);
-    }
-  };
-
-  const handleEditFromDialog = (itemId: string) => {
-    setShowDetail(false);
-    if (onEdit) {
-      onEdit(item);
-    }
-  };
-
-  const formatCurrency = (amount: number | null | undefined, currency: string | null | undefined) => {
-    if (!amount || !currency) return 'Not specified';
-    return `${currency} ${amount.toLocaleString()}`;
+    onSelect?.(false);
   };
 
   return (
-    <>
-      <Card 
-        className="hover:shadow-md transition-shadow cursor-pointer" 
-        onClick={handleCardClick}
-      >
-        <CardContent className="p-4">
-          <div className="space-y-3">
-            {/* Header with title and actions */}
-            <div className="flex items-start justify-between">
-              <div className="flex-1 min-w-0">
-                <h3 className="font-medium truncate">{item.name || 'Untitled'}</h3>
-                {item.artist && (
-                  <p className="text-sm text-muted-foreground truncate">{item.artist}</p>
-                )}
-              </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                  <Button variant="ghost" size="sm">
-                    <MoreHorizontal className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={handleView}>
-                    <Eye className="w-4 h-4 mr-2" />
-                    View Details
-                  </DropdownMenuItem>
-                  {onEdit && (
-                    <DropdownMenuItem onClick={handleEdit}>
-                      <Edit className="w-4 h-4 mr-2" />
-                      Edit
-                    </DropdownMenuItem>
-                  )}
-                  {onDelete && (
-                    <DropdownMenuItem onClick={handleDelete} className="text-destructive">
-                      <Trash2 className="w-4 h-4 mr-2" />
-                      Delete
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
+    <Card
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && handleClick(e)}
+      onClick={handleClick}
+      className={cn(
+        'relative group hover:shadow-lg transition-all duration-300 cursor-pointer',
+        selected && 'ring-2 ring-primary',
+      )}
+    >
+      <CardContent className="p-0">
+        {onSelect && (
+          <Checkbox
+            checked={selected}
+            onClick={handleCheckbox}
+            className="absolute top-2 left-2 z-10 bg-card rounded-sm"
+          />
+        )}
+        <div className="aspect-square overflow-hidden rounded-t-lg">
+          <img
+            src={item.image}
+            alt={item.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        </div>
+        <div className="p-4">
+          <div className="flex items-start justify-between mb-2">
+            <h3 className="font-semibold text-foreground line-clamp-2">
+              {item.title}
+            </h3>
+          </div>
+
+          {item.artist && (
+            <p className="text-muted-foreground text-sm font-medium mb-1">
+              by {item.artist}
+            </p>
+          )}
+
+          {item.yearPeriod && (
+            <p className="text-muted-foreground text-sm mb-2">
+              {item.yearPeriod}
+            </p>
+          )}
+
+          <div className="flex items-center justify-between text-sm">
+            <div className="flex gap-2 text-xs text-muted-foreground">
+              <span className="capitalize">{item.category}</span>
+              {item.subcategory && <span>• {item.subcategory}</span>}
             </div>
+          </div>
 
-            {/* Category and subcategory */}
-            <div className="flex gap-2 flex-wrap">
-              {item.category && (
-                <Badge variant="secondary" className="text-xs">
-                  {item.category}
-                </Badge>
+          {(item.house || item.room) && (
+            <div className="mt-2 text-xs text-muted-foreground">
+              {item.house && (
+                <span className="capitalize">
+                  {item.house.replace('-', ' ')}
+                </span>
               )}
-              {item.subcategory && (
-                <Badge variant="outline" className="text-xs">
-                  {item.subcategory}
-                </Badge>
-              )}
-            </div>
-
-            {/* Location */}
-            {(item.house || item.room) && (
-              <div className="text-sm text-muted-foreground">
-                {item.house && item.room ? `${item.house} • ${item.room}` : item.house || item.room}
-              </div>
-            )}
-
-            {/* Valuation */}
-            {item.currentValue && (
-              <div className="text-sm">
-                <span className="font-medium">Value: </span>
-                {formatCurrency(item.currentValue, item.currency)}
-              </div>
-            )}
-
-            {/* Status */}
-            <div className="flex items-center justify-between">
-              {item.isDraft && (
-                <Badge variant="secondary">Draft</Badge>
-              )}
-              {item.lastUpdated && (
-                <span className="text-xs text-muted-foreground">
-                  Updated {new Date(item.lastUpdated).toLocaleDateString()}
+              {item.house && item.room && <span> • </span>}
+              {item.room && (
+                <span className="capitalize">
+                  {item.room.replace('-', ' ')}
                 </span>
               )}
             </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <ItemDetailDialog
-        itemId={item.id}
-        open={showDetail}
-        onOpenChange={setShowDetail}
-        onEdit={handleEditFromDialog}
-      />
-    </>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 }

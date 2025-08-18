@@ -1,3 +1,4 @@
+
 import {
   Home,
   Package,
@@ -10,9 +11,9 @@ import {
   Lamp,
   Shapes,
   House,
-  AlertTriangle,
+  LogOut,
 } from 'lucide-react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   Sidebar,
   SidebarContent,
@@ -22,18 +23,16 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarFooter,
-  useSidebar,
 } from '@/components/ui/sidebar';
+import { useSidebar } from '@/components/ui/use-sidebar';
 import { useSettingsState } from '@/hooks/useSettingsState';
-import { LogoutButton } from '@/components/LogoutButton';
-import { SidebarStatus } from '@/components/SidebarStatus';
+import { ServiceSelect } from './ServiceSelect';
+import { logout } from '@/lib/api';
 
 const mainItems = [
   { title: 'Dashboard', url: '/', icon: Home },
   { title: 'All Items', url: '/inventory', icon: Package },
   { title: 'Drafts', url: '/drafts', icon: FileText },
-  { title: 'Warnings', url: '/warnings', icon: AlertTriangle },
   { title: 'Analytics', url: '/analytics', icon: BarChart3 },
 ];
 
@@ -58,6 +57,7 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const location = useLocation();
   const currentPath = location.pathname;
+  const navigate = useNavigate();
   const isCollapsed = state === 'collapsed';
   const { categories, houses } = useSettingsState();
 
@@ -96,21 +96,25 @@ export function AppSidebar() {
       ? 'bg-sidebar-accent text-sidebar-accent-foreground font-medium border-r-2 border-sidebar-primary'
       : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground';
 
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
+
   return (
-    <Sidebar className="flex flex-col border-r border-sidebar-border" collapsible="icon">
-      <SidebarContent className="bg-sidebar flex flex-col">
+    <Sidebar className={isCollapsed ? 'w-14' : 'w-64'} collapsible="icon">
+      <SidebarContent className="bg-sidebar border-r border-sidebar-border">
         {/* Logo Section */}
-        <div
-          className={`${isCollapsed ? 'p-2' : 'p-4'} border-b border-sidebar-border flex-shrink-0 h-12 flex items-center`}
-        >
+        <div className="p-6 border-b border-sidebar-border">
           {!isCollapsed ? (
             <div>
-              <h2 className="text-lg font-bold text-sidebar-foreground">
+              <h2 className="text-xl font-bold text-sidebar-foreground">
                 Murgenere
               </h2>
+              <ServiceSelect />
             </div>
           ) : (
-            <div className="flex justify-center w-full">
+            <div className="text-center">
               <div className="w-8 h-8 bg-sidebar-primary rounded-lg flex items-center justify-center">
                 <Package className="w-4 h-4 text-sidebar-primary-foreground" />
               </div>
@@ -118,154 +122,121 @@ export function AppSidebar() {
           )}
         </div>
 
-        {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto">
-          {/* Main Navigation */}
+        {/* Main Navigation */}
+        <SidebarGroup>
+          <SidebarGroupLabel className="uppercase tracking-wider font-semibold">
+            {!isCollapsed && 'Main Menu'}
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {mainItems.map((item) => {
+                const active = checkActive(item.url);
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild isActive={active}>
+                      <NavLink
+                        to={item.url}
+                        end={item.url === '/'}
+                        className={getNavCls({ isActive: active })}
+                      >
+                        <item.icon className="w-4 h-4" />
+                        {!isCollapsed && <span>{item.title}</span>}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Categories */}
+        <SidebarGroup>
+          <SidebarGroupLabel className="uppercase tracking-wider font-semibold">
+            {!isCollapsed && 'Categories'}
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {categoryItems.map((item) => {
+                const active = checkActive(item.url);
+                return (
+                  <SidebarMenuItem key={`category-${item.categoryId}`}>
+                    <SidebarMenuButton asChild isActive={active}>
+                      <NavLink
+                        to={item.url}
+                        className={getNavCls({ isActive: active })}
+                      >
+                        <item.icon className="w-4 h-4" />
+                        {!isCollapsed && <span>{item.title}</span>}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Houses */}
+        <SidebarGroup>
+          <SidebarGroupLabel className="uppercase tracking-wider font-semibold">
+            {!isCollapsed && 'Houses'}
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {houseItems.map((item) => {
+                const active = checkActive(item.url);
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild isActive={active}>
+                      <NavLink
+                        to={item.url}
+                        className={getNavCls({ isActive: active })}
+                      >
+                        <item.icon className="w-4 h-4" />
+                        {!isCollapsed && <span>{item.title}</span>}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Settings at bottom */}
+        <div className="mt-auto border-t border-sidebar-border">
           <SidebarGroup>
-            {!isCollapsed && (
-              <SidebarGroupLabel className="uppercase tracking-wider font-semibold text-xs">
-                Main Menu
-              </SidebarGroupLabel>
-            )}
             <SidebarGroupContent>
               <SidebarMenu>
-                {mainItems.map((item) => {
-                  const active = checkActive(item.url);
-                  return (
-                    <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={active}
-                        tooltip={isCollapsed ? item.title : undefined}
-                        className="h-10"
-                      >
-                        <NavLink
-                          to={item.url}
-                          end={item.url === '/'}
-                          className={getNavCls({ isActive: active })}
-                        >
-                          <item.icon className="w-4 h-4 flex-shrink-0" />
-                          {!isCollapsed && (
-                            <span className="text-sm">{item.title}</span>
-                          )}
-                        </NavLink>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  );
-                })}
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={checkActive('/settings')}
+                  >
+                    <NavLink
+                      to="/settings"
+                      className={getNavCls({
+                        isActive: checkActive('/settings'),
+                      })}
+                    >
+                      <Settings className="w-4 h-4" />
+                      {!isCollapsed && <span>Settings</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+
+                <SidebarMenuItem>
+                  <SidebarMenuButton onClick={handleLogout}>
+                    <LogOut className="w-4 h-4" />
+                    {!isCollapsed && <span>Logout</span>}
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
-
-          {/* Categories */}
-          {categoryItems.length > 0 && (
-            <SidebarGroup>
-              {!isCollapsed && (
-                <SidebarGroupLabel className="uppercase tracking-wider font-semibold text-xs">
-                  Categories
-                </SidebarGroupLabel>
-              )}
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {categoryItems.map((item) => {
-                    const active = checkActive(item.url);
-                    return (
-                      <SidebarMenuItem key={`category-${item.categoryId}`}>
-                        <SidebarMenuButton
-                          asChild
-                          isActive={active}
-                          tooltip={isCollapsed ? item.title : undefined}
-                          className="h-10"
-                        >
-                          <NavLink
-                            to={item.url}
-                            className={getNavCls({ isActive: active })}
-                          >
-                            <item.icon className="w-4 h-4 flex-shrink-0" />
-                            {!isCollapsed && (
-                              <span className="text-sm">{item.title}</span>
-                            )}
-                          </NavLink>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    );
-                  })}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-          )}
-
-          {/* Houses */}
-          {houseItems.length > 0 && (
-            <SidebarGroup>
-              {!isCollapsed && (
-                <SidebarGroupLabel className="uppercase tracking-wider font-semibold text-xs">
-                  Houses
-                </SidebarGroupLabel>
-              )}
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {houseItems.map((item) => {
-                    const active = checkActive(item.url);
-                    return (
-                      <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton
-                          asChild
-                          isActive={active}
-                          tooltip={isCollapsed ? item.title : undefined}
-                          className="h-10"
-                        >
-                          <NavLink
-                            to={item.url}
-                            className={getNavCls({ isActive: active })}
-                          >
-                            <item.icon className="w-4 h-4 flex-shrink-0" />
-                            {!isCollapsed && (
-                              <span className="text-sm">{item.title}</span>
-                            )}
-                          </NavLink>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    );
-                  })}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-          )}
         </div>
       </SidebarContent>
-
-      {/* Footer Section */}
-      <SidebarFooter className="border-t border-sidebar-border bg-sidebar p-2 space-y-2">
-        <SidebarStatus />
-        
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              isActive={checkActive('/settings')}
-              tooltip={isCollapsed ? 'Settings' : undefined}
-              className="h-10"
-            >
-              <NavLink
-                to="/settings"
-                className={getNavCls({
-                  isActive: checkActive('/settings'),
-                })}
-              >
-                <Settings className="w-4 h-4 flex-shrink-0" />
-                {!isCollapsed && <span className="text-sm">Settings</span>}
-              </NavLink>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-
-          <SidebarMenuItem>
-            <div className={isCollapsed ? 'w-full' : ''}>
-              <LogoutButton />
-            </div>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
     </Sidebar>
   );
 }

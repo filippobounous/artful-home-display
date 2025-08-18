@@ -57,11 +57,7 @@ const validateRoom = (room: Partial<RoomConfig>): string[] => {
   const errors: string[] = [];
   if (!room.name?.trim()) errors.push('Room name is required');
   if (!room.house_code?.trim()) errors.push('House code is required');
-  if (
-    room.floor === undefined ||
-    room.floor === null ||
-    (room.floor as unknown as string) === ''
-  )
+  if (room.floor === undefined || room.floor === null)
     errors.push('Floor is required');
   return errors;
 };
