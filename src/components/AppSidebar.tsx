@@ -1,3 +1,4 @@
+
 import {
   Home,
   Package,
@@ -10,6 +11,7 @@ import {
   Lamp,
   Shapes,
   House,
+  AlertTriangle,
 } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
@@ -26,11 +28,13 @@ import {
 } from '@/components/ui/sidebar';
 import { useSettingsState } from '@/hooks/useSettingsState';
 import { LogoutButton } from '@/components/LogoutButton';
+import { SidebarStatus } from '@/components/SidebarStatus';
 
 const mainItems = [
   { title: 'Dashboard', url: '/', icon: Home },
   { title: 'All Items', url: '/inventory', icon: Package },
   { title: 'Drafts', url: '/drafts', icon: FileText },
+  { title: 'Warnings', url: '/warnings', icon: AlertTriangle },
   { title: 'Analytics', url: '/analytics', icon: BarChart3 },
 ];
 
@@ -94,11 +98,11 @@ export function AppSidebar() {
       : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground';
 
   return (
-    <Sidebar className="flex flex-col" collapsible="icon">
-      <SidebarContent className="bg-sidebar border-r border-sidebar-border flex flex-col">
-        {/* Logo Section - Reduced height */}
+    <Sidebar className="flex flex-col border-r border-sidebar-border" collapsible="icon">
+      <SidebarContent className="bg-sidebar flex flex-col">
+        {/* Logo Section */}
         <div
-          className={`${isCollapsed ? 'p-2' : 'p-4'} border-b border-sidebar-border flex-shrink-0 h-12 flex items-center`}
+          className={`${isCollapsed ? 'p-2' : 'p-4'} border-b border-sidebar-border flex-shrink-0 h-16 flex items-center`}
         >
           {!isCollapsed ? (
             <div>
@@ -108,8 +112,8 @@ export function AppSidebar() {
             </div>
           ) : (
             <div className="flex justify-center w-full">
-              <div className="w-6 h-6 bg-sidebar-primary rounded-lg flex items-center justify-center">
-                <Package className="w-3 h-3 text-sidebar-primary-foreground" />
+              <div className="w-8 h-8 bg-sidebar-primary rounded-lg flex items-center justify-center">
+                <Package className="w-4 h-4 text-sidebar-primary-foreground" />
               </div>
             </div>
           )}
@@ -134,7 +138,7 @@ export function AppSidebar() {
                         asChild
                         isActive={active}
                         tooltip={isCollapsed ? item.title : undefined}
-                        className="h-9"
+                        className="h-10"
                       >
                         <NavLink
                           to={item.url}
@@ -172,7 +176,7 @@ export function AppSidebar() {
                           asChild
                           isActive={active}
                           tooltip={isCollapsed ? item.title : undefined}
-                          className="h-9"
+                          className="h-10"
                         >
                           <NavLink
                             to={item.url}
@@ -210,7 +214,7 @@ export function AppSidebar() {
                           asChild
                           isActive={active}
                           tooltip={isCollapsed ? item.title : undefined}
-                          className="h-9"
+                          className="h-10"
                         >
                           <NavLink
                             to={item.url}
@@ -232,15 +236,17 @@ export function AppSidebar() {
         </div>
       </SidebarContent>
 
-      {/* Footer Section - Compact */}
-      <SidebarFooter className="border-t border-sidebar-border bg-sidebar p-2">
+      {/* Footer Section */}
+      <SidebarFooter className="border-t border-sidebar-border bg-sidebar p-2 space-y-2">
+        <SidebarStatus />
+        
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
               isActive={checkActive('/settings')}
               tooltip={isCollapsed ? 'Settings' : undefined}
-              className="h-9"
+              className="h-10"
             >
               <NavLink
                 to="/settings"
@@ -255,7 +261,7 @@ export function AppSidebar() {
           </SidebarMenuItem>
 
           <SidebarMenuItem>
-            <div className={isCollapsed ? 'flex justify-center' : ''}>
+            <div className={isCollapsed ? 'w-full' : ''}>
               <LogoutButton />
             </div>
           </SidebarMenuItem>
