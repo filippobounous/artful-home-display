@@ -30,13 +30,23 @@ import { useSettingsState } from '@/hooks/useSettingsState';
 import { LogoutButton } from '@/components/LogoutButton';
 import { SidebarStatus } from '@/components/SidebarStatus';
 
+const MAIN_MENU_ORDER = [
+  'Dashboard',
+  'Analytics',
+  'All Items',
+  'Drafts',
+  'Warnings',
+];
+
 const mainItems = [
   { title: 'Dashboard', url: '/', icon: Home },
+  { title: 'Analytics', url: '/analytics', icon: BarChart3 },
   { title: 'All Items', url: '/inventory', icon: Package },
   { title: 'Drafts', url: '/drafts', icon: FileText },
   { title: 'Warnings', url: '/warnings', icon: AlertTriangle },
-  { title: 'Analytics', url: '/analytics', icon: BarChart3 },
-];
+].sort(
+  (a, b) => MAIN_MENU_ORDER.indexOf(a.title) - MAIN_MENU_ORDER.indexOf(b.title),
+);
 
 const getIconComponent = (iconName: string) => {
   switch (iconName) {
@@ -81,7 +91,10 @@ export function AppSidebar() {
       url: `/category/${encodeURIComponent(category.id)}`,
       icon: getIconComponent(category.icon),
       categoryId: category.id,
-    }));
+    }))
+    .sort((a, b) =>
+      a.title.localeCompare(b.title, undefined, { sensitivity: 'base' }),
+    );
 
   // Dynamic house items based on configuration
   const houseItems = houses
@@ -90,7 +103,10 @@ export function AppSidebar() {
       title: house.name,
       url: `/house/${encodeURIComponent(house.id)}`,
       icon: getIconComponent(house.icon),
-    }));
+    }))
+    .sort((a, b) =>
+      a.title.localeCompare(b.title, undefined, { sensitivity: 'base' }),
+    );
 
   const checkActive = (path: string) => {
     if (path === '/') {
