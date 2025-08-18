@@ -9,8 +9,14 @@ import { SearchFilters } from '@/components/SearchFilters';
 import { EmptyState } from '@/components/EmptyState';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { fetchDecorItems, updateDecorItem, decorItemToInput } from '@/lib/api';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import {
+  fetchDecorItems,
+  fetchDecorItem,
+  updateDecorItem,
+  decorItemToInput,
+} from '@/lib/api';
+import { ItemDetailDialog } from '@/components/ItemDetailDialog';
 import type { DecorItemInput, ViewMode } from '@/types/inventory';
 import { useSettingsState } from '@/hooks/useSettingsState';
 import { BatchLocationDialog } from '@/components/BatchLocationDialog';
@@ -33,6 +39,18 @@ const AllItems = () => {
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [showBatchDialog, setShowBatchDialog] = useState(false);
+  const navigate = useNavigate();
+  const { itemId } = useParams<{ itemId?: string }>();
+
+  const {
+    data: selectedItem,
+    isLoading: itemLoading,
+    error: itemError,
+  } = useQuery({
+    queryKey: ['decor-item', itemId],
+    queryFn: () => (itemId ? fetchDecorItem(itemId) : Promise.resolve(null)),
+    enabled: !!itemId,
+  });
 
   const { categories, houses } = useSettingsState();
   const { toast } = useToast();
@@ -286,6 +304,7 @@ const AllItems = () => {
                   items={sortedItems}
                   selectedIds={selectedItems}
                   onSelectionChange={(ids) => setSelectedItems(ids)}
+                  onItemClick={(item) => navigate(`/items/${item.id}`)}
                 />
               )}
               {viewMode === 'list' && (
@@ -296,6 +315,7 @@ const AllItems = () => {
                   onSort={handleSort}
                   sortField={sortField}
                   sortDirection={sortDirection}
+                  onItemClick={(item) => navigate(`/items/${item.id}`)}
                 />
               )}
               {viewMode === 'table' && (
@@ -306,6 +326,7 @@ const AllItems = () => {
                   onSort={handleSort}
                   sortField={sortField}
                   sortDirection={sortDirection}
+                  onItemClick={(item) => navigate(`/items/${item.id}`)}
                 />
               )}
             </div>
@@ -317,6 +338,21 @@ const AllItems = () => {
         open={showBatchDialog}
         onOpenChange={setShowBatchDialog}
         onSubmit={handleBatchLocationUpdate}
+      />
+      <ItemDetailDialog
+        item={selectedItem}
+        open={!!itemId}
+        loading={itemLoading}
+        error={itemError instanceof Error ? itemError.message : null}
+        onOpenChange={(open) => {
+          if (!open) {
+            if (window.history.state && window.history.state.idx > 0) {
+              navigate(-1);
+            } else {
+              navigate('/inventory', { replace: true });
+            }
+          }
+        }}
       />
     </div>
   );
