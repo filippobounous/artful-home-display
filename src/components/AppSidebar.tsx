@@ -26,7 +26,6 @@ import {
 } from '@/components/ui/sidebar';
 import { useSidebar } from '@/components/ui/use-sidebar';
 import { useSettingsState } from '@/hooks/useSettingsState';
-import { SidebarStatus } from '@/components/SidebarStatus';
 import { LogoutButton } from '@/components/LogoutButton';
 
 const mainItems = [
@@ -98,18 +97,18 @@ export function AppSidebar() {
   return (
     <Sidebar className="flex flex-col" collapsible="icon">
       <SidebarContent className="bg-sidebar border-r border-sidebar-border flex flex-col">
-        {/* Logo Section */}
-        <div className={`${isCollapsed ? 'p-3' : 'p-6'} border-b border-sidebar-border flex-shrink-0`}>
+        {/* Logo Section - Reduced height */}
+        <div className={`${isCollapsed ? 'p-2' : 'p-4'} border-b border-sidebar-border flex-shrink-0 h-12 flex items-center`}>
           {!isCollapsed ? (
             <div>
-              <h2 className="text-xl font-bold text-sidebar-foreground">
+              <h2 className="text-lg font-bold text-sidebar-foreground">
                 Murgenere
               </h2>
             </div>
           ) : (
-            <div className="flex justify-center">
-              <div className="w-8 h-8 bg-sidebar-primary rounded-lg flex items-center justify-center">
-                <Package className="w-4 h-4 text-sidebar-primary-foreground" />
+            <div className="flex justify-center w-full">
+              <div className="w-6 h-6 bg-sidebar-primary rounded-lg flex items-center justify-center">
+                <Package className="w-3 h-3 text-sidebar-primary-foreground" />
               </div>
             </div>
           )}
@@ -120,7 +119,7 @@ export function AppSidebar() {
           {/* Main Navigation */}
           <SidebarGroup>
             {!isCollapsed && (
-              <SidebarGroupLabel className="uppercase tracking-wider font-semibold">
+              <SidebarGroupLabel className="uppercase tracking-wider font-semibold text-xs">
                 Main Menu
               </SidebarGroupLabel>
             )}
@@ -134,6 +133,7 @@ export function AppSidebar() {
                         asChild 
                         isActive={active}
                         tooltip={isCollapsed ? item.title : undefined}
+                        className="h-9"
                       >
                         <NavLink
                           to={item.url}
@@ -141,7 +141,7 @@ export function AppSidebar() {
                           className={getNavCls({ isActive: active })}
                         >
                           <item.icon className="w-4 h-4 flex-shrink-0" />
-                          {!isCollapsed && <span>{item.title}</span>}
+                          {!isCollapsed && <span className="text-sm">{item.title}</span>}
                         </NavLink>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -155,7 +155,7 @@ export function AppSidebar() {
           {categoryItems.length > 0 && (
             <SidebarGroup>
               {!isCollapsed && (
-                <SidebarGroupLabel className="uppercase tracking-wider font-semibold">
+                <SidebarGroupLabel className="uppercase tracking-wider font-semibold text-xs">
                   Categories
                 </SidebarGroupLabel>
               )}
@@ -169,13 +169,14 @@ export function AppSidebar() {
                           asChild 
                           isActive={active}
                           tooltip={isCollapsed ? item.title : undefined}
+                          className="h-9"
                         >
                           <NavLink
                             to={item.url}
                             className={getNavCls({ isActive: active })}
                           >
                             <item.icon className="w-4 h-4 flex-shrink-0" />
-                            {!isCollapsed && <span>{item.title}</span>}
+                            {!isCollapsed && <span className="text-sm">{item.title}</span>}
                           </NavLink>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
@@ -190,7 +191,7 @@ export function AppSidebar() {
           {houseItems.length > 0 && (
             <SidebarGroup>
               {!isCollapsed && (
-                <SidebarGroupLabel className="uppercase tracking-wider font-semibold">
+                <SidebarGroupLabel className="uppercase tracking-wider font-semibold text-xs">
                   Houses
                 </SidebarGroupLabel>
               )}
@@ -204,13 +205,14 @@ export function AppSidebar() {
                           asChild 
                           isActive={active}
                           tooltip={isCollapsed ? item.title : undefined}
+                          className="h-9"
                         >
                           <NavLink
                             to={item.url}
                             className={getNavCls({ isActive: active })}
                           >
                             <item.icon className="w-4 h-4 flex-shrink-0" />
-                            {!isCollapsed && <span>{item.title}</span>}
+                            {!isCollapsed && <span className="text-sm">{item.title}</span>}
                           </NavLink>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
@@ -223,18 +225,15 @@ export function AppSidebar() {
         </div>
       </SidebarContent>
 
-      {/* Footer Section */}
-      <SidebarFooter className="border-t border-sidebar-border bg-sidebar p-3">
-        {/* Status Badges */}
-        <SidebarStatus />
-        
-        {/* Action Buttons */}
-        <SidebarMenu className="mt-3">
+      {/* Footer Section - Compact */}
+      <SidebarFooter className="border-t border-sidebar-border bg-sidebar p-2">
+        <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
               isActive={checkActive('/settings')}
               tooltip={isCollapsed ? 'Settings' : undefined}
+              className="h-9"
             >
               <NavLink
                 to="/settings"
@@ -243,7 +242,7 @@ export function AppSidebar() {
                 })}
               >
                 <Settings className="w-4 h-4 flex-shrink-0" />
-                {!isCollapsed && <span>Settings</span>}
+                {!isCollapsed && <span className="text-sm">Settings</span>}
               </NavLink>
             </SidebarMenuButton>
           </SidebarMenuItem>

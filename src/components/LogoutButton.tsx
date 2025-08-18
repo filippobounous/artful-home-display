@@ -13,9 +13,13 @@ export function LogoutButton() {
 
   const handleLogout = async () => {
     try {
+      // Attempt server-side logout (best effort)
       await logout();
-      
-      // Clear all auth/session artifacts
+    } catch (error) {
+      // Show non-blocking warning but continue with logout
+      console.warn('Server logout failed:', error);
+    } finally {
+      // Always clear local state regardless of server response
       localStorage.clear();
       sessionStorage.clear();
       
@@ -33,13 +37,6 @@ export function LogoutButton() {
       
       // Additional cleanup - clear any remaining auth state
       window.history.replaceState(null, '', '/login');
-      
-    } catch (error) {
-      toast({
-        title: 'Logout error',
-        description: 'There was an issue signing you out.',
-        variant: 'destructive',
-      });
     }
   };
 

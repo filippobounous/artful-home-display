@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { useTestDataToggle } from '@/hooks/useTestDataToggle';
 import { useDashboardApiHealth } from '@/hooks/useDashboardApiHealth';
 import { useQueryClient } from '@tanstack/react-query';
-import { ApiHealthIndicator } from '@/components/ApiHealthIndicator';
+import { ApiHealthCheck } from './ApiHealthCheck';
 
 export function AdvancedSettings() {
   const { useTestData, setUseTestData } = useTestDataToggle();
@@ -69,10 +69,7 @@ export function AdvancedSettings() {
         </div>
 
         <div className="pt-4 border-t">
-          <div className="space-y-2">
-            <Label>API Connection Status</Label>
-            <ApiHealthIndicator enablePolling={true} />
-          </div>
+          <ApiHealthCheck />
         </div>
       </CardContent>
     </Card>
