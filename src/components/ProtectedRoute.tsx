@@ -1,5 +1,6 @@
+
 import { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { checkAuth } from '@/lib/api';
 
 interface ProtectedRouteProps {
@@ -8,6 +9,7 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const location = useLocation();
 
   useEffect(() => {
     async function verify() {
@@ -19,7 +21,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
       }
     }
     verify();
-  }, []);
+  }, [location.pathname]); // Re-check on route changes
 
   if (isAuthenticated === null) {
     // Loading state
@@ -34,7 +36,7 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace state={{ from: location }} />;
   }
 
   return <>{children}</>;
