@@ -1,27 +1,28 @@
-
 import { useState, useEffect } from 'react';
 import { useTestDataToggle } from './useTestDataToggle';
 import { useApiHealth } from './useApiHealth';
 
 export interface SystemState {
-  topBarVariant: 'normal' | 'testing' | 'degraded';
+  topBarState: 'default' | 'testing' | 'apiwarn';
 }
 
 export function useSystemState(): SystemState {
   const { useTestData } = useTestDataToggle();
   const { status } = useApiHealth(true, 30000); // Poll every 30 seconds
 
-  const [topBarVariant, setTopBarVariant] = useState<'normal' | 'testing' | 'degraded'>('normal');
+  const [topBarState, setTopBarState] = useState<
+    'default' | 'testing' | 'apiwarn'
+  >('default');
 
   useEffect(() => {
     if (useTestData) {
-      setTopBarVariant('testing');
+      setTopBarState('testing');
     } else if (!status.isHealthy && !status.isChecking) {
-      setTopBarVariant('degraded');
+      setTopBarState('apiwarn');
     } else {
-      setTopBarVariant('normal');
+      setTopBarState('default');
     }
   }, [useTestData, status.isHealthy, status.isChecking]);
 
-  return { topBarVariant };
+  return { topBarState };
 }
