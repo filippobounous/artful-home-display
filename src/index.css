@@ -54,6 +54,10 @@ All colors MUST be HSL.
 
     --sidebar-ring: 217.2 91.2% 59.8%;
 
+    --sb-width-expanded: 260px;
+    --sb-width-collapsed: 72px;
+    --top-section-h: 48px;
+
     /* Dashboard specific tokens */
     --dashboard-blue: var(--sidebar-ring);
     --dashboard-green: 160 84.1% 39.4%;
@@ -124,6 +128,48 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .layout {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) 1fr;
+    width: 100%;
+    min-height: 100vh;
+  }
+
+  .layout.expanded {
+    --sidebar-width: var(--sb-width-expanded);
+    --sidebar-width-icon: var(--sb-width-collapsed);
+  }
+
+  .layout.collapsed {
+    --sidebar-width: var(--sb-width-collapsed);
+    --sidebar-width-icon: var(--sb-width-collapsed);
+  }
+
+  .sidebar {
+    width: var(--sidebar-width);
+    overflow: hidden;
+  }
+
+  .main {
+    min-width: 0;
+    overflow: auto;
+  }
+
+  .sidebar-top {
+    height: var(--top-section-h);
+    display: flex;
+    align-items: center;
+  }
+
+  .topbar {
+    height: var(--top-section-h);
+    line-height: var(--top-section-h);
+    display: flex;
+    align-items: center;
   }
 }
 

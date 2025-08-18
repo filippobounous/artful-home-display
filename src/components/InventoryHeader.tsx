@@ -31,7 +31,7 @@ export function InventoryHeader() {
   return (
     <header
       className={cn(
-        'border-b backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40 h-12',
+        'topbar border-b backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40',
         'border-[hsl(var(--tb-border))]',
         getTopBarClasses(),
       )}
