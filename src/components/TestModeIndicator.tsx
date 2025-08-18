@@ -8,9 +8,9 @@ export function TestModeIndicator() {
   if (!useTestData) return null;
 
   return (
-    <Badge variant="destructive" className="ml-3 relative">
+    <Badge variant="destructive" className="relative">
       <span className="absolute -left-1 -top-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
-      TEST/DEV MODE ACTIVE
+      Testing
     </Badge>
   );
 }

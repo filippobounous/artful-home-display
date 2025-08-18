@@ -11,8 +11,12 @@ export function AdvancedSettings() {
   const { useTestData, setUseTestData } = useTestDataToggle();
   const { showApiHealth, setShowApiHealth } = useDashboardApiHealth();
   const queryClient = useQueryClient();
+  
+  // Check if user is in demo mode
+  const isDemoMode = localStorage.getItem('isDemoUser') === 'true';
 
   const handleTestDataToggle = (checked: boolean) => {
+    if (isDemoMode) return; // Prevent changes in demo mode
     setUseTestData(checked);
     // Invalidate all queries to force refetch from correct source
     queryClient.invalidateQueries();
@@ -30,15 +34,21 @@ export function AdvancedSettings() {
       <CardContent className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="test-data-toggle">Use test data</Label>
+            <Label htmlFor="test-data-toggle" className={isDemoMode ? 'text-muted-foreground' : ''}>
+              Use test data
+            </Label>
             <p className="text-sm text-muted-foreground">
-              Use bundled test data instead of the real API
+              {isDemoMode 
+                ? 'Managed by Demo Environment' 
+                : 'Use bundled test data instead of the real API'
+              }
             </p>
           </div>
           <Switch
             id="test-data-toggle"
             checked={useTestData}
             onCheckedChange={handleTestDataToggle}
+            disabled={isDemoMode}
             aria-label="Toggle test data usage"
           />
         </div>

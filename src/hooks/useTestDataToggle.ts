@@ -3,8 +3,9 @@ import { useState, useEffect } from 'react';
 
 export function useTestDataToggle() {
   const [useTestData, setUseTestData] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    return localStorage.getItem('useTestData') === 'true';
+    if (typeof window === 'undefined') return true; // Default to true
+    const stored = localStorage.getItem('useTestData');
+    return stored !== null ? stored === 'true' : true; // Default to true if no stored value
   });
 
   useEffect(() => {

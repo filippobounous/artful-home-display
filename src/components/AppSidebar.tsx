@@ -26,7 +26,7 @@ import {
 } from '@/components/ui/sidebar';
 import { useSidebar } from '@/components/ui/use-sidebar';
 import { useSettingsState } from '@/hooks/useSettingsState';
-import { ServiceSelect } from './ServiceSelect';
+import { SidebarStatus } from '@/components/SidebarStatus';
 import { logout } from '@/lib/api';
 
 const mainItems = [
@@ -103,7 +103,7 @@ export function AppSidebar() {
 
   return (
     <Sidebar className={isCollapsed ? 'w-14' : 'w-64'} collapsible="icon">
-      <SidebarContent className="bg-sidebar border-r border-sidebar-border">
+      <SidebarContent className="bg-sidebar border-r border-sidebar-border flex flex-col">
         {/* Logo Section */}
         <div className="p-6 border-b border-sidebar-border">
           {!isCollapsed ? (
@@ -111,7 +111,6 @@ export function AppSidebar() {
               <h2 className="text-xl font-bold text-sidebar-foreground">
                 Murgenere
               </h2>
-              <ServiceSelect />
             </div>
           ) : (
             <div className="text-center">
@@ -204,38 +203,39 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* Settings at bottom */}
-        <div className="mt-auto border-t border-sidebar-border">
-          <SidebarGroup>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={checkActive('/settings')}
+        {/* Settings */}
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={checkActive('/settings')}
+                >
+                  <NavLink
+                    to="/settings"
+                    className={getNavCls({
+                      isActive: checkActive('/settings'),
+                    })}
                   >
-                    <NavLink
-                      to="/settings"
-                      className={getNavCls({
-                        isActive: checkActive('/settings'),
-                      })}
-                    >
-                      <Settings className="w-4 h-4" />
-                      {!isCollapsed && <span>Settings</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                    <Settings className="w-4 h-4" />
+                    {!isCollapsed && <span>Settings</span>}
+                  </NavLink>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
 
-                <SidebarMenuItem>
-                  <SidebarMenuButton onClick={handleLogout}>
-                    <LogOut className="w-4 h-4" />
-                    {!isCollapsed && <span>Logout</span>}
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </div>
+              <SidebarMenuItem>
+                <SidebarMenuButton onClick={handleLogout}>
+                  <LogOut className="w-4 h-4" />
+                  {!isCollapsed && <span>Logout</span>}
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Status Badges at bottom */}
+        <SidebarStatus />
       </SidebarContent>
     </Sidebar>
   );
