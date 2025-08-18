@@ -1,5 +1,4 @@
-
-import { useSidebar } from '@/components/ui/use-sidebar';
+import { useSidebar } from '@/components/ui/sidebar';
 
 export function SidebarStatus() {
   const { state } = useSidebar();
