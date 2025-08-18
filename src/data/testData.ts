@@ -370,37 +370,44 @@ export const generateTestData = (): DecorItem[] => {
         break;
       case 2:
         item.category = '';
+        item.subcategory = '';
         break;
       case 3:
         item.house = '';
         item.room = '';
+        item.yearPeriod = '';
         break;
       case 4:
         item.title = '';
         item.artist = '';
+        item.acquisitionDate = '';
         break;
       case 5:
         item.title = '';
         item.category = '';
+        item.quantity = 0;
         break;
       case 6:
         item.artist = '';
-        item.category = '';
+        item.subcategory = '';
         break;
       case 7:
         item.title = '';
         item.house = '';
         item.room = '';
+        item.subcategory = '';
         break;
       case 8:
         item.artist = '';
         item.house = '';
         item.room = '';
+        item.yearPeriod = '';
         break;
       case 9:
         item.category = '';
         item.house = '';
         item.room = '';
+        item.quantity = 0;
         break;
     }
     return item;
