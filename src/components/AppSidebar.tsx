@@ -22,8 +22,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarFooter,
-  useSidebar,
 } from '@/components/ui/sidebar';
+import { useSidebar } from '@/components/ui/sidebar-context';
 import { useSettingsState } from '@/hooks/useSettingsState';
 import { LogoutButton } from '@/components/LogoutButton';
 
