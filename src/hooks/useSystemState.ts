@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useTestDataToggle } from './useTestDataToggle';
 import { useApiHealth } from './useApiHealth';
@@ -18,10 +17,12 @@ export function useSystemState(): SystemState {
   useEffect(() => {
     if (useTestData) {
       setTopBarState('testing');
+    } else if (!status.isHealthy && !status.isChecking) {
+      setTopBarState('apiwarn');
     } else {
       setTopBarState('default');
     }
-  }, [useTestData]);
+  }, [useTestData, status.isHealthy, status.isChecking]);
 
   return { topBarState };
 }

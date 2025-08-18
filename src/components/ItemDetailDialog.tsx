@@ -1,6 +1,3 @@
-
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import {
   Dialog,
   DialogContent,
@@ -8,143 +5,279 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { DecorItem } from '@/types/inventory';
+import {
+  Edit,
+  MapPin,
+  Calendar,
+  DollarSign,
+  Hash,
+  Trash2,
+  History,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Edit, X } from 'lucide-react';
-import { getItem } from '@/lib/api';
-import type { InventoryItem } from '@/types/inventory';
 
 interface ItemDetailDialogProps {
-  itemId: string | null;
+  item: DecorItem | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onEdit?: (itemId: string) => void;
+  onEdit?: (item: DecorItem) => void;
+  onDelete?: (item: DecorItem) => void;
+  onHistory?: (item: DecorItem) => void;
 }
 
-export function ItemDetailDialog({ itemId, open, onOpenChange, onEdit }: ItemDetailDialogProps) {
-  const { data: item, isLoading, error } = useQuery({
-    queryKey: ['item', itemId],
-    queryFn: () => getItem(itemId!),
-    enabled: !!itemId && open,
-  });
-
-  if (!itemId) return null;
-
-  const handleEdit = () => {
-    if (item && onEdit) {
-      onEdit(item.id);
-    }
-  };
+export function ItemDetailDialog({
+  item,
+  open,
+  onOpenChange,
+  onEdit,
+  onDelete,
+  onHistory,
+}: ItemDetailDialogProps) {
+  if (!item) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <div className="flex items-center justify-between">
-            <DialogTitle className="text-xl font-semibold">
-              {isLoading ? 'Loading...' : item?.name || 'Item Details'}
-            </DialogTitle>
-            <div className="flex gap-2">
-              {item && onEdit && (
-                <Button variant="outline" size="sm" onClick={handleEdit}>
-                  <Edit className="w-4 h-4 mr-2" />
-                  Edit
-                </Button>
-              )}
-            </div>
+          <DialogTitle className="text-xl font-semibold pr-16">
+            {item.title}
+            <span className="block text-sm font-normal text-muted-foreground">
+              {item.code ?? '-'} • ID {item.id} • v{item.version ?? 1}
+            </span>
+          </DialogTitle>
+          <div className="flex items-center gap-2 mt-2">
+            {onEdit && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => onEdit(item)}
+                className="h-8 px-2"
+              >
+                <Edit className="w-4 h-4 mr-1" />
+                Edit
+              </Button>
+            )}
+            {onHistory && item.history && item.history.length > 0 && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => onHistory(item)}
+                className="h-8 px-2"
+              >
+                <History className="w-4 h-4 mr-1" />
+                History
+              </Button>
+            )}
+            {onDelete && (
+              <Button
+                size="sm"
+                variant="destructive"
+                onClick={() => onDelete(item)}
+                className="h-8 px-2 bg-[hsl(var(--destructive))] hover:bg-[hsl(var(--destructive))]/90 text-[hsl(var(--destructive-foreground))]"
+              >
+                <Trash2 className="w-4 h-4 mr-1" />
+                Delete
+              </Button>
+            )}
           </div>
         </DialogHeader>
 
-        {isLoading && (
-          <div className="flex items-center justify-center py-8">
-            <div className="text-muted-foreground">Loading item details...</div>
+        <div className="space-y-6">
+          {/* Image */}
+          <div className="w-full h-64 rounded-lg overflow-hidden">
+            <img
+              src={item.image}
+              alt={item.title}
+              className="w-full h-full object-cover"
+            />
           </div>
-        )}
 
-        {error && (
-          <div className="flex items-center justify-center py-8">
-            <div className="text-destructive">Failed to load item details</div>
-          </div>
-        )}
+          {/* Basic Information */}
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div>
+                <h4 className="font-medium text-muted-foreground mb-1">
+                  Artist/Maker
+                </h4>
+                <p className="text-foreground">{item.artist ?? '-'}</p>
+              </div>
 
-        {item && (
-          <div className="space-y-6">
-            {/* Basic Info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-muted-foreground">Name</label>
-                <p className="text-base">{item.name || 'Not specified'}</p>
+                <h4 className="font-medium text-muted-foreground mb-1">
+                  Year/Period
+                </h4>
+                <p className="text-foreground">{item.yearPeriod ?? '-'}</p>
               </div>
+
               <div>
-                <label className="text-sm font-medium text-muted-foreground">Artist</label>
-                <p className="text-base">{item.artist || 'Not specified'}</p>
+                <h4 className="font-medium text-muted-foreground mb-1">
+                  Category
+                </h4>
+                <p className="text-foreground flex items-center">
+                  <span className="capitalize">{item.category}</span>
+                  {item.subcategory && (
+                    <>
+                      <span className="mx-1">•</span>
+                      <span className="capitalize">{item.subcategory}</span>
+                    </>
+                  )}
+                </p>
               </div>
+
               <div>
-                <label className="text-sm font-medium text-muted-foreground">Category</label>
-                <p className="text-base">{item.category || 'Not specified'}</p>
+                <h4 className="font-medium text-muted-foreground mb-1">
+                  Origin Region
+                </h4>
+                <p className="text-foreground">{item.originRegion ?? '-'}</p>
               </div>
+
               <div>
-                <label className="text-sm font-medium text-muted-foreground">Subcategory</label>
-                <p className="text-base">{item.subcategory || 'Not specified'}</p>
+                <h4 className="font-medium text-muted-foreground mb-1">
+                  Material
+                </h4>
+                <p className="text-foreground">{item.material ?? '-'}</p>
               </div>
             </div>
 
-            {/* Location */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-muted-foreground">House</label>
-                <p className="text-base">{item.house || 'Not specified'}</p>
+                <h4 className="font-medium text-muted-foreground mb-1">
+                  Location
+                </h4>
+                <p className="text-foreground flex items-center">
+                  <MapPin className="w-4 h-4 mr-1" />
+                  {item.house || item.room ? (
+                    <>
+                      {item.house && (
+                        <span className="capitalize">
+                          {item.house.replace('-', ' ')}
+                        </span>
+                      )}
+                      {item.house && item.room && (
+                        <span className="mx-1">•</span>
+                      )}
+                      {item.room && (
+                        <span className="capitalize">
+                          {item.room.replace('-', ' ')}
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    '-'
+                  )}
+                </p>
               </div>
+
               <div>
-                <label className="text-sm font-medium text-muted-foreground">Room</label>
-                <p className="text-base">{item.room || 'Not specified'}</p>
+                <h4 className="font-medium text-muted-foreground mb-1">
+                  Provenance
+                </h4>
+                <p className="text-foreground">{item.provenance ?? '-'}</p>
               </div>
-            </div>
 
-            {/* Valuation */}
-            {(item.currentValue || item.currency) && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Current Value</label>
-                  <p className="text-base">
-                    {item.currentValue ? `${item.currency || ''} ${item.currentValue}` : 'Not specified'}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Purchase Price</label>
-                  <p className="text-base">
-                    {item.purchasePrice ? `${item.currency || ''} ${item.purchasePrice}` : 'Not specified'}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Description */}
-            {item.description && (
               <div>
-                <label className="text-sm font-medium text-muted-foreground">Description</label>
-                <p className="text-base mt-1">{item.description}</p>
+                <h4 className="font-medium text-muted-foreground mb-1">
+                  Quantity
+                </h4>
+                <p className="text-foreground flex items-center">
+                  <Hash className="w-4 h-4 mr-1" />
+                  {item.quantity ?? '-'}
+                </p>
               </div>
-            )}
 
-            {/* Notes */}
-            {item.notes && (
               <div>
-                <label className="text-sm font-medium text-muted-foreground">Notes</label>
-                <p className="text-base mt-1">{item.notes}</p>
+                <h4 className="font-medium text-muted-foreground mb-1">
+                  Dimensions
+                </h4>
+                <p className="text-foreground">
+                  {item.widthCm ?? '-'} x {item.heightCm ?? '-'} x{' '}
+                  {item.depthCm ?? '-'} cm
+                </p>
               </div>
-            )}
 
-            {/* Status */}
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">Status</label>
-              <div className="mt-1">
-                <Badge variant={item.isDraft ? 'secondary' : 'default'}>
-                  {item.isDraft ? 'Draft' : 'Published'}
-                </Badge>
+              <div>
+                <h4 className="font-medium text-muted-foreground mb-1">
+                  Weight
+                </h4>
+                <p className="text-foreground">{item.weightKg ?? '-'} kg</p>
               </div>
             </div>
           </div>
-        )}
+
+          {/* Acquisition Information */}
+          <div className="border-t pt-4">
+            <h4 className="font-medium text-muted-foreground mb-3">
+              Acquisition Information
+            </h4>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-muted-foreground">Value</p>
+                <p className="text-foreground flex items-center">
+                  <DollarSign className="w-4 h-4 mr-1" />
+                  {item.acquisitionValue?.toLocaleString() ?? '-'}{' '}
+                  {item.acquisitionCurrency || 'EUR'}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-sm text-muted-foreground">Date</p>
+                <p className="text-foreground flex items-center">
+                  <Calendar className="w-4 h-4 mr-1" />
+                  {item.acquisitionDate
+                    ? new Date(item.acquisitionDate).toLocaleDateString()
+                    : '-'}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Appraisal Information */}
+          <div className="border-t pt-4">
+            <h4 className="font-medium text-muted-foreground mb-3">
+              Appraisal Information
+            </h4>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-muted-foreground">Value</p>
+                <p className="text-foreground flex items-center">
+                  <DollarSign className="w-4 h-4 mr-1" />
+                  {item.valuation?.toLocaleString() ?? '-'}{' '}
+                  {item.valuationCurrency || 'EUR'}
+                </p>
+              </div>
+
+              <div>
+                <p className="text-sm text-muted-foreground">Appraiser</p>
+                <p className="text-foreground">{item.valuationPerson ?? '-'}</p>
+              </div>
+
+              <div>
+                <p className="text-sm text-muted-foreground">Date</p>
+                <p className="text-foreground flex items-center">
+                  <Calendar className="w-4 h-4 mr-1" />
+                  {item.valuationDate
+                    ? new Date(item.valuationDate).toLocaleDateString()
+                    : '-'}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Description */}
+          <div className="border-t pt-4">
+            <h4 className="font-medium text-muted-foreground mb-2">
+              Description
+            </h4>
+            <p className="text-foreground">{item.description ?? '-'}</p>
+          </div>
+
+          {/* Notes */}
+          <div className="border-t pt-4">
+            <h4 className="font-medium text-muted-foreground mb-2">Notes</h4>
+            <p className="text-foreground">{item.notes ?? '-'}</p>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );

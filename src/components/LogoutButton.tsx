@@ -5,14 +5,11 @@ import { LogOut } from 'lucide-react';
 import { logout } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
-import { useSidebar } from '@/components/ui/sidebar';
 
 export function LogoutButton() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { state } = useSidebar();
-  const isCollapsed = state === 'collapsed';
 
   const handleLogout = async () => {
     try {
@@ -44,15 +41,9 @@ export function LogoutButton() {
   };
 
   return (
-    <Button 
-      variant="outline" 
-      onClick={handleLogout} 
-      className={`w-full justify-start ${isCollapsed ? 'px-2' : ''}`}
-      aria-label={isCollapsed ? 'Logout' : undefined}
-      title={isCollapsed ? 'Logout' : undefined}
-    >
-      <LogOut className="w-4 h-4" />
-      {!isCollapsed && <span className="ml-2">Logout</span>}
+    <Button variant="outline" onClick={handleLogout} className="w-full justify-start">
+      <LogOut className="w-4 h-4 mr-2" />
+      Logout
     </Button>
   );
 }
