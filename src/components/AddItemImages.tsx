@@ -95,7 +95,7 @@ export function AddItemImages({ formData, setFormData }: AddItemImagesProps) {
       {formData.images.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {formData.images.map((url, index) => (
-            <div key={index} className="relative">
+            <div key={url} className="relative">
               <img
                 src={url}
                 alt={`Preview ${index + 1}`}
