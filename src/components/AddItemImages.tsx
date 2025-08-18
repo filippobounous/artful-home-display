@@ -113,6 +113,7 @@ export function AddItemImages({ formData, setFormData }: AddItemImagesProps) {
                 onClick={() => removeImage(index)}
               >
                 <X className="w-3 h-3" />
+                <span className="sr-only">Remove image</span>
               </Button>
             </div>
           ))}
