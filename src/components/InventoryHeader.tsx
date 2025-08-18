@@ -1,25 +1,39 @@
 
-import { ServiceSelect } from '@/components/ServiceSelect';
+import { SidebarTrigger } from '@/components/ui/sidebar';
 import { DarkModeToggle } from '@/components/DarkModeToggle';
-import { TestModeIndicator } from '@/components/TestModeIndicator';
-import { ApiHealthIndicator } from '@/components/ApiHealthIndicator';
-import { useDashboardApiHealth } from '@/hooks/useDashboardApiHealth';
+import { useSystemState } from '@/hooks/useSystemState';
+import { cn } from '@/lib/utils';
 
 export function InventoryHeader() {
-  const { showApiHealth } = useDashboardApiHealth();
+  const { topBarState } = useSystemState();
+
+  const getTopBarClasses = () => {
+    switch (topBarState) {
+      case 'testing':
+        return cn(
+          'bg-red-50 text-red-900 border-red-200',
+          'dark:bg-red-950/30 dark:text-red-200 dark:border-red-800/50',
+        );
+      default:
+        return cn(
+          'bg-background/95 text-foreground border-border',
+        );
+    }
+  };
 
   return (
-    <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex h-14 items-center justify-between px-6">
-        <div className="flex items-center gap-2">
-          <ServiceSelect />
-          <TestModeIndicator />
-        </div>
-        
+    <header
+      className={cn(
+        'border-b backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40 h-12',
+        getTopBarClasses(),
+      )}
+    >
+      <div className="flex h-full items-center justify-between px-4">
         <div className="flex items-center gap-4">
-          {showApiHealth && (
-            <ApiHealthIndicator enablePolling={true} />
-          )}
+          <SidebarTrigger />
+        </div>
+
+        <div className="flex items-center gap-3">
           <DarkModeToggle />
         </div>
       </div>
