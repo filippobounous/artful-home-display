@@ -1,4 +1,3 @@
-
 import {
   Home,
   Package,
@@ -23,8 +22,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarFooter,
+  useSidebar,
 } from '@/components/ui/sidebar';
-import { useSidebar } from '@/components/ui/use-sidebar';
 import { useSettingsState } from '@/hooks/useSettingsState';
 import { LogoutButton } from '@/components/LogoutButton';
 
@@ -98,7 +97,9 @@ export function AppSidebar() {
     <Sidebar className="flex flex-col" collapsible="icon">
       <SidebarContent className="bg-sidebar border-r border-sidebar-border flex flex-col">
         {/* Logo Section - Reduced height */}
-        <div className={`${isCollapsed ? 'p-2' : 'p-4'} border-b border-sidebar-border flex-shrink-0 h-12 flex items-center`}>
+        <div
+          className={`${isCollapsed ? 'p-2' : 'p-4'} border-b border-sidebar-border flex-shrink-0 h-12 flex items-center`}
+        >
           {!isCollapsed ? (
             <div>
               <h2 className="text-lg font-bold text-sidebar-foreground">
@@ -129,8 +130,8 @@ export function AppSidebar() {
                   const active = checkActive(item.url);
                   return (
                     <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton 
-                        asChild 
+                      <SidebarMenuButton
+                        asChild
                         isActive={active}
                         tooltip={isCollapsed ? item.title : undefined}
                         className="h-9"
@@ -141,7 +142,9 @@ export function AppSidebar() {
                           className={getNavCls({ isActive: active })}
                         >
                           <item.icon className="w-4 h-4 flex-shrink-0" />
-                          {!isCollapsed && <span className="text-sm">{item.title}</span>}
+                          {!isCollapsed && (
+                            <span className="text-sm">{item.title}</span>
+                          )}
                         </NavLink>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -165,8 +168,8 @@ export function AppSidebar() {
                     const active = checkActive(item.url);
                     return (
                       <SidebarMenuItem key={`category-${item.categoryId}`}>
-                        <SidebarMenuButton 
-                          asChild 
+                        <SidebarMenuButton
+                          asChild
                           isActive={active}
                           tooltip={isCollapsed ? item.title : undefined}
                           className="h-9"
@@ -176,7 +179,9 @@ export function AppSidebar() {
                             className={getNavCls({ isActive: active })}
                           >
                             <item.icon className="w-4 h-4 flex-shrink-0" />
-                            {!isCollapsed && <span className="text-sm">{item.title}</span>}
+                            {!isCollapsed && (
+                              <span className="text-sm">{item.title}</span>
+                            )}
                           </NavLink>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
@@ -201,8 +206,8 @@ export function AppSidebar() {
                     const active = checkActive(item.url);
                     return (
                       <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton 
-                          asChild 
+                        <SidebarMenuButton
+                          asChild
                           isActive={active}
                           tooltip={isCollapsed ? item.title : undefined}
                           className="h-9"
@@ -212,7 +217,9 @@ export function AppSidebar() {
                             className={getNavCls({ isActive: active })}
                           >
                             <item.icon className="w-4 h-4 flex-shrink-0" />
-                            {!isCollapsed && <span className="text-sm">{item.title}</span>}
+                            {!isCollapsed && (
+                              <span className="text-sm">{item.title}</span>
+                            )}
                           </NavLink>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
@@ -246,7 +253,7 @@ export function AppSidebar() {
               </NavLink>
             </SidebarMenuButton>
           </SidebarMenuItem>
-          
+
           <SidebarMenuItem>
             <div className={isCollapsed ? 'flex justify-center' : ''}>
               <LogoutButton />
