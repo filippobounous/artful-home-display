@@ -1,10 +1,10 @@
-
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { Toaster } from '@/components/ui/toaster';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { TestDataProvider } from '@/context/TestDataProvider';
 
 // Pages
 import Login from '@/pages/Login';
@@ -31,35 +31,41 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-        <BrowserRouter>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route
-              path="/*"
-              element={
-                <ProtectedRoute>
-                  <SidebarProvider>
-                    <Routes>
-                      <Route path="/" element={<Index />} />
-                      <Route path="/inventory" element={<AllItems />} />
-                      <Route path="/add-item" element={<AddItem />} />
-                      <Route path="/drafts" element={<Drafts />} />
-                      <Route path="/warnings" element={<Warnings />} />
-                      <Route path="/analytics" element={<Analytics />} />
-                      <Route path="/settings" element={<Settings />} />
-                      <Route path="/category/:categoryId" element={<CategoryPage />} />
-                      <Route path="/house/:houseId" element={<HousePage />} />
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                  </SidebarProvider>
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </BrowserRouter>
-        <Toaster />
-      </ThemeProvider>
+      <TestDataProvider>
+        <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+          <BrowserRouter>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route
+                path="/*"
+                element={
+                  <ProtectedRoute>
+                    <SidebarProvider>
+                      <Routes>
+                        <Route path="/" element={<Index />} />
+                        <Route path="/inventory" element={<AllItems />} />
+                        <Route path="/items/:itemId" element={<AllItems />} />
+                        <Route path="/add-item" element={<AddItem />} />
+                        <Route path="/drafts" element={<Drafts />} />
+                        <Route path="/warnings" element={<Warnings />} />
+                        <Route path="/analytics" element={<Analytics />} />
+                        <Route path="/settings" element={<Settings />} />
+                        <Route
+                          path="/category/:categoryId"
+                          element={<CategoryPage />}
+                        />
+                        <Route path="/house/:houseId" element={<HousePage />} />
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </SidebarProvider>
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </BrowserRouter>
+          <Toaster />
+        </ThemeProvider>
+      </TestDataProvider>
     </QueryClientProvider>
   );
 }

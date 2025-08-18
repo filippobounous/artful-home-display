@@ -1,4 +1,3 @@
-
 import {
   Home,
   Package,
@@ -14,6 +13,7 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
+import { useEffect } from 'react';
 import {
   Sidebar,
   SidebarContent,
@@ -56,11 +56,18 @@ const getIconComponent = (iconName: string) => {
 };
 
 export function AppSidebar() {
-  const { state } = useSidebar();
+  const { state, setOpen } = useSidebar();
   const location = useLocation();
   const currentPath = location.pathname;
   const isCollapsed = state === 'collapsed';
   const { categories, houses } = useSettingsState();
+
+  useEffect(() => {
+    const stored = localStorage.getItem('sidebar:state');
+    if (stored !== null) {
+      setOpen(stored === 'true');
+    }
+  }, [location.pathname, setOpen]);
 
   // Dynamic category items based on configuration - ensure unique categories only
   const categoryItems = categories
@@ -98,7 +105,10 @@ export function AppSidebar() {
       : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground';
 
   return (
-    <Sidebar className="flex flex-col border-r border-sidebar-border" collapsible="icon">
+    <Sidebar
+      className="flex flex-col border-r border-sidebar-border"
+      collapsible="icon"
+    >
       <SidebarContent className="bg-sidebar flex flex-col">
         {/* Logo Section */}
         <div
@@ -239,7 +249,7 @@ export function AppSidebar() {
       {/* Footer Section */}
       <SidebarFooter className="border-t border-sidebar-border bg-sidebar p-2 space-y-2">
         <SidebarStatus />
-        
+
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
@@ -261,9 +271,16 @@ export function AppSidebar() {
           </SidebarMenuItem>
 
           <SidebarMenuItem>
-            <div className={isCollapsed ? 'w-full' : ''}>
-              <LogoutButton />
-            </div>
+            <SidebarMenuButton
+              asChild
+              tooltip={isCollapsed ? 'Logout' : undefined}
+              className="h-10"
+            >
+              <LogoutButton
+                collapsed={isCollapsed}
+                className={getNavCls({ isActive: false })}
+              />
+            </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>

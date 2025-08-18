@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -9,7 +8,7 @@ import { ApiHealthCheck } from './ApiHealthCheck';
 export function AdvancedSettings() {
   const { useTestData, setUseTestData } = useTestDataToggle();
   const queryClient = useQueryClient();
-  
+
   // Check if user is in demo mode
   const isDemoMode = localStorage.getItem('isDemoUser') === 'true';
 
@@ -28,14 +27,16 @@ export function AdvancedSettings() {
       <CardContent className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="test-data-toggle" className={isDemoMode ? 'text-muted-foreground' : ''}>
-              Use test data
+            <Label
+              htmlFor="test-data-toggle"
+              className={isDemoMode ? 'text-muted-foreground' : ''}
+            >
+              Use Test Data
             </Label>
             <p className="text-sm text-muted-foreground">
-              {isDemoMode 
-                ? 'Managed by Demo Environment' 
-                : 'Use bundled test data instead of the real API'
-              }
+              {isDemoMode
+                ? 'Managed by Demo Environment'
+                : 'Use bundled test data instead of the real API'}
             </p>
           </div>
           <Switch
