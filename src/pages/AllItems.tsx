@@ -36,7 +36,7 @@ const AllItems = () => {
     min?: number;
     max?: number;
   }>({});
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [viewMode, setViewMode] = useState<ViewMode>('table');
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [showBatchDialog, setShowBatchDialog] = useState(false);
   const navigate = useNavigate();
