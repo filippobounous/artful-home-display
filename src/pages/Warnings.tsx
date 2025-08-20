@@ -35,7 +35,7 @@ const Warnings = () => {
     min?: number;
     max?: number;
   }>({});
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [viewMode, setViewMode] = useState<ViewMode>('table');
   const [searchParams, setSearchParams] = useSearchParams();
   const { houses, categories } = useSettingsState();
   type SortField =
