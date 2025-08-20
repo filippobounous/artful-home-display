@@ -341,6 +341,7 @@ const AllItems = () => {
             }
           }
         }}
+        onEdit={(item) => navigate(`/add-item?draftId=${item.id}`)}
       />
     </SidebarLayout>
   );
