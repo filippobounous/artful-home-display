@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { InventoryHeader } from '@/components/InventoryHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -34,6 +35,24 @@ const Analytics = () => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedHouses, setSelectedHouses] = useState<string[]>([]);
   const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>([]);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    const categoriesParam = searchParams.get('categories');
+    const housesParam = searchParams.get('houses');
+    const currenciesParam = searchParams.get('currencies');
+
+    if (categoriesParam) {
+      setSelectedCategories(categoriesParam.split(',').filter(Boolean));
+    }
+    if (housesParam) {
+      setSelectedHouses(housesParam.split(',').filter(Boolean));
+    }
+    if (currenciesParam) {
+      setSelectedCurrencies(currenciesParam.split(',').filter(Boolean));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     fetchDecorItems()
@@ -73,6 +92,20 @@ const Analytics = () => {
 
     setFilteredItems(filtered);
   }, [items, selectedCategories, selectedHouses, selectedCurrencies]);
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (selectedCategories.length > 0) {
+      params.set('categories', selectedCategories.join(','));
+    }
+    if (selectedHouses.length > 0) {
+      params.set('houses', selectedHouses.join(','));
+    }
+    if (selectedCurrencies.length > 0) {
+      params.set('currencies', selectedCurrencies.join(','));
+    }
+    setSearchParams(params, { replace: true });
+  }, [selectedCategories, selectedHouses, selectedCurrencies, setSearchParams]);
 
   // Basic statistics
   const totalItems = filteredItems.length;

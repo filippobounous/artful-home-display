@@ -11,11 +11,6 @@ export function InventoryHeader() {
 
   const getTopBarClasses = () => {
     switch (topBarState) {
-      case 'testing':
-        return cn(
-          'bg-[hsl(var(--tb-bg-testing)/0.15)] text-[hsl(var(--tb-fg-default))]',
-          'dark:bg-[hsl(var(--tb-bg-testing)/0.2)] dark:text-[hsl(var(--tb-fg-contrast))]',
-        );
       case 'apiwarn':
         return cn(
           'bg-[hsl(var(--tb-bg-apiwarn)/0.15)] text-[hsl(var(--tb-fg-default))]',

@@ -1,7 +1,7 @@
-
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MultiSelectFilter } from '@/components/MultiSelectFilter';
 import { DecorItem } from '@/types/inventory';
+import { AppliedAnalyticsFilters } from './AppliedAnalyticsFilters';
+import { cn } from '@/lib/utils';
 
 interface AnalyticsFiltersProps {
   items: DecorItem[];
@@ -22,74 +22,69 @@ export function AnalyticsFilters({
   selectedCurrencies,
   setSelectedCurrencies,
 }: AnalyticsFiltersProps) {
-  // Get unique categories
   const categories = Array.from(
-    new Set(items.map(item => item.category))
-  ).map(category => ({
+    new Set(items.map((item) => item.category)),
+  ).map((category) => ({
     id: category,
     name: category.charAt(0).toUpperCase() + category.slice(1),
   }));
 
-  // Get unique houses
   const houses = Array.from(
-    new Set(items.map(item => item.house).filter(Boolean))
-  ).map(house => ({
+    new Set(items.map((item) => item.house).filter(Boolean)),
+  ).map((house) => ({
     id: house!,
     name: house!.replace('-', ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
   }));
 
-  // Get unique currencies
   const currencies = Array.from(
-    new Set(items.map(item => item.valuationCurrency).filter(Boolean))
-  ).map(currency => ({
-    id: currency!,
-    name: currency!,
-  }));
+    new Set(items.map((item) => item.valuationCurrency).filter(Boolean)),
+  ).map((currency) => ({ id: currency!, name: currency! }));
+
+  const activeCount =
+    selectedCategories.length +
+    selectedHouses.length +
+    selectedCurrencies.length;
 
   return (
-    <Card className="mb-8">
-      <CardHeader>
-        <CardTitle>Filters</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <div className="mb-8 space-y-6">
+      <div
+        className={cn(
+          'bg-card p-4 rounded-lg border shadow-sm',
+          activeCount > 0 && 'border-primary',
+        )}
+      >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-2">
-              Categories
-            </label>
-            <MultiSelectFilter
-              placeholder="Select categories"
-              options={categories}
-              selectedValues={selectedCategories}
-              onSelectionChange={setSelectedCategories}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-2">
-              Houses
-            </label>
-            <MultiSelectFilter
-              placeholder="Select houses"
-              options={houses}
-              selectedValues={selectedHouses}
-              onSelectionChange={setSelectedHouses}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-2">
-              Currencies
-            </label>
-            <MultiSelectFilter
-              placeholder="Select currencies"
-              options={currencies}
-              selectedValues={selectedCurrencies}
-              onSelectionChange={setSelectedCurrencies}
-            />
-          </div>
+          <MultiSelectFilter
+            placeholder="Select categories"
+            options={categories}
+            selectedValues={selectedCategories}
+            onSelectionChange={setSelectedCategories}
+          />
+          <MultiSelectFilter
+            placeholder="Select houses"
+            options={houses}
+            selectedValues={selectedHouses}
+            onSelectionChange={setSelectedHouses}
+          />
+          <MultiSelectFilter
+            placeholder="Select currencies"
+            options={currencies}
+            selectedValues={selectedCurrencies}
+            onSelectionChange={setSelectedCurrencies}
+          />
         </div>
-      </CardContent>
-    </Card>
+      </div>
+      <AppliedAnalyticsFilters
+        selectedCategories={selectedCategories}
+        setSelectedCategories={setSelectedCategories}
+        selectedHouses={selectedHouses}
+        setSelectedHouses={setSelectedHouses}
+        selectedCurrencies={selectedCurrencies}
+        setSelectedCurrencies={setSelectedCurrencies}
+        categoryOptions={categories}
+        houseOptions={houses}
+        currencyOptions={currencies}
+      />
+    </div>
   );
 }

@@ -110,7 +110,7 @@ exports[`InventoryHeader visual states > renders testing dark 1`] = `
     class="dark"
   >
     <header
-      class="topbar border-b backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40 border-[hsl(var(--tb-border))] bg-[hsl(var(--tb-bg-testing)/0.15)] text-[hsl(var(--tb-fg-default))] dark:bg-[hsl(var(--tb-bg-testing)/0.2)] dark:text-[hsl(var(--tb-fg-contrast))]"
+      class="topbar border-b backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40 border-[hsl(var(--tb-border))] bg-[hsl(var(--tb-bg-default)/0.95)] text-[hsl(var(--tb-fg-default))]"
     >
       <div
         class="flex h-full w-full items-center justify-between px-4"
@@ -135,7 +135,7 @@ exports[`InventoryHeader visual states > renders testing light 1`] = `
 <DocumentFragment>
   <div>
     <header
-      class="topbar border-b backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40 border-[hsl(var(--tb-border))] bg-[hsl(var(--tb-bg-testing)/0.15)] text-[hsl(var(--tb-fg-default))] dark:bg-[hsl(var(--tb-bg-testing)/0.2)] dark:text-[hsl(var(--tb-fg-contrast))]"
+      class="topbar border-b backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40 border-[hsl(var(--tb-border))] bg-[hsl(var(--tb-bg-default)/0.95)] text-[hsl(var(--tb-fg-default))]"
     >
       <div
         class="flex h-full w-full items-center justify-between px-4"
