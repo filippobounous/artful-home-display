@@ -28,7 +28,7 @@ export default function HousePage() {
     min?: number;
     max?: number;
   }>({});
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
+  const [viewMode, setViewMode] = useState<ViewMode>('table');
   type SortField =
     | 'title'
     | 'artist'
