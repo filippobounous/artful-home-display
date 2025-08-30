@@ -36,7 +36,7 @@ export function InventoryHeader() {
         getTopBarClasses(),
       )}
     >
-      <div className="flex h-full items-center justify-between px-4">
+      <div className="flex h-full w-full items-center justify-between px-4">
         <div className="flex items-center gap-4">
           <SidebarTrigger />
           {showApiHealth && <ApiHealthIndicator enablePolling={true} />}
