@@ -55,7 +55,7 @@ All colors MUST be HSL.
     --sidebar-ring: 217.2 91.2% 59.8%;
 
     --sb-width-expanded: 260px;
-    --sb-width-collapsed: 72px;
+    --sb-width-collapsed: 56px;
     --top-section-h: 48px;
 
     /* Dashboard specific tokens */
