@@ -1,12 +1,11 @@
 import { RoomConfig } from '@/types/inventory';
-import { API_URL, API_KEY } from './common';
+import { API_URL, withAuthHeaders } from './common';
 import { getAllHouses, saveLocalHouses } from './houses';
 
 function buildHeaders(contentType?: string) {
   const headers: Record<string, string> = {};
   if (contentType) headers['Content-Type'] = contentType;
-  if (API_KEY) headers['X-API-Key'] = API_KEY;
-  return headers;
+  return withAuthHeaders(headers);
 }
 
 export async function addRoom(houseId: string, room: RoomConfig) {
@@ -95,6 +94,7 @@ export async function deleteRoom(houseId: string, roomId: string) {
       `${API_URL}/houses/${houseId}/rooms/${roomId}`,
       {
         method: 'DELETE',
+        headers: buildHeaders(),
       },
     );
     if (!response.ok) throw new Error('Failed to delete room');

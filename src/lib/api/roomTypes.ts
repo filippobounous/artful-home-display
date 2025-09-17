@@ -1,4 +1,4 @@
-import { API_URL, API_KEY } from './common';
+import { API_URL, withAuthHeaders } from './common';
 
 export interface RoomType {
   id: string;
@@ -6,9 +6,7 @@ export interface RoomType {
 }
 
 function buildHeaders() {
-  const headers: Record<string, string> = {};
-  if (API_KEY) headers['X-API-Key'] = API_KEY;
-  return headers;
+  return withAuthHeaders();
 }
 
 export async function fetchRoomTypes(): Promise<RoomType[]> {

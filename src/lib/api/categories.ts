@@ -3,13 +3,12 @@ import {
   SubcategoryConfig,
   categoryConfigs,
 } from '@/types/inventory';
-import { API_URL, API_KEY } from './common';
+import { API_URL, withAuthHeaders } from './common';
 
 function buildHeaders(contentType?: string) {
   const headers: Record<string, string> = {};
   if (contentType) headers['Content-Type'] = contentType;
-  if (API_KEY) headers['X-API-Key'] = API_KEY;
-  return headers;
+  return withAuthHeaders(headers);
 }
 
 function getAllCategories(): CategoryConfig[] {
@@ -96,6 +95,7 @@ export async function deleteCategory(id: string) {
   try {
     const response = await fetch(`${API_URL}/categories/${id}`, {
       method: 'DELETE',
+      headers: buildHeaders(),
     });
     if (!response.ok) throw new Error('Failed to delete category');
     saveLocalCategories(getAllCategories().filter((c) => c.id !== id));
@@ -194,7 +194,10 @@ export async function deleteSubcategory(
   try {
     const response = await fetch(
       `${API_URL}/categories/${categoryId}/subcategories/${subcategoryId}`,
-      { method: 'DELETE' },
+      {
+        method: 'DELETE',
+        headers: buildHeaders(),
+      },
     );
     if (!response.ok) throw new Error('Failed to delete subcategory');
     const categories = getAllCategories().map((c) =>
