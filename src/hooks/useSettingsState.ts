@@ -43,6 +43,96 @@ const saveState = () => {
   }
 };
 
+const normalizeIdentifier = (
+  value: string | number | null | undefined,
+): string => {
+  if (value === null || value === undefined) return '';
+  const normalized = String(value).trim().toLowerCase();
+  if (!normalized) return '';
+  return normalized.replace(/[\s_]+/g, '-').replace(/-+/g, '-');
+};
+
+const resolveHouseIdentifiers = (houseId: string) => {
+  const normalizedId = normalizeIdentifier(houseId);
+  const identifiers = new Set<string>();
+  if (!normalizedId) return { house: undefined, identifiers };
+
+  identifiers.add(normalizedId);
+
+  const matchingHouse = globalHouses.find((house) => {
+    const values: Array<string | undefined> = [
+      house.id,
+      house.code,
+      house.name,
+    ];
+    return values.some(
+      (value) => normalizeIdentifier(value) === normalizedId,
+    );
+  });
+
+  if (matchingHouse) {
+    [matchingHouse.id, matchingHouse.code, matchingHouse.name].forEach(
+      (value) => {
+        const normalized = normalizeIdentifier(value);
+        if (normalized) identifiers.add(normalized);
+      },
+    );
+  }
+
+  return { house: matchingHouse, identifiers };
+};
+
+const resolveRoomIdentifiers = (
+  house: HouseConfig | undefined,
+  roomId: string,
+) => {
+  const normalizedId = normalizeIdentifier(roomId);
+  const identifiers = new Set<string>();
+  if (!normalizedId) return { room: undefined, identifiers };
+
+  identifiers.add(normalizedId);
+
+  const roomsToSearch = house
+    ? house.rooms
+    : globalHouses.flatMap((h) => h.rooms);
+
+  const matchingRoom = roomsToSearch.find((room) => {
+    const values: Array<string | undefined> = [
+      room.id,
+      room.code,
+      room.name,
+    ];
+    return values.some(
+      (value) => normalizeIdentifier(value) === normalizedId,
+    );
+  });
+
+  if (matchingRoom) {
+    [matchingRoom.id, matchingRoom.code, matchingRoom.name].forEach(
+      (value) => {
+        const normalized = normalizeIdentifier(value);
+        if (normalized) identifiers.add(normalized);
+      },
+    );
+  }
+
+  return { room: matchingRoom, identifiers };
+};
+
+const loadInventoryItems = (): DecorItem[] => {
+  if (typeof window === 'undefined') return [];
+
+  try {
+    const stored = localStorage.getItem('inventoryData');
+    if (!stored) return [];
+
+    const parsed = JSON.parse(stored);
+    return Array.isArray(parsed) ? (parsed as DecorItem[]) : [];
+  } catch {
+    return [];
+  }
+};
+
 // Validation functions
 const validateHouse = (house: Partial<HouseConfig>): string[] => {
   const errors: string[] = [];
@@ -66,20 +156,37 @@ const validateRoom = (room: Partial<RoomConfig>): string[] => {
   return errors;
 };
 
-// Enhanced function to check for linked items - simulates checking for items in a room
+// Enhanced function to check for linked items - inspects stored inventory data
 const getLinkedItems = (houseId: string, roomId: string): string[] => {
-  // This simulates items being linked to a room
-  // In a real app, this would query your items database
-  // For demonstration, we'll return some mock data for certain rooms
-  const mockLinkedItems = [
-    { houseId: '1', roomId: 'living-room', items: ['item1', 'item2', 'item3'] },
-    { houseId: '1', roomId: 'kitchen', items: ['item4', 'item5'] },
-  ];
+  const normalizedHouse = normalizeIdentifier(houseId);
+  const normalizedRoom = normalizeIdentifier(roomId);
 
-  const linkedData = mockLinkedItems.find(
-    (data) => data.houseId === houseId && data.roomId === roomId,
+  if (!normalizedHouse || !normalizedRoom) return [];
+
+  const { house, identifiers: houseIdentifiers } =
+    resolveHouseIdentifiers(houseId);
+  const { identifiers: roomIdentifiers } = resolveRoomIdentifiers(
+    house,
+    roomId,
   );
-  return linkedData ? linkedData.items : [];
+
+  if (!houseIdentifiers.size || !roomIdentifiers.size) return [];
+
+  const items = loadInventoryItems();
+  if (items.length === 0) return [];
+
+  const linked = new Set<string>();
+
+  items.forEach((item) => {
+    if (!item || item.deleted) return;
+    const itemHouse = normalizeIdentifier(item.house);
+    const itemRoom = normalizeIdentifier(item.room);
+    if (houseIdentifiers.has(itemHouse) && roomIdentifiers.has(itemRoom)) {
+      linked.add(String(item.id));
+    }
+  });
+
+  return Array.from(linked);
 };
 
 // Function to reassign items from one room to another
@@ -89,14 +196,41 @@ const reassignItems = (
   toHouseId: string,
   toRoomId: string,
 ): void => {
-  const raw = localStorage.getItem('inventoryData');
-  const items: DecorItem[] = raw ? JSON.parse(raw) : [];
-  const updated = items.map((i) =>
-    i.house === fromHouseId && i.room === fromRoomId
-      ? { ...i, house: toHouseId, room: toRoomId }
-      : i,
+  if (typeof window === 'undefined') return;
+
+  const items = loadInventoryItems();
+  if (items.length === 0) return;
+
+  const { house, identifiers: fromHouseIdentifiers } =
+    resolveHouseIdentifiers(fromHouseId);
+  const { identifiers: fromRoomIdentifiers } = resolveRoomIdentifiers(
+    house,
+    fromRoomId,
   );
-  localStorage.setItem('inventoryData', JSON.stringify(updated));
+
+  if (!fromHouseIdentifiers.size || !fromRoomIdentifiers.size) return;
+
+  let hasChanges = false;
+  const updated = items.map((item) => {
+    if (!item || item.deleted) return item;
+
+    const itemHouse = normalizeIdentifier(item.house);
+    const itemRoom = normalizeIdentifier(item.room);
+
+    if (
+      fromHouseIdentifiers.has(itemHouse) &&
+      fromRoomIdentifiers.has(itemRoom)
+    ) {
+      hasChanges = true;
+      return { ...item, house: toHouseId, room: toRoomId };
+    }
+
+    return item;
+  });
+
+  if (hasChanges) {
+    localStorage.setItem('inventoryData', JSON.stringify(updated));
+  }
 };
 
 export function useSettingsState() {
