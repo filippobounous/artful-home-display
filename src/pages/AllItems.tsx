@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { InventoryHeader } from '@/components/InventoryHeader';
 import { ItemsGrid } from '@/components/ItemsGrid';
@@ -16,27 +16,15 @@ import {
   decorItemToInput,
 } from '@/lib/api';
 import { ItemDetailDialog } from '@/components/ItemDetailDialog';
-import type { DecorItemInput, ViewMode } from '@/types/inventory';
+import type { DecorItemInput } from '@/types/inventory';
 import { useSettingsState } from '@/hooks/useSettingsState';
 import { BatchLocationDialog } from '@/components/BatchLocationDialog';
 import { useToast } from '@/hooks/use-toast';
 import { formatNumber } from '@/lib/currencyUtils';
-import { sortInventoryItems } from '@/lib/sortUtils';
 import { SidebarLayout } from '@/components/SidebarLayout';
+import { useInventoryFilters } from '@/hooks/useInventoryFilters';
 
 const AllItems = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string[]>([]);
-  const [selectedSubcategory, setSelectedSubcategory] = useState<string[]>([]);
-  const [selectedHouse, setSelectedHouse] = useState<string[]>([]);
-  const [selectedRoom, setSelectedRoom] = useState<string[]>([]);
-  const [selectedYear, setSelectedYear] = useState<string[]>([]);
-  const [selectedArtist, setSelectedArtist] = useState<string[]>([]);
-  const [valuationRange, setValuationRange] = useState<{
-    min?: number;
-    max?: number;
-  }>({});
-  const [viewMode, setViewMode] = useState<ViewMode>('table');
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [showBatchDialog, setShowBatchDialog] = useState(false);
   const navigate = useNavigate();
@@ -65,110 +53,39 @@ const AllItems = () => {
     queryFn: fetchDecorItems,
   });
 
-  const yearOptions = useMemo(() => {
-    const years = new Set<string>();
-    items.forEach((item) => {
-      if (item.yearPeriod) years.add(item.yearPeriod);
-    });
-    return Array.from(years);
-  }, [items]);
-
-  const artistOptions = useMemo(() => {
-    const artists = new Set<string>();
-    items.forEach((item) => {
-      if (item.artist) artists.add(item.artist);
-    });
-    return Array.from(artists);
-  }, [items]);
-
-  const filteredItems = useMemo(() => {
-    return items.filter((item) => {
-      if (item.deleted) return false;
-
-      const term = searchTerm.toLowerCase();
-      const matchesSearch =
-        term === '' ||
-        item.title.toLowerCase().includes(term) ||
-        (item.description && item.description.toLowerCase().includes(term)) ||
-        (item.notes && item.notes.toLowerCase().includes(term)) ||
-        (item.artist && item.artist.toLowerCase().includes(term));
-
-      const matchesCategory =
-        selectedCategory.length === 0 ||
-        selectedCategory.includes(item.category);
-
-      const matchesSubcategory =
-        selectedSubcategory.length === 0 ||
-        (item.subcategory && selectedSubcategory.includes(item.subcategory));
-
-      const matchesHouse =
-        selectedHouse.length === 0 || selectedHouse.includes(item.house || '');
-
-      const roomKey = `${item.house}|${item.room}`;
-      const matchesRoom =
-        selectedRoom.length === 0 || selectedRoom.includes(roomKey);
-
-      const matchesYear =
-        selectedYear.length === 0 ||
-        (item.yearPeriod && selectedYear.includes(item.yearPeriod));
-
-      const matchesArtist =
-        selectedArtist.length === 0 ||
-        (item.artist && selectedArtist.includes(item.artist));
-
-      const matchesValuation =
-        (!valuationRange.min ||
-          (item.valuation && item.valuation >= valuationRange.min)) &&
-        (!valuationRange.max ||
-          (item.valuation && item.valuation <= valuationRange.max));
-
-      return (
-        matchesSearch &&
-        matchesCategory &&
-        matchesSubcategory &&
-        matchesHouse &&
-        matchesRoom &&
-        matchesYear &&
-        matchesArtist &&
-        matchesValuation
-      );
-    });
-  }, [
+  const filters = useInventoryFilters({
     items,
+    categories,
+    houses,
+  });
+
+  const {
     searchTerm,
+    setSearchTerm,
     selectedCategory,
+    setSelectedCategory,
     selectedSubcategory,
+    setSelectedSubcategory,
     selectedHouse,
+    setSelectedHouse,
     selectedRoom,
+    setSelectedRoom,
     selectedYear,
+    setSelectedYear,
     selectedArtist,
+    setSelectedArtist,
     valuationRange,
-  ]);
-
-  type SortField =
-    | 'title'
-    | 'artist'
-    | 'category'
-    | 'valuation'
-    | 'yearPeriod'
-    | 'location';
-  const [sortField, setSortField] = useState<SortField>('title');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
-
-  const sortedItems = useMemo(() => {
-    return sortInventoryItems(
-      filteredItems,
-      sortField,
-      sortDirection,
-      houses,
-      categories,
-    );
-  }, [filteredItems, sortField, sortDirection, houses, categories]);
-
-  const handleSort = (field: string, direction: 'asc' | 'desc') => {
-    setSortField(field as SortField);
-    setSortDirection(direction);
-  };
+    setValuationRange,
+    viewMode,
+    setViewMode,
+    sortField,
+    sortDirection,
+    handleSort,
+    yearOptions,
+    artistOptions,
+    filteredItems,
+    sortedItems,
+  } = filters;
 
   const handleBatchLocationUpdate = async (houseId: string, roomId: string) => {
     try {
