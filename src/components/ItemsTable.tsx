@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import { ArrowUpDown, ChevronUp, ChevronDown } from 'lucide-react';
 import { DecorItem } from '@/types/inventory';
 import { useShiftSelection } from '@/hooks/useShiftSelection';
+import { formatCurrencyOptional } from '@/lib/currencyUtils';
 
 interface ItemsTableProps {
   items: DecorItem[];
@@ -38,15 +39,6 @@ export function ItemsTable({
     selectedIds,
     onSelectionChange,
   });
-
-  const formatCurrency = (value?: number, currency?: string) => {
-    if (!value) return '-';
-    const formatter = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'EUR',
-    });
-    return formatter.format(value);
-  };
 
   const handleSort = (field: string) => {
     if (onSort) {
@@ -166,7 +158,10 @@ export function ItemsTable({
                 </div>
               </TableCell>
               <TableCell className="text-right">
-                {formatCurrency(item.valuation, item.valuationCurrency)}
+                {formatCurrencyOptional(
+                  item.valuation,
+                  item.valuationCurrency,
+                )}
               </TableCell>
             </TableRow>
           ))}
