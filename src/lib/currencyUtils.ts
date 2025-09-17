@@ -9,7 +9,7 @@ const currencyFormats: Record<string, { locale: string; symbol: string }> = {
 
 export function formatCurrency(amount: number, currencyCode: string): string {
   const format = currencyFormats[currencyCode];
-  
+
   if (!format) {
     return `${currencyCode} ${amount.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   }
@@ -20,6 +20,21 @@ export function formatCurrency(amount: number, currencyCode: string): string {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount);
+}
+
+export function formatCurrencyOptional(
+  amount?: number | null,
+  currencyCode?: string | null,
+): string {
+  if (amount === null || amount === undefined) {
+    return '-';
+  }
+
+  if (!currencyCode) {
+    return '-';
+  }
+
+  return formatCurrency(amount, currencyCode);
 }
 
 export function formatNumber(value: number, decimals: number = 0): string {
