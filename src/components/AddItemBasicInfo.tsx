@@ -1,3 +1,5 @@
+import type { ComponentProps, Dispatch, SetStateAction } from 'react';
+
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
@@ -7,8 +9,59 @@ import type { DecorItemFormData } from '@/types/forms';
 
 interface AddItemBasicInfoProps {
   formData: DecorItemFormData;
-  setFormData: React.Dispatch<React.SetStateAction<DecorItemFormData>>;
+  setFormData: Dispatch<SetStateAction<DecorItemFormData>>;
   errors?: Record<string, string>;
+}
+
+type FieldKey =
+  | 'name'
+  | 'creator'
+  | 'date_period'
+  | 'origin_region'
+  | 'quantity';
+
+type FieldConfig = {
+  id: FieldKey;
+  label: string;
+  placeholder: string;
+  inputProps?: Omit<
+    ComponentProps<typeof Input>,
+    'value' | 'onChange' | 'id' | 'placeholder'
+  >;
+};
+
+interface BasicInfoFieldProps extends FieldConfig {
+  value: DecorItemFormData[FieldKey];
+  error?: string;
+  onChange: (value: string) => void;
+}
+
+function BasicInfoField({
+  id,
+  label,
+  placeholder,
+  value,
+  error,
+  onChange,
+  inputProps,
+}: BasicInfoFieldProps) {
+  return (
+    <div>
+      <Label htmlFor={id}>{label}</Label>
+      <Input
+        id={id}
+        placeholder={placeholder}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        {...inputProps}
+        className={cn(
+          error && 'border-destructive focus-visible:ring-destructive',
+          inputProps?.className,
+        )}
+      />
+      {error && <p className="text-destructive text-sm mt-1">{error}</p>}
+    </div>
+  );
 }
 
 export function AddItemBasicInfo({
@@ -16,6 +69,38 @@ export function AddItemBasicInfo({
   setFormData,
   errors = {},
 }: AddItemBasicInfoProps) {
+  const coreFields: FieldConfig[] = [
+    {
+      id: 'name',
+      label: 'Name *',
+      placeholder: 'Enter item name',
+    },
+    {
+      id: 'creator',
+      label: 'Creator *',
+      placeholder: 'Artist or maker name',
+    },
+    {
+      id: 'date_period',
+      label: 'Date/Period *',
+      placeholder: 'e.g., 1920s, 2023',
+    },
+    {
+      id: 'origin_region',
+      label: 'Origin Region *',
+      placeholder: 'Country or region',
+    },
+    {
+      id: 'quantity',
+      label: 'Quantity *',
+      placeholder: 'Enter quantity',
+      inputProps: {
+        type: 'number',
+        min: 1,
+      },
+    },
+  ];
+
   return (
     <div className="space-y-4">
       <h3 className="text-lg font-medium text-foreground flex items-center">
@@ -27,101 +112,20 @@ export function AddItemBasicInfo({
         )}
       </h3>
 
-      <div>
-        <Label htmlFor="name">Name *</Label>
-        <Input
-          id="name"
-          placeholder="Enter item name"
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          className={cn(
-            errors.name && 'border-destructive focus-visible:ring-destructive',
-          )}
-        />
-        {errors.name && (
-          <p className="text-destructive text-sm mt-1">{errors.name}</p>
-        )}
-      </div>
-
-      <div>
-        <Label htmlFor="creator">Creator *</Label>
-        <Input
-          id="creator"
-          placeholder="Artist or maker name"
-          value={formData.creator}
-          onChange={(e) =>
-            setFormData({ ...formData, creator: e.target.value })
+      {coreFields.map((field) => (
+        <BasicInfoField
+          key={field.id}
+          {...field}
+          value={formData[field.id]}
+          error={errors[field.id]}
+          onChange={(value) =>
+            setFormData((prev) => ({
+              ...prev,
+              [field.id]: value,
+            }))
           }
-          className={cn(
-            errors.creator &&
-              'border-destructive focus-visible:ring-destructive',
-          )}
         />
-        {errors.creator && (
-          <p className="text-destructive text-sm mt-1">{errors.creator}</p>
-        )}
-      </div>
-
-      <div>
-        <Label htmlFor="date_period">Date/Period *</Label>
-        <Input
-          id="date_period"
-          placeholder="e.g., 1920s, 2023"
-          value={formData.date_period}
-          onChange={(e) =>
-            setFormData({ ...formData, date_period: e.target.value })
-          }
-          className={cn(
-            errors.date_period &&
-              'border-destructive focus-visible:ring-destructive',
-          )}
-        />
-        {errors.date_period && (
-          <p className="text-destructive text-sm mt-1">{errors.date_period}</p>
-        )}
-      </div>
-
-      <div>
-        <Label htmlFor="origin_region">Origin Region *</Label>
-        <Input
-          id="origin_region"
-          placeholder="Country or region"
-          value={formData.origin_region}
-          onChange={(e) =>
-            setFormData({ ...formData, origin_region: e.target.value })
-          }
-          className={cn(
-            errors.origin_region &&
-              'border-destructive focus-visible:ring-destructive',
-          )}
-        />
-        {errors.origin_region && (
-          <p className="text-destructive text-sm mt-1">
-            {errors.origin_region}
-          </p>
-        )}
-      </div>
-
-      <div>
-        <Label htmlFor="quantity">Quantity *</Label>
-        <Input
-          id="quantity"
-          type="number"
-          min="1"
-          placeholder="Enter quantity"
-          value={formData.quantity}
-          onChange={(e) =>
-            setFormData({ ...formData, quantity: e.target.value })
-          }
-          className={cn(
-            errors.quantity &&
-              'border-destructive focus-visible:ring-destructive',
-          )}
-        />
-        {errors.quantity && (
-          <p className="text-destructive text-sm mt-1">{errors.quantity}</p>
-        )}
-      </div>
+      ))}
 
       {/* Physical Section */}
       <div className="space-y-4 pt-4 border-t">
