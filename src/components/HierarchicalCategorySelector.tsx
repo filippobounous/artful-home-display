@@ -1,5 +1,8 @@
-import { HierarchicalSelector } from '@/components/HierarchicalSelector';
-import { useSettingsState } from '@/hooks/useSettingsState';
+import { createHierarchicalSettingsSelector } from '@/components/createHierarchicalSettingsSelector';
+import type {
+  CategoryConfig,
+  SubcategoryConfig,
+} from '@/types/inventory';
 
 interface HierarchicalCategorySelectorProps {
   selectedCategory: string;
@@ -8,32 +11,32 @@ interface HierarchicalCategorySelectorProps {
   invalid?: boolean;
 }
 
+const CategorySelector = createHierarchicalSettingsSelector<
+  CategoryConfig,
+  SubcategoryConfig
+>({
+  label: 'Category *',
+  labelFor: 'categorySubcategory',
+  placeholder: 'Select category and subcategory',
+  selectParents: (state) => state.categories,
+  getChildren: (category) => category.subcategories,
+  includeGeneralOption: true,
+  isParentVisible: (category) => Boolean(category.visible),
+  isChildVisible: (subcategory) => Boolean(subcategory.visible),
+});
+
 export function HierarchicalCategorySelector({
   selectedCategory,
   selectedSubcategory,
   onSelectionChange,
   invalid = false,
 }: HierarchicalCategorySelectorProps) {
-  const { categories } = useSettingsState();
-
   return (
-    <HierarchicalSelector
-      label="Category *"
-      labelFor="categorySubcategory"
-      placeholder="Select category and subcategory"
-      parents={categories}
+    <CategorySelector
       selectedParent={selectedCategory}
       selectedChild={selectedSubcategory}
       onSelectionChange={onSelectionChange}
-      getChildren={(category) => category.subcategories}
-      getParentId={(category) => category.id}
-      getParentName={(category) => category.name}
-      getChildId={(subcategory) => subcategory.id}
-      getChildName={(subcategory) => subcategory.name}
       invalid={invalid}
-      includeGeneralOption
-      isParentVisible={(category) => Boolean(category.visible)}
-      isChildVisible={(subcategory) => Boolean(subcategory.visible)}
     />
   );
 }

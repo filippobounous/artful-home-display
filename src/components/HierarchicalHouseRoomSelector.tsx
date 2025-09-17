@@ -1,5 +1,5 @@
-import { HierarchicalSelector } from '@/components/HierarchicalSelector';
-import { useSettingsState } from '@/hooks/useSettingsState';
+import { createHierarchicalSettingsSelector } from '@/components/createHierarchicalSettingsSelector';
+import type { HouseConfig, RoomConfig } from '@/types/inventory';
 
 interface HierarchicalHouseRoomSelectorProps {
   selectedHouse: string;
@@ -8,32 +8,32 @@ interface HierarchicalHouseRoomSelectorProps {
   invalid?: boolean;
 }
 
+const HouseRoomSelector = createHierarchicalSettingsSelector<
+  HouseConfig,
+  RoomConfig
+>({
+  label: 'Location (House - Room) *',
+  labelFor: 'houseRoom',
+  placeholder: 'Select house and room',
+  selectParents: (state) => state.houses,
+  getChildren: (house) => house.rooms,
+  requireChildSelection: true,
+  isParentVisible: (house) => Boolean(house.visible),
+  isChildVisible: (room) => Boolean(room.visible),
+});
+
 export function HierarchicalHouseRoomSelector({
   selectedHouse,
   selectedRoom,
   onSelectionChange,
   invalid = false,
 }: HierarchicalHouseRoomSelectorProps) {
-  const { houses } = useSettingsState();
-
   return (
-    <HierarchicalSelector
-      label="Location (House - Room) *"
-      labelFor="houseRoom"
-      placeholder="Select house and room"
-      parents={houses}
+    <HouseRoomSelector
       selectedParent={selectedHouse}
       selectedChild={selectedRoom}
       onSelectionChange={onSelectionChange}
-      getChildren={(house) => house.rooms}
-      getParentId={(house) => house.id}
-      getParentName={(house) => house.name}
-      getChildId={(room) => room.id}
-      getChildName={(room) => room.name}
       invalid={invalid}
-      requireChildSelection
-      isParentVisible={(house) => Boolean(house.visible)}
-      isChildVisible={(room) => Boolean(room.visible)}
     />
   );
 }
