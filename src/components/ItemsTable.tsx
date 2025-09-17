@@ -1,4 +1,3 @@
-import { useRef } from 'react';
 import { Badge } from '@/components/ui/badge';
 import {
   Table,
@@ -13,6 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { ArrowUpDown, ChevronUp, ChevronDown } from 'lucide-react';
 import { DecorItem } from '@/types/inventory';
+import { useShiftSelection } from '@/hooks/useShiftSelection';
 
 interface ItemsTableProps {
   items: DecorItem[];
@@ -33,7 +33,11 @@ export function ItemsTable({
   selectedIds = [],
   onSelectionChange,
 }: ItemsTableProps) {
-  const lastIndex = useRef<number | null>(null);
+  const { handleItemToggle } = useShiftSelection({
+    items,
+    selectedIds,
+    onSelectionChange,
+  });
 
   const formatCurrency = (value?: number, currency?: string) => {
     if (!value) return '-';
@@ -84,24 +88,6 @@ export function ItemsTable({
     </TableHead>
   );
 
-  const toggle = (id: string, index: number, shift: boolean) => {
-    if (!onSelectionChange) return;
-    let newIds = [...selectedIds];
-    if (shift && lastIndex.current !== null) {
-      const start = Math.min(lastIndex.current, index);
-      const end = Math.max(lastIndex.current, index);
-      const range = items.slice(start, end + 1).map((i) => i.id.toString());
-      range.forEach((rid) => {
-        if (!newIds.includes(rid)) newIds.push(rid);
-      });
-    } else {
-      if (newIds.includes(id)) newIds = newIds.filter((i) => i !== id);
-      else newIds.push(id);
-      lastIndex.current = index;
-    }
-    onSelectionChange(newIds);
-  };
-
   return (
     <div className="rounded-md border">
       <Table>
@@ -129,7 +115,7 @@ export function ItemsTable({
               )}
               onClick={(e) => {
                 if (e.shiftKey) {
-                  toggle(item.id.toString(), idx, true);
+                  handleItemToggle(item, idx, true);
                 } else {
                   onItemClick?.(item);
                 }
@@ -142,7 +128,7 @@ export function ItemsTable({
                       checked={selectedIds.includes(item.id.toString())}
                       onClick={(e) => {
                         e.stopPropagation();
-                        toggle(item.id.toString(), idx, false);
+                        handleItemToggle(item, idx, e.shiftKey);
                       }}
                       className="bg-card rounded-sm"
                     />
