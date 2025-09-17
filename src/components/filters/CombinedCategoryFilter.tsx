@@ -1,8 +1,5 @@
-
-import { MultiSelectFilter } from '@/components/MultiSelectFilter';
+import { HierarchicalMultiSelectFilter } from './HierarchicalMultiSelectFilter';
 import { useSettingsState } from '@/hooks/useSettingsState';
-import { Label } from '@/components/ui/label';
-import type { CheckedState } from '@radix-ui/react-checkbox';
 
 interface CombinedCategoryFilterProps {
   selectedCategory: string[];
@@ -21,147 +18,25 @@ export function CombinedCategoryFilter({
 }: CombinedCategoryFilterProps) {
   const { categories } = useSettingsState();
 
-  // Create combined options with headers as tri-state checkboxes
-  const visibleCategories = categories.filter((c) => c.visible);
-  const combinedOptions = visibleCategories.flatMap((category) => {
-    const subcategoryIds = category.subcategories
-      .filter((s) => s.visible)
-      .map((sub) => sub.id);
-    const selectedSubs = selectedSubcategory.filter((id) =>
-      subcategoryIds.includes(id),
-    );
-    const allSelected =
-      selectedSubs.length === subcategoryIds.length &&
-      subcategoryIds.length > 0;
-    const checkState: CheckedState =
-      selectedCategory.includes(category.id) || allSelected
-        ? true
-        : selectedSubs.length > 0
-          ? 'indeterminate'
-          : false;
-    return [
-      {
-        id: category.id,
-        name: category.name,
-        header: true,
-        checkState,
-        onCheckChange: (checked: CheckedState) => {
-          if (!permanentCategory) {
-            if (checked) {
-              // When checking a category, add it to selected categories and select all its subcategories
-              const newCategories = selectedCategory.includes(category.id) 
-                ? selectedCategory 
-                : [...selectedCategory, category.id];
-              setSelectedCategory(newCategories);
-              
-              const newSubcategories = [
-                ...selectedSubcategory.filter((s) => !subcategoryIds.includes(s)),
-                ...subcategoryIds,
-              ];
-              setSelectedSubcategory(newSubcategories);
-            } else {
-              // When unchecking a category, remove it and its subcategories
-              setSelectedCategory(
-                selectedCategory.filter((c) => c !== category.id),
-              );
-              setSelectedSubcategory(
-                selectedSubcategory.filter((s) => !subcategoryIds.includes(s)),
-              );
-            }
-          }
-        },
-      },
-      ...category.subcategories
-        .filter((s) => s.visible)
-        .map((sub) => ({
-          id: sub.id,
-          name: sub.name,
-          indent: true,
-        })),
-    ];
-  });
-
-  // Combine selected values for display
-  const allSelectedValues = [...selectedCategory, ...selectedSubcategory];
-
-  const selectedCount = visibleCategories.reduce((cnt, cat) => {
-    const subIds = cat.subcategories.filter((s) => s.visible).map((s) => s.id);
-    const subs = selectedSubcategory.filter((id) => subIds.includes(id));
-    const allSel = subs.length === subIds.length && subIds.length > 0;
-    if (selectedCategory.includes(cat.id) || allSel) {
-      return cnt + 1;
-    }
-    return cnt + subs.length;
-  }, 0);
-
-  const handleSelectionChange = (values: string[]) => {
-    const categoryIds: string[] = [];
-    const subcategoryIds: string[] = [];
-
-    visibleCategories.forEach((category) => {
-      const subIds = category.subcategories
-        .filter((s) => s.visible)
-        .map((s) => s.id);
-      const selectedSubs = values.filter((v) => subIds.includes(v));
-      const allSelected =
-        selectedSubs.length === subIds.length && subIds.length > 0;
-      const hasCategory = values.includes(category.id);
-
-      // Only add category if explicitly selected or all subcategories are selected
-      if (hasCategory || allSelected) {
-        categoryIds.push(category.id);
-        subcategoryIds.push(...subIds);
-      } else {
-        // Add only the individually selected subcategories
-        subcategoryIds.push(...selectedSubs);
-      }
-    });
-
-    if (!permanentCategory) {
-      setSelectedCategory(categoryIds);
-    }
-    setSelectedSubcategory(subcategoryIds);
-  };
-
-  if (permanentCategory) {
-    // Only show subcategory filter for permanent category pages
-    const permanentCat = categories.find((cat) => cat.id === permanentCategory);
-    if (!permanentCat) return null;
-
-    const subcategoryOptions = permanentCat.subcategories
-      .filter((s) => s.visible)
-      .map((sub) => ({
-        id: sub.id,
-        name: sub.name,
-      }));
-
-    return (
-      <div className="md:col-span-2">
-        <Label className="block text-sm font-medium text-muted-foreground mb-2">
-          Subcategories
-        </Label>
-        <MultiSelectFilter
-          placeholder="Select subcategories"
-          options={subcategoryOptions}
-          selectedValues={selectedSubcategory}
-          onSelectionChange={setSelectedSubcategory}
-        />
-      </div>
-    );
-  }
-
   return (
-    <div className="md:col-span-2">
-      <Label className="block text-sm font-medium text-muted-foreground mb-2">
-        Categories & Subcategories
-      </Label>
-      <MultiSelectFilter
-        placeholder="Select categories or subcategories"
-        options={combinedOptions}
-        selectedValues={allSelectedValues}
-        onSelectionChange={handleSelectionChange}
-        selectedCount={selectedCount}
-      />
-    </div>
+    <HierarchicalMultiSelectFilter
+      parents={categories}
+      getParentId={(category) => category.id}
+      getParentName={(category) => category.name}
+      getParentVisible={(category) => category.visible}
+      getChildren={(category) => category.subcategories}
+      getChildId={(_, subcategory) => subcategory.id}
+      getChildName={(_, subcategory) => subcategory.name}
+      isChildVisible={(_, subcategory) => subcategory.visible}
+      selectedParentIds={selectedCategory}
+      setSelectedParentIds={setSelectedCategory}
+      selectedChildIds={selectedSubcategory}
+      setSelectedChildIds={setSelectedSubcategory}
+      permanentParentId={permanentCategory}
+      label="Categories & Subcategories"
+      placeholder="Select categories or subcategories"
+      childOnlyLabel="Subcategories"
+      childOnlyPlaceholder="Select subcategories"
+    />
   );
 }
