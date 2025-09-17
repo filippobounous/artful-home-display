@@ -1,11 +1,4 @@
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { CombinedParentChildSelect } from '@/components/CombinedParentChildSelect';
 import { useSettingsState } from '@/hooks/useSettingsState';
 
 interface CombinedCategorySelectorProps {
@@ -21,54 +14,33 @@ export function CombinedCategorySelector({
 }: CombinedCategorySelectorProps) {
   const { categories } = useSettingsState();
 
-  const combinedOptions = categories.flatMap((category) =>
-    category.subcategories.map((subcategory) => ({
-      value: `${category.id}|${subcategory.id}`,
-      label: `${category.name} - ${subcategory.name}`,
-      categoryId: category.id,
-      subcategoryId: subcategory.id,
-    })),
-  );
-
-  const categoryOnlyOptions = categories.map((category) => ({
-    value: `${category.id}|`,
-    label: `${category.name} (General)`,
-    categoryId: category.id,
-    subcategoryId: '',
-  }));
-
-  const allOptions = [...categoryOnlyOptions, ...combinedOptions];
-
-  const currentValue = selectedCategory
-    ? `${selectedCategory}|${selectedSubcategory || ''}`
-    : '';
-
-  const handleSelectionChange = (value: string) => {
-    if (value) {
-      const [categoryId, subcategoryId] = value.split('|');
-      onSelectionChange(categoryId, subcategoryId || '');
-    } else {
-      onSelectionChange('', '');
-    }
-  };
-
   return (
-    <div>
-      <Label htmlFor="categorySubcategory">Category *</Label>
-      <Select value={currentValue} onValueChange={handleSelectionChange}>
-        <SelectTrigger
-          className={currentValue ? undefined : 'text-muted-foreground'}
-        >
-          <SelectValue placeholder="Select category and subcategory" />
-        </SelectTrigger>
-        <SelectContent>
-          {allOptions.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              {option.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
+    <CombinedParentChildSelect
+      selectId="categorySubcategory"
+      label="Category *"
+      placeholder="Select category and subcategory"
+      items={categories}
+      selectedParentId={selectedCategory}
+      selectedChildId={selectedSubcategory}
+      getParentId={(category) => category.id}
+      getChildren={(category) => category.subcategories}
+      getChildId={(subcategory) => subcategory.id}
+      buildOptionLabel={(category, subcategory) =>
+        `${category.name} - ${subcategory.name}`
+      }
+      buildParentOnlyLabel={(category) => `${category.name} (General)`}
+      includeParentOnlyOption
+      buildValue={(categoryId, subcategoryId) =>
+        `${categoryId}|${subcategoryId}`
+      }
+      parseValue={(value) => {
+        const [categoryId, subcategoryId = ''] = value.split('|');
+        return { parentId: categoryId, childId: subcategoryId };
+      }}
+      buildCurrentValue={(categoryId, subcategoryId) =>
+        categoryId ? `${categoryId}|${subcategoryId || ''}` : ''
+      }
+      onSelectionChange={onSelectionChange}
+    />
   );
 }

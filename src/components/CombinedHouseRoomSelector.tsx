@@ -1,11 +1,4 @@
-import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { CombinedParentChildSelect } from '@/components/CombinedParentChildSelect';
 import { useSettingsState } from '@/hooks/useSettingsState';
 
 interface CombinedHouseRoomSelectorProps {
@@ -21,44 +14,27 @@ export function CombinedHouseRoomSelector({
 }: CombinedHouseRoomSelectorProps) {
   const { houses } = useSettingsState();
 
-  const combinedOptions = houses.flatMap((house) =>
-    house.rooms.map((room) => ({
-      value: `${house.id}|${room.id}`,
-      label: `${house.name} - ${room.name}`,
-      houseId: house.id,
-      roomId: room.id,
-    })),
-  );
-
-  const currentValue =
-    selectedHouse && selectedRoom ? `${selectedHouse}|${selectedRoom}` : '';
-
-  const handleSelectionChange = (value: string) => {
-    if (value) {
-      const [houseId, roomId] = value.split('|');
-      onSelectionChange(houseId, roomId);
-    } else {
-      onSelectionChange('', '');
-    }
-  };
-
   return (
-    <div>
-      <Label htmlFor="houseRoom">Location (House - Room) *</Label>
-      <Select value={currentValue} onValueChange={handleSelectionChange}>
-        <SelectTrigger
-          className={currentValue ? undefined : 'text-muted-foreground'}
-        >
-          <SelectValue placeholder="Select house and room" />
-        </SelectTrigger>
-        <SelectContent>
-          {combinedOptions.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              {option.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
+    <CombinedParentChildSelect
+      selectId="houseRoom"
+      label="Location (House - Room) *"
+      placeholder="Select house and room"
+      items={houses}
+      selectedParentId={selectedHouse}
+      selectedChildId={selectedRoom}
+      getParentId={(house) => house.id}
+      getChildren={(house) => house.rooms}
+      getChildId={(room) => room.id}
+      buildOptionLabel={(house, room) => `${house.name} - ${room.name}`}
+      buildValue={(houseId, roomId) => `${houseId}|${roomId}`}
+      parseValue={(value) => {
+        const [houseId, roomId] = value.split('|');
+        return { parentId: houseId, childId: roomId };
+      }}
+      buildCurrentValue={(houseId, roomId) =>
+        houseId && roomId ? `${houseId}|${roomId}` : ''
+      }
+      onSelectionChange={onSelectionChange}
+    />
   );
 }
