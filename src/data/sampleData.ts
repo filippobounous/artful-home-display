@@ -128,7 +128,7 @@ export const sampleDecorItems: DecorItem[] = [
   {
     id: 7,
     title: 'Modern Glass Vase',
-    category: 'decor',
+    category: 'decorative',
     subcategory: 'vase',
     widthCm: 15,
     heightCm: 40,
@@ -146,7 +146,7 @@ export const sampleDecorItems: DecorItem[] = [
   {
     id: 8,
     title: 'Handwoven Basket',
-    category: 'decor',
+    category: 'decorative',
     subcategory: 'basket',
     widthCm: 30,
     heightCm: 25,
@@ -292,7 +292,7 @@ export const sampleDecorItems: DecorItem[] = [
   {
     id: 16,
     title: 'Round Wall Mirror',
-    category: 'decor',
+    category: 'decorative',
     subcategory: 'mirror',
     widthCm: 60,
     heightCm: 60,
@@ -310,7 +310,7 @@ export const sampleDecorItems: DecorItem[] = [
   {
     id: 17,
     title: 'Pendant Ceiling Light',
-    category: 'decor',
+    category: 'decorative',
     subcategory: 'lighting',
     widthCm: 40,
     heightCm: 50,
