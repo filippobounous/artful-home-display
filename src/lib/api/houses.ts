@@ -31,7 +31,9 @@ function saveLocalHouses(houses: HouseConfig[]) {
 
 export async function fetchHouses(): Promise<HouseConfig[]> {
   try {
-    const response = await fetch(`${API_URL}/houses`);
+    const response = await fetch(`${API_URL}/houses`, {
+      headers: buildHeaders(),
+    });
     if (!response.ok) throw new Error('Failed to fetch houses');
     const data = await response.json();
     saveLocalHouses(data);

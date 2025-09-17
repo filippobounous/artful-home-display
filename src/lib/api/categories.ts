@@ -35,7 +35,9 @@ function saveLocalCategories(categories: CategoryConfig[]) {
 
 export async function fetchCategories(): Promise<CategoryConfig[]> {
   try {
-    const response = await fetch(`${API_URL}/categories`);
+    const response = await fetch(`${API_URL}/categories`, {
+      headers: buildHeaders(),
+    });
     if (!response.ok) throw new Error('Failed to fetch categories');
     const data = await response.json();
     saveLocalCategories(data);
