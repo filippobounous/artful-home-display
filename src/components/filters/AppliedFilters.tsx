@@ -1,6 +1,8 @@
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { X } from 'lucide-react';
+import {
+  AppliedFilterBadges,
+  type AppliedFilterBadgeGroup,
+} from '@/components/filters/AppliedFilterBadges';
 import { useSettingsState } from '@/hooks/useSettingsState';
 
 interface AppliedFiltersProps {
@@ -101,6 +103,175 @@ export function AppliedFilters({
 
   if (!hasActiveFilters) return null;
 
+  const filterGroups: AppliedFilterBadgeGroup[] = [];
+
+  if (searchTerm) {
+    const searchOptions: AppliedFilterBadgeGroup['options'] = {
+      search: { label: searchTerm },
+    };
+
+    filterGroups.push({
+      id: 'search',
+      labelPrefix: 'Search',
+      selectedIds: ['search'],
+      options: searchOptions,
+      onRemove: () => setSearchTerm(''),
+      variant: 'secondary',
+    });
+  }
+
+  if (selectedCategory.length > 0) {
+    const categoryOptions: AppliedFilterBadgeGroup['options'] = {};
+
+    selectedCategory.forEach((categoryId) => {
+      const category = categories.find((c) => c.id === categoryId);
+      categoryOptions[categoryId] = { label: category?.name ?? categoryId };
+    });
+
+    filterGroups.push({
+      id: 'category',
+      labelPrefix: 'Category',
+      selectedIds: selectedCategory,
+      options: categoryOptions,
+      onRemove: (id) => clearFilter('category', id),
+      locked: Boolean(permanentCategory),
+    });
+  }
+
+  if (selectedSubcategory.length > 0) {
+    const subcategoryOptions: AppliedFilterBadgeGroup['options'] = {};
+    const visibleSubcategories: string[] = [];
+
+    selectedSubcategory.forEach((subcategoryId) => {
+      const category = categories.find((c) =>
+        c.subcategories.some((sub) => sub.id === subcategoryId),
+      );
+      const subcategory = category?.subcategories.find(
+        (sub) => sub.id === subcategoryId,
+      );
+      if (!subcategory || !category) return;
+      if (
+        selectedCategory.includes(category.id) &&
+        category.id !== permanentCategory
+      ) {
+        return;
+      }
+
+      visibleSubcategories.push(subcategoryId);
+      subcategoryOptions[subcategoryId] = { label: subcategory.name };
+    });
+
+    if (visibleSubcategories.length > 0) {
+      filterGroups.push({
+        id: 'subcategory',
+        labelPrefix: 'Subcategory',
+        selectedIds: visibleSubcategories,
+        options: subcategoryOptions,
+        onRemove: (id) => clearFilter('subcategory', id),
+        variant: 'secondary',
+      });
+    }
+  }
+
+  if (selectedHouse.length > 0) {
+    const houseOptions: AppliedFilterBadgeGroup['options'] = {};
+
+    selectedHouse.forEach((houseId) => {
+      const house = houses.find((h) => h.id === houseId);
+      houseOptions[houseId] = { label: house?.name ?? houseId };
+    });
+
+    filterGroups.push({
+      id: 'house',
+      labelPrefix: 'House',
+      selectedIds: selectedHouse,
+      options: houseOptions,
+      onRemove: (id) => clearFilter('house', id),
+      locked: Boolean(permanentHouse),
+    });
+  }
+
+  if (selectedRoom.length > 0) {
+    const roomOptions: AppliedFilterBadgeGroup['options'] = {};
+    const visibleRooms: string[] = [];
+
+    selectedRoom.forEach((roomPair) => {
+      const [houseId, roomId] = roomPair.split('|');
+      if (selectedHouse.includes(houseId)) return;
+      const house = houses.find((h) => h.id === houseId);
+      const room = house?.rooms.find((r) => r.id === roomId);
+
+      visibleRooms.push(roomPair);
+      roomOptions[roomPair] = {
+        label: `${room?.name ?? roomId} (${house?.name ?? houseId})`,
+      };
+    });
+
+    if (visibleRooms.length > 0) {
+      filterGroups.push({
+        id: 'room',
+        labelPrefix: 'Room',
+        selectedIds: visibleRooms,
+        options: roomOptions,
+        onRemove: (id) => clearFilter('room', id),
+        variant: 'secondary',
+      });
+    }
+  }
+
+  if (selectedYear.length > 0) {
+    const yearOptions: AppliedFilterBadgeGroup['options'] = {};
+
+    selectedYear.forEach((year) => {
+      yearOptions[year] = { label: year };
+    });
+
+    filterGroups.push({
+      id: 'year',
+      labelPrefix: 'Year',
+      selectedIds: selectedYear,
+      options: yearOptions,
+      onRemove: (id) => clearFilter('year', id),
+      variant: 'secondary',
+    });
+  }
+
+  if (selectedArtist.length > 0) {
+    const artistOptions: AppliedFilterBadgeGroup['options'] = {};
+
+    selectedArtist.forEach((artist) => {
+      artistOptions[artist] = { label: artist };
+    });
+
+    filterGroups.push({
+      id: 'artist',
+      labelPrefix: 'Artist',
+      selectedIds: selectedArtist,
+      options: artistOptions,
+      onRemove: (id) => clearFilter('artist', id),
+      variant: 'secondary',
+    });
+  }
+
+  if (valuationRange.min !== undefined || valuationRange.max !== undefined) {
+    const valuationOptions: AppliedFilterBadgeGroup['options'] = {
+      valuation: {
+        label: `${valuationRange.min ?? 0} - ${
+          valuationRange.max ?? '∞'
+        }`,
+      },
+    };
+
+    filterGroups.push({
+      id: 'valuation',
+      labelPrefix: 'Valuation',
+      selectedIds: ['valuation'],
+      options: valuationOptions,
+      onRemove: () => setValuationRange({}),
+      variant: 'secondary',
+    });
+  }
+
   return (
     <div className="bg-card p-4 rounded-lg border shadow-sm">
       <div className="flex items-center justify-between mb-3">
@@ -112,115 +283,7 @@ export function AppliedFilters({
         </Button>
       </div>
       <div className="flex flex-wrap gap-2">
-        {searchTerm && (
-          <Badge variant="secondary" className="px-3 py-1">
-            Search: {searchTerm}
-            <X
-              className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
-              onClick={() => setSearchTerm('')}
-            />
-          </Badge>
-        )}
-        {selectedCategory.map((categoryId) => {
-          const category = categories.find((c) => c.id === categoryId);
-          const locked = permanentCategory && categoryId === permanentCategory;
-          return (
-            <Badge key={categoryId} variant="default" className="px-3 py-1">
-              Category: {category?.name}
-              {!permanentCategory && (
-                <X
-                  className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
-                  onClick={() => clearFilter('category', categoryId)}
-                />
-              )}
-            </Badge>
-          );
-        })}
-        {selectedSubcategory.map((subcategoryId) => {
-          const category = categories.find((c) =>
-            c.subcategories.some((sub) => sub.id === subcategoryId),
-          );
-          const subcategory = category?.subcategories.find(
-            (s) => s.id === subcategoryId,
-          );
-          if (!subcategory || !category) return null;
-          if (
-            selectedCategory.includes(category.id) &&
-            category.id !== permanentCategory
-          )
-            return null;
-          return (
-            <Badge
-              key={subcategoryId}
-              variant="secondary"
-              className="px-3 py-1"
-            >
-              Subcategory: {subcategory.name}
-              <X
-                className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
-                onClick={() => clearFilter('subcategory', subcategoryId)}
-              />
-            </Badge>
-          );
-        })}
-        {selectedHouse.map((houseId) => {
-          const house = houses.find((h) => h.id === houseId);
-          const locked = permanentHouse && houseId === permanentHouse;
-          return (
-            <Badge key={houseId} variant="default" className="px-3 py-1">
-              House: {house?.name}
-              {!permanentHouse && (
-                <X
-                  className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
-                  onClick={() => clearFilter('house', houseId)}
-                />
-              )}
-            </Badge>
-          );
-        })}
-        {selectedRoom.map((roomPair) => {
-          const [houseId, roomId] = roomPair.split('|');
-          if (selectedHouse.includes(houseId)) return null;
-          const house = houses.find((h) => h.id === houseId);
-          const room = house?.rooms.find((r) => r.id === roomId);
-          return (
-            <Badge key={roomPair} variant="secondary" className="px-3 py-1">
-              Room: {room?.name} ({house?.name})
-              <X
-                className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
-                onClick={() => clearFilter('room', roomPair)}
-              />
-            </Badge>
-          );
-        })}
-        {selectedYear.map((year) => (
-          <Badge key={year} variant="secondary" className="px-3 py-1">
-            Year: {year}
-            <X
-              className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
-              onClick={() => clearFilter('year', year)}
-            />
-          </Badge>
-        ))}
-        {selectedArtist.map((artist) => (
-          <Badge key={artist} variant="secondary" className="px-3 py-1">
-            Artist: {artist}
-            <X
-              className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
-              onClick={() => clearFilter('artist', artist)}
-            />
-          </Badge>
-        ))}
-        {(valuationRange.min !== undefined ||
-          valuationRange.max !== undefined) && (
-          <Badge variant="secondary" className="px-3 py-1">
-            Valuation: {valuationRange.min ?? 0} - {valuationRange.max ?? '∞'}
-            <X
-              className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
-              onClick={() => setValuationRange({})}
-            />
-          </Badge>
-        )}
+        <AppliedFilterBadges groups={filterGroups} />
       </div>
     </div>
   );

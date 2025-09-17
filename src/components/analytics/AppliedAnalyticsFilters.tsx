@@ -1,6 +1,8 @@
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { X } from 'lucide-react';
+import {
+  AppliedFilterBadges,
+  type AppliedFilterBadgeGroup,
+} from '@/components/filters/AppliedFilterBadges';
 
 interface Option {
   id: string;
@@ -43,6 +45,63 @@ export function AppliedAnalyticsFilters({
 
   if (!hasFilters) return null;
 
+  const filterGroups: AppliedFilterBadgeGroup[] = [];
+
+  if (selectedCategories.length > 0) {
+    const categoryOptionsMap: AppliedFilterBadgeGroup['options'] = {};
+
+    selectedCategories.forEach((id) => {
+      const category = categoryOptions.find((option) => option.id === id);
+      categoryOptionsMap[id] = { label: category?.name ?? id };
+    });
+
+    filterGroups.push({
+      id: 'analytics-category',
+      labelPrefix: 'Category',
+      selectedIds: selectedCategories,
+      options: categoryOptionsMap,
+      onRemove: (id) =>
+        setSelectedCategories(selectedCategories.filter((category) => category !== id)),
+    });
+  }
+
+  if (selectedHouses.length > 0) {
+    const houseOptionsMap: AppliedFilterBadgeGroup['options'] = {};
+
+    selectedHouses.forEach((id) => {
+      const house = houseOptions.find((option) => option.id === id);
+      houseOptionsMap[id] = { label: house?.name ?? id };
+    });
+
+    filterGroups.push({
+      id: 'analytics-house',
+      labelPrefix: 'House',
+      selectedIds: selectedHouses,
+      options: houseOptionsMap,
+      onRemove: (id) =>
+        setSelectedHouses(selectedHouses.filter((house) => house !== id)),
+    });
+  }
+
+  if (selectedCurrencies.length > 0) {
+    const currencyOptionsMap: AppliedFilterBadgeGroup['options'] = {};
+
+    selectedCurrencies.forEach((id) => {
+      const currency = currencyOptions.find((option) => option.id === id);
+      currencyOptionsMap[id] = { label: currency?.name ?? id };
+    });
+
+    filterGroups.push({
+      id: 'analytics-currency',
+      labelPrefix: 'Currency',
+      selectedIds: selectedCurrencies,
+      options: currencyOptionsMap,
+      onRemove: (id) =>
+        setSelectedCurrencies(selectedCurrencies.filter((currency) => currency !== id)),
+      variant: 'secondary',
+    });
+  }
+
   return (
     <div className="bg-card p-4 rounded-lg border shadow-sm">
       <div className="flex items-center justify-between mb-3">
@@ -54,52 +113,7 @@ export function AppliedAnalyticsFilters({
         </Button>
       </div>
       <div className="flex flex-wrap gap-2">
-        {selectedCategories.map((id) => {
-          const category = categoryOptions.find((c) => c.id === id);
-          return (
-            <Badge key={id} variant="default" className="px-3 py-1">
-              Category: {category?.name || id}
-              <X
-                className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
-                onClick={() =>
-                  setSelectedCategories(
-                    selectedCategories.filter((c) => c !== id),
-                  )
-                }
-              />
-            </Badge>
-          );
-        })}
-        {selectedHouses.map((id) => {
-          const house = houseOptions.find((h) => h.id === id);
-          return (
-            <Badge key={id} variant="default" className="px-3 py-1">
-              House: {house?.name || id}
-              <X
-                className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
-                onClick={() =>
-                  setSelectedHouses(selectedHouses.filter((h) => h !== id))
-                }
-              />
-            </Badge>
-          );
-        })}
-        {selectedCurrencies.map((id) => {
-          const currency = currencyOptions.find((c) => c.id === id);
-          return (
-            <Badge key={id} variant="secondary" className="px-3 py-1">
-              Currency: {currency?.name || id}
-              <X
-                className="w-3 h-3 ml-2 cursor-pointer hover:text-destructive"
-                onClick={() =>
-                  setSelectedCurrencies(
-                    selectedCurrencies.filter((c) => c !== id),
-                  )
-                }
-              />
-            </Badge>
-          );
-        })}
+        <AppliedFilterBadges groups={filterGroups} />
       </div>
     </div>
   );
