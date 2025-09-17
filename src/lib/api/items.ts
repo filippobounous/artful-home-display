@@ -11,7 +11,17 @@ import { testMusic } from '@/data/musicTestData';
 import { API_URL, API_KEY } from './common';
 
 const isApiConfigured = () => {
-  return !!(API_URL && API_KEY);
+  return !!API_URL;
+};
+
+const withOptionalAuth = (
+  base: Record<string, string> = {},
+): Record<string, string> => {
+  const headers = { ...base };
+  if (API_KEY) {
+    headers.Authorization = `Bearer ${API_KEY}`;
+  }
+  return headers;
 };
 
 const isTestDataEnabled = () => {
@@ -119,10 +129,7 @@ export async function fetchDecorItems(): Promise<DecorItem[]> {
   
   try {
     const response = await fetch(`${API_URL}/items`, {
-      headers: {
-        Authorization: `Bearer ${API_KEY}`,
-        'Content-Type': 'application/json',
-      },
+      headers: withOptionalAuth({ 'Content-Type': 'application/json' }),
     });
     if (!response.ok) throw new Error('API request failed');
     return await response.json();
@@ -149,10 +156,7 @@ export async function fetchDecorItem(
   
   try {
     const response = await fetch(`${API_URL}/items/${id}`, {
-      headers: {
-        Authorization: `Bearer ${API_KEY}`,
-        'Content-Type': 'application/json',
-      },
+      headers: withOptionalAuth({ 'Content-Type': 'application/json' }),
     });
     if (!response.ok) throw new Error('Failed to fetch item');
     return await response.json();
@@ -175,10 +179,7 @@ export async function fetchBookItems(): Promise<BookItem[]> {
   
   try {
     const response = await fetch(`${API_URL}/books`, {
-      headers: {
-        Authorization: `Bearer ${API_KEY}`,
-        'Content-Type': 'application/json',
-      },
+      headers: withOptionalAuth({ 'Content-Type': 'application/json' }),
     });
     if (!response.ok) throw new Error('API request failed');
     return await response.json();
@@ -201,10 +202,7 @@ export async function fetchMusicItems(): Promise<MusicItem[]> {
   
   try {
     const response = await fetch(`${API_URL}/music`, {
-      headers: {
-        Authorization: `Bearer ${API_KEY}`,
-        'Content-Type': 'application/json',
-      },
+      headers: withOptionalAuth({ 'Content-Type': 'application/json' }),
     });
     if (!response.ok) throw new Error('API request failed');
     return await response.json();
@@ -233,10 +231,7 @@ export async function createDecorItem(
   try {
     const response = await fetch(`${API_URL}/items`, {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${API_KEY}`,
-        'Content-Type': 'application/json',
-      },
+      headers: withOptionalAuth({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(input),
     });
     if (!response.ok) throw new Error('Failed to create item');
@@ -275,10 +270,7 @@ export async function updateDecorItem(
   try {
     const response = await fetch(`${API_URL}/items/${id}`, {
       method: 'PUT',
-      headers: {
-        Authorization: `Bearer ${API_KEY}`,
-        'Content-Type': 'application/json',
-      },
+      headers: withOptionalAuth({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(input),
     });
     if (!response.ok) throw new Error('Failed to update item');
@@ -303,9 +295,7 @@ export async function deleteDecorItem(id: number): Promise<void> {
   try {
     const response = await fetch(`${API_URL}/items/${id}`, {
       method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${API_KEY}`,
-      },
+      headers: withOptionalAuth(),
     });
     if (!response.ok) throw new Error('Failed to delete item');
   } catch (error) {
@@ -340,10 +330,7 @@ export async function restoreDecorItem(
   try {
     const response = await fetch(`${API_URL}/items/${id}/restore`, {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${API_KEY}`,
-        'Content-Type': 'application/json',
-      },
+      headers: withOptionalAuth({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(version),
     });
     if (!response.ok) throw new Error('Failed to restore item');
