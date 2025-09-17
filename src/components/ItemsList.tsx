@@ -8,6 +8,7 @@ import { DecorItem } from '@/types/inventory';
 import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { useSettingsState } from '@/hooks/useSettingsState';
 import { sortInventoryItems } from '@/lib/sortUtils';
+import { formatCurrencySafe } from '@/lib/currencyUtils';
 
 interface ItemsListProps {
   items: DecorItem[];
@@ -45,15 +46,6 @@ export function ItemsList({
   const activeSortDirection = sortDirection ?? internalSortDirection;
   const { houses, categories } = useSettingsState();
   const lastIndex = useRef<number | null>(null);
-
-  const formatCurrency = (value?: number, currency?: string) => {
-    if (!value) return '-';
-    const formatter = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'EUR',
-    });
-    return formatter.format(value);
-  };
 
   const handleSort = (field: SortField) => {
     if (onSort) {
@@ -203,7 +195,10 @@ export function ItemsList({
                   <div className="flex gap-2">
                     {item.valuation && (
                       <Badge variant="outline">
-                        {formatCurrency(item.valuation, item.valuationCurrency)}
+                        {formatCurrencySafe(
+                          item.valuation,
+                          item.valuationCurrency,
+                        )}
                       </Badge>
                     )}
                   </div>

@@ -13,6 +13,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { ArrowUpDown, ChevronUp, ChevronDown } from 'lucide-react';
 import { DecorItem } from '@/types/inventory';
+import { formatCurrencySafe } from '@/lib/currencyUtils';
 
 interface ItemsTableProps {
   items: DecorItem[];
@@ -34,15 +35,6 @@ export function ItemsTable({
   onSelectionChange,
 }: ItemsTableProps) {
   const lastIndex = useRef<number | null>(null);
-
-  const formatCurrency = (value?: number, currency?: string) => {
-    if (!value) return '-';
-    const formatter = new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'EUR',
-    });
-    return formatter.format(value);
-  };
 
   const handleSort = (field: string) => {
     if (onSort) {
@@ -180,7 +172,7 @@ export function ItemsTable({
                 </div>
               </TableCell>
               <TableCell className="text-right">
-                {formatCurrency(item.valuation, item.valuationCurrency)}
+                {formatCurrencySafe(item.valuation, item.valuationCurrency)}
               </TableCell>
             </TableRow>
           ))}
