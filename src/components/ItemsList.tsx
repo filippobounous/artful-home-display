@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,7 @@ import { DecorItem } from '@/types/inventory';
 import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { useSettingsState } from '@/hooks/useSettingsState';
 import { sortInventoryItems } from '@/lib/sortUtils';
+import { useShiftSelection } from '@/hooks/useShiftSelection';
 
 interface ItemsListProps {
   items: DecorItem[];
@@ -44,7 +45,6 @@ export function ItemsList({
   const activeSortField = sortField ?? internalSortField;
   const activeSortDirection = sortDirection ?? internalSortDirection;
   const { houses, categories } = useSettingsState();
-  const lastIndex = useRef<number | null>(null);
 
   const formatCurrency = (value?: number, currency?: string) => {
     if (!value) return '-';
@@ -82,6 +82,12 @@ export function ItemsList({
         categories,
       );
 
+  const { handleItemToggle } = useShiftSelection({
+    items: sortedItems,
+    selectedIds,
+    onSelectionChange,
+  });
+
   const SortButton = ({
     field,
     children,
@@ -108,33 +114,13 @@ export function ItemsList({
     </Button>
   );
 
-  const toggle = (id: string, index: number, shift: boolean) => {
-    if (!onSelectionChange) return;
-    let newIds = [...selectedIds];
-    if (shift && lastIndex.current !== null) {
-      const start = Math.min(lastIndex.current, index);
-      const end = Math.max(lastIndex.current, index);
-      const range = sortedItems
-        .slice(start, end + 1)
-        .map((i) => i.id.toString());
-      range.forEach((rid) => {
-        if (!newIds.includes(rid)) newIds.push(rid);
-      });
-    } else {
-      if (newIds.includes(id)) newIds = newIds.filter((i) => i !== id);
-      else newIds.push(id);
-      lastIndex.current = index;
-    }
-    onSelectionChange(newIds);
-  };
-
   const handleClick = (
     e: React.MouseEvent | React.KeyboardEvent,
     item: DecorItem,
     idx: number,
   ) => {
     if (e.shiftKey) {
-      toggle(item.id.toString(), idx, true);
+      handleItemToggle(item, idx, true);
     } else {
       onItemClick?.(item);
     }
@@ -177,7 +163,7 @@ export function ItemsList({
                     checked={selectedIds.includes(item.id.toString())}
                     onClick={(e) => {
                       e.stopPropagation();
-                      toggle(item.id.toString(), idx, false);
+                      handleItemToggle(item, idx, e.shiftKey);
                     }}
                     className="absolute -left-3 top-1 bg-card rounded-sm"
                   />
