@@ -1,8 +1,11 @@
 import { InventoryHeader } from '@/components/InventoryHeader';
 import { SettingsManagement } from '@/components/SettingsManagement';
 import { SidebarLayout } from '@/components/SidebarLayout';
+import { useAuth } from '@/hooks/useAuth';
 
 const Settings = () => {
+  const { canWrite } = useAuth();
+
   return (
     <SidebarLayout>
       <InventoryHeader />
@@ -16,7 +19,14 @@ const Settings = () => {
           </p>
         </div>
 
-        <SettingsManagement />
+        {canWrite ? (
+          <SettingsManagement />
+        ) : (
+          <div className="max-w-2xl p-6 border border-dashed rounded-lg bg-muted/30 text-muted-foreground">
+            You have view-only access. Settings changes and data management
+            tools are disabled for your account.
+          </div>
+        )}
       </main>
     </SidebarLayout>
   );

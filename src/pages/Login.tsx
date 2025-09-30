@@ -9,9 +9,11 @@ import { Package, Eye, EyeOff } from 'lucide-react';
 import { login } from '@/lib/api';
 import DemoCredentialsToggle from '@/components/DemoCredentialsToggle';
 import DemoCredentialsPanel from '@/components/DemoCredentialsPanel';
+import { useAuth } from '@/hooks/useAuth';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { completeLogin } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -38,7 +40,8 @@ const Login = () => {
     setError('');
 
     try {
-      await login(username, password);
+      const result = await login(username, password);
+      completeLogin(result.accessLevel);
       navigate('/');
     } catch {
       setError('Invalid username or password');

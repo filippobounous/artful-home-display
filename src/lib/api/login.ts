@@ -1,18 +1,58 @@
 
 import { API_URL } from './common';
+import type { AccessLevel, LoginResult } from '@/types/auth';
 
-export async function login(username: string, password: string): Promise<void> {
+const ACCESS_LEVEL_KEY = 'accessLevel';
+
+const HARD_CODED_USERS: Record<
+  string,
+  { password: string; accessLevel: AccessLevel; demoMode?: boolean }
+> = {
+  viewer: { password: 'password123', accessLevel: 'view', demoMode: true },
+  editor: { password: 'password123', accessLevel: 'write', demoMode: true },
+};
+
+function applyDemoFlags() {
+  localStorage.setItem('isDemoUser', 'true');
+  localStorage.setItem('useTestData', 'true');
+}
+
+function applyAccessLevel(level: AccessLevel) {
+  localStorage.setItem(ACCESS_LEVEL_KEY, level);
+}
+
+function clearDemoFlags() {
+  localStorage.removeItem('isDemoUser');
+}
+
+export async function login(
+  username: string,
+  password: string,
+): Promise<LoginResult> {
   // Check if these are demo credentials
-  const demoUsername = import.meta.env.VITE_DEMO_EMAIL || import.meta.env.VITE_DEMO_USERNAME || 'demo';
+  const demoUsername =
+    import.meta.env.VITE_DEMO_EMAIL ||
+    import.meta.env.VITE_DEMO_USERNAME ||
+    'demo';
   const demoPassword = import.meta.env.VITE_DEMO_PASSWORD || 'password123';
-  
-  const isDemoLogin = (username === demoUsername && password === demoPassword);
-  
+
+  const isDemoLogin = username === demoUsername && password === demoPassword;
+
   if (isDemoLogin) {
-    // For demo login, just set a flag and enable test data mode
-    localStorage.setItem('isDemoUser', 'true');
-    localStorage.setItem('useTestData', 'true');
-    return Promise.resolve();
+    applyDemoFlags();
+    applyAccessLevel('write');
+    return Promise.resolve({ accessLevel: 'write' });
+  }
+
+  const hardCodedUser = HARD_CODED_USERS[username];
+  if (hardCodedUser && hardCodedUser.password === password) {
+    if (hardCodedUser.demoMode) {
+      applyDemoFlags();
+    } else {
+      clearDemoFlags();
+    }
+    applyAccessLevel(hardCodedUser.accessLevel);
+    return Promise.resolve({ accessLevel: hardCodedUser.accessLevel });
   }
 
   // Regular API login flow
@@ -34,15 +74,19 @@ export async function login(username: string, password: string): Promise<void> {
   if (!response.ok) {
     throw new Error('Invalid credentials');
   }
-  
-  // Clear demo user flag for regular login
-  localStorage.removeItem('isDemoUser');
+
+  clearDemoFlags();
+  applyAccessLevel('write');
+  localStorage.removeItem('useTestData');
+
+  return { accessLevel: 'write' };
 }
 
 export async function logout(): Promise<void> {
-  // Clear demo user flag
-  localStorage.removeItem('isDemoUser');
-  
+  clearDemoFlags();
+  localStorage.removeItem('useTestData');
+  localStorage.removeItem(ACCESS_LEVEL_KEY);
+
   await fetch(`${API_URL}/logout`, {
     method: 'POST',
     credentials: 'include',
@@ -50,13 +94,21 @@ export async function logout(): Promise<void> {
 }
 
 export async function checkAuth(): Promise<boolean> {
-  // Check if user is logged in as demo user
+  if (localStorage.getItem(ACCESS_LEVEL_KEY)) {
+    return true;
+  }
+
   if (localStorage.getItem('isDemoUser') === 'true') {
     return true;
   }
-  
+
   const response = await fetch(`${API_URL}/auth/status`, {
     credentials: 'include',
   });
+
+  if (response.ok && !localStorage.getItem(ACCESS_LEVEL_KEY)) {
+    applyAccessLevel('write');
+  }
+
   return response.ok;
 }

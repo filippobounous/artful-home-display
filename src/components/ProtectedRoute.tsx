@@ -1,29 +1,21 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { checkAuth } from '@/lib/api';
+import { useAuth } from '@/hooks/useAuth';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const { isAuthenticated, isLoading, refreshAuth } = useAuth();
   const location = useLocation();
 
   useEffect(() => {
-    async function verify() {
-      try {
-        const authenticated = await checkAuth();
-        setIsAuthenticated(authenticated);
-      } catch {
-        setIsAuthenticated(false);
-      }
-    }
-    verify();
-  }, [location.pathname]); // Re-check on route changes
+    refreshAuth();
+  }, [location.pathname, refreshAuth]);
 
-  if (isAuthenticated === null) {
+  if (isLoading) {
     // Loading state
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">

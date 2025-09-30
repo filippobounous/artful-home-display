@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom';
 import { LogOut } from 'lucide-react';
-import { logout } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/hooks/useAuth';
 
 interface LogoutButtonProps {
   collapsed?: boolean;
@@ -17,11 +17,12 @@ export function LogoutButton({
   const navigate = useNavigate();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { signOut } = useAuth();
 
   const handleLogout = async () => {
     try {
       // Attempt server-side logout (best effort)
-      await logout();
+      await signOut();
     } catch (error) {
       // Show non-blocking warning but continue with logout
       console.warn('Server logout failed:', error);

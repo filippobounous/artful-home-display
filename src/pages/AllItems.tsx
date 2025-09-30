@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { InventoryHeader } from '@/components/InventoryHeader';
 import { ItemsGrid } from '@/components/ItemsGrid';
@@ -23,12 +23,21 @@ import { useToast } from '@/hooks/use-toast';
 import { formatNumber } from '@/lib/currencyUtils';
 import { SidebarLayout } from '@/components/SidebarLayout';
 import { useInventoryFilters } from '@/hooks/useInventoryFilters';
+import { useAuth } from '@/hooks/useAuth';
 
 const AllItems = () => {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [showBatchDialog, setShowBatchDialog] = useState(false);
   const navigate = useNavigate();
   const { itemId } = useParams<{ itemId?: string }>();
+  const { canWrite } = useAuth();
+
+  useEffect(() => {
+    if (!canWrite) {
+      setSelectedItems([]);
+      setShowBatchDialog(false);
+    }
+  }, [canWrite]);
 
   const {
     data: selectedItem,
@@ -88,6 +97,7 @@ const AllItems = () => {
   } = filters;
 
   const handleBatchLocationUpdate = async (houseId: string, roomId: string) => {
+    if (!canWrite) return;
     try {
       const updatePromises = selectedItems.map(async (id) => {
         const itemId = Number(id);
@@ -170,12 +180,14 @@ const AllItems = () => {
                 Update Location ({selectedItems.length})
               </Button>
             )}
-            <Link to="/add-item">
-              <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                Add Item
-              </Button>
-            </Link>
+            {canWrite && (
+              <Link to="/add-item">
+                <Button>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Item
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
 
@@ -209,39 +221,51 @@ const AllItems = () => {
             {viewMode === 'grid' && (
               <ItemsGrid
                 items={sortedItems}
-                selectedIds={selectedItems}
-                onSelectionChange={(ids) => setSelectedItems(ids)}
                 onItemClick={(item) => navigate(`/items/${item.id}`)}
+                {...(canWrite
+                  ? {
+                      selectedIds: selectedItems,
+                      onSelectionChange: (ids: string[]) => setSelectedItems(ids),
+                    }
+                  : {})}
               />
             )}
             {viewMode === 'list' && (
               <ItemsList
                 items={sortedItems}
-                selectedIds={selectedItems}
-                onSelectionChange={(ids) => setSelectedItems(ids)}
                 onSort={handleSort}
                 sortField={sortField}
                 sortDirection={sortDirection}
                 onItemClick={(item) => navigate(`/items/${item.id}`)}
+                {...(canWrite
+                  ? {
+                      selectedIds: selectedItems,
+                      onSelectionChange: (ids: string[]) => setSelectedItems(ids),
+                    }
+                  : {})}
               />
             )}
             {viewMode === 'table' && (
               <ItemsTable
                 items={sortedItems}
-                selectedIds={selectedItems}
-                onSelectionChange={(ids) => setSelectedItems(ids)}
                 onSort={handleSort}
                 sortField={sortField}
                 sortDirection={sortDirection}
                 onItemClick={(item) => navigate(`/items/${item.id}`)}
+                {...(canWrite
+                  ? {
+                      selectedIds: selectedItems,
+                      onSelectionChange: (ids: string[]) => setSelectedItems(ids),
+                    }
+                  : {})}
               />
             )}
           </div>
         )}
       </main>
       <BatchLocationDialog
-        open={showBatchDialog}
-        onOpenChange={setShowBatchDialog}
+        open={canWrite ? showBatchDialog : false}
+        onOpenChange={(open) => canWrite && setShowBatchDialog(open)}
         onSubmit={handleBatchLocationUpdate}
       />
       <ItemDetailDialog
@@ -258,7 +282,11 @@ const AllItems = () => {
             }
           }
         }}
-        onEdit={(item) => navigate(`/add-item?draftId=${item.id}`)}
+        onEdit={
+          canWrite
+            ? (item) => navigate(`/add-item?draftId=${item.id}`)
+            : undefined
+        }
       />
     </SidebarLayout>
   );

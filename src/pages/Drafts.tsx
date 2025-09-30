@@ -6,10 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Trash2, Edit, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { SidebarLayout } from '@/components/SidebarLayout';
+import { useAuth } from '@/hooks/useAuth';
 
 const Drafts = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { canWrite } = useAuth();
   const [drafts, setDrafts] = useState(() => {
     const stored = localStorage.getItem('drafts');
     return stored ? JSON.parse(stored) : [];
@@ -20,6 +22,7 @@ const Drafts = () => {
   }, [drafts]);
 
   const deleteDraft = (id: number, event: React.MouseEvent) => {
+    if (!canWrite) return;
     event.stopPropagation();
     setDrafts((prev) => prev.filter((draft) => draft.id !== id));
     toast({
@@ -29,6 +32,7 @@ const Drafts = () => {
   };
 
   const editDraft = (id: number, event: React.MouseEvent) => {
+    if (!canWrite) return;
     event.stopPropagation();
     const draft = drafts.find((d) => d.id === id);
     if (draft) {
@@ -59,6 +63,12 @@ const Drafts = () => {
           <h2 className="text-xl font-semibold text-foreground mb-2">Drafts</h2>
           <p className="text-muted-foreground">Your saved draft items</p>
         </div>
+
+        {!canWrite && (
+          <div className="mb-6 p-4 border border-dashed rounded-lg bg-muted/30 text-muted-foreground">
+            You have view-only access. Draft management actions are disabled.
+          </div>
+        )}
 
         {drafts.length === 0 ? (
           <div className="text-center py-12">
@@ -98,7 +108,8 @@ const Drafts = () => {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={(e) => editDraft(draft.id, e)}
+                        disabled={!canWrite}
+                        onClick={(e) => canWrite && editDraft(draft.id, e)}
                       >
                         <Edit className="w-4 h-4 mr-1" />
                         Edit
@@ -106,7 +117,8 @@ const Drafts = () => {
                       <Button
                         variant="destructive"
                         size="sm"
-                        onClick={(e) => deleteDraft(draft.id, e)}
+                        disabled={!canWrite}
+                        onClick={(e) => canWrite && deleteDraft(draft.id, e)}
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
