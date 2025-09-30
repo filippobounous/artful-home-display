@@ -93,12 +93,8 @@ The app will be available at `http://localhost:5173` by default.
 When running `npm run dev`, Vite automatically sets `import.meta.env.DEV` to
 `true`. You do not need to define this variable in your `.env` file.
 
-If the API server cannot be reached, you can still log in with the demo
-credentials `demo` / `password123`.
-
-If your app is started by another tool and `import.meta.env.DEV` isn't `true`,
-set `VITE_ALLOW_DEMO_LOGIN=true` in a `.env` file to enable the offline demo
-login with `demo` / `password123`.
+No login is required—the interface loads immediately using either live or
+bundled test data depending on your configuration.
 
 ## Connecting a FastAPI backend
 
