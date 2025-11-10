@@ -12,7 +12,7 @@ export function withAuthHeaders(
 ): Record<string, string> {
   const headers = { ...base };
   if (API_KEY) {
-    headers.Authorization = `Bearer ${API_KEY}`;
+    headers['X-API-Key'] = API_KEY;
   }
   return headers;
 }
