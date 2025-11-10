@@ -3,11 +3,9 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { Toaster } from '@/components/ui/toaster';
-import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { TestDataProvider } from '@/context/TestDataProvider';
 
 // Pages
-import Login from '@/pages/Login';
 import Index from '@/pages/Index';
 import AllItems from '@/pages/AllItems';
 import AddItem from '@/pages/AddItem';
@@ -34,34 +32,21 @@ function App() {
       <TestDataProvider>
         <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
           <BrowserRouter>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route
-                path="/*"
-                element={
-                  <ProtectedRoute>
-                    <SidebarProvider>
-                      <Routes>
-                        <Route path="/" element={<Index />} />
-                        <Route path="/inventory" element={<AllItems />} />
-                        <Route path="/items/:itemId" element={<AllItems />} />
-                        <Route path="/add-item" element={<AddItem />} />
-                        <Route path="/drafts" element={<Drafts />} />
-                        <Route path="/warnings" element={<Warnings />} />
-                        <Route path="/analytics" element={<Analytics />} />
-                        <Route path="/settings" element={<Settings />} />
-                        <Route
-                          path="/category/:categoryId"
-                          element={<CategoryPage />}
-                        />
-                        <Route path="/house/:houseId" element={<HousePage />} />
-                        <Route path="*" element={<NotFound />} />
-                      </Routes>
-                    </SidebarProvider>
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
+            <SidebarProvider>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/inventory" element={<AllItems />} />
+                <Route path="/items/:itemId" element={<AllItems />} />
+                <Route path="/add-item" element={<AddItem />} />
+                <Route path="/drafts" element={<Drafts />} />
+                <Route path="/warnings" element={<Warnings />} />
+                <Route path="/analytics" element={<Analytics />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/category/:categoryId" element={<CategoryPage />} />
+                <Route path="/house/:houseId" element={<HousePage />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </SidebarProvider>
           </BrowserRouter>
           <Toaster />
         </ThemeProvider>

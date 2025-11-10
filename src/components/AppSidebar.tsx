@@ -27,7 +27,6 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { useSettingsState } from '@/hooks/useSettingsState';
-import { LogoutButton } from '@/components/LogoutButton';
 import { SidebarStatus } from '@/components/SidebarStatus';
 
 const MAIN_MENU_ORDER = [
@@ -288,18 +287,6 @@ export function AppSidebar() {
             </SidebarMenuButton>
           </SidebarMenuItem>
 
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              tooltip={isCollapsed ? 'Logout' : undefined}
-              className="h-10"
-            >
-              <LogoutButton
-                collapsed={isCollapsed}
-                className={getNavCls({ isActive: false })}
-              />
-            </SidebarMenuButton>
-          </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
