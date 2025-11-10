@@ -47,7 +47,7 @@ const Drafts = () => {
         description: 'Redirecting to edit mode...',
       });
 
-      navigate(`/add?draftId=${id}`);
+      navigate(`/add-item?draftId=${id}`);
     }
   };
 
