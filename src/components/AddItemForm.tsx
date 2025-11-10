@@ -69,10 +69,14 @@ export function AddItemForm() {
     images: [],
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isExistingItem, setIsExistingItem] = useState(false);
 
   useEffect(() => {
     async function loadData() {
-      if (!draftId) return;
+      if (!draftId) {
+        setIsExistingItem(false);
+        return;
+      }
       const stored = localStorage.getItem('editingDraft');
       let draft: DecorItemInput | null = null;
       if (stored) {
@@ -141,6 +145,7 @@ export function AddItemForm() {
 
         setFormData(loaded);
         setErrors(validateRequiredFields(loaded));
+        setIsExistingItem(!('lastModified' in draft));
 
         localStorage.removeItem('editingDraft');
 
@@ -155,10 +160,18 @@ export function AddItemForm() {
             description: 'Item data loaded for editing',
           });
         }
+      } else {
+        setIsExistingItem(false);
       }
     }
     loadData();
   }, [draftId, toast]);
+
+  useEffect(() => {
+    if (!draftId) {
+      setIsExistingItem(false);
+    }
+  }, [draftId]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -221,19 +234,9 @@ export function AddItemForm() {
     } as DecorItemInput;
 
     let saveAction: Promise<DecorItem>;
-    let exists = false;
 
-    if (draftId) {
-      const inventory = JSON.parse(
-        localStorage.getItem('inventoryData') || '[]',
-      ) as DecorItem[];
-      exists = inventory.some(
-        (item) => item.id === Number(draftId) && !item.deleted,
-      );
-
-      saveAction = exists
-        ? updateDecorItem(draftId, decorItem)
-        : createDecorItem(decorItem);
+    if (draftId && isExistingItem) {
+      saveAction = updateDecorItem(draftId, decorItem);
     } else {
       saveAction = createDecorItem(decorItem);
     }
@@ -249,9 +252,9 @@ export function AddItemForm() {
         }
 
         toast({
-          title: draftId && exists ? 'Item updated' : 'Item added',
+          title: draftId && isExistingItem ? 'Item updated' : 'Item added',
           description:
-            draftId && exists
+            draftId && isExistingItem
               ? 'Your item has been updated successfully'
               : 'Your item has been added to the collection successfully',
         });
