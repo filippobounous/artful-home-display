@@ -57,8 +57,9 @@ const Analytics = () => {
   useEffect(() => {
     fetchDecorItems()
       .then((data) => {
-        setItems(data);
-        setFilteredItems(data);
+        const activeItems = data.filter((item) => !item.deleted);
+        setItems(activeItems);
+        setFilteredItems(activeItems);
       })
       .catch(() => {
         setItems([]);
@@ -68,7 +69,7 @@ const Analytics = () => {
 
   // Apply filters
   useEffect(() => {
-    let filtered = items;
+    let filtered = [...items];
 
     if (selectedCategories.length > 0) {
       filtered = filtered.filter((item) =>
