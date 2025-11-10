@@ -78,7 +78,13 @@ export function AddItemForm() {
         return;
       }
       const stored = localStorage.getItem('editingDraft');
-      let draft: DecorItemInput | null = null;
+      let draft: (DecorItemInput & {
+        lastModified?: string;
+        isExistingItem?: boolean;
+      }) | null = null;
+      let existingItem: DecorItem | null = null;
+      let fetchAttempted = false;
+      let inventoryItems: DecorItem[] = [];
       if (stored) {
         try {
           draft = JSON.parse(stored);
@@ -89,13 +95,16 @@ export function AddItemForm() {
 
       if (!draft) {
         try {
-          const inventory = JSON.parse(
+          inventoryItems = JSON.parse(
             localStorage.getItem('inventoryData') || '[]',
           );
-          const item = inventory.find(
+          const item = inventoryItems.find(
             (i: DecorItem) => i.id === Number(draftId),
           );
-          if (item) draft = decorItemToInput(item);
+          if (item) {
+            draft = decorItemToInput(item);
+            existingItem = item;
+          }
         } catch {
           draft = null;
         }
@@ -103,7 +112,11 @@ export function AddItemForm() {
 
       if (!draft) {
         const item = await fetchDecorItem(draftId);
-        if (item) draft = decorItemToInput(item);
+        fetchAttempted = true;
+        if (item) {
+          draft = decorItemToInput(item);
+          existingItem = item;
+        }
       }
       if (draft) {
         const acquisitionDate = draft.acquisition_date
@@ -145,7 +158,35 @@ export function AddItemForm() {
 
         setFormData(loaded);
         setErrors(validateRequiredFields(loaded));
-        setIsExistingItem(!('lastModified' in draft));
+
+        let existing = false;
+        if (typeof draft.isExistingItem === 'boolean') {
+          existing = draft.isExistingItem;
+        } else if (existingItem) {
+          existing = true;
+        } else if (draftId) {
+          const idToMatch = Number(draftId);
+          const itemsToCheck = inventoryItems.length
+            ? inventoryItems
+            : (() => {
+                try {
+                  return JSON.parse(
+                    localStorage.getItem('inventoryData') || '[]',
+                  ) as DecorItem[];
+                } catch {
+                  return [] as DecorItem[];
+                }
+              })();
+          existing = itemsToCheck.some((item) => item.id === idToMatch);
+
+          if (!existing && !fetchAttempted) {
+            const fetched = await fetchDecorItem(draftId);
+            fetchAttempted = true;
+            existing = !!fetched;
+          }
+        }
+
+        setIsExistingItem(existing);
 
         localStorage.removeItem('editingDraft');
 
@@ -281,6 +322,7 @@ export function AddItemForm() {
       title: formData.name || 'Untitled Draft',
       category: formData.category,
       description: formData.description || '',
+      isExistingItem,
     };
     const filtered = drafts.filter((d: { id: number }) => d.id !== id);
     localStorage.setItem('drafts', JSON.stringify([...filtered, newDraft]));
