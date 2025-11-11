@@ -576,6 +576,14 @@ const musicInputFromFormData = (
 const validateBookForm = (data: BookItemFormData) => {
   const errs: Record<string, string> = {};
   if (!data.title.trim()) errs.title = 'Title is required';
+
+  const quantityValue = Number(data.quantity);
+  if (!data.quantity.trim()) {
+    errs.quantity = 'Quantity is required';
+  } else if (!Number.isInteger(quantityValue) || quantityValue <= 0) {
+    errs.quantity = 'Quantity must be a positive whole number';
+  }
+
   return errs;
 };
 
@@ -583,6 +591,14 @@ const validateMusicForm = (data: MusicItemFormData) => {
   const errs: Record<string, string> = {};
   if (!data.title.trim()) errs.title = 'Title is required';
   if (!data.artist.trim()) errs.artist = 'Artist is required';
+
+  const quantityValue = Number(data.quantity);
+  if (!data.quantity.trim()) {
+    errs.quantity = 'Quantity is required';
+  } else if (!Number.isInteger(quantityValue) || quantityValue <= 0) {
+    errs.quantity = 'Quantity must be a positive whole number';
+  }
+
   return errs;
 };
 
@@ -934,9 +950,13 @@ function BookAddItemForm() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="book-quantity">Quantity</Label>
+                  <Label htmlFor="book-quantity">Quantity *</Label>
                   <Input
                     id="book-quantity"
+                    type="number"
+                    min={1}
+                    step={1}
+                    required
                     value={formData.quantity}
                     onChange={(event) =>
                       setFormData((prev) => ({
@@ -945,7 +965,13 @@ function BookAddItemForm() {
                       }))
                     }
                     placeholder="1"
+                    aria-invalid={errors.quantity ? 'true' : 'false'}
                   />
+                  {errors.quantity && (
+                    <p className="text-sm text-destructive mt-1">
+                      {errors.quantity}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="book-valuation">Valuation</Label>
@@ -1357,9 +1383,13 @@ function MusicAddItemForm() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="music-quantity">Quantity</Label>
+                  <Label htmlFor="music-quantity">Quantity *</Label>
                   <Input
                     id="music-quantity"
+                    type="number"
+                    min={1}
+                    step={1}
+                    required
                     value={formData.quantity}
                     onChange={(event) =>
                       setFormData((prev) => ({
@@ -1368,7 +1398,13 @@ function MusicAddItemForm() {
                       }))
                     }
                     placeholder="1"
+                    aria-invalid={errors.quantity ? 'true' : 'false'}
                   />
+                  {errors.quantity && (
+                    <p className="text-sm text-destructive mt-1">
+                      {errors.quantity}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <Label htmlFor="music-valuation">Valuation</Label>
