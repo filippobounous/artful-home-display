@@ -1,10 +1,13 @@
 import { MultiSelectFilter } from '@/components/MultiSelectFilter';
-import { DecorItem } from '@/types/inventory';
+import type { InventoryItem } from '@/types/inventory';
 import { AppliedAnalyticsFilters } from './AppliedAnalyticsFilters';
 import { cn } from '@/lib/utils';
+import { useSettingsState } from '@/hooks/useSettingsState';
+import { getCategoryLabel, getItemValuationCurrency } from '@/lib/inventoryDisplay';
+import { useCollection } from '@/context/CollectionProvider';
 
 interface AnalyticsFiltersProps {
-  items: DecorItem[];
+  items: InventoryItem[];
   selectedCategories: string[];
   setSelectedCategories: (categories: string[]) => void;
   selectedHouses: string[];
@@ -22,28 +25,32 @@ export function AnalyticsFilters({
   selectedCurrencies,
   setSelectedCurrencies,
 }: AnalyticsFiltersProps) {
-  const categories = Array.from(
-    new Set(items.map((item) => item.category)),
-  ).map((category) => ({
-    id: category,
-    name: category.charAt(0).toUpperCase() + category.slice(1),
+  const { houses, categories } = useSettingsState();
+  const { collection } = useCollection();
+  const categoryLabel = getCategoryLabel(collection);
+
+  const categoryOptions = categories.map((category) => ({
+    id: category.id,
+    name: category.name,
   }));
 
-  const houses = Array.from(
-    new Set(items.map((item) => item.house).filter(Boolean)),
-  ).map((house) => ({
-    id: house!,
-    name: house!.replace('-', ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
+  const houseOptions = houses.map((house) => ({
+    id: house.id,
+    name: house.name,
   }));
 
-  const currencies = Array.from(
-    new Set(items.map((item) => item.valuationCurrency).filter(Boolean)),
-  ).map((currency) => ({ id: currency!, name: currency! }));
+  const currencySet = new Set<string>();
+  items.forEach((item) => {
+    const currency = getItemValuationCurrency(item);
+    if (currency) currencySet.add(currency);
+  });
+  const currencyOptions = Array.from(currencySet).map((currency) => ({
+    id: currency,
+    name: currency,
+  }));
 
   const activeCount =
-    selectedCategories.length +
-    selectedHouses.length +
-    selectedCurrencies.length;
+    selectedCategories.length + selectedHouses.length + selectedCurrencies.length;
 
   return (
     <div className="mb-8 space-y-6">
@@ -55,20 +62,20 @@ export function AnalyticsFilters({
       >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <MultiSelectFilter
-            placeholder="Select categories"
-            options={categories}
+            placeholder={`Select ${categoryLabel.toLowerCase()}s`}
+            options={categoryOptions}
             selectedValues={selectedCategories}
             onSelectionChange={setSelectedCategories}
           />
           <MultiSelectFilter
             placeholder="Select houses"
-            options={houses}
+            options={houseOptions}
             selectedValues={selectedHouses}
             onSelectionChange={setSelectedHouses}
           />
           <MultiSelectFilter
             placeholder="Select currencies"
-            options={currencies}
+            options={currencyOptions}
             selectedValues={selectedCurrencies}
             onSelectionChange={setSelectedCurrencies}
           />
@@ -81,9 +88,10 @@ export function AnalyticsFilters({
         setSelectedHouses={setSelectedHouses}
         selectedCurrencies={selectedCurrencies}
         setSelectedCurrencies={setSelectedCurrencies}
-        categoryOptions={categories}
-        houseOptions={houses}
-        currencyOptions={currencies}
+        categoryOptions={categoryOptions}
+        houseOptions={houseOptions}
+        currencyOptions={currencyOptions}
+        categoryLabel={categoryLabel}
       />
     </div>
   );

@@ -28,3 +28,39 @@ export interface DecorItemFormData {
   notes: string;
   images?: string[];
 }
+
+export interface BookItemFormData {
+  title: string;
+  author: string;
+  publisher: string;
+  isbn: string;
+  genre: string;
+  pageCount: string;
+  publicationYear: string;
+  quantity: string;
+  house: string;
+  room: string;
+  valuation: string;
+  valuationCurrency: string;
+  valuationDate: string;
+  description: string;
+  notes: string;
+}
+
+export interface MusicItemFormData {
+  title: string;
+  artist: string;
+  album: string;
+  format: string;
+  genre: string;
+  releaseYear: string;
+  trackCount: string;
+  quantity: string;
+  house: string;
+  room: string;
+  valuation: string;
+  valuationCurrency: string;
+  valuationDate: string;
+  description: string;
+  notes: string;
+}

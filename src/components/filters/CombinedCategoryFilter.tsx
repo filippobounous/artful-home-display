@@ -7,6 +7,10 @@ interface CombinedCategoryFilterProps {
   selectedSubcategory: string[];
   setSelectedSubcategory: (subcategories: string[]) => void;
   permanentCategory?: string;
+  label?: string;
+  placeholder?: string;
+  childLabel?: string;
+  childPlaceholder?: string;
 }
 
 export function CombinedCategoryFilter({
@@ -15,6 +19,10 @@ export function CombinedCategoryFilter({
   selectedSubcategory,
   setSelectedSubcategory,
   permanentCategory,
+  label = 'Categories & Subcategories',
+  placeholder = 'Select categories or subcategories',
+  childLabel = 'Subcategories',
+  childPlaceholder = 'Select subcategories',
 }: CombinedCategoryFilterProps) {
   const { categories } = useSettingsState();
 
@@ -33,10 +41,10 @@ export function CombinedCategoryFilter({
       selectedChildIds={selectedSubcategory}
       setSelectedChildIds={setSelectedSubcategory}
       permanentParentId={permanentCategory}
-      label="Categories & Subcategories"
-      placeholder="Select categories or subcategories"
-      childOnlyLabel="Subcategories"
-      childOnlyPlaceholder="Select subcategories"
+      label={label}
+      placeholder={placeholder}
+      childOnlyLabel={childLabel}
+      childOnlyPlaceholder={childPlaceholder}
     />
   );
 }

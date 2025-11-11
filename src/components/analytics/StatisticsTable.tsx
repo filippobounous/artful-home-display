@@ -1,10 +1,11 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { DecorItem } from '@/types/inventory';
+import type { InventoryItem } from '@/types/inventory';
 import { formatCurrency, formatNumber } from '@/lib/currencyUtils';
+import { getItemValuationCurrency, getItemValuationValue } from '@/lib/inventoryDisplay';
 
 interface StatisticsTableProps {
-  items: DecorItem[];
+  items: InventoryItem[];
 }
 
 interface CurrencyStats {
@@ -22,12 +23,13 @@ interface CurrencyStats {
 export function StatisticsTable({ items }: StatisticsTableProps) {
   // Group items by currency and calculate statistics
   const statsByCurrency = items.reduce((acc, item) => {
-    if (item.valuation && item.valuationCurrency && item.valuation > 0) {
-      const currency = item.valuationCurrency;
+    const valuation = getItemValuationValue(item);
+    const currency = getItemValuationCurrency(item);
+    if (valuation && valuation > 0 && currency) {
       if (!acc[currency]) {
         acc[currency] = [];
       }
-      acc[currency].push(item.valuation);
+      acc[currency].push(valuation);
     }
     return acc;
   }, {} as Record<string, number[]>);

@@ -1,10 +1,10 @@
 import { ItemCard } from './ItemCard';
-import { DecorItem } from '@/types/inventory';
+import type { InventoryItem } from '@/types/inventory';
 import { useShiftSelection } from '@/hooks/useShiftSelection';
 
 interface ItemsGridProps {
-  items: DecorItem[];
-  onItemClick?: (item: DecorItem) => void;
+  items: InventoryItem[];
+  onItemClick?: (item: InventoryItem) => void;
   selectedIds?: string[];
   onSelectionChange?: (ids: string[]) => void;
 }

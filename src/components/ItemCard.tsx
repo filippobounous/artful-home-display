@@ -1,16 +1,35 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
-import { DecorItem } from '@/types/inventory';
+import type { InventoryItem } from '@/types/inventory';
+import { useCollection } from '@/context/CollectionProvider';
+import {
+  formatItemLocation,
+  getCreatorLabel,
+  getItemCategory,
+  getItemCreator,
+  getItemSubcategory,
+  getItemYear,
+  getYearLabel,
+} from '@/lib/inventoryDisplay';
 
 interface ItemCardProps {
-  item: DecorItem;
-  onClick?: (item: DecorItem) => void;
+  item: InventoryItem;
+  onClick?: (item: InventoryItem) => void;
   selected?: boolean;
   onSelect?: (shift: boolean) => void;
 }
 
 export function ItemCard({ item, onClick, selected, onSelect }: ItemCardProps) {
+  const { collection } = useCollection();
+  const creator = getItemCreator(item);
+  const creatorLabel = getCreatorLabel(collection);
+  const category = getItemCategory(item);
+  const subcategory = getItemSubcategory(item);
+  const location = formatItemLocation(item);
+  const year = getItemYear(item);
+  const yearLabel = getYearLabel(collection);
+
   const handleClick = (e: React.MouseEvent | React.KeyboardEvent) => {
     if (e.shiftKey && onSelect) {
       onSelect(true);
@@ -57,39 +76,28 @@ export function ItemCard({ item, onClick, selected, onSelect }: ItemCardProps) {
             </h3>
           </div>
 
-          {item.artist && (
+          {creator && (
             <p className="text-muted-foreground text-sm font-medium mb-1">
-              by {item.artist}
+              {creatorLabel}: {creator}
             </p>
           )}
 
-          {item.yearPeriod && (
-            <p className="text-muted-foreground text-sm mb-2">
-              {item.yearPeriod}
+          {year && (
+            <p className="text-muted-foreground text-xs mb-2">
+              {yearLabel}: {year}
             </p>
           )}
 
-          <div className="flex items-center justify-between text-sm">
+          {(category || subcategory) && (
             <div className="flex gap-2 text-xs text-muted-foreground">
-              <span className="capitalize">{item.category}</span>
-              {item.subcategory && <span>• {item.subcategory}</span>}
+              {category && <span className="capitalize">{category}</span>}
+              {category && subcategory && <span>•</span>}
+              {subcategory && <span className="capitalize">{subcategory}</span>}
             </div>
-          </div>
+          )}
 
-          {(item.house || item.room) && (
-            <div className="mt-2 text-xs text-muted-foreground">
-              {item.house && (
-                <span className="capitalize">
-                  {item.house.replace('-', ' ')}
-                </span>
-              )}
-              {item.house && item.room && <span> • </span>}
-              {item.room && (
-                <span className="capitalize">
-                  {item.room.replace('-', ' ')}
-                </span>
-              )}
-            </div>
+          {location && (
+            <div className="mt-2 text-xs text-muted-foreground">{location}</div>
           )}
         </div>
       </CardContent>

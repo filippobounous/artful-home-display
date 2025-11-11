@@ -1,5 +1,5 @@
 import type { DecorItem } from '@/types/inventory';
-import { defaultHouses } from '@/types/inventory';
+import { decorDefaultHouses } from '@/types/inventory';
 
 export const generateTestData = (): DecorItem[] => {
   const creators = [
@@ -62,7 +62,7 @@ export const generateTestData = (): DecorItem[] => {
   ];
 
   // Use only houses and rooms from defaultHouses
-  const validHouses = defaultHouses.map((house) => ({
+  const validHouses = decorDefaultHouses.map((house) => ({
     id: house.id,
     name: house.name,
     rooms: house.rooms.map((room) => ({

@@ -4,6 +4,7 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { Toaster } from '@/components/ui/toaster';
 import { TestDataProvider } from '@/context/TestDataProvider';
+import { CollectionProvider } from '@/context/CollectionProvider';
 
 // Pages
 import Index from '@/pages/Index';
@@ -30,10 +31,11 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TestDataProvider>
-        <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
-          <BrowserRouter>
-            <SidebarProvider>
-              <Routes>
+        <CollectionProvider>
+          <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+            <BrowserRouter>
+              <SidebarProvider>
+                <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/inventory" element={<AllItems />} />
                 <Route path="/items/:itemId" element={<AllItems />} />
@@ -45,11 +47,12 @@ function App() {
                 <Route path="/category/:categoryId" element={<CategoryPage />} />
                 <Route path="/house/:houseId" element={<HousePage />} />
                 <Route path="*" element={<NotFound />} />
-              </Routes>
-            </SidebarProvider>
-          </BrowserRouter>
-          <Toaster />
-        </ThemeProvider>
+                </Routes>
+              </SidebarProvider>
+            </BrowserRouter>
+            <Toaster />
+          </ThemeProvider>
+        </CollectionProvider>
       </TestDataProvider>
     </QueryClientProvider>
   );

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { InventoryHeader } from '@/components/InventoryHeader';
 import { Card, CardContent } from '@/components/ui/card';
@@ -6,18 +6,36 @@ import { Button } from '@/components/ui/button';
 import { Trash2, Edit, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { SidebarLayout } from '@/components/SidebarLayout';
+import { useCollection } from '@/context/CollectionProvider';
+import type { CollectionType } from '@/types/inventory';
+
+const draftStorageKey = (collection: CollectionType) => `drafts-${collection}`;
+const editingDraftKey = (collection: CollectionType) =>
+  `editingDraft-${collection}`;
 
 const Drafts = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { collection } = useCollection();
+  const draftsKey = useMemo(() => draftStorageKey(collection), [collection]);
+  const editingKey = useMemo(
+    () => editingDraftKey(collection),
+    [collection],
+  );
+
   const [drafts, setDrafts] = useState(() => {
-    const stored = localStorage.getItem('drafts');
+    const stored = localStorage.getItem(draftsKey);
     return stored ? JSON.parse(stored) : [];
   });
 
   useEffect(() => {
-    localStorage.setItem('drafts', JSON.stringify(drafts));
-  }, [drafts]);
+    const stored = localStorage.getItem(draftsKey);
+    setDrafts(stored ? JSON.parse(stored) : []);
+  }, [draftsKey]);
+
+  useEffect(() => {
+    localStorage.setItem(draftsKey, JSON.stringify(drafts));
+  }, [drafts, draftsKey]);
 
   const deleteDraft = (id: number, event: React.MouseEvent) => {
     event.stopPropagation();
@@ -34,7 +52,7 @@ const Drafts = () => {
     if (draft) {
       // Store complete draft data in localStorage for the AddItem page to pick up
       localStorage.setItem(
-        'editingDraft',
+        editingKey,
         JSON.stringify({
           id: draft.id,
           ...draft.data,

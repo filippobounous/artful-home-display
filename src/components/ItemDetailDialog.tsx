@@ -4,26 +4,40 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Badge } from '@/components/ui/badge';
-import { DecorItem } from '@/types/inventory';
+import type { InventoryItem } from '@/types/inventory';
 import {
   Edit,
-  MapPin,
   Calendar,
   DollarSign,
-  Hash,
   Trash2,
   History,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useCollection } from '@/context/CollectionProvider';
+import {
+  formatItemLocation,
+  getCategoryLabel,
+  getCollectionSpecificDetails,
+  getCreatorLabel,
+  getItemCategory,
+  getItemCreator,
+  getItemQuantity,
+  getItemSubcategory,
+  getItemValuationCurrency,
+  getItemValuationValue,
+  getItemYear,
+  getSubcategoryLabel,
+  getYearLabel,
+} from '@/lib/inventoryDisplay';
+import { formatCurrencyOptional } from '@/lib/currencyUtils';
 
 interface ItemDetailDialogProps {
-  item: DecorItem | null;
+  item: InventoryItem | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onEdit?: (item: DecorItem) => void;
-  onDelete?: (item: DecorItem) => void;
-  onHistory?: (item: DecorItem) => void;
+  onEdit?: (item: InventoryItem) => void;
+  onDelete?: (item: InventoryItem) => void;
+  onHistory?: (item: InventoryItem) => void;
   loading?: boolean;
   error?: string | null;
 }
@@ -38,6 +52,57 @@ export function ItemDetailDialog({
   loading = false,
   error = null,
 }: ItemDetailDialogProps) {
+  const { collection } = useCollection();
+  const creatorLabel = getCreatorLabel(collection);
+  const categoryLabel = getCategoryLabel(collection);
+  const subcategoryLabel = getSubcategoryLabel(collection);
+  const yearLabel = getYearLabel(collection);
+
+  const metadata = item
+    ? (() => {
+        const details: Array<{ label: string; value: string }> = [];
+        const creator = getItemCreator(item);
+        if (creator) {
+          details.push({ label: creatorLabel, value: creator });
+        }
+        const category = getItemCategory(item);
+        const subcategory = getItemSubcategory(item);
+        if (category || subcategory) {
+          const value = [
+            category ? `Primary: ${category}` : null,
+            subcategory ? `${subcategoryLabel}: ${subcategory}` : null,
+          ]
+            .filter(Boolean)
+            .join(' • ');
+          if (value) {
+            details.push({ label: categoryLabel, value });
+          }
+        }
+        const year = getItemYear(item);
+        if (year) {
+          details.push({ label: yearLabel, value: year });
+        }
+        const location = formatItemLocation(item);
+        if (location) {
+          details.push({ label: 'Location', value: location });
+        }
+        getCollectionSpecificDetails(item, collection).forEach((detail) => {
+          details.push(detail);
+        });
+        const quantity = getItemQuantity(item);
+        if (quantity && quantity > 1) {
+          details.push({ label: 'Quantity', value: String(quantity) });
+        }
+        return details;
+      })()
+    : [];
+
+  const valuationValue = item ? getItemValuationValue(item) : undefined;
+  const valuationDisplay =
+    valuationValue !== undefined
+      ? formatCurrencyOptional(valuationValue, getItemValuationCurrency(item!))
+      : null;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -53,7 +118,7 @@ export function ItemDetailDialog({
               <DialogTitle className="text-xl font-semibold pr-16">
                 {item.title}
                 <span className="block text-sm font-normal text-muted-foreground">
-                  {item.code ?? '-'} • ID {item.id} • v{item.version ?? 1}
+                  ID {item.id}
                 </span>
               </DialogTitle>
               <div className="flex items-center gap-2 mt-2">
@@ -68,7 +133,7 @@ export function ItemDetailDialog({
                     Edit
                   </Button>
                 )}
-                {onHistory && item.history && item.history.length > 0 && (
+                {onHistory && 'history' in item && item.history && item.history.length > 0 && (
                   <Button
                     size="sm"
                     variant="outline"
@@ -94,7 +159,6 @@ export function ItemDetailDialog({
             </DialogHeader>
 
             <div className="space-y-6">
-              {/* Image */}
               <div className="w-full h-64 rounded-lg overflow-hidden">
                 <img
                   src={item.image}
@@ -103,196 +167,102 @@ export function ItemDetailDialog({
                 />
               </div>
 
-              {/* Basic Information */}
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {metadata.map((entry) => (
+                  <div key={`${entry.label}-${entry.value}`}>
                     <h4 className="font-medium text-muted-foreground mb-1">
-                      Artist/Maker
+                      {entry.label}
                     </h4>
-                    <p className="text-foreground">{item.artist ?? '-'}</p>
+                    <p className="text-foreground">{entry.value}</p>
                   </div>
-
+                ))}
+                {item.notes && (
                   <div>
                     <h4 className="font-medium text-muted-foreground mb-1">
-                      Year/Period
+                      Notes
                     </h4>
-                    <p className="text-foreground">{item.yearPeriod ?? '-'}</p>
+                    <p className="text-foreground">{item.notes}</p>
                   </div>
-
+                )}
+                {item.description && (
                   <div>
                     <h4 className="font-medium text-muted-foreground mb-1">
-                      Category
+                      Description
                     </h4>
-                    <p className="text-foreground flex items-center">
-                      <span className="capitalize">{item.category}</span>
-                      {item.subcategory && (
-                        <>
-                          <span className="mx-1">•</span>
-                          <span className="capitalize">{item.subcategory}</span>
-                        </>
-                      )}
-                    </p>
+                    <p className="text-foreground">{item.description}</p>
                   </div>
+                )}
+              </div>
 
-                  <div>
-                    <h4 className="font-medium text-muted-foreground mb-1">
-                      Origin Region
-                    </h4>
-                    <p className="text-foreground">
-                      {item.originRegion ?? '-'}
-                    </p>
-                  </div>
-
-                  <div>
-                    <h4 className="font-medium text-muted-foreground mb-1">
-                      Material
-                    </h4>
-                    <p className="text-foreground">{item.material ?? '-'}</p>
+              {(valuationDisplay || item.valuationDate) && (
+                <div className="border-t pt-4">
+                  <h4 className="font-medium text-muted-foreground mb-3">
+                    Valuation
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {valuationDisplay && (
+                      <div>
+                        <p className="text-sm text-muted-foreground">Value</p>
+                        <p className="text-foreground flex items-center gap-2">
+                          <DollarSign className="w-4 h-4" />
+                          {valuationDisplay}
+                        </p>
+                      </div>
+                    )}
+                    {item.valuationDate && (
+                      <div>
+                        <p className="text-sm text-muted-foreground">Date</p>
+                        <p className="text-foreground flex items-center gap-2">
+                          <Calendar className="w-4 h-4" />
+                          {item.valuationDate}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
+              )}
 
-                <div className="space-y-4">
-                  <div>
-                    <h4 className="font-medium text-muted-foreground mb-1">
-                      Location
-                    </h4>
-                    <p className="text-foreground flex items-center">
-                      <MapPin className="w-4 h-4 mr-1" />
-                      {item.house || item.room ? (
-                        <>
-                          {item.house && (
-                            <span className="capitalize">
-                              {item.house.replace('-', ' ')}
-                            </span>
+              {'acquisitionDate' in item && (item.acquisitionDate || item.acquisitionValue) && (
+                <div className="border-t pt-4">
+                  <h4 className="font-medium text-muted-foreground mb-3">
+                    Acquisition
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {item.acquisitionValue !== undefined && (
+                      <div>
+                        <p className="text-sm text-muted-foreground">Value</p>
+                        <p className="text-foreground flex items-center gap-2">
+                          <DollarSign className="w-4 h-4" />
+                          {formatCurrencyOptional(
+                            item.acquisitionValue,
+                            item.acquisitionCurrency,
                           )}
-                          {item.house && item.room && (
-                            <span className="mx-1">•</span>
-                          )}
-                          {item.room && (
-                            <span className="capitalize">
-                              {item.room.replace('-', ' ')}
-                            </span>
-                          )}
-                        </>
-                      ) : (
-                        '-'
-                      )}
-                    </p>
-                  </div>
-
-                  <div>
-                    <h4 className="font-medium text-muted-foreground mb-1">
-                      Provenance
-                    </h4>
-                    <p className="text-foreground">{item.provenance ?? '-'}</p>
-                  </div>
-
-                  <div>
-                    <h4 className="font-medium text-muted-foreground mb-1">
-                      Quantity
-                    </h4>
-                    <p className="text-foreground flex items-center">
-                      <Hash className="w-4 h-4 mr-1" />
-                      {item.quantity ?? '-'}
-                    </p>
-                  </div>
-
-                  <div>
-                    <h4 className="font-medium text-muted-foreground mb-1">
-                      Dimensions
-                    </h4>
-                    <p className="text-foreground">
-                      {item.widthCm ?? '-'} x {item.heightCm ?? '-'} x{' '}
-                      {item.depthCm ?? '-'} cm
-                    </p>
-                  </div>
-
-                  <div>
-                    <h4 className="font-medium text-muted-foreground mb-1">
-                      Weight
-                    </h4>
-                    <p className="text-foreground">{item.weightKg ?? '-'} kg</p>
+                        </p>
+                      </div>
+                    )}
+                    {item.acquisitionDate && (
+                      <div>
+                        <p className="text-sm text-muted-foreground">Date</p>
+                        <p className="text-foreground flex items-center gap-2">
+                          <Calendar className="w-4 h-4" />
+                          {item.acquisitionDate}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
+              )}
 
-              {/* Acquisition Information */}
-              <div className="border-t pt-4">
-                <h4 className="font-medium text-muted-foreground mb-3">
-                  Acquisition Information
-                </h4>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Value</p>
-                    <p className="text-foreground flex items-center">
-                      <DollarSign className="w-4 h-4 mr-1" />
-                      {item.acquisitionValue?.toLocaleString() ?? '-'}{' '}
-                      {item.acquisitionCurrency || 'EUR'}
-                    </p>
-                  </div>
-
-                  <div>
-                    <p className="text-sm text-muted-foreground">Date</p>
-                    <p className="text-foreground flex items-center">
-                      <Calendar className="w-4 h-4 mr-1" />
-                      {item.acquisitionDate
-                        ? new Date(item.acquisitionDate).toLocaleDateString()
-                        : '-'}
-                    </p>
-                  </div>
+              {'history' in item && item.history && item.history.length > 0 && (
+                <div className="border-t pt-4">
+                  <h4 className="font-medium text-muted-foreground mb-2">
+                    Version History
+                  </h4>
+                  <p className="text-sm text-muted-foreground">
+                    {item.history.length} previous revisions recorded.
+                  </p>
                 </div>
-              </div>
-
-              {/* Appraisal Information */}
-              <div className="border-t pt-4">
-                <h4 className="font-medium text-muted-foreground mb-3">
-                  Appraisal Information
-                </h4>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Value</p>
-                    <p className="text-foreground flex items-center">
-                      <DollarSign className="w-4 h-4 mr-1" />
-                      {item.valuation?.toLocaleString() ?? '-'}{' '}
-                      {item.valuationCurrency || 'EUR'}
-                    </p>
-                  </div>
-
-                  <div>
-                    <p className="text-sm text-muted-foreground">Appraiser</p>
-                    <p className="text-foreground">
-                      {item.valuationPerson ?? '-'}
-                    </p>
-                  </div>
-
-                  <div>
-                    <p className="text-sm text-muted-foreground">Date</p>
-                    <p className="text-foreground flex items-center">
-                      <Calendar className="w-4 h-4 mr-1" />
-                      {item.valuationDate
-                        ? new Date(item.valuationDate).toLocaleDateString()
-                        : '-'}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Description */}
-              <div className="border-t pt-4">
-                <h4 className="font-medium text-muted-foreground mb-2">
-                  Description
-                </h4>
-                <p className="text-foreground">{item.description ?? '-'}</p>
-              </div>
-
-              {/* Notes */}
-              <div className="border-t pt-4">
-                <h4 className="font-medium text-muted-foreground mb-2">
-                  Notes
-                </h4>
-                <p className="text-foreground">{item.notes ?? '-'}</p>
-              </div>
+              )}
             </div>
           </>
         )}

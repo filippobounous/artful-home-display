@@ -1,42 +1,110 @@
 import { useState, useEffect } from 'react';
 import {
-  categoryConfigs,
-  defaultHouses,
+  collectionCategoryConfigs,
+  collectionDefaultHouses,
   CategoryConfig,
   SubcategoryConfig,
   HouseConfig,
   RoomConfig,
   DecorItem,
+  type CollectionType,
 } from '@/types/inventory';
-import { fetchCategories, fetchHouses } from '@/lib/api';
+import {
+  fetchCategories,
+  fetchHouses,
+  categoriesStorageKey,
+  housesStorageKey,
+} from '@/lib/api';
+import { useCollection } from '@/context/CollectionProvider';
 
 // Load persisted settings from localStorage if available
-let storedCategories: CategoryConfig[] | null = null;
-let storedHouses: HouseConfig[] | null = null;
-if (typeof window !== 'undefined') {
+const collections: CollectionType[] = ['art', 'books', 'music'];
+
+const cloneCategories = (categories: CategoryConfig[]) =>
+  categories.map((category) => ({
+    ...category,
+    subcategories: category.subcategories.map((sub) => ({ ...sub })),
+  }));
+
+const cloneHouses = (houses: HouseConfig[]) =>
+  houses.map((house) => ({
+    ...house,
+    rooms: house.rooms.map((room) => ({ ...room })),
+  }));
+
+const getCategoriesFor = (collection: CollectionType) =>
+  globalCategoriesByCollection[collection];
+
+const getHousesFor = (collection: CollectionType) =>
+  globalHousesByCollection[collection];
+
+const loadStoredCategories = (
+  collection: CollectionType,
+): CategoryConfig[] | null => {
+  if (typeof window === 'undefined') return null;
   try {
-    storedCategories = JSON.parse(localStorage.getItem('categories') || 'null');
-    storedHouses = JSON.parse(localStorage.getItem('houses') || 'null');
+    const raw = localStorage.getItem(categoriesStorageKey(collection));
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as CategoryConfig[]) : null;
   } catch {
-    storedCategories = null;
-    storedHouses = null;
+    return null;
   }
-}
-
-// Create a global state management solution
-let globalCategories: CategoryConfig[] = storedCategories || categoryConfigs;
-let globalHouses: HouseConfig[] = storedHouses || defaultHouses;
-let listeners: (() => void)[] = [];
-
-const notifyListeners = () => {
-  listeners.forEach((listener) => listener());
 };
 
-const saveState = () => {
+const loadStoredHouses = (
+  collection: CollectionType,
+): HouseConfig[] | null => {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(housesStorageKey(collection));
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as HouseConfig[]) : null;
+  } catch {
+    return null;
+  }
+};
+
+const initialCategories = (collection: CollectionType) =>
+  cloneCategories(
+    loadStoredCategories(collection) ?? collectionCategoryConfigs[collection],
+  );
+
+const initialHouses = (collection: CollectionType) =>
+  cloneHouses(
+    loadStoredHouses(collection) ?? collectionDefaultHouses[collection],
+  );
+
+const globalCategoriesByCollection: Record<CollectionType, CategoryConfig[]> = {
+  art: initialCategories('art'),
+  books: initialCategories('books'),
+  music: initialCategories('music'),
+};
+
+const globalHousesByCollection: Record<CollectionType, HouseConfig[]> = {
+  art: initialHouses('art'),
+  books: initialHouses('books'),
+  music: initialHouses('music'),
+};
+
+let listeners: Array<(collection: CollectionType) => void> = [];
+
+const notifyListeners = (collection: CollectionType) => {
+  listeners.forEach((listener) => listener(collection));
+};
+
+const saveState = (collection: CollectionType) => {
   if (typeof window !== 'undefined') {
     try {
-      localStorage.setItem('categories', JSON.stringify(globalCategories));
-      localStorage.setItem('houses', JSON.stringify(globalHouses));
+      localStorage.setItem(
+        categoriesStorageKey(collection),
+        JSON.stringify(globalCategoriesByCollection[collection]),
+      );
+      localStorage.setItem(
+        housesStorageKey(collection),
+        JSON.stringify(globalHousesByCollection[collection]),
+      );
     } catch {
       // Ignore write errors (e.g., storage quota)
     }
@@ -52,14 +120,19 @@ const normalizeIdentifier = (
   return normalized.replace(/[\s_]+/g, '-').replace(/-+/g, '-');
 };
 
-const resolveHouseIdentifiers = (houseId: string) => {
+const resolveHouseIdentifiers = (
+  collection: CollectionType,
+  houseId: string,
+) => {
   const normalizedId = normalizeIdentifier(houseId);
   const identifiers = new Set<string>();
   if (!normalizedId) return { house: undefined, identifiers };
 
   identifiers.add(normalizedId);
 
-  const matchingHouse = globalHouses.find((house) => {
+  const houses = getHousesFor(collection);
+
+  const matchingHouse = houses.find((house) => {
     const values: Array<string | undefined> = [
       house.id,
       house.code,
@@ -83,6 +156,7 @@ const resolveHouseIdentifiers = (houseId: string) => {
 };
 
 const resolveRoomIdentifiers = (
+  collection: CollectionType,
   house: HouseConfig | undefined,
   roomId: string,
 ) => {
@@ -92,9 +166,9 @@ const resolveRoomIdentifiers = (
 
   identifiers.add(normalizedId);
 
-  const roomsToSearch = house
-    ? house.rooms
-    : globalHouses.flatMap((h) => h.rooms);
+  const houses = getHousesFor(collection);
+
+  const roomsToSearch = house ? house.rooms : houses.flatMap((h) => h.rooms);
 
   const matchingRoom = roomsToSearch.find((room) => {
     const values: Array<string | undefined> = [
@@ -119,11 +193,14 @@ const resolveRoomIdentifiers = (
   return { room: matchingRoom, identifiers };
 };
 
-const loadInventoryItems = (): DecorItem[] => {
+const inventoryStorageKey = (collection: CollectionType) =>
+  `inventoryData-${collection}`;
+
+const loadInventoryItems = (collection: CollectionType): DecorItem[] => {
   if (typeof window === 'undefined') return [];
 
   try {
-    const stored = localStorage.getItem('inventoryData');
+    const stored = localStorage.getItem(inventoryStorageKey(collection));
     if (!stored) return [];
 
     const parsed = JSON.parse(stored);
@@ -157,22 +234,27 @@ const validateRoom = (room: Partial<RoomConfig>): string[] => {
 };
 
 // Enhanced function to check for linked items - inspects stored inventory data
-const getLinkedItems = (houseId: string, roomId: string): string[] => {
+const getLinkedItems = (
+  collection: CollectionType,
+  houseId: string,
+  roomId: string,
+): string[] => {
   const normalizedHouse = normalizeIdentifier(houseId);
   const normalizedRoom = normalizeIdentifier(roomId);
 
   if (!normalizedHouse || !normalizedRoom) return [];
 
   const { house, identifiers: houseIdentifiers } =
-    resolveHouseIdentifiers(houseId);
+    resolveHouseIdentifiers(collection, houseId);
   const { identifiers: roomIdentifiers } = resolveRoomIdentifiers(
+    collection,
     house,
     roomId,
   );
 
   if (!houseIdentifiers.size || !roomIdentifiers.size) return [];
 
-  const items = loadInventoryItems();
+  const items = loadInventoryItems(collection);
   if (items.length === 0) return [];
 
   const linked = new Set<string>();
@@ -191,6 +273,7 @@ const getLinkedItems = (houseId: string, roomId: string): string[] => {
 
 // Function to reassign items from one room to another
 const reassignItems = (
+  collection: CollectionType,
   fromHouseId: string,
   fromRoomId: string,
   toHouseId: string,
@@ -198,12 +281,13 @@ const reassignItems = (
 ): void => {
   if (typeof window === 'undefined') return;
 
-  const items = loadInventoryItems();
+  const items = loadInventoryItems(collection);
   if (items.length === 0) return;
 
   const { house, identifiers: fromHouseIdentifiers } =
-    resolveHouseIdentifiers(fromHouseId);
+    resolveHouseIdentifiers(collection, fromHouseId);
   const { identifiers: fromRoomIdentifiers } = resolveRoomIdentifiers(
+    collection,
     house,
     fromRoomId,
   );
@@ -229,38 +313,64 @@ const reassignItems = (
   });
 
   if (hasChanges) {
-    localStorage.setItem('inventoryData', JSON.stringify(updated));
+    localStorage.setItem(
+      inventoryStorageKey(collection),
+      JSON.stringify(updated),
+    );
   }
 };
 
 export function useSettingsState() {
-  const [categories, setCategories] =
-    useState<CategoryConfig[]>(globalCategories);
-  const [houses, setHouses] = useState<HouseConfig[]>(globalHouses);
+  const { collection } = useCollection();
   const [, forceUpdate] = useState({});
+  const [categories, setCategories] = useState<CategoryConfig[]>(() =>
+    cloneCategories(getCategoriesFor(collection)),
+  );
+  const [houses, setHouses] = useState<HouseConfig[]>(() =>
+    cloneHouses(getHousesFor(collection)),
+  );
 
   useEffect(() => {
+    setCategories(cloneCategories(getCategoriesFor(collection)));
+    setHouses(cloneHouses(getHousesFor(collection)));
+  }, [collection]);
+
+  useEffect(() => {
+    let cancelled = false;
     async function load() {
       try {
-        globalCategories = await fetchCategories();
+        const remoteCategories = await fetchCategories(collection);
+        if (!cancelled) {
+          globalCategoriesByCollection[collection] =
+            cloneCategories(remoteCategories);
+          saveState(collection);
+          notifyListeners(collection);
+        }
       } catch {
         // ignore
       }
       try {
-        globalHouses = await fetchHouses();
+        const remoteHouses = await fetchHouses(collection);
+        if (!cancelled) {
+          globalHousesByCollection[collection] = cloneHouses(remoteHouses);
+          saveState(collection);
+          notifyListeners(collection);
+        }
       } catch {
         // ignore
       }
-      setCategories([...globalCategories]);
-      setHouses([...globalHouses]);
     }
     load();
-  }, []);
+    return () => {
+      cancelled = true;
+    };
+  }, [collection]);
 
   useEffect(() => {
-    const listener = () => {
-      setCategories([...globalCategories]);
-      setHouses([...globalHouses]);
+    const listener = (changedCollection: CollectionType) => {
+      if (changedCollection !== collection) return;
+      setCategories(cloneCategories(getCategoriesFor(collection)));
+      setHouses(cloneHouses(getHousesFor(collection)));
       forceUpdate({});
     };
 
@@ -269,7 +379,29 @@ export function useSettingsState() {
     return () => {
       listeners = listeners.filter((l) => l !== listener);
     };
-  }, []);
+  }, [collection]);
+
+  const updateCategoriesState = (
+    updater: (current: CategoryConfig[]) => CategoryConfig[],
+  ) => {
+    const next = cloneCategories(updater(getCategoriesFor(collection)));
+    globalCategoriesByCollection[collection] = next;
+    saveState(collection);
+    setCategories(cloneCategories(next));
+    notifyListeners(collection);
+    return next;
+  };
+
+  const updateHousesState = (
+    updater: (current: HouseConfig[]) => HouseConfig[],
+  ) => {
+    const next = cloneHouses(updater(getHousesFor(collection)));
+    globalHousesByCollection[collection] = next;
+    saveState(collection);
+    setHouses(cloneHouses(next));
+    notifyListeners(collection);
+    return next;
+  };
 
   const addCategory = (name: string, icon: string) => {
     const newCategory: CategoryConfig = {
@@ -279,9 +411,7 @@ export function useSettingsState() {
       subcategories: [],
       visible: true,
     };
-    globalCategories = [...globalCategories, newCategory];
-    saveState();
-    notifyListeners();
+    updateCategoriesState((prev) => [...prev, newCategory]);
     return newCategory;
   };
 
@@ -297,14 +427,12 @@ export function useSettingsState() {
       code: house.code.toUpperCase(),
       rooms: [],
     };
-    globalHouses = [...globalHouses, newHouse];
-    saveState();
-    notifyListeners();
+    updateHousesState((prev) => [...prev, newHouse]);
     return newHouse;
   };
 
   const editHouse = (houseId: string, updates: Partial<HouseConfig>) => {
-    const house = globalHouses.find((h) => h.id === houseId);
+    const house = getHousesFor(collection).find((h) => h.id === houseId);
     if (!house) throw new Error('House not found');
 
     const updatedHouse = { ...house, ...updates };
@@ -313,22 +441,22 @@ export function useSettingsState() {
       throw new Error(validationErrors.join(', '));
     }
 
-    globalHouses = globalHouses.map((house) => {
-      if (house.id === houseId) {
-        const history = house.history
-          ? [...house.history, { ...house }]
-          : [{ ...house }];
-        return {
-          ...house,
-          ...updates,
-          version: (house.version || 1) + 1,
-          history,
-        };
-      }
-      return house;
-    });
-    saveState();
-    notifyListeners();
+    updateHousesState((prev) =>
+      prev.map((current) => {
+        if (current.id === houseId) {
+          const history = current.history
+            ? [...current.history, { ...current }]
+            : [{ ...current }];
+          return {
+            ...current,
+            ...updates,
+            version: (current.version || 1) + 1,
+            history,
+          };
+        }
+        return current;
+      }),
+    );
   };
 
   const addRoom = (
@@ -340,33 +468,33 @@ export function useSettingsState() {
       throw new Error(validationErrors.join(', '));
     }
 
-    globalHouses = globalHouses.map((house) => {
-      if (house.id === houseId) {
-        const newRoom: RoomConfig = {
-          id: Date.now().toString(),
-          code: room.code,
-          name: room.name,
-          house_code: house.code,
-          room_type: room.room_type,
-          floor: room.floor,
-          area_sqm: room.area_sqm,
-          windows: room.windows,
-          doors: room.doors,
-          description: room.description,
-          notes: room.notes,
-          version: 1,
-          is_deleted: false,
-          visible: true,
-        };
-        return {
-          ...house,
-          rooms: [...house.rooms, newRoom],
-        };
-      }
-      return house;
-    });
-    saveState();
-    notifyListeners();
+    updateHousesState((prev) =>
+      prev.map((house) => {
+        if (house.id === houseId) {
+          const newRoom: RoomConfig = {
+            id: Date.now().toString(),
+            code: room.code,
+            name: room.name,
+            house_code: house.code,
+            room_type: room.room_type,
+            floor: room.floor,
+            area_sqm: room.area_sqm,
+            windows: room.windows,
+            doors: room.doors,
+            description: room.description,
+            notes: room.notes,
+            version: 1,
+            is_deleted: false,
+            visible: true,
+          };
+          return {
+            ...house,
+            rooms: [...house.rooms, newRoom],
+          };
+        }
+        return house;
+      }),
+    );
   };
 
   const editRoom = (
@@ -374,7 +502,7 @@ export function useSettingsState() {
     roomId: string,
     updates: Partial<RoomConfig>,
   ) => {
-    const house = globalHouses.find((h) => h.id === houseId);
+    const house = getHousesFor(collection).find((h) => h.id === houseId);
     const room = house?.rooms.find((r) => r.id === roomId);
     if (!house || !room) throw new Error('House or room not found');
 
@@ -384,51 +512,54 @@ export function useSettingsState() {
       throw new Error(validationErrors.join(', '));
     }
 
-    globalHouses = globalHouses.map((house) => {
-      if (house.id === houseId) {
-        return {
-          ...house,
-          rooms: house.rooms.map((room) => {
-            if (room.id === roomId) {
-              const history = room.history
-                ? [...room.history, { ...room }]
-                : [{ ...room }];
-              return {
-                ...room,
-                ...updates,
-                version: (room.version || 1) + 1,
-                history,
-              };
-            }
-            return room;
-          }),
-        };
-      }
-      return house;
-    });
-    saveState();
-    notifyListeners();
+    updateHousesState((prev) =>
+      prev.map((currentHouse) => {
+        if (currentHouse.id === houseId) {
+          return {
+            ...currentHouse,
+            rooms: currentHouse.rooms.map((currentRoom) => {
+              if (currentRoom.id === roomId) {
+                const history = currentRoom.history
+                  ? [...currentRoom.history, { ...currentRoom }]
+                  : [{ ...currentRoom }];
+                return {
+                  ...currentRoom,
+                  ...updates,
+                  version: (currentRoom.version || 1) + 1,
+                  history,
+                };
+              }
+              return currentRoom;
+            }),
+          };
+        }
+        return currentHouse;
+      }),
+    );
   };
 
+  const boundGetLinkedItems = (houseId: string, roomId: string) =>
+    getLinkedItems(collection, houseId, roomId);
+
   const deleteRoom = (houseId: string, roomId: string) => {
-    const linkedItems = getLinkedItems(houseId, roomId);
+    const linkedItems = boundGetLinkedItems(houseId, roomId);
     if (linkedItems.length > 0) {
       throw new Error(
         `Cannot delete room: ${linkedItems.length} items are linked to this room. Please reassign them first.`,
       );
     }
 
-    globalHouses = globalHouses.map((house) => {
-      if (house.id === houseId) {
-        return {
-          ...house,
-          rooms: house.rooms.filter((room) => room.id !== roomId),
-        };
-      }
-      return house;
-    });
-    saveState();
-    notifyListeners();
+    updateHousesState((prev) =>
+      prev.map((house) => {
+        if (house.id === houseId) {
+          return {
+            ...house,
+            rooms: house.rooms.filter((room) => room.id !== roomId),
+          };
+        }
+        return house;
+      }),
+    );
   };
 
   const deleteRoomWithReassignment = (
@@ -437,94 +568,90 @@ export function useSettingsState() {
     newHouseId?: string,
     newRoomId?: string,
   ) => {
-    const linkedItems = getLinkedItems(houseId, roomId);
+    const linkedItems = boundGetLinkedItems(houseId, roomId);
 
     if (linkedItems.length > 0 && newHouseId && newRoomId) {
-      // Reassign items first
-      reassignItems(houseId, roomId, newHouseId, newRoomId);
+      reassignItems(collection, houseId, roomId, newHouseId, newRoomId);
     }
 
-    // Then delete the room
-    globalHouses = globalHouses.map((house) => {
-      if (house.id === houseId) {
-        return {
-          ...house,
-          rooms: house.rooms.filter((room) => room.id !== roomId),
-        };
-      }
-      return house;
-    });
-    saveState();
-    notifyListeners();
+    updateHousesState((prev) =>
+      prev.map((house) => {
+        if (house.id === houseId) {
+          return {
+            ...house,
+            rooms: house.rooms.filter((room) => room.id !== roomId),
+          };
+        }
+        return house;
+      }),
+    );
   };
 
   const moveHouse = (from: number, to: number) => {
-    const updated = Array.from(globalHouses);
-    const [moved] = updated.splice(from, 1);
-    updated.splice(to, 0, moved);
-    globalHouses = updated;
-    saveState();
-    notifyListeners();
+    updateHousesState((prev) => {
+      const updated = Array.from(prev);
+      const [moved] = updated.splice(from, 1);
+      updated.splice(to, 0, moved);
+      return updated;
+    });
   };
 
   const moveRoom = (houseId: string, from: number, to: number) => {
-    globalHouses = globalHouses.map((h) => {
-      if (h.id === houseId) {
-        const rooms = Array.from(h.rooms);
-        const [moved] = rooms.splice(from, 1);
-        rooms.splice(to, 0, moved);
-        return { ...h, rooms };
-      }
-      return h;
-    });
-    saveState();
-    notifyListeners();
+    updateHousesState((prev) =>
+      prev.map((house) => {
+        if (house.id === houseId) {
+          const rooms = Array.from(house.rooms);
+          const [moved] = rooms.splice(from, 1);
+          rooms.splice(to, 0, moved);
+          return { ...house, rooms };
+        }
+        return house;
+      }),
+    );
   };
 
   const addSubcategory = (categoryId: string, subcategoryName: string) => {
-    globalCategories = globalCategories.map((category) => {
-      if (category.id === categoryId) {
-        const newSubcategory = {
-          id: subcategoryName.toLowerCase().replace(/\s+/g, '-'),
-          name: subcategoryName,
-          visible: true,
-        };
-        return {
-          ...category,
-          subcategories: [...category.subcategories, newSubcategory],
-        };
-      }
-      return category;
-    });
-    saveState();
-    notifyListeners();
+    const newSubcategory = {
+      id: subcategoryName.toLowerCase().replace(/\s+/g, '-'),
+      name: subcategoryName,
+      visible: true,
+    };
+    updateCategoriesState((prev) =>
+      prev.map((category) =>
+        category.id === categoryId
+          ? {
+              ...category,
+              subcategories: [...category.subcategories, newSubcategory],
+            }
+          : category,
+      ),
+    );
   };
 
   const deleteSubcategory = (categoryId: string, subcategoryId: string) => {
-    globalCategories = globalCategories.map((category) => {
-      if (category.id === categoryId) {
-        return {
-          ...category,
-          subcategories: category.subcategories.filter(
-            (sub) => sub.id !== subcategoryId,
-          ),
-        };
-      }
-      return category;
-    });
-    saveState();
-    notifyListeners();
+    updateCategoriesState((prev) =>
+      prev.map((category) =>
+        category.id === categoryId
+          ? {
+              ...category,
+              subcategories: category.subcategories.filter(
+                (sub) => sub.id !== subcategoryId,
+              ),
+            }
+          : category,
+      ),
+    );
   };
 
   const editCategory = (
     categoryId: string,
     updates: Partial<CategoryConfig>,
   ) => {
-    globalCategories = globalCategories.map((cat) =>
-      cat.id === categoryId ? { ...cat, ...updates } : cat,
+    updateCategoriesState((prev) =>
+      prev.map((category) =>
+        category.id === categoryId ? { ...category, ...updates } : category,
+      ),
     );
-    saveState();
-    notifyListeners();
   };
 
   const editSubcategory = (
@@ -532,93 +659,97 @@ export function useSettingsState() {
     subcategoryId: string,
     updates: Partial<SubcategoryConfig>,
   ) => {
-    globalCategories = globalCategories.map((cat) => {
-      if (cat.id === categoryId) {
-        return {
-          ...cat,
-          subcategories: cat.subcategories.map((sub) =>
-            sub.id === subcategoryId ? { ...sub, ...updates } : sub,
-          ),
-        };
-      }
-      return cat;
-    });
-    saveState();
-    notifyListeners();
+    updateCategoriesState((prev) =>
+      prev.map((category) => {
+        if (category.id === categoryId) {
+          return {
+            ...category,
+            subcategories: category.subcategories.map((sub) =>
+              sub.id === subcategoryId ? { ...sub, ...updates } : sub,
+            ),
+          };
+        }
+        return category;
+      }),
+    );
   };
 
   const moveCategory = (from: number, to: number) => {
-    const updated = Array.from(globalCategories);
-    const [moved] = updated.splice(from, 1);
-    updated.splice(to, 0, moved);
-    globalCategories = updated;
-    saveState();
-    notifyListeners();
+    updateCategoriesState((prev) => {
+      const updated = Array.from(prev);
+      const [moved] = updated.splice(from, 1);
+      updated.splice(to, 0, moved);
+      return updated;
+    });
   };
 
   const moveSubcategory = (categoryId: string, from: number, to: number) => {
-    globalCategories = globalCategories.map((cat) => {
-      if (cat.id === categoryId) {
-        const subs = Array.from(cat.subcategories);
-        const [moved] = subs.splice(from, 1);
-        subs.splice(to, 0, moved);
-        return { ...cat, subcategories: subs };
-      }
-      return cat;
-    });
-    saveState();
-    notifyListeners();
+    updateCategoriesState((prev) =>
+      prev.map((category) => {
+        if (category.id === categoryId) {
+          const subs = Array.from(category.subcategories);
+          const [moved] = subs.splice(from, 1);
+          subs.splice(to, 0, moved);
+          return { ...category, subcategories: subs };
+        }
+        return category;
+      }),
+    );
   };
 
   const toggleHouseVisibility = (houseId: string) => {
-    globalHouses = globalHouses.map((h) =>
-      h.id === houseId ? { ...h, visible: !h.visible } : h,
+    updateHousesState((prev) =>
+      prev.map((house) =>
+        house.id === houseId ? { ...house, visible: !house.visible } : house,
+      ),
     );
-    saveState();
-    notifyListeners();
   };
 
   const toggleRoomVisibility = (houseId: string, roomId: string) => {
-    globalHouses = globalHouses.map((h) => {
-      if (h.id === houseId) {
-        return {
-          ...h,
-          rooms: h.rooms.map((r) =>
-            r.id === roomId ? { ...r, visible: !r.visible } : r,
-          ),
-        };
-      }
-      return h;
-    });
-    saveState();
-    notifyListeners();
+    updateHousesState((prev) =>
+      prev.map((house) => {
+        if (house.id === houseId) {
+          return {
+            ...house,
+            rooms: house.rooms.map((room) =>
+              room.id === roomId ? { ...room, visible: !room.visible } : room,
+            ),
+          };
+        }
+        return house;
+      }),
+    );
   };
 
   const toggleCategoryVisibility = (categoryId: string) => {
-    globalCategories = globalCategories.map((c) =>
-      c.id === categoryId ? { ...c, visible: !c.visible } : c,
+    updateCategoriesState((prev) =>
+      prev.map((category) =>
+        category.id === categoryId
+          ? { ...category, visible: !category.visible }
+          : category,
+      ),
     );
-    saveState();
-    notifyListeners();
   };
 
   const toggleSubcategoryVisibility = (
     categoryId: string,
     subcategoryId: string,
   ) => {
-    globalCategories = globalCategories.map((c) => {
-      if (c.id === categoryId) {
-        return {
-          ...c,
-          subcategories: c.subcategories.map((s) =>
-            s.id === subcategoryId ? { ...s, visible: !s.visible } : s,
-          ),
-        };
-      }
-      return c;
-    });
-    saveState();
-    notifyListeners();
+    updateCategoriesState((prev) =>
+      prev.map((category) => {
+        if (category.id === categoryId) {
+          return {
+            ...category,
+            subcategories: category.subcategories.map((subcategory) =>
+              subcategory.id === subcategoryId
+                ? { ...subcategory, visible: !subcategory.visible }
+                : subcategory,
+            ),
+          };
+        }
+        return category;
+      }),
+    );
   };
 
   const downloadMappings = () => {
@@ -636,7 +767,10 @@ export function useSettingsState() {
         id: c.id,
         name: c.name,
         icon: c.icon,
-        subcategories: c.subcategories.map((s) => ({ id: s.id, name: s.name })),
+        subcategories: c.subcategories.map((s) => ({
+          id: s.id,
+          name: s.name,
+        })),
       })),
     };
 
@@ -677,6 +811,7 @@ export function useSettingsState() {
     toggleSubcategoryVisibility,
     validateHouse,
     validateRoom,
-    getLinkedItems,
+    getLinkedItems: boundGetLinkedItems,
   };
 }
+

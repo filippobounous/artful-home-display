@@ -1,7 +1,8 @@
 import {
   CategoryConfig,
   SubcategoryConfig,
-  categoryConfigs,
+  collectionCategoryConfigs,
+  type CollectionType,
 } from '@/types/inventory';
 import { API_URL, withAuthHeaders } from './common';
 
@@ -11,142 +12,185 @@ function buildHeaders(contentType?: string) {
   return withAuthHeaders(headers);
 }
 
-function getAllCategories(): CategoryConfig[] {
-  const stored = localStorage.getItem('categories');
+const categoriesStorageKey = (collection: CollectionType) =>
+  `${collection}-categories`;
+
+function getDefaults(collection: CollectionType): CategoryConfig[] {
+  return collectionCategoryConfigs[collection] ?? [];
+}
+
+function getAllCategories(collection: CollectionType): CategoryConfig[] {
+  const stored = localStorage.getItem(categoriesStorageKey(collection));
   if (stored) {
     try {
       return JSON.parse(stored) as CategoryConfig[];
     } catch {
-      // fall through to defaults
+      // ignore parse errors and fall back to defaults
     }
   }
-  localStorage.setItem('categories', JSON.stringify(categoryConfigs));
-  return [...categoryConfigs];
+  const defaults = getDefaults(collection);
+  localStorage.setItem(categoriesStorageKey(collection), JSON.stringify(defaults));
+  return [...defaults];
 }
 
-function getLocalCategories(): CategoryConfig[] {
-  return getAllCategories().filter((c) => c.visible);
+function getLocalCategories(collection: CollectionType): CategoryConfig[] {
+  return getAllCategories(collection).filter((c) => c.visible);
 }
 
-function saveLocalCategories(categories: CategoryConfig[]) {
-  localStorage.setItem('categories', JSON.stringify(categories));
+function saveLocalCategories(
+  collection: CollectionType,
+  categories: CategoryConfig[],
+) {
+  localStorage.setItem(categoriesStorageKey(collection), JSON.stringify(categories));
 }
 
-export async function fetchCategories(): Promise<CategoryConfig[]> {
+function getEndpoint(collection: CollectionType) {
+  if (!API_URL) return '';
+  if (collection === 'art') return `${API_URL}/categories`;
+  return `${API_URL}/${collection}/categories`;
+}
+
+export async function fetchCategories(
+  collection: CollectionType,
+): Promise<CategoryConfig[]> {
   try {
-    const response = await fetch(`${API_URL}/categories`, {
+    const endpoint = getEndpoint(collection);
+    if (!endpoint) throw new Error('API not configured');
+    const response = await fetch(endpoint, {
       headers: buildHeaders(),
     });
     if (!response.ok) throw new Error('Failed to fetch categories');
-    const data = await response.json();
-    saveLocalCategories(data);
-    return data as CategoryConfig[];
+    const data = (await response.json()) as CategoryConfig[];
+    saveLocalCategories(collection, data);
+    return data;
   } catch {
-    return getLocalCategories();
+    return getLocalCategories(collection);
   }
 }
 
-export async function createCategory(category: CategoryConfig) {
+export async function createCategory(
+  collection: CollectionType,
+  category: CategoryConfig,
+) {
   try {
-    const response = await fetch(`${API_URL}/categories`, {
+    const endpoint = getEndpoint(collection);
+    if (!endpoint) throw new Error('API not configured');
+    const response = await fetch(endpoint, {
       method: 'POST',
       headers: buildHeaders('application/json'),
       body: JSON.stringify(category),
     });
     if (!response.ok) throw new Error('Failed to create category');
-    const data = await response.json();
-    const categories = getAllCategories();
-    saveLocalCategories([...categories, data]);
-    return data as CategoryConfig;
+    const data = (await response.json()) as CategoryConfig;
+    const categories = getAllCategories(collection);
+    saveLocalCategories(collection, [...categories, data]);
+    return data;
   } catch {
-    const categories = getAllCategories();
-    saveLocalCategories([...categories, category]);
+    const categories = getAllCategories(collection);
+    saveLocalCategories(collection, [...categories, category]);
     return category;
   }
 }
 
 export async function updateCategory(
+  collection: CollectionType,
   id: string,
   updates: Partial<CategoryConfig>,
 ) {
   try {
-    const response = await fetch(`${API_URL}/categories/${id}`, {
+    const endpoint = getEndpoint(collection);
+    if (!endpoint) throw new Error('API not configured');
+    const response = await fetch(`${endpoint}/${id}`, {
       method: 'PUT',
       headers: buildHeaders('application/json'),
       body: JSON.stringify(updates),
     });
     if (!response.ok) throw new Error('Failed to update category');
-    const data = await response.json();
-    const categories = getAllCategories().map((c) =>
+    const data = (await response.json()) as CategoryConfig;
+    const categories = getAllCategories(collection).map((c) =>
       c.id === data.id ? data : c,
     );
-    saveLocalCategories(categories);
-    return data as CategoryConfig;
+    saveLocalCategories(collection, categories);
+    return data;
   } catch {
-    const categories = getAllCategories().map((c) =>
+    const categories = getAllCategories(collection).map((c) =>
       c.id === id ? { ...c, ...updates } : c,
     );
-    saveLocalCategories(categories);
+    saveLocalCategories(collection, categories);
     return categories.find((c) => c.id === id) as CategoryConfig;
   }
 }
 
-export async function deleteCategory(id: string) {
+export async function deleteCategory(
+  collection: CollectionType,
+  id: string,
+) {
   try {
-    const response = await fetch(`${API_URL}/categories/${id}`, {
+    const endpoint = getEndpoint(collection);
+    if (!endpoint) throw new Error('API not configured');
+    const response = await fetch(`${endpoint}/${id}`, {
       method: 'DELETE',
       headers: buildHeaders(),
     });
     if (!response.ok) throw new Error('Failed to delete category');
-    saveLocalCategories(getAllCategories().filter((c) => c.id !== id));
+    saveLocalCategories(
+      collection,
+      getAllCategories(collection).filter((c) => c.id !== id),
+    );
     return true;
   } catch {
-    saveLocalCategories(getAllCategories().filter((c) => c.id !== id));
+    saveLocalCategories(
+      collection,
+      getAllCategories(collection).filter((c) => c.id !== id),
+    );
     return true;
   }
 }
 
 export async function addSubcategory(
+  collection: CollectionType,
   categoryId: string,
   subcategory: SubcategoryConfig,
 ) {
   try {
-    const response = await fetch(
-      `${API_URL}/categories/${categoryId}/subcategories`,
-      {
-        method: 'POST',
-        headers: buildHeaders('application/json'),
-        body: JSON.stringify(subcategory),
-      },
-    );
+    const endpoint = getEndpoint(collection);
+    if (!endpoint) throw new Error('API not configured');
+    const response = await fetch(`${endpoint}/${categoryId}/subcategories`, {
+      method: 'POST',
+      headers: buildHeaders('application/json'),
+      body: JSON.stringify(subcategory),
+    });
     if (!response.ok) throw new Error('Failed to add subcategory');
-    const data = await response.json();
-    const categories = getAllCategories().map((c) =>
+    const data = (await response.json()) as SubcategoryConfig;
+    const categories = getAllCategories(collection).map((c) =>
       c.id === categoryId
         ? { ...c, subcategories: [...c.subcategories, data] }
         : c,
     );
-    saveLocalCategories(categories);
-    return data as SubcategoryConfig;
+    saveLocalCategories(collection, categories);
+    return data;
   } catch {
-    const categories = getAllCategories().map((c) =>
+    const categories = getAllCategories(collection).map((c) =>
       c.id === categoryId
         ? { ...c, subcategories: [...c.subcategories, subcategory] }
         : c,
     );
-    saveLocalCategories(categories);
+    saveLocalCategories(collection, categories);
     return subcategory;
   }
 }
 
 export async function updateSubcategory(
+  collection: CollectionType,
   categoryId: string,
   subcategoryId: string,
   updates: Partial<SubcategoryConfig>,
 ) {
   try {
+    const endpoint = getEndpoint(collection);
+    if (!endpoint) throw new Error('API not configured');
     const response = await fetch(
-      `${API_URL}/categories/${categoryId}/subcategories/${subcategoryId}`,
+      `${endpoint}/${categoryId}/subcategories/${subcategoryId}`,
       {
         method: 'PUT',
         headers: buildHeaders('application/json'),
@@ -154,8 +198,8 @@ export async function updateSubcategory(
       },
     );
     if (!response.ok) throw new Error('Failed to update subcategory');
-    const data = await response.json();
-    const categories = getAllCategories().map((c) => {
+    const data = (await response.json()) as SubcategoryConfig;
+    const categories = getAllCategories(collection).map((c) => {
       if (c.id === categoryId) {
         return {
           ...c,
@@ -166,10 +210,10 @@ export async function updateSubcategory(
       }
       return c;
     });
-    saveLocalCategories(categories);
-    return data as SubcategoryConfig;
+    saveLocalCategories(collection, categories);
+    return data;
   } catch {
-    const categories = getAllCategories().map((c) => {
+    const categories = getAllCategories(collection).map((c) => {
       if (c.id === categoryId) {
         return {
           ...c,
@@ -180,7 +224,7 @@ export async function updateSubcategory(
       }
       return c;
     });
-    saveLocalCategories(categories);
+    saveLocalCategories(collection, categories);
     return categories
       .find((c) => c.id === categoryId)!
       .subcategories.find((s) => s.id === subcategoryId) as SubcategoryConfig;
@@ -188,19 +232,22 @@ export async function updateSubcategory(
 }
 
 export async function deleteSubcategory(
+  collection: CollectionType,
   categoryId: string,
   subcategoryId: string,
 ) {
   try {
+    const endpoint = getEndpoint(collection);
+    if (!endpoint) throw new Error('API not configured');
     const response = await fetch(
-      `${API_URL}/categories/${categoryId}/subcategories/${subcategoryId}`,
+      `${endpoint}/${categoryId}/subcategories/${subcategoryId}`,
       {
         method: 'DELETE',
         headers: buildHeaders(),
       },
     );
     if (!response.ok) throw new Error('Failed to delete subcategory');
-    const categories = getAllCategories().map((c) =>
+    const categories = getAllCategories(collection).map((c) =>
       c.id === categoryId
         ? {
             ...c,
@@ -210,10 +257,10 @@ export async function deleteSubcategory(
           }
         : c,
     );
-    saveLocalCategories(categories);
+    saveLocalCategories(collection, categories);
     return true;
   } catch {
-    const categories = getAllCategories().map((c) =>
+    const categories = getAllCategories(collection).map((c) =>
       c.id === categoryId
         ? {
             ...c,
@@ -223,9 +270,14 @@ export async function deleteSubcategory(
           }
         : c,
     );
-    saveLocalCategories(categories);
+    saveLocalCategories(collection, categories);
     return true;
   }
 }
 
-export { getAllCategories, getLocalCategories, saveLocalCategories };
+export {
+  getAllCategories,
+  getLocalCategories,
+  saveLocalCategories,
+  categoriesStorageKey,
+};

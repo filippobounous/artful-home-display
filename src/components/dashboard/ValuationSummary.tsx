@@ -1,21 +1,26 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { DecorItem } from '@/types/inventory';
+import type { InventoryItem } from '@/types/inventory';
 import { formatCurrency } from '@/lib/currencyUtils';
+import {
+  getItemValuationCurrency,
+  getItemValuationValue,
+} from '@/lib/inventoryDisplay';
 
 interface ValuationSummaryProps {
-  items: DecorItem[];
+  items: InventoryItem[];
 }
 
 export function ValuationSummary({ items }: ValuationSummaryProps) {
   // Group valuations by currency
   const valuationsByCurrency = items.reduce((acc, item) => {
-    if (item.valuation && item.valuationCurrency) {
-      const currency = item.valuationCurrency;
+    const valuation = getItemValuationValue(item);
+    const currency = getItemValuationCurrency(item);
+    if (valuation !== undefined && currency) {
       if (!acc[currency]) {
         acc[currency] = { total: 0, count: 0 };
       }
-      acc[currency].total += item.valuation;
+      acc[currency].total += valuation;
       acc[currency].count += 1;
     }
     return acc;

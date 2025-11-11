@@ -5,22 +5,26 @@ interface YearFilterProps {
   yearOptions: string[];
   selectedYear: string[];
   setSelectedYear: (years: string[]) => void;
+  label?: string;
+  placeholder?: string;
 }
 
 export function YearFilter({
   yearOptions,
   selectedYear,
   setSelectedYear,
+  label = 'Year/Period',
+  placeholder = 'Select year or period',
 }: YearFilterProps) {
   const options = yearOptions.map((y) => ({ id: y, name: y }));
 
   return (
     <div>
       <Label className="block text-sm font-medium text-muted-foreground mb-2">
-        Year/Period
+        {label}
       </Label>
       <MultiSelectFilter
-        placeholder="Select year or period"
+        placeholder={placeholder}
         options={options}
         selectedValues={selectedYear}
         onSelectionChange={setSelectedYear}

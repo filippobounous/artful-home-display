@@ -19,6 +19,7 @@ interface AppliedAnalyticsFiltersProps {
   categoryOptions: Option[];
   houseOptions: Option[];
   currencyOptions: Option[];
+  categoryLabel: string;
 }
 
 export function AppliedAnalyticsFilters({
@@ -31,6 +32,7 @@ export function AppliedAnalyticsFilters({
   categoryOptions,
   houseOptions,
   currencyOptions,
+  categoryLabel,
 }: AppliedAnalyticsFiltersProps) {
   const hasFilters =
     selectedCategories.length > 0 ||
@@ -57,7 +59,7 @@ export function AppliedAnalyticsFilters({
 
     filterGroups.push({
       id: 'analytics-category',
-      labelPrefix: 'Category',
+      labelPrefix: categoryLabel,
       selectedIds: selectedCategories,
       options: categoryOptionsMap,
       onRemove: (id) =>

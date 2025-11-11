@@ -1,15 +1,23 @@
-import { ViewMode } from '@/types/inventory';
+import { ViewMode, type CollectionType } from '@/types/inventory';
 import { FilterHeader } from '@/components/filters/FilterHeader';
 import { SearchInput } from '@/components/filters/SearchInput';
 import { CombinedCategoryFilter } from '@/components/filters/CombinedCategoryFilter';
 import { CombinedLocationFilter } from '@/components/filters/CombinedLocationFilter';
 import { YearFilter } from '@/components/filters/YearFilter';
-import { ArtistFilter } from '@/components/filters/ArtistFilter';
+import { CreatorFilter } from '@/components/filters/CreatorFilter';
 import { ValuationRangeFilter } from '@/components/filters/ValuationRangeFilter';
 import { AppliedFilters } from '@/components/filters/AppliedFilters';
 import { cn } from '@/lib/utils';
+import {
+  getCategoryLabel,
+  getCreatorLabel,
+  getCreatorPlaceholder,
+  getSubcategoryLabel,
+  getYearLabel,
+} from '@/lib/inventoryDisplay';
 
 interface SearchFiltersProps {
+  collection: CollectionType;
   searchTerm: string;
   setSearchTerm: (term: string) => void;
   selectedCategory: string[];
@@ -23,9 +31,9 @@ interface SearchFiltersProps {
   yearOptions: string[];
   selectedYear: string[];
   setSelectedYear: (years: string[]) => void;
-  artistOptions: string[];
-  selectedArtist: string[];
-  setSelectedArtist: (artists: string[]) => void;
+  creatorOptions: string[];
+  selectedCreator: string[];
+  setSelectedCreator: (creators: string[]) => void;
   valuationRange: { min?: number; max?: number };
   setValuationRange: (range: { min?: number; max?: number }) => void;
   viewMode: ViewMode;
@@ -38,6 +46,7 @@ interface SearchFiltersProps {
 }
 
 export function SearchFilters({
+  collection,
   searchTerm,
   setSearchTerm,
   selectedCategory,
@@ -51,9 +60,9 @@ export function SearchFilters({
   yearOptions,
   selectedYear,
   setSelectedYear,
-  artistOptions,
-  selectedArtist,
-  setSelectedArtist,
+  creatorOptions,
+  selectedCreator,
+  setSelectedCreator,
   valuationRange,
   setValuationRange,
   viewMode,
@@ -64,6 +73,12 @@ export function SearchFilters({
   permanentCategory,
   permanentHouse,
 }: SearchFiltersProps) {
+  const creatorLabel = getCreatorLabel(collection);
+  const creatorPlaceholder = getCreatorPlaceholder(collection);
+  const categoryLabel = getCategoryLabel(collection);
+  const subcategoryLabel = getSubcategoryLabel(collection);
+  const yearLabel = getYearLabel(collection);
+
   const activeCount =
     (searchTerm ? 1 : 0) +
     selectedCategory.length +
@@ -71,7 +86,7 @@ export function SearchFilters({
     selectedHouse.length +
     selectedRoom.length +
     selectedYear.length +
-    selectedArtist.length +
+    selectedCreator.length +
     (valuationRange.min ? 1 : 0) +
     (valuationRange.max ? 1 : 0);
   return (
@@ -108,6 +123,10 @@ export function SearchFilters({
             selectedSubcategory={selectedSubcategory}
             setSelectedSubcategory={setSelectedSubcategory}
             permanentCategory={permanentCategory}
+            label={`${categoryLabel} & ${subcategoryLabel}`}
+            placeholder={`Select ${categoryLabel.toLowerCase()}s or ${subcategoryLabel.toLowerCase()}`}
+            childLabel={subcategoryLabel}
+            childPlaceholder={`Select ${subcategoryLabel.toLowerCase()}`}
           />
 
           {/* Combined House/Room Filter */}
@@ -124,14 +143,17 @@ export function SearchFilters({
               yearOptions={yearOptions}
               selectedYear={selectedYear}
               setSelectedYear={setSelectedYear}
+              label={yearLabel}
             />
           </div>
 
           <div className="md:col-span-2">
-            <ArtistFilter
-              artistOptions={artistOptions}
-              selectedArtist={selectedArtist}
-              setSelectedArtist={setSelectedArtist}
+            <CreatorFilter
+              options={creatorOptions}
+              selected={selectedCreator}
+              onChange={setSelectedCreator}
+              label={creatorLabel}
+              placeholder={creatorPlaceholder}
             />
           </div>
 
@@ -158,12 +180,18 @@ export function SearchFilters({
         setSelectedRoom={setSelectedRoom}
         selectedYear={selectedYear}
         setSelectedYear={setSelectedYear}
-        selectedArtist={selectedArtist}
-        setSelectedArtist={setSelectedArtist}
+        selectedCreator={selectedCreator}
+        setSelectedCreator={setSelectedCreator}
         valuationRange={valuationRange}
         setValuationRange={setValuationRange}
         permanentCategory={permanentCategory}
         permanentHouse={permanentHouse}
+        labels={{
+          creator: creatorLabel,
+          category: categoryLabel,
+          subcategory: subcategoryLabel,
+          year: yearLabel,
+        }}
       />
     </div>
   );
