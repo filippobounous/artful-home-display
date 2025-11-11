@@ -98,7 +98,7 @@ bundled test data depending on your configuration.
 
 ## Connecting a FastAPI backend
 
-1. Create a `.env` file based on `.env.example` and set `VITE_API_URL` to the URL of your FastAPI server. If your API requires authentication, also set `VITE_API_KEY` with your key value.
+1. Create a `.env` file based on `.env.example` and set `VITE_API_URL` to the URL of your FastAPI server. If your API requires authentication, also set `VITE_API_KEY` with your key value. The frontend attaches this key to every request using the `X-API-Key` header expected by the FastAPI service.
 2. Start your FastAPI app (for example `uvicorn your_package.main:app --reload`).
 3. The frontend will attempt to fetch decor item data from `${VITE_API_URL}/decoritems`.
    It also looks for house information at `${VITE_API_URL}/houses` and room data
@@ -118,7 +118,7 @@ to that service and the app will use it for data.
 
 ## Running with Docker
 
-1. Create a `.env` file based on `.env.example` and adjust `VITE_API_URL` and `VITE_API_KEY` if needed.
+1. Create a `.env` file based on `.env.example` and adjust `VITE_API_URL` and `VITE_API_KEY` if needed (the key is sent via an `X-API-Key` header).
 2. Build the image and start the container:
 
 ```bash
