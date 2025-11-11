@@ -18,12 +18,18 @@ interface AppliedFiltersProps {
   setSelectedRoom: (rooms: string[]) => void;
   selectedYear: string[];
   setSelectedYear: (years: string[]) => void;
-  selectedArtist: string[];
-  setSelectedArtist: (artists: string[]) => void;
+  selectedCreator: string[];
+  setSelectedCreator: (creators: string[]) => void;
   valuationRange: { min?: number; max?: number };
   setValuationRange: (range: { min?: number; max?: number }) => void;
   permanentCategory?: string;
   permanentHouse?: string;
+  labels: {
+    creator: string;
+    category: string;
+    subcategory: string;
+    year: string;
+  };
 }
 
 export function AppliedFilters({
@@ -39,12 +45,13 @@ export function AppliedFilters({
   setSelectedRoom,
   selectedYear,
   setSelectedYear,
-  selectedArtist,
-  setSelectedArtist,
+  selectedCreator,
+  setSelectedCreator,
   valuationRange,
   setValuationRange,
   permanentCategory,
   permanentHouse,
+  labels,
 }: AppliedFiltersProps) {
   const { categories, houses } = useSettingsState();
 
@@ -69,8 +76,8 @@ export function AppliedFilters({
       case 'year':
         setSelectedYear(selectedYear.filter((y) => y !== value));
         break;
-      case 'artist':
-        setSelectedArtist(selectedArtist.filter((a) => a !== value));
+      case 'creator':
+        setSelectedCreator(selectedCreator.filter((a) => a !== value));
         break;
     }
   };
@@ -85,7 +92,7 @@ export function AppliedFilters({
     }
     setSelectedRoom([]);
     setSelectedYear([]);
-    setSelectedArtist([]);
+    setSelectedCreator([]);
     setValuationRange({});
     setSearchTerm('');
   };
@@ -96,7 +103,7 @@ export function AppliedFilters({
     selectedSubcategory.length > 0 ||
     selectedRoom.length > 0 ||
     selectedYear.length > 0 ||
-    selectedArtist.length > 0 ||
+    selectedCreator.length > 0 ||
     valuationRange.min !== undefined ||
     valuationRange.max !== undefined ||
     searchTerm.length > 0;
@@ -130,7 +137,7 @@ export function AppliedFilters({
 
     filterGroups.push({
       id: 'category',
-      labelPrefix: 'Category',
+      labelPrefix: labels.category,
       selectedIds: selectedCategory,
       options: categoryOptions,
       onRemove: (id) => clearFilter('category', id),
@@ -164,7 +171,7 @@ export function AppliedFilters({
     if (visibleSubcategories.length > 0) {
       filterGroups.push({
         id: 'subcategory',
-        labelPrefix: 'Subcategory',
+        labelPrefix: labels.subcategory,
         selectedIds: visibleSubcategories,
         options: subcategoryOptions,
         onRemove: (id) => clearFilter('subcategory', id),
@@ -228,7 +235,7 @@ export function AppliedFilters({
 
     filterGroups.push({
       id: 'year',
-      labelPrefix: 'Year',
+      labelPrefix: labels.year,
       selectedIds: selectedYear,
       options: yearOptions,
       onRemove: (id) => clearFilter('year', id),
@@ -236,19 +243,19 @@ export function AppliedFilters({
     });
   }
 
-  if (selectedArtist.length > 0) {
-    const artistOptions: AppliedFilterBadgeGroup['options'] = {};
+  if (selectedCreator.length > 0) {
+    const creatorOptions: AppliedFilterBadgeGroup['options'] = {};
 
-    selectedArtist.forEach((artist) => {
-      artistOptions[artist] = { label: artist };
+    selectedCreator.forEach((creator) => {
+      creatorOptions[creator] = { label: creator };
     });
 
     filterGroups.push({
-      id: 'artist',
-      labelPrefix: 'Artist',
-      selectedIds: selectedArtist,
-      options: artistOptions,
-      onRemove: (id) => clearFilter('artist', id),
+      id: 'creator',
+      labelPrefix: labels.creator,
+      selectedIds: selectedCreator,
+      options: creatorOptions,
+      onRemove: (id) => clearFilter('creator', id),
       variant: 'secondary',
     });
   }

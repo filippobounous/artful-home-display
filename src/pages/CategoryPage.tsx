@@ -1,7 +1,8 @@
 import { useParams, useNavigate } from 'react-router-dom';
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { InventoryHeader } from '@/components/InventoryHeader';
-import { fetchDecorItems } from '@/lib/api/items';
+import { getItemsFetcher, itemsQueryKey } from '@/lib/api/items';
 import { SearchFilters } from '@/components/SearchFilters';
 import { ItemsGrid } from '@/components/ItemsGrid';
 import { ItemsList } from '@/components/ItemsList';
@@ -10,23 +11,28 @@ import { EmptyState } from '@/components/EmptyState';
 import { useSettingsState } from '@/hooks/useSettingsState';
 import { SidebarLayout } from '@/components/SidebarLayout';
 import { useInventoryFilters } from '@/hooks/useInventoryFilters';
+import { useCollection } from '@/context/CollectionProvider';
 
 export default function CategoryPage() {
   const { categoryId } = useParams<{ categoryId: string }>();
   const navigate = useNavigate();
   const { categories, houses } = useSettingsState();
+  const { collection } = useCollection();
   const decodedCategoryId = categoryId ? decodeURIComponent(categoryId) : '';
   const category = categories.find((c) => c.id === decodedCategoryId);
 
+  const fetchItems = useMemo(() => getItemsFetcher(collection), [collection]);
+
   const { data: items = [], isLoading } = useQuery({
-    queryKey: ['decor-items'],
-    queryFn: fetchDecorItems,
+    queryKey: itemsQueryKey(collection),
+    queryFn: fetchItems,
   });
 
   const filters = useInventoryFilters({
     items,
     categories,
     houses,
+    collection,
     permanentCategoryId: decodedCategoryId,
   });
 
@@ -43,8 +49,8 @@ export default function CategoryPage() {
     setSelectedRoom,
     selectedYear,
     setSelectedYear,
-    selectedArtist,
-    setSelectedArtist,
+    selectedCreator,
+    setSelectedCreator,
     valuationRange,
     setValuationRange,
     viewMode,
@@ -53,7 +59,7 @@ export default function CategoryPage() {
     sortDirection,
     handleSort,
     yearOptions,
-    artistOptions,
+    creatorOptions,
     filteredItems,
     sortedItems,
   } = filters;
@@ -73,6 +79,7 @@ export default function CategoryPage() {
         </div>
 
         <SearchFilters
+          collection={collection}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           selectedCategory={selectedCategory}
@@ -86,9 +93,9 @@ export default function CategoryPage() {
           yearOptions={yearOptions}
           selectedYear={selectedYear}
           setSelectedYear={setSelectedYear}
-          artistOptions={artistOptions}
-          selectedArtist={selectedArtist}
-          setSelectedArtist={setSelectedArtist}
+          creatorOptions={creatorOptions}
+          selectedCreator={selectedCreator}
+          setSelectedCreator={setSelectedCreator}
           valuationRange={valuationRange}
           setValuationRange={setValuationRange}
           viewMode={viewMode}

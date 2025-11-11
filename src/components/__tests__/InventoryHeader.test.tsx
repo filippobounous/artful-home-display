@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { InventoryHeader } from '../InventoryHeader';
+import { CollectionProvider } from '@/context/CollectionProvider';
 
 let mockState: 'default' | 'testing' | 'apiwarn' = 'default';
 
@@ -27,9 +28,11 @@ vi.mock('@/components/ApiHealthIndicator', () => ({
 describe('InventoryHeader visual states', () => {
   const renderHeader = (theme?: string) =>
     render(
-      <div className={theme}>
-        <InventoryHeader />
-      </div>,
+      <CollectionProvider>
+        <div className={theme}>
+          <InventoryHeader />
+        </div>
+      </CollectionProvider>,
     );
 
   it('renders default light', () => {

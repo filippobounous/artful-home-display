@@ -1,4 +1,4 @@
-import { HouseConfig, defaultHouses } from '@/types/inventory';
+import { HouseConfig, collectionDefaultHouses, type CollectionType } from '@/types/inventory';
 import { API_URL, withAuthHeaders } from './common';
 
 function buildHeaders(contentType?: string) {
@@ -7,75 +7,108 @@ function buildHeaders(contentType?: string) {
   return withAuthHeaders(headers);
 }
 
-function getAllHouses(): HouseConfig[] {
-  const stored = localStorage.getItem('houses');
+const housesStorageKey = (collection: CollectionType) => `${collection}-houses`;
+
+function getDefaults(collection: CollectionType): HouseConfig[] {
+  return collectionDefaultHouses[collection] ?? [];
+}
+
+function getAllHouses(collection: CollectionType): HouseConfig[] {
+  const stored = localStorage.getItem(housesStorageKey(collection));
   if (stored) {
     try {
       return JSON.parse(stored) as HouseConfig[];
     } catch {
-      // fall through to defaults
+      // ignore parse errors and fall back to defaults
     }
   }
-  localStorage.setItem('houses', JSON.stringify(defaultHouses));
-  return [...defaultHouses];
+  const defaults = getDefaults(collection);
+  localStorage.setItem(housesStorageKey(collection), JSON.stringify(defaults));
+  return [...defaults];
 }
 
-function getLocalHouses(): HouseConfig[] {
-  return getAllHouses().filter((h) => !h.is_deleted);
+function getLocalHouses(collection: CollectionType): HouseConfig[] {
+  return getAllHouses(collection).filter((h) => !h.is_deleted);
 }
 
-function saveLocalHouses(houses: HouseConfig[]) {
-  localStorage.setItem('houses', JSON.stringify(houses));
+function saveLocalHouses(collection: CollectionType, houses: HouseConfig[]) {
+  localStorage.setItem(housesStorageKey(collection), JSON.stringify(houses));
 }
 
-export async function fetchHouses(): Promise<HouseConfig[]> {
+function getEndpoint(collection: CollectionType) {
+  if (!API_URL) return '';
+  if (collection === 'art') return `${API_URL}/houses`;
+  return `${API_URL}/${collection}/houses`;
+}
+
+export async function fetchHouses(
+  collection: CollectionType,
+): Promise<HouseConfig[]> {
   try {
-    const response = await fetch(`${API_URL}/houses`, {
+    const endpoint = getEndpoint(collection);
+    if (!endpoint) throw new Error('API not configured');
+    const response = await fetch(endpoint, {
       headers: buildHeaders(),
     });
     if (!response.ok) throw new Error('Failed to fetch houses');
-    const data = await response.json();
-    saveLocalHouses(data);
-    return data.filter((h: HouseConfig) => !h.is_deleted);
+    const data = (await response.json()) as HouseConfig[];
+    saveLocalHouses(collection, data);
+    return data.filter((h) => !h.is_deleted);
   } catch {
-    return getLocalHouses();
+    return getLocalHouses(collection);
   }
 }
 
-export async function createHouse(house: HouseConfig) {
+export async function createHouse(
+  collection: CollectionType,
+  house: HouseConfig,
+) {
   try {
-    const response = await fetch(`${API_URL}/houses`, {
+    const endpoint = getEndpoint(collection);
+    if (!endpoint) throw new Error('API not configured');
+    const response = await fetch(endpoint, {
       method: 'POST',
       headers: buildHeaders('application/json'),
       body: JSON.stringify(house),
     });
     if (!response.ok) throw new Error('Failed to create house');
-    const data = await response.json();
-    const houses = getAllHouses();
-    saveLocalHouses([...houses, { ...data, is_deleted: false, history: [] }]);
+    const data = (await response.json()) as HouseConfig;
+    const houses = getAllHouses(collection);
+    saveLocalHouses(collection, [
+      ...houses,
+      { ...data, is_deleted: false, history: data.history ?? [] },
+    ]);
     return data;
   } catch {
-    const houses = getAllHouses();
-    const newHouse = { ...house, is_deleted: false, history: [] };
-    saveLocalHouses([...houses, newHouse]);
+    const houses = getAllHouses(collection);
+    const newHouse = { ...house, is_deleted: false, history: house.history ?? [] };
+    saveLocalHouses(collection, [...houses, newHouse]);
     return newHouse;
   }
 }
 
-export async function updateHouse(id: string, updates: Partial<HouseConfig>) {
+export async function updateHouse(
+  collection: CollectionType,
+  id: string,
+  updates: Partial<HouseConfig>,
+) {
   try {
-    const response = await fetch(`${API_URL}/houses/${id}`, {
+    const endpoint = getEndpoint(collection);
+    if (!endpoint) throw new Error('API not configured');
+    const response = await fetch(`${endpoint}/${id}`, {
       method: 'PUT',
       headers: buildHeaders('application/json'),
       body: JSON.stringify(updates),
     });
     if (!response.ok) throw new Error('Failed to update house');
-    const data = await response.json();
-    const houses = getAllHouses().map((h) => (h.id === data.id ? data : h));
-    saveLocalHouses(houses);
+    const data = (await response.json()) as HouseConfig;
+    const houses = getAllHouses(collection).map((h) =>
+      h.id === data.id ? data : h,
+    );
+    saveLocalHouses(collection, houses);
     return data;
   } catch {
-    const houses = getAllHouses();
+    const houses = getAllHouses(collection);
     let updatedHouse: HouseConfig | null = null;
     const updated = houses.map((h) => {
       if (h.id === id) {
@@ -90,30 +123,37 @@ export async function updateHouse(id: string, updates: Partial<HouseConfig>) {
       }
       return h;
     });
-    saveLocalHouses(updated);
+    saveLocalHouses(collection, updated);
     return updatedHouse as HouseConfig;
   }
 }
 
-export async function deleteHouse(id: string) {
+export async function deleteHouse(collection: CollectionType, id: string) {
   try {
-    const response = await fetch(`${API_URL}/houses/${id}`, {
+    const endpoint = getEndpoint(collection);
+    if (!endpoint) throw new Error('API not configured');
+    const response = await fetch(`${endpoint}/${id}`, {
       method: 'DELETE',
       headers: buildHeaders(),
     });
     if (!response.ok) throw new Error('Failed to delete house');
-    const houses = getAllHouses().map((h) =>
+    const houses = getAllHouses(collection).map((h) =>
       h.id === id ? { ...h, is_deleted: true } : h,
     );
-    saveLocalHouses(houses);
+    saveLocalHouses(collection, houses);
     return true;
   } catch {
-    const houses = getAllHouses().map((h) =>
+    const houses = getAllHouses(collection).map((h) =>
       h.id === id ? { ...h, is_deleted: true } : h,
     );
-    saveLocalHouses(houses);
+    saveLocalHouses(collection, houses);
     return true;
   }
 }
 
-export { getAllHouses, getLocalHouses, saveLocalHouses };
+export {
+  getAllHouses,
+  getLocalHouses,
+  saveLocalHouses,
+  housesStorageKey,
+};

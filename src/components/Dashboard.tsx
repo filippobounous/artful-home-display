@@ -1,68 +1,65 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { DecorItem } from '@/types/inventory';
+import type { InventoryItem } from '@/types/inventory';
 import { useSettingsState } from '@/hooks/useSettingsState';
 import { ValuationSummary } from '@/components/dashboard/ValuationSummary';
 import { CollectionOverview } from '@/components/dashboard/CollectionOverview';
-import { Palette, Sofa, Package, Home } from 'lucide-react';
+import { Palette, BookOpen, Music } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { formatNumber } from '@/lib/currencyUtils';
+import { useCollection } from '@/context/CollectionProvider';
+import {
+  getCategoryLabel,
+  getItemCategory,
+} from '@/lib/inventoryDisplay';
 
 interface DashboardProps {
-  items: DecorItem[];
+  items: InventoryItem[];
 }
+
+const collectionIcons: Record<'art' | 'books' | 'music', React.ReactNode> = {
+  art: <Palette className="w-8 h-8 text-dashboard-blue" />,
+  books: <BookOpen className="w-8 h-8 text-dashboard-green" />,
+  music: <Music className="w-8 h-8 text-dashboard-indigo" />,
+};
 
 export function Dashboard({ items }: DashboardProps) {
   const { categories, houses } = useSettingsState();
+  const { collection } = useCollection();
 
-  const counts = items.reduce(
-    (acc, item) => {
-      acc.categories[item.category] = (acc.categories[item.category] ?? 0) + 1;
-      if (item.house) {
-        acc.houses[item.house] = (acc.houses[item.house] ?? 0) + 1;
-      }
-      return acc;
-    },
-    { categories: {}, houses: {} } as {
-      categories: Record<string, number>;
-      houses: Record<string, number>;
-    },
-  );
+  const categoryCounts = items.reduce<Record<string, number>>((acc, item) => {
+    const category = getItemCategory(item);
+    if (!category) return acc;
+    acc[category] = (acc[category] ?? 0) + 1;
+    return acc;
+  }, {});
 
-  // Count items by category using current settings
-  const categoryStats = categories
+  const houseCounts = items.reduce<Record<string, number>>((acc, item) => {
+    const houseId = item.house ?? 'unassigned';
+    acc[houseId] = (acc[houseId] ?? 0) + 1;
+    return acc;
+  }, {});
+
+  const visibleCategories = categories
     .filter((c) => c.visible)
     .map((category) => ({
       ...category,
-      count: counts.categories[category.id] ?? 0,
+      count: categoryCounts[category.id] ?? 0,
     }));
 
-  // Count items by house using current settings
-  const houseStats = houses
+  const visibleHouses = houses
     .filter((h) => h.visible)
     .map((house) => ({
       ...house,
-      count: counts.houses[house.id] ?? 0,
+      count: houseCounts[house.id] ?? 0,
     }));
 
   const totalItems = items.length;
-
-  const getCategoryIcon = (categoryId: string) => {
-    switch (categoryId) {
-      case 'art':
-        return <Palette className="w-8 h-8 text-dashboard-blue" />;
-      case 'furniture':
-        return <Sofa className="w-8 h-8 text-dashboard-green" />;
-      default:
-        return <Package className="w-8 h-8 text-muted-foreground" />;
-    }
-  };
+  const categoryLabel = getCategoryLabel(collection);
 
   return (
     <div className="space-y-8">
-      {/* Enhanced Overview Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Basic Total Items Card */}
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -72,25 +69,21 @@ export function Dashboard({ items }: DashboardProps) {
                   {formatNumber(totalItems)}
                 </p>
               </div>
-              <Package className="w-8 h-8 text-dashboard-blue" />
+              {collectionIcons[collection]}
             </div>
           </CardContent>
         </Card>
 
-        {/* Collection Overview */}
         <CollectionOverview items={items} />
-
-        {/* Valuation Summary */}
         <ValuationSummary items={items} />
       </div>
 
-      {/* Categories */}
       <div>
         <h2 className="text-xl font-semibold text-foreground mb-4">
-          Browse by Category
+          Browse by {categoryLabel}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {categoryStats.map((category) => (
+          {visibleCategories.map((category) => (
             <Link
               key={category.id}
               to={`/category/${encodeURIComponent(category.id)}`}
@@ -98,16 +91,13 @@ export function Dashboard({ items }: DashboardProps) {
               <Card className="hover:shadow-md transition-shadow cursor-pointer">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      {getCategoryIcon(category.id)}
-                      <div>
-                        <h3 className="font-semibold text-foreground">
-                          {category.name}
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                          {formatNumber(category.count)} items
-                        </p>
-                      </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground">
+                        {category.name}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        {formatNumber(category.count)} items
+                      </p>
                     </div>
                     <Badge variant="secondary">
                       {formatNumber(category.count)}
@@ -120,27 +110,21 @@ export function Dashboard({ items }: DashboardProps) {
         </div>
       </div>
 
-      {/* Houses */}
       <div>
         <h2 className="text-xl font-semibold text-foreground mb-4">
           Browse by Location
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {houseStats.map((house) => (
+          {visibleHouses.map((house) => (
             <Link key={house.id} to={`/house/${encodeURIComponent(house.id)}`}>
               <Card className="hover:shadow-md transition-shadow cursor-pointer">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Home className="w-8 h-8 text-dashboard-indigo" />
-                      <div>
-                        <h3 className="font-semibold text-foreground">
-                          {house.name}
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                          {formatNumber(house.count)} items
-                        </p>
-                      </div>
+                    <div>
+                      <h3 className="font-semibold text-foreground">{house.name}</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {formatNumber(house.count)} items
+                      </p>
                     </div>
                     <Badge variant="secondary">
                       {formatNumber(house.count)}

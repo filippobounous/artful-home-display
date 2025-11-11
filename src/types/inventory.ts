@@ -24,6 +24,8 @@ export interface ItemBase {
   deleted?: boolean;
 }
 
+export type CollectionType = 'art' | 'books' | 'music';
+
 export interface DecorItem extends ItemBase {
   code?: string;
   artist?: string;
@@ -107,20 +109,57 @@ export interface DecorItemInput {
   is_deleted?: boolean;
 }
 
+export interface BookItemInput {
+  id?: number;
+  title: string;
+  author?: string;
+  publisher?: string;
+  isbn?: string;
+  genre?: string;
+  pageCount?: number;
+  publicationYear?: number;
+  quantity?: number;
+  description?: string;
+  notes?: string;
+  house?: string;
+  room?: string;
+  valuation?: number;
+  valuationCurrency?: string;
+  valuationDate?: string;
+  deleted?: boolean;
+}
+
+export interface MusicItemInput {
+  id?: number;
+  title: string;
+  artist?: string;
+  album?: string;
+  format?: string;
+  genre?: string;
+  releaseYear?: number;
+  trackCount?: number;
+  quantity?: number;
+  description?: string;
+  notes?: string;
+  house?: string;
+  room?: string;
+  valuation?: number;
+  valuationCurrency?: string;
+  valuationDate?: string;
+  deleted?: boolean;
+}
+
+export type InventoryItemInput =
+  | DecorItemInput
+  | BookItemInput
+  | MusicItemInput;
+
 export type InventoryItem = DecorItem | BookItem | MusicItem;
 
 export type ViewMode = 'grid' | 'list' | 'table';
 export type CategoryFilter = 'all' | string;
-export type HouseFilter = 'all' | 'main-house' | 'guest-house' | 'studio';
-export type RoomFilter =
-  | 'all'
-  | 'living-room'
-  | 'bedroom'
-  | 'kitchen'
-  | 'dining-room'
-  | 'office'
-  | 'bathroom'
-  | 'hallway';
+export type HouseFilter = 'all' | string;
+export type RoomFilter = 'all' | string;
 
 // Configuration types for settings
 export interface CategoryConfig {
@@ -179,8 +218,8 @@ export interface RoomConfig {
   history?: RoomConfig[];
 }
 
-// Category configurations with icons - removed duplicate "decor" category
-export const categoryConfigs: CategoryConfig[] = [
+// Category configurations per collection
+export const decorCategoryConfigs: CategoryConfig[] = [
   {
     id: 'art',
     name: 'Art',
@@ -227,8 +266,91 @@ export const categoryConfigs: CategoryConfig[] = [
   },
 ];
 
-// House configurations with icons
-export const defaultHouses: HouseConfig[] = [
+export const bookCategoryConfigs: CategoryConfig[] = [
+  {
+    id: 'fiction',
+    name: 'Fiction',
+    icon: 'book',
+    subcategories: [
+      { id: 'literary', name: 'Literary', visible: true },
+      { id: 'mystery', name: 'Mystery', visible: true },
+      { id: 'fantasy', name: 'Fantasy', visible: true },
+      { id: 'historical', name: 'Historical', visible: true },
+    ],
+    visible: true,
+  },
+  {
+    id: 'non-fiction',
+    name: 'Non-Fiction',
+    icon: 'library',
+    subcategories: [
+      { id: 'biography', name: 'Biography', visible: true },
+      { id: 'history', name: 'History', visible: true },
+      { id: 'science', name: 'Science', visible: true },
+      { id: 'art-history', name: 'Art History', visible: true },
+    ],
+    visible: true,
+  },
+  {
+    id: 'reference',
+    name: 'Reference',
+    icon: 'file-text',
+    subcategories: [
+      { id: 'encyclopedia', name: 'Encyclopedias', visible: true },
+      { id: 'atlas', name: 'Atlases', visible: true },
+      { id: 'catalogue', name: 'Catalogues', visible: true },
+    ],
+    visible: true,
+  },
+];
+
+export const musicCategoryConfigs: CategoryConfig[] = [
+  {
+    id: 'recordings',
+    name: 'Recordings',
+    icon: 'disc',
+    subcategories: [
+      { id: 'vinyl', name: 'Vinyl', visible: true },
+      { id: 'cd', name: 'CD', visible: true },
+      { id: 'cassette', name: 'Cassette', visible: true },
+    ],
+    visible: true,
+  },
+  {
+    id: 'scores',
+    name: 'Scores & Sheet Music',
+    icon: 'music',
+    subcategories: [
+      { id: 'orchestral', name: 'Orchestral', visible: true },
+      { id: 'chamber', name: 'Chamber', visible: true },
+      { id: 'vocal', name: 'Vocal', visible: true },
+    ],
+    visible: true,
+  },
+  {
+    id: 'memorabilia',
+    name: 'Memorabilia',
+    icon: 'ticket',
+    subcategories: [
+      { id: 'posters', name: 'Posters', visible: true },
+      { id: 'programs', name: 'Programs', visible: true },
+      { id: 'merchandise', name: 'Merchandise', visible: true },
+    ],
+    visible: true,
+  },
+];
+
+export const collectionCategoryConfigs: Record<
+  CollectionType,
+  CategoryConfig[]
+> = {
+  art: decorCategoryConfigs,
+  books: bookCategoryConfigs,
+  music: musicCategoryConfigs,
+};
+
+// House configurations per collection
+export const decorDefaultHouses: HouseConfig[] = [
   {
     id: 'main-house',
     code: 'MH01',
@@ -394,3 +516,242 @@ export const defaultHouses: HouseConfig[] = [
     visible: true,
   },
 ];
+
+export const bookDefaultHouses: HouseConfig[] = [
+  {
+    id: 'central-library',
+    code: 'LIB01',
+    name: 'Central Library',
+    address: '12 Library Square, London',
+    city: 'London',
+    country: 'United Kingdom',
+    postal_code: 'WC2N 5DU',
+    beneficiary: ['Readers'],
+    latitude: 51.5074,
+    longitude: -0.1278,
+    description: 'Primary reading room and public stacks',
+    notes: '',
+    version: 1,
+    is_deleted: false,
+    icon: 'library',
+    rooms: [
+      {
+        id: 'reading-room',
+        name: 'Reading Room',
+        floor: 1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+      {
+        id: 'stacks',
+        name: 'Main Stacks',
+        floor: 2,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+      {
+        id: 'children',
+        name: "Children's Wing",
+        floor: 1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+    ],
+    visible: true,
+  },
+  {
+    id: 'research-archive',
+    code: 'ARC01',
+    name: 'Research Archive',
+    address: '24 Scholar Lane, Oxford',
+    city: 'Oxford',
+    country: 'United Kingdom',
+    postal_code: 'OX1 2JD',
+    beneficiary: ['Researchers'],
+    latitude: 51.752,
+    longitude: -1.2577,
+    description: 'Special collections and archives',
+    notes: '',
+    version: 1,
+    is_deleted: false,
+    icon: 'archive',
+    rooms: [
+      {
+        id: 'rare-books',
+        name: 'Rare Books Vault',
+        floor: -1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+      {
+        id: 'manuscripts',
+        name: 'Manuscripts Room',
+        floor: 1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+    ],
+    visible: true,
+  },
+  {
+    id: 'offsite-storage',
+    code: 'STR01',
+    name: 'Offsite Storage',
+    address: '185 Archive Way, Cambridge',
+    city: 'Cambridge',
+    country: 'United Kingdom',
+    postal_code: 'CB2 1TN',
+    beneficiary: ['Collection'],
+    latitude: 52.2053,
+    longitude: 0.1218,
+    description: 'Climate controlled storage',
+    notes: '',
+    version: 1,
+    is_deleted: false,
+    icon: 'warehouse',
+    rooms: [
+      {
+        id: 'compact-storage',
+        name: 'Compact Storage',
+        floor: 1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+      {
+        id: 'oversized',
+        name: 'Oversized Items',
+        floor: 1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+    ],
+    visible: true,
+  },
+];
+
+export const musicDefaultHouses: HouseConfig[] = [
+  {
+    id: 'music-vault',
+    code: 'MV01',
+    name: 'Music Vault',
+    address: '500 Harmony Ave, Nashville, TN',
+    city: 'Nashville',
+    country: 'United States',
+    postal_code: '37201',
+    beneficiary: ['Archive'],
+    latitude: 36.1627,
+    longitude: -86.7816,
+    description: 'Secured vault for master recordings',
+    notes: '',
+    version: 1,
+    is_deleted: false,
+    icon: 'vault',
+    rooms: [
+      {
+        id: 'vinyl-room',
+        name: 'Vinyl Room',
+        floor: 1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+      {
+        id: 'master-tapes',
+        name: 'Master Tapes',
+        floor: -1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+    ],
+    visible: true,
+  },
+  {
+    id: 'recording-studio',
+    code: 'STU01',
+    name: 'Recording Studio',
+    address: '215 Rhythm Rd, Los Angeles, CA',
+    city: 'Los Angeles',
+    country: 'United States',
+    postal_code: '90028',
+    beneficiary: ['Artists'],
+    latitude: 34.0522,
+    longitude: -118.2437,
+    description: 'Active studio and production spaces',
+    notes: '',
+    version: 1,
+    is_deleted: false,
+    icon: 'audio-lines',
+    rooms: [
+      {
+        id: 'control-room',
+        name: 'Control Room',
+        floor: 1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+      {
+        id: 'live-room',
+        name: 'Live Room',
+        floor: 1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+    ],
+    visible: true,
+  },
+  {
+    id: 'listening-lounge',
+    code: 'LL01',
+    name: 'Listening Lounge',
+    address: '88 Melody St, New York, NY',
+    city: 'New York',
+    country: 'United States',
+    postal_code: '10012',
+    beneficiary: ['Guests'],
+    latitude: 40.7265,
+    longitude: -73.9987,
+    description: 'Dedicated listening and event space',
+    notes: '',
+    version: 1,
+    is_deleted: false,
+    icon: 'headphones',
+    rooms: [
+      {
+        id: 'main-lounge',
+        name: 'Main Lounge',
+        floor: 1,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+      {
+        id: 'private-suite',
+        name: 'Private Suite',
+        floor: 2,
+        version: 1,
+        is_deleted: false,
+        visible: true,
+      },
+    ],
+    visible: true,
+  },
+];
+
+export const collectionDefaultHouses: Record<
+  CollectionType,
+  HouseConfig[]
+> = {
+  art: decorDefaultHouses,
+  books: bookDefaultHouses,
+  music: musicDefaultHouses,
+};

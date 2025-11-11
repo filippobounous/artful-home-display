@@ -1,18 +1,27 @@
 import { useCallback, useMemo, useState } from 'react';
 import type {
   CategoryConfig,
-  DecorItem,
   HouseConfig,
   ViewMode,
+  InventoryItem,
+  CollectionType,
 } from '@/types/inventory';
 import { sortInventoryItems } from '@/lib/sortUtils';
+import {
+  getCreatorLabel,
+  getItemCategory,
+  getItemCreator,
+  getItemSubcategory,
+  getItemValuationValue,
+  getItemYear,
+} from '@/lib/inventoryDisplay';
 
 export type InventorySortField =
   | 'title'
-  | 'artist'
+  | 'creator'
   | 'category'
   | 'valuation'
-  | 'yearPeriod'
+  | 'year'
   | 'location';
 
 export interface ValuationRange {
@@ -21,9 +30,10 @@ export interface ValuationRange {
 }
 
 interface UseInventoryFiltersOptions {
-  items: DecorItem[];
+  items: InventoryItem[];
   categories: CategoryConfig[];
   houses: HouseConfig[];
+  collection: CollectionType;
   permanentCategoryId?: string;
   permanentHouseId?: string;
   initialViewMode?: ViewMode;
@@ -35,6 +45,7 @@ export function useInventoryFilters({
   items,
   categories,
   houses,
+  collection,
   permanentCategoryId,
   permanentHouseId,
   initialViewMode = 'table',
@@ -47,7 +58,7 @@ export function useInventoryFilters({
   const [selectedHouse, setSelectedHouse] = useState<string[]>([]);
   const [selectedRoom, setSelectedRoom] = useState<string[]>([]);
   const [selectedYear, setSelectedYear] = useState<string[]>([]);
-  const [selectedArtist, setSelectedArtist] = useState<string[]>([]);
+  const [selectedCreator, setSelectedCreator] = useState<string[]>([]);
   const [valuationRange, setValuationRange] = useState<ValuationRange>({});
   const [viewMode, setViewMode] = useState<ViewMode>(initialViewMode);
   const [sortField, setSortField] =
@@ -58,27 +69,26 @@ export function useInventoryFilters({
   const yearOptions = useMemo(() => {
     const years = new Set<string>();
     items.forEach((item) => {
-      if (item.yearPeriod) {
-        years.add(item.yearPeriod);
-      }
+      const year = getItemYear(item);
+      if (year) years.add(year);
     });
     return Array.from(years);
   }, [items]);
 
-  const artistOptions = useMemo(() => {
-    const artists = new Set<string>();
+  const creatorOptions = useMemo(() => {
+    const creators = new Set<string>();
     items.forEach((item) => {
-      if (item.artist) {
-        artists.add(item.artist);
-      }
+      const creator = getItemCreator(item);
+      if (creator) creators.add(creator);
     });
-    return Array.from(artists);
+    return Array.from(creators);
   }, [items]);
 
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
       if (item.deleted) return false;
-      if (permanentCategoryId && item.category !== permanentCategoryId) {
+      const itemCategory = getItemCategory(item);
+      if (permanentCategoryId && itemCategory !== permanentCategoryId) {
         return false;
       }
       if (permanentHouseId && item.house !== permanentHouseId) {
@@ -91,19 +101,25 @@ export function useInventoryFilters({
         item.title.toLowerCase().includes(term) ||
         (item.description && item.description.toLowerCase().includes(term)) ||
         (item.notes && item.notes.toLowerCase().includes(term)) ||
-        (item.artist && item.artist.toLowerCase().includes(term));
+        (getItemCreator(item) &&
+          getItemCreator(item)!.toLowerCase().includes(term)) ||
+        ('publisher' in item &&
+          item.publisher &&
+          item.publisher.toLowerCase().includes(term)) ||
+        ('isbn' in item && item.isbn && item.isbn.toLowerCase().includes(term));
 
       if (!matchesSearch) return false;
 
       const matchesCategory =
         selectedCategory.length === 0 ||
-        selectedCategory.includes(item.category);
+        (itemCategory && selectedCategory.includes(itemCategory));
 
       if (!matchesCategory) return false;
 
       const matchesSubcategory =
         selectedSubcategory.length === 0 ||
-        (item.subcategory && selectedSubcategory.includes(item.subcategory));
+        (getItemSubcategory(item) &&
+          selectedSubcategory.includes(getItemSubcategory(item)!));
 
       if (!matchesSubcategory) return false;
 
@@ -121,21 +137,23 @@ export function useInventoryFilters({
 
       const matchesYear =
         selectedYear.length === 0 ||
-        (item.yearPeriod && selectedYear.includes(item.yearPeriod));
+        (getItemYear(item) && selectedYear.includes(getItemYear(item)!));
 
       if (!matchesYear) return false;
 
-      const matchesArtist =
-        selectedArtist.length === 0 ||
-        (item.artist && selectedArtist.includes(item.artist));
+      const matchesCreator =
+        selectedCreator.length === 0 ||
+        (getItemCreator(item) &&
+          selectedCreator.includes(getItemCreator(item)!));
 
-      if (!matchesArtist) return false;
+      if (!matchesCreator) return false;
 
+      const valuation = getItemValuationValue(item);
       const matchesValuation =
-        (!valuationRange.min ||
-          (item.valuation && item.valuation >= valuationRange.min)) &&
-        (!valuationRange.max ||
-          (item.valuation && item.valuation <= valuationRange.max));
+        (valuationRange.min === undefined ||
+          (valuation !== undefined && valuation >= valuationRange.min)) &&
+        (valuationRange.max === undefined ||
+          (valuation !== undefined && valuation <= valuationRange.max));
 
       return matchesValuation;
     });
@@ -147,7 +165,7 @@ export function useInventoryFilters({
     selectedHouse,
     selectedRoom,
     selectedYear,
-    selectedArtist,
+    selectedCreator,
     valuationRange,
     permanentCategoryId,
     permanentHouseId,
@@ -160,8 +178,16 @@ export function useInventoryFilters({
       sortDirection,
       houses,
       categories,
+      collection,
     );
-  }, [filteredItems, sortField, sortDirection, houses, categories]);
+  }, [
+    filteredItems,
+    sortField,
+    sortDirection,
+    houses,
+    categories,
+    collection,
+  ]);
 
   const handleSort = useCallback(
     (field: InventorySortField, direction: 'asc' | 'desc') => {
@@ -184,8 +210,8 @@ export function useInventoryFilters({
     setSelectedRoom,
     selectedYear,
     setSelectedYear,
-    selectedArtist,
-    setSelectedArtist,
+    selectedCreator,
+    setSelectedCreator,
     valuationRange,
     setValuationRange,
     viewMode,
@@ -196,8 +222,11 @@ export function useInventoryFilters({
     setSortDirection,
     handleSort,
     yearOptions,
-    artistOptions,
+    creatorOptions,
     filteredItems,
     sortedItems,
+    labels: {
+      creator: getCreatorLabel(collection),
+    },
   };
 }

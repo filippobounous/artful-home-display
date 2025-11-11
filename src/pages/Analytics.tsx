@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { InventoryHeader } from '@/components/InventoryHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -14,12 +15,22 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-import { fetchDecorItems } from '@/lib/api';
-import { DecorItem } from '@/types/inventory';
-import { StatisticsTable } from '@/components/analytics/StatisticsTable';
-import { formatCurrency, formatNumber } from '@/lib/currencyUtils';
 import { AnalyticsFilters } from '@/components/analytics/AnalyticsFilters';
 import { SidebarLayout } from '@/components/SidebarLayout';
+import { StatisticsTable } from '@/components/analytics/StatisticsTable';
+import {
+  getItemsFetcher,
+  itemsQueryKey,
+} from '@/lib/api/items';
+import type { InventoryItem } from '@/types/inventory';
+import { useCollection } from '@/context/CollectionProvider';
+import {
+  getCategoryLabel,
+  getItemCategory,
+  getItemValuationCurrency,
+  getItemValuationValue,
+} from '@/lib/inventoryDisplay';
+import { formatCurrency, formatNumber } from '@/lib/currencyUtils';
 
 interface TooltipProps {
   active?: boolean;
@@ -29,13 +40,28 @@ interface TooltipProps {
   label?: string;
 }
 
+const COLORS = [
+  'hsl(208, 100%, 49.8%)',
+  'hsl(169, 100%, 38.4%)',
+  'hsl(41, 100%, 57.8%)',
+  'hsl(20, 100%, 62.9%)',
+  'hsl(243, 51.9%, 68.2%)',
+];
+
 const Analytics = () => {
-  const [items, setItems] = useState<DecorItem[]>([]);
-  const [filteredItems, setFilteredItems] = useState<DecorItem[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedHouses, setSelectedHouses] = useState<string[]>([]);
   const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
+  const { collection } = useCollection();
+  const categoryLabel = getCategoryLabel(collection);
+
+  const fetchItems = useMemo(() => getItemsFetcher(collection), [collection]);
+
+  const { data: items = [] } = useQuery({
+    queryKey: itemsQueryKey(collection),
+    queryFn: fetchItems,
+  });
 
   useEffect(() => {
     const categoriesParam = searchParams.get('categories');
@@ -55,46 +81,6 @@ const Analytics = () => {
   }, []);
 
   useEffect(() => {
-    fetchDecorItems()
-      .then((data) => {
-        const activeItems = data.filter((item) => !item.deleted);
-        setItems(activeItems);
-        setFilteredItems(activeItems);
-      })
-      .catch(() => {
-        setItems([]);
-        setFilteredItems([]);
-      });
-  }, []);
-
-  // Apply filters
-  useEffect(() => {
-    let filtered = [...items];
-
-    if (selectedCategories.length > 0) {
-      filtered = filtered.filter((item) =>
-        selectedCategories.includes(item.category),
-      );
-    }
-
-    if (selectedHouses.length > 0) {
-      filtered = filtered.filter(
-        (item) => item.house && selectedHouses.includes(item.house),
-      );
-    }
-
-    if (selectedCurrencies.length > 0) {
-      filtered = filtered.filter(
-        (item) =>
-          item.valuationCurrency &&
-          selectedCurrencies.includes(item.valuationCurrency),
-      );
-    }
-
-    setFilteredItems(filtered);
-  }, [items, selectedCategories, selectedHouses, selectedCurrencies]);
-
-  useEffect(() => {
     const params = new URLSearchParams();
     if (selectedCategories.length > 0) {
       params.set('categories', selectedCategories.join(','));
@@ -108,21 +94,43 @@ const Analytics = () => {
     setSearchParams(params, { replace: true });
   }, [selectedCategories, selectedHouses, selectedCurrencies, setSearchParams]);
 
-  // Basic statistics
+  const filteredItems = useMemo(() => {
+    return items.filter((item) => {
+      if (selectedCategories.length > 0) {
+        const category = getItemCategory(item);
+        if (!category || !selectedCategories.includes(category)) {
+          return false;
+        }
+      }
+      if (selectedHouses.length > 0) {
+        if (!item.house || !selectedHouses.includes(item.house)) {
+          return false;
+        }
+      }
+      if (selectedCurrencies.length > 0) {
+        const currency = getItemValuationCurrency(item);
+        if (!currency || !selectedCurrencies.includes(currency)) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }, [items, selectedCategories, selectedHouses, selectedCurrencies]);
+
   const totalItems = filteredItems.length;
   const valuedItems = filteredItems.filter(
-    (item) => item.valuation && item.valuation > 0,
+    (item) => (getItemValuationValue(item) ?? 0) > 0,
   );
 
-  // Group valuations by currency
   const valuationsByCurrency = valuedItems.reduce(
     (acc, item) => {
-      if (item.valuation && item.valuationCurrency) {
-        const currency = item.valuationCurrency;
+      const valuation = getItemValuationValue(item);
+      const currency = getItemValuationCurrency(item);
+      if (valuation !== undefined && currency) {
         if (!acc[currency]) {
           acc[currency] = { total: 0, count: 0 };
         }
-        acc[currency].total += item.valuation;
+        acc[currency].total += valuation;
         acc[currency].count += 1;
       }
       return acc;
@@ -130,10 +138,10 @@ const Analytics = () => {
     {} as Record<string, { total: number; count: number }>,
   );
 
-  // Items by category
   const categoryData = filteredItems.reduce(
     (acc, item) => {
-      acc[item.category] = (acc[item.category] || 0) + 1;
+      const category = getItemCategory(item) ?? 'Unassigned';
+      acc[category] = (acc[category] || 0) + 1;
       return acc;
     },
     {} as Record<string, number>,
@@ -146,7 +154,6 @@ const Analytics = () => {
     }),
   );
 
-  // Items by house
   const houseData = filteredItems.reduce(
     (acc, item) => {
       const house = item.house || 'Unassigned';
@@ -161,20 +168,17 @@ const Analytics = () => {
     count,
   }));
 
-  // Valuation by category (grouped by currency)
   const valuationByCategory = filteredItems.reduce(
     (acc, item) => {
-      if (item.valuation && item.valuationCurrency) {
-        const key = `${item.category}-${item.valuationCurrency}`;
+      const valuation = getItemValuationValue(item);
+      const currency = getItemValuationCurrency(item);
+      const category = getItemCategory(item) ?? 'Unassigned';
+      if (valuation !== undefined && currency) {
+        const key = `${category}-${currency}`;
         if (!acc[key]) {
-          acc[key] = {
-            category:
-              item.category.charAt(0).toUpperCase() + item.category.slice(1),
-            currency: item.valuationCurrency,
-            value: 0,
-          };
+          acc[key] = { category, currency, value: 0 };
         }
-        acc[key].value += item.valuation;
+        acc[key].value += valuation;
       }
       return acc;
     },
@@ -183,14 +187,6 @@ const Analytics = () => {
 
   const valuationChartData = Object.values(valuationByCategory);
 
-  const COLORS = [
-    'hsl(208, 100%, 49.8%)',
-    'hsl(169, 100%, 38.4%)',
-    'hsl(41, 100%, 57.8%)',
-    'hsl(20, 100%, 62.9%)',
-    'hsl(243, 51.9%, 68.2%)',
-  ];
-
   const customTooltip = ({ active, payload, label }: TooltipProps) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
@@ -198,8 +194,8 @@ const Analytics = () => {
         return (
           <div className="bg-background border rounded-lg p-3 shadow-md">
             <p className="font-medium">{label}</p>
-            <p className="text-primary">
-              Value: {formatCurrency(data.value, data.currency)}
+            <p className="text-sm text-muted-foreground">
+              {formatCurrency(data.value, data.currency)}
             </p>
           </div>
         );
@@ -208,9 +204,7 @@ const Analytics = () => {
         return (
           <div className="bg-background border rounded-lg p-3 shadow-md">
             <p className="font-medium">{label}</p>
-            <p className="text-primary">
-              Count: {formatNumber(data.count)} items
-            </p>
+            <p className="text-sm text-muted-foreground">{data.count} items</p>
           </div>
         );
       }
@@ -221,18 +215,16 @@ const Analytics = () => {
   return (
     <SidebarLayout>
       <InventoryHeader />
-
-      <main className="flex-1 p-6">
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold text-foreground mb-2">
+      <main className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
             Collection Analytics
-          </h2>
+          </h1>
           <p className="text-muted-foreground">
-            Comprehensive overview of your collection statistics
+            Explore insights across your {collection} collection.
           </p>
         </div>
 
-        {/* Analytics Filters */}
         <AnalyticsFilters
           items={items}
           selectedCategories={selectedCategories}
@@ -243,120 +235,48 @@ const Analytics = () => {
           setSelectedCurrencies={setSelectedCurrencies}
         />
 
-        {/* Overview Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Total Items
-              </CardTitle>
+              <CardTitle>Total Items</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {formatNumber(totalItems)} items
-              </div>
+              <p className="text-3xl font-bold">{formatNumber(totalItems)}</p>
             </CardContent>
           </Card>
-
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Valued Items
-              </CardTitle>
+              <CardTitle>Valued Items</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {formatNumber(valuedItems.length)} items
-              </div>
-              <p className="text-sm text-muted-foreground">
-                {totalItems > 0
-                  ? formatNumber((valuedItems.length / totalItems) * 100, 1)
-                  : 0}
-                % of collection
+              <p className="text-3xl font-bold">{formatNumber(valuedItems.length)}</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Valuation Currencies</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold">
+                {formatNumber(Object.keys(valuationsByCurrency).length)}
               </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Currencies
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {Object.keys(valuationsByCurrency).length}
-              </div>
-              <p className="text-sm text-muted-foreground">
-                {Object.keys(valuationsByCurrency).join(', ') || 'None'}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Categories
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {Object.keys(categoryData).length}
-              </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Valuation Summary by Currency */}
-        {Object.keys(valuationsByCurrency).length > 0 && (
-          <div className="mb-8">
-            <Card>
-              <CardHeader>
-                <CardTitle>Total Valuations by Currency</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {Object.entries(valuationsByCurrency).map(
-                    ([currency, data]) => (
-                      <div
-                        key={currency}
-                        className="text-center p-4 border rounded-lg"
-                      >
-                        <div className="text-2xl font-bold">
-                          {formatCurrency(data.total, currency)}
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          {formatNumber(data.count)} items in {currency}
-                        </p>
-                      </div>
-                    ),
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {/* Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <Card>
             <CardHeader>
-              <CardTitle>Items by Category</CardTitle>
+              <CardTitle>{categoryLabel} Distribution</CardTitle>
             </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
+            <CardContent className="h-[320px]">
+              <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={categoryChartData}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="category" />
-                  <YAxis
-                    label={{
-                      value: 'Items',
-                      angle: -90,
-                      position: 'insideLeft',
-                    }}
-                  />
+                  <XAxis dataKey="category" tick={{ fontSize: 12 }} />
+                  <YAxis tick={{ fontSize: 12 }} />
                   <Tooltip content={customTooltip} />
-                  <Bar dataKey="count" fill="hsl(var(--sidebar-ring))" />
+                  <Bar dataKey="count" fill="hsl(var(--primary))" />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -366,26 +286,12 @@ const Analytics = () => {
             <CardHeader>
               <CardTitle>Items by House</CardTitle>
             </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
+            <CardContent className="h-[320px]">
+              <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie
-                    data={houseChartData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ house, percent }) =>
-                      `${house} (${(percent * 100).toFixed(1)}%)`
-                    }
-                    outerRadius={80}
-                    fill="hsl(243, 51.9%, 68.2%)"
-                    dataKey="count"
-                  >
-                    {houseChartData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
-                      />
+                  <Pie data={houseChartData} dataKey="count" nameKey="house" fill="hsl(var(--secondary))" label>
+                    {houseChartData.map((_, index) => (
+                      <Cell key={index} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
                   <Tooltip content={customTooltip} />
@@ -395,34 +301,35 @@ const Analytics = () => {
           </Card>
         </div>
 
-        {valuationChartData.length > 0 && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <Card>
-              <CardHeader>
-                <CardTitle>Valuation by Category</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={valuationChartData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="category" />
-                    <YAxis
-                      label={{
-                        value: 'Value',
-                        angle: -90,
-                        position: 'insideLeft',
-                      }}
+        <Card>
+          <CardHeader>
+            <CardTitle>Valuation by {categoryLabel}</CardTitle>
+          </CardHeader>
+          <CardContent className="h-[360px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={valuationChartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis
+                  dataKey="category"
+                  tickFormatter={(value) =>
+                    value.charAt(0).toUpperCase() + value.slice(1)
+                  }
+                />
+                <YAxis tickFormatter={(value) => formatNumber(value)} />
+                <Tooltip content={customTooltip} />
+                <Bar dataKey="value">
+                  {valuationChartData.map((entry, index) => (
+                    <Cell
+                      key={`${entry.category}-${entry.currency}`}
+                      fill={COLORS[index % COLORS.length]}
                     />
-                    <Tooltip content={customTooltip} />
-                    <Bar dataKey="value" fill="hsl(160, 84.1%, 39.4%)" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </div>
-        )}
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
 
-        {/* Statistics Table */}
         <StatisticsTable items={filteredItems} />
       </main>
     </SidebarLayout>

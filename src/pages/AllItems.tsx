@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { InventoryHeader } from '@/components/InventoryHeader';
 import { ItemsGrid } from '@/components/ItemsGrid';
@@ -10,33 +11,47 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
-  fetchDecorItems,
-  fetchDecorItem,
-  updateDecorItem,
-  decorItemToInput,
+  getItemsFetcher,
+  getItemFetcher,
+  itemsQueryKey,
+  itemQueryKey,
+  getUpdateItemFn,
+  getItemToInputConverter,
 } from '@/lib/api';
 import { ItemDetailDialog } from '@/components/ItemDetailDialog';
-import type { DecorItemInput } from '@/types/inventory';
+import type { InventoryItemInput } from '@/types/inventory';
 import { useSettingsState } from '@/hooks/useSettingsState';
 import { BatchLocationDialog } from '@/components/BatchLocationDialog';
 import { useToast } from '@/hooks/use-toast';
 import { formatNumber } from '@/lib/currencyUtils';
 import { SidebarLayout } from '@/components/SidebarLayout';
 import { useInventoryFilters } from '@/hooks/useInventoryFilters';
+import { useCollection } from '@/context/CollectionProvider';
 
 const AllItems = () => {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [showBatchDialog, setShowBatchDialog] = useState(false);
   const navigate = useNavigate();
   const { itemId } = useParams<{ itemId?: string }>();
+  const { collection } = useCollection();
+  const fetchItems = useMemo(() => getItemsFetcher(collection), [collection]);
+  const fetchItemById = useMemo(
+    () => getItemFetcher(collection),
+    [collection],
+  );
+  const updateItem = useMemo(() => getUpdateItemFn(collection), [collection]);
+  const itemToInput = useMemo(
+    () => getItemToInputConverter(collection),
+    [collection],
+  );
 
   const {
     data: selectedItem,
     isLoading: itemLoading,
     error: itemError,
   } = useQuery({
-    queryKey: ['decor-item', itemId],
-    queryFn: () => (itemId ? fetchDecorItem(itemId) : Promise.resolve(null)),
+    queryKey: itemId ? itemQueryKey(collection, itemId) : undefined,
+    queryFn: () => (itemId ? fetchItemById(itemId) : Promise.resolve(null)),
     enabled: !!itemId,
   });
 
@@ -49,14 +64,15 @@ const AllItems = () => {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ['decor-items'],
-    queryFn: fetchDecorItems,
+    queryKey: itemsQueryKey(collection),
+    queryFn: fetchItems,
   });
 
   const filters = useInventoryFilters({
     items,
     categories,
     houses,
+    collection,
   });
 
   const {
@@ -72,8 +88,8 @@ const AllItems = () => {
     setSelectedRoom,
     selectedYear,
     setSelectedYear,
-    selectedArtist,
-    setSelectedArtist,
+    selectedCreator,
+    setSelectedCreator,
     valuationRange,
     setValuationRange,
     viewMode,
@@ -82,7 +98,7 @@ const AllItems = () => {
     sortDirection,
     handleSort,
     yearOptions,
-    artistOptions,
+    creatorOptions,
     filteredItems,
     sortedItems,
   } = filters;
@@ -93,17 +109,18 @@ const AllItems = () => {
         const itemId = Number(id);
         const item = items.find((i) => i.id === itemId);
         if (item) {
-          const input: DecorItemInput = {
-            ...decorItemToInput(item),
+          const input = {
+            ...itemToInput(item),
             house: houseId,
             room: roomId,
-          };
-          return updateDecorItem(itemId, input);
+          } as InventoryItemInput;
+          return updateItem(itemId, input);
         }
+        return undefined;
       });
 
       await Promise.all(updatePromises);
-      queryClient.invalidateQueries({ queryKey: ['decor-items'] });
+      queryClient.invalidateQueries({ queryKey: itemsQueryKey(collection) });
       setSelectedItems([]);
       setShowBatchDialog(false);
 
@@ -180,6 +197,7 @@ const AllItems = () => {
         </div>
 
         <SearchFilters
+          collection={collection}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           selectedCategory={selectedCategory}
@@ -193,9 +211,9 @@ const AllItems = () => {
           yearOptions={yearOptions}
           selectedYear={selectedYear}
           setSelectedYear={setSelectedYear}
-          artistOptions={artistOptions}
-          selectedArtist={selectedArtist}
-          setSelectedArtist={setSelectedArtist}
+          creatorOptions={creatorOptions}
+          selectedCreator={selectedCreator}
+          setSelectedCreator={setSelectedCreator}
           valuationRange={valuationRange}
           setValuationRange={setValuationRange}
           viewMode={viewMode}

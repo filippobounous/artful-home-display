@@ -1,39 +1,63 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { DecorItem } from '@/types/inventory';
+import type { InventoryItem } from '@/types/inventory';
 import { useSettingsState } from '@/hooks/useSettingsState';
 import { formatCurrency, formatNumber, formatDate } from '@/lib/currencyUtils';
+import { useCollection } from '@/context/CollectionProvider';
+import {
+  getCategoryLabel,
+  getItemCategory,
+  getItemValuationCurrency,
+  getItemValuationValue,
+  getItemYear,
+} from '@/lib/inventoryDisplay';
 
 interface CollectionOverviewProps {
-  items: DecorItem[];
+  items: InventoryItem[];
 }
 
 export function CollectionOverview({ items }: CollectionOverviewProps) {
   const { categories } = useSettingsState();
+  const { collection } = useCollection();
 
   // Calculate valued/unvalued items
-  const valuedItems = items.filter(item => item.valuation && item.valuation > 0);
-  const unvaluedItems = items.filter(item => !item.valuation || item.valuation <= 0);
+  const valuedItems = items.filter((item) => getItemValuationValue(item) ?? 0 > 0);
+  const unvaluedItems = items.filter(
+    (item) => (getItemValuationValue(item) ?? 0) <= 0,
+  );
 
   // Top categories by item count
   const categoryStats = categories.map(category => ({
     ...category,
-    count: items.filter(item => item.category === category.id).length,
+    count: items.filter((item) => getItemCategory(item) === category.id).length,
   })).sort((a, b) => b.count - a.count).slice(0, 3);
 
   // Latest activity (using acquisition date as proxy)
   const latestItem = items
-    .filter(item => item.acquisitionDate)
-    .sort((a, b) => new Date(b.acquisitionDate!).getTime() - new Date(a.acquisitionDate!).getTime())[0];
+    .map((item) => {
+      if ('acquisitionDate' in item && item.acquisitionDate) {
+        return { item, date: item.acquisitionDate };
+      }
+      if (item.valuationDate) {
+        return { item, date: item.valuationDate };
+      }
+      const year = getItemYear(item);
+      return year ? { item, date: `${year}-01-01` } : null;
+    })
+    .filter((entry): entry is { item: InventoryItem; date: string } => Boolean(entry))
+    .sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    )[0];
 
   // Average values per currency
   const averagesByCurrency = valuedItems.reduce((acc, item) => {
-    if (item.valuation && item.valuationCurrency) {
-      const currency = item.valuationCurrency;
+    const valuation = getItemValuationValue(item);
+    const currency = getItemValuationCurrency(item);
+    if (valuation !== undefined && currency) {
       if (!acc[currency]) {
         acc[currency] = { total: 0, count: 0 };
       }
-      acc[currency].total += item.valuation;
+      acc[currency].total += valuation;
       acc[currency].count += 1;
     }
     return acc;
@@ -41,7 +65,12 @@ export function CollectionOverview({ items }: CollectionOverviewProps) {
 
   // Highest valued items (top 3)
   const highestValuedItems = valuedItems
-    .sort((a, b) => (b.valuation || 0) - (a.valuation || 0))
+    .map((item) => ({
+      item,
+      valuation: getItemValuationValue(item) ?? 0,
+      currency: getItemValuationCurrency(item),
+    }))
+    .sort((a, b) => b.valuation - a.valuation)
     .slice(0, 3);
 
   return (
@@ -83,7 +112,7 @@ export function CollectionOverview({ items }: CollectionOverviewProps) {
           <div>
             <p className="text-sm font-medium mb-1">Latest Activity</p>
             <p className="text-sm text-muted-foreground">
-              Last updated: {formatDate(latestItem.acquisitionDate!)}
+              Last updated: {formatDate(latestItem.date)}
             </p>
           </div>
         )}
@@ -108,14 +137,11 @@ export function CollectionOverview({ items }: CollectionOverviewProps) {
           <div>
             <p className="text-sm font-medium mb-2">Highest Valued Items</p>
             <div className="space-y-1">
-              {highestValuedItems.map(item => (
+              {highestValuedItems.map(({ item, valuation, currency }) => (
                 <div key={item.id} className="flex justify-between text-sm">
                   <span className="truncate flex-1 mr-2">{item.title}</span>
                   <span className="font-medium">
-                    {item.valuation && item.valuationCurrency 
-                      ? formatCurrency(item.valuation, item.valuationCurrency)
-                      : '—'
-                    }
+                    {currency ? formatCurrency(valuation, currency) : '—'}
                   </span>
                 </div>
               ))}
