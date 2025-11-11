@@ -1,5 +1,6 @@
 
 import type { MusicItem } from '@/types/inventory';
+import { musicDefaultHouses } from '@/types/inventory';
 
 export const generateMusicTestData = (): MusicItem[] => {
   const artists = [
@@ -9,8 +10,13 @@ export const generateMusicTestData = (): MusicItem[] => {
     'The Rolling Stones', 'David Bowie', 'Queen', 'The Who'
   ];
 
-  const formats = ['Vinyl LP', 'CD', 'Cassette', '7" Single', '12" Single'];
-  const genres = ['Rock', 'Jazz', 'Blues', 'Pop', 'Folk', 'Classical', 'R&B', 'Electronic'];
+  const formats = ['Vinyl LP', 'CD', 'Cassette', '7" Single', '12" Single', 'Digital'];
+  const genres = [
+    'Rock', 'Jazz', 'Blues', 'Pop', 'Folk', 'Classical', 'R&B', 'Electronic', 'Soul',
+    'Hip-Hop'
+  ];
+
+  const valuationCurrencies = ['USD', 'GBP', 'EUR'];
 
   const getRandomElement = <T>(array: T[]): T => 
     array[Math.floor(Math.random() * array.length)];
@@ -31,6 +37,14 @@ export const generateMusicTestData = (): MusicItem[] => {
       'Exile on Main St.', 'The Rise and Fall of Ziggy Stardust'
     ];
 
+    const releaseYear = getRandomNumber(1950, 2024);
+    const house = getRandomElement(musicDefaultHouses);
+    const room =
+      house.rooms && house.rooms.length > 0
+        ? getRandomElement(house.rooms).id
+        : undefined;
+    const valuationCurrency = getRandomElement(valuationCurrencies);
+
     return {
       id,
       title: getRandomElement(albums),
@@ -38,18 +52,18 @@ export const generateMusicTestData = (): MusicItem[] => {
       album: getRandomElement(albums),
       format,
       genre,
-      releaseYear: getRandomNumber(1950, 2024),
+      releaseYear,
       trackCount: getRandomNumber(8, 20),
       description: 'A classic recording that showcases exceptional musical artistry.',
       quantity: getRandomNumber(1, 2),
-      yearPeriod: getRandomNumber(1950, 2024).toString(),
+      yearPeriod: releaseYear.toString(),
       image: '/placeholder.svg',
       valuation: getRandomNumber(15, 300),
       valuationDate: '2024-01-01',
-      valuationCurrency: 'USD',
-      house: 'main-house',
-      room: 'living-room',
-      notes: 'Part of the vinyl collection.',
+      valuationCurrency,
+      house: house.id,
+      room,
+      notes: 'Part of the recorded music archive.',
       deleted: false,
       history: [],
     };
