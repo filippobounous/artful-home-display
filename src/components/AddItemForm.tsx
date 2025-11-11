@@ -591,6 +591,14 @@ const useHouseOptions = () => {
   return useMemo(() => houses.filter((house) => house.visible), [houses]);
 };
 
+const UNASSIGNED_VALUE = 'unassigned';
+
+const mapSelectValue = (value: string) =>
+  value === '' ? UNASSIGNED_VALUE : value;
+
+const normalizeSelectValue = (value: string) =>
+  value === UNASSIGNED_VALUE ? '' : value;
+
 const HouseSelect = ({
   value,
   onChange,
@@ -600,12 +608,15 @@ const HouseSelect = ({
   onChange: (next: string) => void;
   houses: ReturnType<typeof useHouseOptions>;
 }) => (
-  <Select value={value} onValueChange={onChange}>
+  <Select
+    value={mapSelectValue(value)}
+    onValueChange={(next) => onChange(normalizeSelectValue(next))}
+  >
     <SelectTrigger>
       <SelectValue placeholder="Select a house" />
     </SelectTrigger>
     <SelectContent>
-      <SelectItem value="">Unassigned</SelectItem>
+      <SelectItem value={UNASSIGNED_VALUE}>Unassigned</SelectItem>
       {houses.map((house) => (
         <SelectItem key={house.id} value={house.id}>
           {house.name}
@@ -624,14 +635,17 @@ const RoomSelect = ({
   onChange: (next: string) => void;
   selectedHouse?: ReturnType<typeof useHouseOptions>[number];
 }) => (
-  <Select value={value} onValueChange={onChange}>
+  <Select
+    value={mapSelectValue(value)}
+    onValueChange={(next) => onChange(normalizeSelectValue(next))}
+  >
     <SelectTrigger>
       <SelectValue
         placeholder={selectedHouse ? 'Select a room' : 'Select house first'}
       />
     </SelectTrigger>
     <SelectContent>
-      <SelectItem value="">Unassigned</SelectItem>
+      <SelectItem value={UNASSIGNED_VALUE}>Unassigned</SelectItem>
       {selectedHouse?.rooms.map((room) => (
         <SelectItem key={room.id} value={room.id}>
           {room.name}
@@ -996,8 +1010,13 @@ function BookAddItemForm() {
                   <HouseSelect
                     value={formData.house}
                     houses={houses}
-                    onChange={(value) =>
-                      setFormData((prev) => ({ ...prev, house: value, room: '' }))
+                    onChange={(nextHouse) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        house: nextHouse,
+                        room:
+                          nextHouse && nextHouse === prev.house ? prev.room : '',
+                      }))
                     }
                   />
                 </div>
@@ -1419,8 +1438,13 @@ function MusicAddItemForm() {
                   <HouseSelect
                     value={formData.house}
                     houses={houses}
-                    onChange={(value) =>
-                      setFormData((prev) => ({ ...prev, house: value, room: '' }))
+                    onChange={(nextHouse) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        house: nextHouse,
+                        room:
+                          nextHouse && nextHouse === prev.house ? prev.room : '',
+                      }))
                     }
                   />
                 </div>
