@@ -27,6 +27,42 @@ const isTestDataEnabled = () => {
 const inventoryStorageKey = (collection: CollectionType) =>
   `inventoryData-${collection}`;
 
+function cloneFixtures<T extends InventoryItem>(fixtures: T[]): T[] {
+  return fixtures.map((item) => JSON.parse(JSON.stringify(item)) as T);
+}
+
+function getTestItems<T extends InventoryItem>(
+  collection: CollectionType,
+  fixtures: T[],
+): T[] {
+  if (typeof window === 'undefined') {
+    return cloneFixtures(fixtures);
+  }
+
+  const key = inventoryStorageKey(collection);
+  const stored = localStorage.getItem(key);
+
+  if (!stored) {
+    const seeded = cloneFixtures(fixtures);
+    localStorage.setItem(key, JSON.stringify(seeded));
+    return seeded;
+  }
+
+  try {
+    const parsed = JSON.parse(stored);
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      const seeded = cloneFixtures(fixtures);
+      localStorage.setItem(key, JSON.stringify(seeded));
+      return seeded;
+    }
+    return parsed as T[];
+  } catch {
+    const seeded = cloneFixtures(fixtures);
+    localStorage.setItem(key, JSON.stringify(seeded));
+    return seeded;
+  }
+}
+
 function getLocalItems(collection: CollectionType): InventoryItem[] {
   if (typeof window === 'undefined') return [];
   const stored = localStorage.getItem(inventoryStorageKey(collection));
@@ -238,9 +274,9 @@ export function musicItemToInput(item: MusicItem): MusicItemInput {
 
 export async function fetchDecorItems(): Promise<DecorItem[]> {
   const testDataEnabled = isTestDataEnabled();
-  
+
   if (testDataEnabled) {
-    return Promise.resolve(testDecorItems);
+    return Promise.resolve(getTestItems('art', testDecorItems));
   }
   
   if (!isApiConfigured()) {
@@ -265,8 +301,9 @@ export async function fetchDecorItem(
   const testDataEnabled = isTestDataEnabled();
   
   if (testDataEnabled) {
+    const items = getTestItems('art', testDecorItems);
     return Promise.resolve(
-      testDecorItems.find((i) => i.id === Number(id)) || null,
+      items.find((i) => i.id === Number(id)) || null,
     );
   }
   
@@ -290,7 +327,7 @@ export async function fetchBookItems(): Promise<BookItem[]> {
   const testDataEnabled = isTestDataEnabled();
 
   if (testDataEnabled) {
-    return Promise.resolve(testBooks);
+    return Promise.resolve(getTestItems('books', testBooks));
   }
 
   if (!isApiConfigured()) {
@@ -315,8 +352,9 @@ export async function fetchBookItem(
   const testDataEnabled = isTestDataEnabled();
 
   if (testDataEnabled) {
+    const items = getTestItems('books', testBooks);
     return Promise.resolve(
-      testBooks.find((item) => item.id === Number(id)) || null,
+      items.find((item) => item.id === Number(id)) || null,
     );
   }
 
@@ -341,7 +379,7 @@ export async function fetchMusicItems(): Promise<MusicItem[]> {
   const testDataEnabled = isTestDataEnabled();
 
   if (testDataEnabled) {
-    return Promise.resolve(testMusic);
+    return Promise.resolve(getTestItems('music', testMusic));
   }
 
   if (!isApiConfigured()) {
@@ -366,8 +404,9 @@ export async function fetchMusicItem(
   const testDataEnabled = isTestDataEnabled();
 
   if (testDataEnabled) {
+    const items = getTestItems('music', testMusic);
     return Promise.resolve(
-      testMusic.find((item) => item.id === Number(id)) || null,
+      items.find((item) => item.id === Number(id)) || null,
     );
   }
 
@@ -396,7 +435,9 @@ export async function createDecorItem(
   const testDataEnabled = isTestDataEnabled();
   
   if (testDataEnabled || !isApiConfigured()) {
-    const items = getLocalDecorItems();
+    const items = testDataEnabled
+      ? getTestItems('art', testDecorItems)
+      : getLocalDecorItems();
     const newItem = inputToDecorItem(input);
     const nextId =
       items.length > 0 ? Math.max(...items.map((i) => i.id)) + 1 : 1;
@@ -426,7 +467,9 @@ export async function createBookItem(
   const testDataEnabled = isTestDataEnabled();
 
   if (testDataEnabled || !isApiConfigured()) {
-    const items = getLocalBookItems();
+    const items = testDataEnabled
+      ? getTestItems('books', testBooks)
+      : getLocalBookItems();
     const newItem = inputToBookItem(input);
     const nextId =
       items.length > 0 ? Math.max(...items.map((i) => i.id ?? 0)) + 1 : 1;
@@ -457,7 +500,9 @@ export async function updateDecorItem(
   const testDataEnabled = isTestDataEnabled();
   
   if (testDataEnabled || !isApiConfigured()) {
-    const items = getLocalDecorItems();
+    const items = testDataEnabled
+      ? getTestItems('art', testDecorItems)
+      : getLocalDecorItems();
     const idx = items.findIndex((i) => i.id === Number(id));
     const existing = idx >= 0 ? items[idx] : null;
     const updated = inputToDecorItem({ ...input, id: Number(id) });
@@ -496,7 +541,9 @@ export async function updateBookItem(
   const testDataEnabled = isTestDataEnabled();
 
   if (testDataEnabled || !isApiConfigured()) {
-    const items = getLocalBookItems();
+    const items = testDataEnabled
+      ? getTestItems('books', testBooks)
+      : getLocalBookItems();
     const idx = items.findIndex((i) => i.id === Number(id));
     const existing = idx >= 0 ? items[idx] : null;
     const updated = inputToBookItem({ ...input, id: Number(id) });
@@ -531,10 +578,13 @@ export async function deleteDecorItem(id: number): Promise<void> {
   const testDataEnabled = isTestDataEnabled();
 
   if (testDataEnabled || !isApiConfigured()) {
-    const items = getLocalDecorItems().map((i) =>
+    const items = testDataEnabled
+      ? getTestItems('art', testDecorItems)
+      : getLocalDecorItems();
+    const updatedItems = items.map((i) =>
       i.id === id ? { ...i, deleted: true } : i,
     );
-    saveLocalDecorItems(items);
+    saveLocalDecorItems(updatedItems);
     return Promise.resolve();
   }
   
@@ -556,7 +606,9 @@ export async function createMusicItem(
   const testDataEnabled = isTestDataEnabled();
 
   if (testDataEnabled || !isApiConfigured()) {
-    const items = getLocalMusicItems();
+    const items = testDataEnabled
+      ? getTestItems('music', testMusic)
+      : getLocalMusicItems();
     const newItem = inputToMusicItem(input);
     const nextId =
       items.length > 0 ? Math.max(...items.map((i) => i.id ?? 0)) + 1 : 1;
@@ -587,7 +639,9 @@ export async function updateMusicItem(
   const testDataEnabled = isTestDataEnabled();
 
   if (testDataEnabled || !isApiConfigured()) {
-    const items = getLocalMusicItems();
+    const items = testDataEnabled
+      ? getTestItems('music', testMusic)
+      : getLocalMusicItems();
     const idx = items.findIndex((i) => i.id === Number(id));
     const existing = idx >= 0 ? items[idx] : null;
     const updated = inputToMusicItem({ ...input, id: Number(id) });
@@ -622,10 +676,13 @@ export async function deleteMusicItem(id: number): Promise<void> {
   const testDataEnabled = isTestDataEnabled();
 
   if (testDataEnabled || !isApiConfigured()) {
-    const items = getLocalMusicItems().map((i) =>
+    const items = testDataEnabled
+      ? getTestItems('music', testMusic)
+      : getLocalMusicItems();
+    const updatedItems = items.map((i) =>
       i.id === id ? { ...i, deleted: true } : i,
     );
-    saveLocalMusicItems(items);
+    saveLocalMusicItems(updatedItems);
     return Promise.resolve();
   }
 
@@ -744,10 +801,13 @@ export async function deleteBookItem(id: number): Promise<void> {
   const testDataEnabled = isTestDataEnabled();
 
   if (testDataEnabled || !isApiConfigured()) {
-    const items = getLocalBookItems().map((i) =>
+    const items = testDataEnabled
+      ? getTestItems('books', testBooks)
+      : getLocalBookItems();
+    const updatedItems = items.map((i) =>
       i.id === id ? { ...i, deleted: true } : i,
     );
-    saveLocalBookItems(items);
+    saveLocalBookItems(updatedItems);
     return Promise.resolve();
   }
 
@@ -770,7 +830,9 @@ export async function restoreDecorItem(
   const testDataEnabled = isTestDataEnabled();
   
   if (testDataEnabled || !isApiConfigured()) {
-    const items = getLocalDecorItems();
+    const items = testDataEnabled
+      ? getTestItems('art', testDecorItems)
+      : getLocalDecorItems();
     const idx = items.findIndex((i) => i.id === id);
     if (idx < 0) throw new Error('Item not found');
     const current = items[idx];

@@ -1,5 +1,6 @@
 
 import type { BookItem } from '@/types/inventory';
+import { bookDefaultHouses } from '@/types/inventory';
 
 export const generateBooksTestData = (): BookItem[] => {
   const authors = [
@@ -17,8 +18,11 @@ export const generateBooksTestData = (): BookItem[] => {
 
   const genres = [
     'Literary Fiction', 'Classic Literature', 'Philosophy', 'History',
-    'Biography', 'Poetry', 'Drama', 'Essays', 'Travel', 'Art History'
+    'Biography', 'Poetry', 'Drama', 'Essays', 'Travel', 'Art History',
+    'Science', 'Mystery', 'Fantasy', 'Memoir'
   ];
+
+  const valuationCurrencies = ['USD', 'GBP', 'EUR'];
 
   const getRandomElement = <T>(array: T[]): T => 
     array[Math.floor(Math.random() * array.length)];
@@ -39,6 +43,14 @@ export const generateBooksTestData = (): BookItem[] => {
       'Norwegian Wood', 'The Great Gatsby', 'Moby Dick', 'Jane Eyre'
     ];
 
+    const publicationYear = getRandomNumber(1850, 2024);
+    const house = getRandomElement(bookDefaultHouses);
+    const room =
+      house.rooms && house.rooms.length > 0
+        ? getRandomElement(house.rooms).id
+        : undefined;
+    const valuationCurrency = getRandomElement(valuationCurrencies);
+
     return {
       id,
       title: getRandomElement(titles),
@@ -47,17 +59,17 @@ export const generateBooksTestData = (): BookItem[] => {
       isbn: `978-${getRandomNumber(1000000000, 9999999999)}`,
       genre,
       pageCount: getRandomNumber(150, 800),
-      publicationYear: getRandomNumber(1800, 2024),
+      publicationYear,
       description: 'A remarkable literary work that has influenced generations of readers.',
       quantity: getRandomNumber(1, 3),
-      yearPeriod: getRandomNumber(1800, 2024).toString(),
+      yearPeriod: publicationYear.toString(),
       image: '/placeholder.svg',
       valuation: getRandomNumber(20, 500),
       valuationDate: '2024-01-01',
-      valuationCurrency: 'USD',
-      house: 'main-house',
-      room: 'library',
-      notes: 'Part of the main collection.',
+      valuationCurrency,
+      house: house.id,
+      room,
+      notes: 'Part of the literary collection.',
       deleted: false,
       history: [],
     };
