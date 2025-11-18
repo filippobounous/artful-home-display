@@ -1,4 +1,45 @@
-import type { CollectionType, InventoryItem } from '@/types/inventory';
+import type { BookItem, CollectionType, InventoryItem } from '@/types/inventory';
+import { bookCategoryConfigs } from '@/types/inventory';
+
+function isBookItem(item: InventoryItem): item is BookItem {
+  return 'publicationYear' in item || 'isbn' in item || 'publisher' in item;
+}
+
+export function resolveBookCategoryId(value?: string): string | undefined {
+  if (!value) return undefined;
+  const lower = value.toLowerCase();
+
+  for (const category of bookCategoryConfigs) {
+    if (category.id === value || category.name.toLowerCase() === lower) {
+      return category.id;
+    }
+
+    const subcategoryMatch = category.subcategories.find(
+      (subcategory) =>
+        subcategory.id === value || subcategory.name.toLowerCase() === lower,
+    );
+
+    if (subcategoryMatch) return category.id;
+  }
+
+  return undefined;
+}
+
+export function resolveBookSubcategoryId(value?: string): string | undefined {
+  if (!value) return undefined;
+  const lower = value.toLowerCase();
+
+  for (const category of bookCategoryConfigs) {
+    const subcategoryMatch = category.subcategories.find(
+      (subcategory) =>
+        subcategory.id === value || subcategory.name.toLowerCase() === lower,
+    );
+
+    if (subcategoryMatch) return subcategoryMatch.id;
+  }
+
+  return undefined;
+}
 
 export interface ItemDetailEntry {
   label: string;
@@ -13,12 +54,19 @@ export function getItemCreator(item: InventoryItem): string | undefined {
 
 export function getItemCategory(item: InventoryItem): string | undefined {
   if ('category' in item && item.category) return item.category;
-  if ('genre' in item && item.genre) return item.genre;
+  if ('genre' in item && item.genre) {
+    if (isBookItem(item)) {
+      return resolveBookCategoryId(item.genre) ?? item.genre;
+    }
+    return item.genre;
+  }
   return undefined;
 }
 
 export function getItemSubcategory(item: InventoryItem): string | undefined {
   if ('subcategory' in item && item.subcategory) return item.subcategory;
+  if ('genre' in item && item.genre && isBookItem(item))
+    return resolveBookSubcategoryId(item.genre);
   return undefined;
 }
 

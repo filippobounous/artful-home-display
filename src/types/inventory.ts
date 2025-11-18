@@ -54,6 +54,8 @@ export interface BookItem extends ItemBase {
   author?: string;
   publisher?: string;
   isbn?: string;
+  category?: string;
+  subcategory?: string;
   genre?: string;
   pageCount?: number;
   publicationYear?: number;
@@ -115,6 +117,8 @@ export interface BookItemInput {
   author?: string;
   publisher?: string;
   isbn?: string;
+  category?: string;
+  subcategory?: string;
   genre?: string;
   pageCount?: number;
   publicationYear?: number;
