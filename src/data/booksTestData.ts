@@ -1,5 +1,5 @@
 
-import type { BookItem } from '@/types/inventory';
+import { bookCategoryConfigs, type BookItem } from '@/types/inventory';
 
 export const generateBooksTestData = (): BookItem[] => {
   const authors = [
@@ -15,12 +15,7 @@ export const generateBooksTestData = (): BookItem[] => {
     'Macmillan', 'HarperCollins', 'Scribner', 'Knopf', 'Norton'
   ];
 
-  const genres = [
-    'Literary Fiction', 'Classic Literature', 'Philosophy', 'History',
-    'Biography', 'Poetry', 'Drama', 'Essays', 'Travel', 'Art History'
-  ];
-
-  const getRandomElement = <T>(array: T[]): T => 
+  const getRandomElement = <T>(array: T[]): T =>
     array[Math.floor(Math.random() * array.length)];
 
   const getRandomNumber = (min: number, max: number): number =>
@@ -29,7 +24,8 @@ export const generateBooksTestData = (): BookItem[] => {
   const generateBook = (id: number): BookItem => {
     const author = getRandomElement(authors);
     const publisher = getRandomElement(publishers);
-    const genre = getRandomElement(genres);
+    const category = getRandomElement(bookCategoryConfigs);
+    const subcategory = getRandomElement(category.subcategories);
     
     const titles = [
       'Pride and Prejudice', 'Great Expectations', 'Hamlet', 'The Sun Also Rises',
@@ -45,7 +41,9 @@ export const generateBooksTestData = (): BookItem[] => {
       author,
       publisher,
       isbn: `978-${getRandomNumber(1000000000, 9999999999)}`,
-      genre,
+      category: category.id,
+      subcategory: subcategory.id,
+      genre: subcategory.name,
       pageCount: getRandomNumber(150, 800),
       publicationYear: getRandomNumber(1800, 2024),
       description: 'A remarkable literary work that has influenced generations of readers.',

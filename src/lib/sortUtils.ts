@@ -4,6 +4,10 @@ import {
   type CategoryConfig,
   type CollectionType,
 } from '@/types/inventory';
+import {
+  resolveBookCategoryId,
+  resolveBookSubcategoryId,
+} from './inventoryDisplay';
 
 function locationIndex(item: InventoryItem, houses: HouseConfig[]): number {
   const withSort = item as InventoryItem & { locationSort?: number | string };
@@ -24,12 +28,15 @@ function locationIndex(item: InventoryItem, houses: HouseConfig[]): number {
 
 function getCategoryId(item: InventoryItem): string | undefined {
   if ('category' in item && item.category) return item.category;
-  if ('genre' in item && item.genre) return item.genre;
+  if ('genre' in item && item.genre)
+    return resolveBookCategoryId(item.genre) ?? item.genre;
   return undefined;
 }
 
 function getSubcategoryId(item: InventoryItem): string | undefined {
   if ('subcategory' in item && item.subcategory) return item.subcategory;
+  if ('genre' in item && item.genre)
+    return resolveBookSubcategoryId(item.genre) ?? undefined;
   return undefined;
 }
 
