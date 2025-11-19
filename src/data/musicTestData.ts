@@ -1,5 +1,6 @@
 
 import type { MusicItem } from '@/types/inventory';
+import { musicCategoryConfigs } from '@/types/inventory';
 
 export const generateMusicTestData = (): MusicItem[] => {
   const artists = [
@@ -9,8 +10,28 @@ export const generateMusicTestData = (): MusicItem[] => {
     'The Rolling Stones', 'David Bowie', 'Queen', 'The Who'
   ];
 
-  const formats = ['Vinyl LP', 'CD', 'Cassette', '7" Single', '12" Single'];
-  const genres = ['Rock', 'Jazz', 'Blues', 'Pop', 'Folk', 'Classical', 'R&B', 'Electronic'];
+  const visibleCategories = musicCategoryConfigs.filter((category) => category.visible);
+
+  const getFormatsForSubcategory = (subcategoryId?: string): string[] => {
+    switch (subcategoryId) {
+      case 'vinyl':
+        return ['Vinyl LP', '12" Single'];
+      case 'cd':
+        return ['CD', 'CD Box Set'];
+      case 'cassette':
+        return ['Cassette', 'Demo Tape'];
+      case 'orchestral':
+      case 'chamber':
+      case 'vocal':
+        return ['Full Score', 'Study Score'];
+      case 'posters':
+      case 'programs':
+      case 'merchandise':
+        return ['Collectible'];
+      default:
+        return ['Vinyl LP', 'CD', 'Cassette', '7" Single', '12" Single'];
+    }
+  };
 
   const getRandomElement = <T>(array: T[]): T => 
     array[Math.floor(Math.random() * array.length)];
@@ -20,8 +41,17 @@ export const generateMusicTestData = (): MusicItem[] => {
 
   const generateMusicItem = (id: number): MusicItem => {
     const artist = getRandomElement(artists);
-    const format = getRandomElement(formats);
-    const genre = getRandomElement(genres);
+
+    const category = getRandomElement(visibleCategories);
+    const visibleSubcategories = category.subcategories.filter(
+      (subcategory) => subcategory.visible,
+    );
+    const subcategory =
+      visibleSubcategories.length > 0
+        ? getRandomElement(visibleSubcategories)
+        : undefined;
+    const format = getRandomElement(getFormatsForSubcategory(subcategory?.id));
+    const genre = [category.name, subcategory?.name].filter(Boolean).join(' • ');
     
     const albums = [
       'Abbey Road', 'Highway 61 Revisited', 'Kind of Blue', 'A Love Supreme',
@@ -37,6 +67,8 @@ export const generateMusicTestData = (): MusicItem[] => {
       artist,
       album: getRandomElement(albums),
       format,
+      category: category.id,
+      subcategory: subcategory?.id,
       genre,
       releaseYear: getRandomNumber(1950, 2024),
       trackCount: getRandomNumber(8, 20),

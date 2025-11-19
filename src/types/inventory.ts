@@ -67,6 +67,8 @@ export interface MusicItem extends ItemBase {
   artist?: string;
   album?: string;
   format?: string;
+  category?: string;
+  subcategory?: string;
   genre?: string;
   releaseYear?: number;
   trackCount?: number;
@@ -135,6 +137,8 @@ export interface MusicItemInput {
   artist?: string;
   album?: string;
   format?: string;
+  category?: string;
+  subcategory?: string;
   genre?: string;
   releaseYear?: number;
   trackCount?: number;
