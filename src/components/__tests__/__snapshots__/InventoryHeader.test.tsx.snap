@@ -19,6 +19,39 @@ exports[`InventoryHeader visual states > renders apiwarn dark 1`] = `
         <div
           class="flex items-center gap-3"
         >
+          <button
+            aria-autocomplete="none"
+            aria-controls="radix-:rk:"
+            aria-expanded="false"
+            class="flex h-10 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 w-[150px] capitalize"
+            data-state="closed"
+            dir="ltr"
+            role="combobox"
+            type="button"
+          >
+            <span
+              style="pointer-events: none;"
+            >
+              Art
+            </span>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-down h-4 w-4 text-muted-foreground"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+              />
+            </svg>
+          </button>
           <div />
         </div>
       </div>
@@ -44,6 +77,39 @@ exports[`InventoryHeader visual states > renders apiwarn light 1`] = `
         <div
           class="flex items-center gap-3"
         >
+          <button
+            aria-autocomplete="none"
+            aria-controls="radix-:r8:"
+            aria-expanded="false"
+            class="flex h-10 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 w-[150px] capitalize"
+            data-state="closed"
+            dir="ltr"
+            role="combobox"
+            type="button"
+          >
+            <span
+              style="pointer-events: none;"
+            >
+              Art
+            </span>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-down h-4 w-4 text-muted-foreground"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+              />
+            </svg>
+          </button>
           <div />
         </div>
       </div>
@@ -71,6 +137,39 @@ exports[`InventoryHeader visual states > renders default dark 1`] = `
         <div
           class="flex items-center gap-3"
         >
+          <button
+            aria-autocomplete="none"
+            aria-controls="radix-:rc:"
+            aria-expanded="false"
+            class="flex h-10 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 w-[150px] capitalize"
+            data-state="closed"
+            dir="ltr"
+            role="combobox"
+            type="button"
+          >
+            <span
+              style="pointer-events: none;"
+            >
+              Art
+            </span>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-down h-4 w-4 text-muted-foreground"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+              />
+            </svg>
+          </button>
           <div />
         </div>
       </div>
@@ -96,6 +195,39 @@ exports[`InventoryHeader visual states > renders default light 1`] = `
         <div
           class="flex items-center gap-3"
         >
+          <button
+            aria-autocomplete="none"
+            aria-controls="radix-:r0:"
+            aria-expanded="false"
+            class="flex h-10 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 w-[150px] capitalize"
+            data-state="closed"
+            dir="ltr"
+            role="combobox"
+            type="button"
+          >
+            <span
+              style="pointer-events: none;"
+            >
+              Art
+            </span>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-down h-4 w-4 text-muted-foreground"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+              />
+            </svg>
+          </button>
           <div />
         </div>
       </div>
@@ -123,6 +255,39 @@ exports[`InventoryHeader visual states > renders testing dark 1`] = `
         <div
           class="flex items-center gap-3"
         >
+          <button
+            aria-autocomplete="none"
+            aria-controls="radix-:rg:"
+            aria-expanded="false"
+            class="flex h-10 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 w-[150px] capitalize"
+            data-state="closed"
+            dir="ltr"
+            role="combobox"
+            type="button"
+          >
+            <span
+              style="pointer-events: none;"
+            >
+              Art
+            </span>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-down h-4 w-4 text-muted-foreground"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+              />
+            </svg>
+          </button>
           <div />
         </div>
       </div>
@@ -148,6 +313,39 @@ exports[`InventoryHeader visual states > renders testing light 1`] = `
         <div
           class="flex items-center gap-3"
         >
+          <button
+            aria-autocomplete="none"
+            aria-controls="radix-:r4:"
+            aria-expanded="false"
+            class="flex h-10 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1 w-[150px] capitalize"
+            data-state="closed"
+            dir="ltr"
+            role="combobox"
+            type="button"
+          >
+            <span
+              style="pointer-events: none;"
+            >
+              Art
+            </span>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-chevron-down h-4 w-4 text-muted-foreground"
+              fill="none"
+              height="24"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+              />
+            </svg>
+          </button>
           <div />
         </div>
       </div>

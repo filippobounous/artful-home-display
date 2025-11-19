@@ -4,10 +4,27 @@ import { ApiHealthIndicator } from '@/components/ApiHealthIndicator';
 import { useDashboardApiHealth } from '@/hooks/useDashboardApiHealth';
 import { useSystemState } from '@/hooks/useSystemState';
 import { cn } from '@/lib/utils';
+import { useCollection, CollectionType } from '@/context/CollectionProvider';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
-export function InventoryHeader() {
+type ResetCallbacks = (() => void) | Array<() => void>;
+
+interface InventoryHeaderProps {
+  onCollectionChangeCallbacks?: ResetCallbacks;
+}
+
+export function InventoryHeader({
+  onCollectionChangeCallbacks,
+}: InventoryHeaderProps) {
   const { showApiHealth } = useDashboardApiHealth();
   const { topBarState } = useSystemState();
+  const { collection, setCollection } = useCollection();
 
   const getTopBarClasses = () => {
     switch (topBarState) {
@@ -21,6 +38,22 @@ export function InventoryHeader() {
           'bg-[hsl(var(--tb-bg-default)/0.95)] text-[hsl(var(--tb-fg-default))]',
         );
     }
+  };
+
+  const handleCollectionChange = (value: CollectionType) => {
+    if (value === collection) return;
+    setCollection(value);
+    const callbacksArray = Array.isArray(onCollectionChangeCallbacks)
+      ? onCollectionChangeCallbacks
+      : onCollectionChangeCallbacks
+        ? [onCollectionChangeCallbacks]
+        : [];
+
+    callbacksArray.forEach((callback) => {
+      if (typeof callback === 'function') {
+        callback();
+      }
+    });
   };
 
   return (
@@ -38,6 +71,16 @@ export function InventoryHeader() {
         </div>
 
         <div className="flex items-center gap-3">
+          <Select value={collection} onValueChange={handleCollectionChange}>
+            <SelectTrigger className="w-[150px] capitalize">
+              <SelectValue placeholder="Collection" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="art">Art</SelectItem>
+              <SelectItem value="books">Books</SelectItem>
+              <SelectItem value="music">Music</SelectItem>
+            </SelectContent>
+          </Select>
           <DarkModeToggle />
         </div>
       </div>
