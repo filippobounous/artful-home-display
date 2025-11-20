@@ -32,6 +32,7 @@ export function Dashboard({ items }: DashboardProps) {
   // Count items by category using current settings
   const categoryStats = categories
     .filter((c) => c.visible)
+    .sort((a, b) => a.name.localeCompare(b.name))
     .map((category) => ({
       ...category,
       count: counts.categories[category.id] ?? 0,
@@ -40,6 +41,7 @@ export function Dashboard({ items }: DashboardProps) {
   // Count items by house using current settings
   const houseStats = houses
     .filter((h) => h.visible)
+    .sort((a, b) => a.name.localeCompare(b.name))
     .map((house) => ({
       ...house,
       count: counts.houses[house.id] ?? 0,
