@@ -59,15 +59,21 @@ export function Dashboard({ items }: DashboardProps) {
   };
 
   return (
-    <div className="space-y-8">
-      {/* Enhanced Overview Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Collection Overview */}
-        <CollectionOverview items={items} />
+    <div className="space-y-10">
+      <section className="space-y-4">
+        <div className="space-y-1">
+          <p className="text-sm font-medium text-muted-foreground">Dashboard</p>
+          <h2 className="text-2xl font-semibold text-foreground">Overview</h2>
+          <p className="text-sm text-muted-foreground">
+            A quick look at how your collection is doing right now.
+          </p>
+        </div>
 
-        {/* Valuation Summary */}
-        <ValuationSummary items={items} />
-      </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <CollectionOverview items={items} />
+          <ValuationSummary items={items} />
+        </div>
+      </section>
 
       {/* Categories */}
       <div>
