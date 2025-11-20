@@ -36,6 +36,8 @@ All colors MUST be HSL.
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
 
+    --button-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+
     --radius: 0.5rem;
 
     --sidebar-background: 0 0% 98%;
@@ -100,6 +102,8 @@ All colors MUST be HSL.
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
+    --button-shadow: 0 0 0 1px hsla(var(--sidebar-ring), 0.35),
+      0 12px 30px hsla(var(--sidebar-ring), 0.2);
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -169,6 +173,10 @@ All colors MUST be HSL.
     line-height: var(--top-section-h);
     display: flex;
     align-items: center;
+  }
+
+  .button-shadow {
+    box-shadow: var(--button-shadow);
   }
 }
 
