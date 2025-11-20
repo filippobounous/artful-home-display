@@ -63,7 +63,7 @@ export function Dashboard({ items }: DashboardProps) {
   return (
     <div className="space-y-8">
       {/* Enhanced Overview Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
         {/* Basic Total Items Card */}
         <Card>
           <CardContent className="p-6">
@@ -79,7 +79,15 @@ export function Dashboard({ items }: DashboardProps) {
           </CardContent>
         </Card>
 
-        <Link to="/warnings">
+        {/* Collection Overview */}
+        <CollectionOverview items={items} />
+
+        {/* Valuation Summary */}
+        <ValuationSummary items={items} />
+      </div>
+
+      <div className="flex justify-start lg:justify-end">
+        <Link to="/warnings" className="w-full lg:max-w-sm">
           <Card className="hover:shadow-md transition-shadow cursor-pointer">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -94,12 +102,6 @@ export function Dashboard({ items }: DashboardProps) {
             </CardContent>
           </Card>
         </Link>
-
-        {/* Collection Overview */}
-        <CollectionOverview items={items} />
-
-        {/* Valuation Summary */}
-        <ValuationSummary items={items} />
       </div>
 
       {/* Categories */}
