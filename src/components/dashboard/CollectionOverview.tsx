@@ -93,7 +93,9 @@ export function CollectionOverview({ items }: CollectionOverviewProps) {
           <div>
             <p className="text-sm font-medium mb-2">Average Item Value</p>
             <div className="space-y-1">
-              {Object.entries(averagesByCurrency).map(([currency, data]) => (
+              {Object.entries(averagesByCurrency)
+                .sort(([a], [b]) => a.localeCompare(b))
+                .map(([currency, data]) => (
                 <div key={currency} className="flex justify-between text-sm">
                   <span>{currency}:</span>
                   <span>{formatCurrency(data.total / data.count, currency)}</span>
