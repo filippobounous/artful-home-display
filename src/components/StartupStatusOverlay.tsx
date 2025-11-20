@@ -1,16 +1,21 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AlertTriangle, CheckCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useApiHealth } from '@/hooks/useApiHealth';
 import { useTestDataToggle } from '@/hooks/useTestDataToggle';
 
-const AUTO_DISMISS_MS = 4000;
+const TIMER_SECONDS = 5;
+const POST_TIMER_DISMISS_MS = 2000;
 
 export function StartupStatusOverlay() {
   const { status, checkHealth } = useApiHealth();
   const { useTestData, setUseTestData } = useTestDataToggle();
   const [visible, setVisible] = useState(true);
+  const [remainingSeconds, setRemainingSeconds] = useState(TIMER_SECONDS);
+  const [timerComplete, setTimerComplete] = useState(false);
   const statusRef = useRef(status);
+  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const postTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     statusRef.current = status;
@@ -31,10 +36,51 @@ export function StartupStatusOverlay() {
     }
   }, [status, setUseTestData, useTestData]);
 
-  useEffect(() => {
-    if (status.isChecking) return;
+  const clearTimers = useCallback(() => {
+    if (countdownRef.current) {
+      clearInterval(countdownRef.current);
+      countdownRef.current = null;
+    }
 
-    const timeout = setTimeout(() => {
+    if (postTimerRef.current) {
+      clearTimeout(postTimerRef.current);
+      postTimerRef.current = null;
+    }
+  }, []);
+
+  const startCountdown = useCallback(() => {
+    clearTimers();
+    setVisible(true);
+    setTimerComplete(false);
+    setRemainingSeconds(TIMER_SECONDS);
+
+    countdownRef.current = setInterval(() => {
+      setRemainingSeconds((prev) => {
+        if (prev <= 1) {
+          if (countdownRef.current) {
+            clearInterval(countdownRef.current);
+            countdownRef.current = null;
+          }
+          setTimerComplete(true);
+          return 0;
+        }
+
+        return prev - 1;
+      });
+    }, 1000);
+  }, [clearTimers]);
+
+  useEffect(() => {
+    startCountdown();
+    checkHealth();
+
+    return () => clearTimers();
+  }, [checkHealth, clearTimers, startCountdown]);
+
+  useEffect(() => {
+    if (!timerComplete) return;
+
+    postTimerRef.current = setTimeout(() => {
       const currentStatus = statusRef.current;
 
       if (!currentStatus.isHealthy) {
@@ -42,10 +88,15 @@ export function StartupStatusOverlay() {
       }
 
       setVisible(false);
-    }, AUTO_DISMISS_MS);
+    }, POST_TIMER_DISMISS_MS);
 
-    return () => clearTimeout(timeout);
-  }, [status, setUseTestData]);
+    return () => {
+      if (postTimerRef.current) {
+        clearTimeout(postTimerRef.current);
+        postTimerRef.current = null;
+      }
+    };
+  }, [setUseTestData, timerComplete]);
 
   const message = useMemo(() => {
     if (status.isChecking) return 'Checking API health...';
@@ -59,6 +110,11 @@ export function StartupStatusOverlay() {
       setUseTestData(true);
     }
     setVisible(false);
+  };
+
+  const handleRecheck = () => {
+    startCountdown();
+    checkHealth();
   };
 
   if (!visible) return null;
@@ -79,15 +135,22 @@ export function StartupStatusOverlay() {
         {status.isChecking && (
           <p className="text-sm text-muted-foreground">Verifying connection...</p>
         )}
-        <div className="flex items-center gap-2">
-          <Button variant="secondary" onClick={handleDismiss}>
-            Dismiss
-          </Button>
-          {!status.isChecking && (
-            <Button onClick={checkHealth} variant="outline">
-              Recheck
-            </Button>
-          )}
+        <div className="flex flex-col items-center gap-3">
+          <p className="text-sm text-muted-foreground">
+            Auto-dismiss in {remainingSeconds}s
+          </p>
+          <div className="flex items-center gap-2">
+            {timerComplete && (
+              <Button variant="secondary" onClick={handleDismiss}>
+                Dismiss
+              </Button>
+            )}
+            {!status.isChecking && (
+              <Button onClick={handleRecheck} variant="outline">
+                Recheck
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </div>
