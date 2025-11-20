@@ -4,9 +4,10 @@ import { DecorItem } from '@/types/inventory';
 import { useSettingsState } from '@/hooks/useSettingsState';
 import { ValuationSummary } from '@/components/dashboard/ValuationSummary';
 import { CollectionOverview } from '@/components/dashboard/CollectionOverview';
-import { Palette, Sofa, Package, Home } from 'lucide-react';
+import { Palette, Sofa, Package, Home, AlertTriangle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { formatNumber } from '@/lib/currencyUtils';
+import { getWarningItems } from '@/lib/warnings';
 
 interface DashboardProps {
   items: DecorItem[];
@@ -46,6 +47,7 @@ export function Dashboard({ items }: DashboardProps) {
     }));
 
   const totalItems = items.length;
+  const warningItems = getWarningItems(items);
 
   const getCategoryIcon = (categoryId: string) => {
     switch (categoryId) {
@@ -61,7 +63,7 @@ export function Dashboard({ items }: DashboardProps) {
   return (
     <div className="space-y-8">
       {/* Enhanced Overview Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Basic Total Items Card */}
         <Card>
           <CardContent className="p-6">
@@ -76,6 +78,22 @@ export function Dashboard({ items }: DashboardProps) {
             </div>
           </CardContent>
         </Card>
+
+        <Link to="/warnings">
+          <Card className="hover:shadow-md transition-shadow cursor-pointer">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Missing Details</p>
+                  <p className="text-2xl font-bold text-foreground">
+                    {formatNumber(warningItems.length)}
+                  </p>
+                </div>
+                <AlertTriangle className="w-8 h-8 text-dashboard-purple" />
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
 
         {/* Collection Overview */}
         <CollectionOverview items={items} />

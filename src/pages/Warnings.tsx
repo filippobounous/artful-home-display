@@ -7,7 +7,7 @@ import { Copy, Download, AlertTriangle } from 'lucide-react';
 import { SidebarLayout } from '@/components/SidebarLayout';
 import { useToast } from '@/hooks/use-toast';
 import { fetchDecorItems } from '@/lib/api/items';
-import { DecorItem, ViewMode } from '@/types/inventory';
+import { ViewMode } from '@/types/inventory';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { SearchFilters } from '@/components/SearchFilters';
 import { ItemsGrid } from '@/components/ItemsGrid';
@@ -16,10 +16,7 @@ import { ItemsTable } from '@/components/ItemsTable';
 import { EmptyState } from '@/components/EmptyState';
 import { useSettingsState } from '@/hooks/useSettingsState';
 import { sortInventoryItems } from '@/lib/sortUtils';
-
-interface WarningItem extends DecorItem {
-  missingFields: string[];
-}
+import { getWarningItems } from '@/lib/warnings';
 
 const Warnings = () => {
   const navigate = useNavigate();
@@ -52,30 +49,6 @@ const Warnings = () => {
     queryKey: ['decor-items-warnings'],
     queryFn: fetchDecorItems,
   });
-
-  const getWarningItems = (items: DecorItem[]): WarningItem[] => {
-    return items
-      .map((item) => {
-        const missingFields: string[] = [];
-
-        if (!item.title?.trim()) missingFields.push('Title');
-        if (!item.artist?.trim()) missingFields.push('Artist');
-        if (!item.category?.trim()) missingFields.push('Category');
-        if (!item.subcategory?.trim()) missingFields.push('Subcategory');
-        if (!item.house?.trim()) missingFields.push('House');
-        if (!item.room?.trim()) missingFields.push('Room');
-        if (!item.yearPeriod?.toString().trim()) missingFields.push('Year');
-        if (!item.acquisitionDate?.trim()) missingFields.push('Date');
-        if (!item.quantity || item.quantity <= 0)
-          missingFields.push('Quantity');
-
-        if (missingFields.length > 0) {
-          return { ...item, missingFields } as WarningItem;
-        }
-        return null;
-      })
-      .filter((item): item is WarningItem => item !== null);
-  };
 
   const warningItems = getWarningItems(items);
 
