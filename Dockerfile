@@ -3,7 +3,7 @@ FROM node:20-alpine AS base
 WORKDIR /app
 
 # Install dependencies
-COPY package.json package-lock.json bun.lockb* ./
+COPY package.json package-lock.json ./
 RUN npm ci
 
 # Stage 1: Build the application

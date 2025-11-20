@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { setTestDataState } from '@/lib/testDataState';
 
 interface TestDataContextValue {
   testing: boolean;
@@ -16,7 +17,11 @@ export function TestDataProvider({ children }: { children: React.ReactNode }) {
     return stored !== null ? stored === 'true' : true;
   });
 
+  setTestDataState(testing);
+
   useEffect(() => {
+    setTestDataState(testing);
+
     if (typeof window !== 'undefined') {
       localStorage.setItem('useTestData', testing.toString());
     }

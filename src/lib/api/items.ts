@@ -8,15 +8,11 @@ import {
 import { testDecorItems } from '@/data/testData';
 import { testBooks } from '@/data/booksTestData';
 import { testMusic } from '@/data/musicTestData';
+import { getTestDataState } from '@/lib/testDataState';
 import { API_URL, withAuthHeaders } from './common';
 
 const isApiConfigured = () => {
   return !!API_URL;
-};
-
-const isTestDataEnabled = () => {
-  if (typeof window === 'undefined') return false;
-  return localStorage.getItem('useTestData') === 'true';
 };
 
 function getLocalItems(): DecorItem[] {
@@ -107,7 +103,7 @@ export function decorItemToInput(item: DecorItem): DecorItemInput {
 }
 
 export async function fetchDecorItems(): Promise<DecorItem[]> {
-  const testDataEnabled = isTestDataEnabled();
+  const testDataEnabled = getTestDataState();
   
   if (testDataEnabled) {
     return Promise.resolve(testDecorItems);
@@ -132,7 +128,7 @@ export async function fetchDecorItems(): Promise<DecorItem[]> {
 export async function fetchDecorItem(
   id: number | string,
 ): Promise<DecorItem | null> {
-  const testDataEnabled = isTestDataEnabled();
+  const testDataEnabled = getTestDataState();
   
   if (testDataEnabled) {
     return Promise.resolve(
@@ -157,7 +153,7 @@ export async function fetchDecorItem(
 }
 
 export async function fetchBookItems(): Promise<BookItem[]> {
-  const testDataEnabled = isTestDataEnabled();
+  const testDataEnabled = getTestDataState();
   
   if (testDataEnabled) {
     return Promise.resolve(testBooks);
@@ -180,7 +176,7 @@ export async function fetchBookItems(): Promise<BookItem[]> {
 }
 
 export async function fetchMusicItems(): Promise<MusicItem[]> {
-  const testDataEnabled = isTestDataEnabled();
+  const testDataEnabled = getTestDataState();
   
   if (testDataEnabled) {
     return Promise.resolve(testMusic);
@@ -205,7 +201,7 @@ export async function fetchMusicItems(): Promise<MusicItem[]> {
 export async function createDecorItem(
   input: DecorItemInput,
 ): Promise<DecorItem> {
-  const testDataEnabled = isTestDataEnabled();
+  const testDataEnabled = getTestDataState();
   
   if (testDataEnabled || !isApiConfigured()) {
     const items = getLocalItems();
@@ -236,7 +232,7 @@ export async function updateDecorItem(
   id: number | string,
   input: DecorItemInput,
 ): Promise<DecorItem> {
-  const testDataEnabled = isTestDataEnabled();
+  const testDataEnabled = getTestDataState();
   
   if (testDataEnabled || !isApiConfigured()) {
     const items = getLocalItems();
@@ -272,7 +268,7 @@ export async function updateDecorItem(
 }
 
 export async function deleteDecorItem(id: number): Promise<void> {
-  const testDataEnabled = isTestDataEnabled();
+  const testDataEnabled = getTestDataState();
   
   if (testDataEnabled || !isApiConfigured()) {
     const items = getLocalItems().map((i) =>
@@ -298,7 +294,7 @@ export async function restoreDecorItem(
   id: number,
   version: DecorItemInput,
 ): Promise<DecorItem> {
-  const testDataEnabled = isTestDataEnabled();
+  const testDataEnabled = getTestDataState();
   
   if (testDataEnabled || !isApiConfigured()) {
     const items = getLocalItems();
