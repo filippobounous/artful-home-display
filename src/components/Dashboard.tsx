@@ -4,7 +4,7 @@ import { DecorItem } from '@/types/inventory';
 import { useSettingsState } from '@/hooks/useSettingsState';
 import { ValuationSummary } from '@/components/dashboard/ValuationSummary';
 import { CollectionOverview } from '@/components/dashboard/CollectionOverview';
-import { Palette, Sofa, Package, Home } from 'lucide-react';
+import { Palette, Sofa, Package, Home, CalendarClock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { formatNumber } from '@/lib/currencyUtils';
 
@@ -46,6 +46,18 @@ export function Dashboard({ items }: DashboardProps) {
     }));
 
   const totalItems = items.length;
+  const newItemsThisMonth = items.filter((item) => {
+    if (!item.acquisitionDate) return false;
+
+    const acquiredDate = new Date(item.acquisitionDate);
+    if (Number.isNaN(acquiredDate.getTime())) return false;
+
+    const now = new Date();
+    return (
+      acquiredDate.getFullYear() === now.getFullYear() &&
+      acquiredDate.getMonth() === now.getMonth()
+    );
+  }).length;
 
   const getCategoryIcon = (categoryId: string) => {
     switch (categoryId) {
@@ -62,17 +74,20 @@ export function Dashboard({ items }: DashboardProps) {
     <div className="space-y-8">
       {/* Enhanced Overview Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Basic Total Items Card */}
+        {/* New Items This Month */}
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Total Items</p>
+                <p className="text-sm text-muted-foreground">New items this month</p>
                 <p className="text-2xl font-bold text-foreground">
-                  {formatNumber(totalItems)}
+                  {formatNumber(newItemsThisMonth)}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {formatNumber(totalItems)} total items tracked
                 </p>
               </div>
-              <Package className="w-8 h-8 text-dashboard-blue" />
+              <CalendarClock className="w-8 h-8 text-dashboard-blue" />
             </div>
           </CardContent>
         </Card>
