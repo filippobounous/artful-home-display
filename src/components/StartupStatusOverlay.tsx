@@ -6,12 +6,12 @@ import { useTestDataToggle } from '@/hooks/useTestDataToggle';
 
 const TIMER_SECONDS = 5;
 const POST_TIMER_DISMISS_MS = 2000;
+const HEALTHY_DISMISS_MS = 1000;
 
 export function StartupStatusOverlay() {
   const { status, checkHealth } = useApiHealth();
   const { useTestData, setUseTestData } = useTestDataToggle();
   const [visible, setVisible] = useState(true);
-  const [remainingSeconds, setRemainingSeconds] = useState(TIMER_SECONDS);
   const [timerComplete, setTimerComplete] = useState(false);
   const statusRef = useRef(status);
   const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -52,21 +52,19 @@ export function StartupStatusOverlay() {
     clearTimers();
     setVisible(true);
     setTimerComplete(false);
-    setRemainingSeconds(TIMER_SECONDS);
+
+    let secondsRemaining = TIMER_SECONDS;
 
     countdownRef.current = setInterval(() => {
-      setRemainingSeconds((prev) => {
-        if (prev <= 1) {
-          if (countdownRef.current) {
-            clearInterval(countdownRef.current);
-            countdownRef.current = null;
-          }
-          setTimerComplete(true);
-          return 0;
-        }
+      secondsRemaining -= 1;
 
-        return prev - 1;
-      });
+      if (secondsRemaining <= 0) {
+        if (countdownRef.current) {
+          clearInterval(countdownRef.current);
+          countdownRef.current = null;
+        }
+        setTimerComplete(true);
+      }
     }, 1000);
   }, [clearTimers]);
 
@@ -78,6 +76,8 @@ export function StartupStatusOverlay() {
   }, [checkHealth, clearTimers, startCountdown]);
 
   useEffect(() => {
+    if (status.isHealthy) return;
+
     if (!timerComplete) return;
 
     postTimerRef.current = setTimeout(() => {
@@ -96,13 +96,37 @@ export function StartupStatusOverlay() {
         postTimerRef.current = null;
       }
     };
-  }, [setUseTestData, timerComplete]);
+  }, [setUseTestData, timerComplete, status.isHealthy]);
+
+  useEffect(() => {
+    if (!status.isHealthy || !visible) return;
+
+    clearTimers();
+    setTimerComplete(false);
+
+    postTimerRef.current = setTimeout(() => {
+      setVisible(false);
+    }, HEALTHY_DISMISS_MS);
+
+    return () => {
+      if (postTimerRef.current) {
+        clearTimeout(postTimerRef.current);
+        postTimerRef.current = null;
+      }
+    };
+  }, [clearTimers, status.isHealthy, visible]);
 
   const message = useMemo(() => {
     if (status.isChecking) return 'Checking API health...';
-    if (status.isHealthy && !useTestData) return 'API reachable, using live data';
+    if (status.isHealthy && !useTestData) return 'API connection established';
     return 'API unavailable, using test data';
   }, [status.isChecking, status.isHealthy, useTestData]);
+
+  const detailMessage = useMemo(() => {
+    if (status.isHealthy) return 'API connection established';
+    if (!timerComplete) return 'Waiting for API...';
+    return 'Auto-dismiss in 2 seconds';
+  }, [status.isHealthy, timerComplete]);
 
   const handleDismiss = () => {
     const currentStatus = statusRef.current;
@@ -136,16 +160,14 @@ export function StartupStatusOverlay() {
           <p className="text-sm text-muted-foreground">Verifying connection...</p>
         )}
         <div className="flex flex-col items-center gap-3">
-          <p className="text-sm text-muted-foreground">
-            Auto-dismiss in {remainingSeconds}s
-          </p>
+          <p className="text-sm text-muted-foreground">{detailMessage}</p>
           <div className="flex items-center gap-2">
-            {timerComplete && (
+            {timerComplete && !status.isHealthy && (
               <Button variant="secondary" onClick={handleDismiss}>
                 Dismiss
               </Button>
             )}
-            {!status.isChecking && (
+            {!status.isChecking && !status.isHealthy && (
               <Button onClick={handleRecheck} variant="outline">
                 Recheck
               </Button>
