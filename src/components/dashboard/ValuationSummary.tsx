@@ -25,7 +25,7 @@ export function ValuationSummary({ items }: ValuationSummaryProps) {
   const valuedItems = Object.values(valuationsByCurrency).reduce((sum, curr) => sum + curr.count, 0);
   const unvaluedItems = totalItems - valuedItems;
 
-  const currencyEntries = Object.entries(valuationsByCurrency);
+  const currencyEntries = Object.entries(valuationsByCurrency).sort(([a], [b]) => a.localeCompare(b));
 
   if (currencyEntries.length === 0) {
     return (
