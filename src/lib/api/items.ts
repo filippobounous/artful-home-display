@@ -4,6 +4,7 @@ import {
   BookItem,
   MusicItem,
   DecorItemInput,
+  InventoryItem,
 } from '@/types/inventory';
 import { CollectionType } from '@/context/CollectionProvider';
 import { testDecorItems } from '@/data/testData';
@@ -263,11 +264,11 @@ export function itemQueryKey(
 export function getItemsFetcher(collection: CollectionType) {
   switch (collection) {
     case 'books':
-      return fetchBookItems as unknown as () => Promise<DecorItem[]>;
+      return fetchBookItems as unknown as () => Promise<InventoryItem[]>;
     case 'music':
-      return fetchMusicItems as unknown as () => Promise<DecorItem[]>;
+      return fetchMusicItems as unknown as () => Promise<InventoryItem[]>;
     default:
-      return fetchDecorItems;
+      return fetchDecorItems as unknown as () => Promise<InventoryItem[]>;
   }
 }
 
@@ -276,13 +277,63 @@ export function getItemFetcher(collection: CollectionType) {
     case 'books':
       return fetchBookItem as unknown as (
         id: number | string,
-      ) => Promise<DecorItem | null>;
+      ) => Promise<InventoryItem | null>;
     case 'music':
       return fetchMusicItem as unknown as (
         id: number | string,
-      ) => Promise<DecorItem | null>;
+      ) => Promise<InventoryItem | null>;
     default:
-      return fetchDecorItem;
+      return fetchDecorItem as unknown as (
+        id: number | string,
+      ) => Promise<InventoryItem | null>;
+  }
+}
+
+export async function updateBookItem(
+  id: number | string,
+  input: BookItem,
+): Promise<BookItem> {
+  const testDataEnabled = getTestDataState();
+
+  if (testDataEnabled || !isApiConfigured()) {
+    return Promise.resolve({ ...input, id: Number(id) });
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/books/${id}`, {
+      method: 'PUT',
+      headers: withAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify(input),
+    });
+    if (!response.ok) throw new Error('Failed to update book');
+    return await response.json();
+  } catch (error) {
+    console.error('Failed to update book item:', error);
+    throw error;
+  }
+}
+
+export async function updateMusicItem(
+  id: number | string,
+  input: MusicItem,
+): Promise<MusicItem> {
+  const testDataEnabled = getTestDataState();
+
+  if (testDataEnabled || !isApiConfigured()) {
+    return Promise.resolve({ ...input, id: Number(id) });
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/music/${id}`, {
+      method: 'PUT',
+      headers: withAuthHeaders({ 'Content-Type': 'application/json' }),
+      body: JSON.stringify(input),
+    });
+    if (!response.ok) throw new Error('Failed to update music');
+    return await response.json();
+  } catch (error) {
+    console.error('Failed to update music item:', error);
+    throw error;
   }
 }
 

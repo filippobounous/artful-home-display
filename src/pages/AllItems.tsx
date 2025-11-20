@@ -16,9 +16,17 @@ import {
   itemQueryKey,
   updateDecorItem,
   decorItemToInput,
+  updateBookItem,
+  updateMusicItem,
 } from '@/lib/api';
 import { ItemDetailDialog } from '@/components/ItemDetailDialog';
-import type { DecorItemInput } from '@/types/inventory';
+import type {
+  BookItem,
+  DecorItem,
+  DecorItemInput,
+  InventoryItem,
+  MusicItem,
+} from '@/types/inventory';
 import { useSettingsState } from '@/hooks/useSettingsState';
 import { BatchLocationDialog } from '@/components/BatchLocationDialog';
 import { useToast } from '@/hooks/use-toast';
@@ -41,7 +49,7 @@ const AllItems = () => {
     data: selectedItem,
     isLoading: itemLoading,
     error: itemError,
-  } = useQuery({
+  } = useQuery<InventoryItem | null>({
     queryKey: itemQueryKey(collection, itemId),
     queryFn: () => (itemId ? itemFetcher(itemId) : Promise.resolve(null)),
     enabled: !!itemId,
@@ -55,7 +63,7 @@ const AllItems = () => {
     data: items = [],
     isLoading,
     error,
-  } = useQuery({
+  } = useQuery<InventoryItem[]>({
     queryKey: itemsQueryKey(collection),
     queryFn: itemsFetcher,
   });
@@ -99,14 +107,34 @@ const AllItems = () => {
       const updatePromises = selectedItems.map(async (id) => {
         const itemId = Number(id);
         const item = items.find((i) => i.id === itemId);
-        if (item) {
-          const input: DecorItemInput = {
-            ...decorItemToInput(item),
+        if (!item) return;
+
+        if (collection === 'books') {
+          const bookItem: BookItem = {
+            ...(item as BookItem),
             house: houseId,
             room: roomId,
           };
-          return updateDecorItem(itemId, input);
+          return updateBookItem(itemId, bookItem);
         }
+
+        if (collection === 'music') {
+          const musicItem: MusicItem = {
+            ...(item as MusicItem),
+            house: houseId,
+            room: roomId,
+          };
+          return updateMusicItem(itemId, musicItem);
+        }
+
+        const decorItem = item as DecorItem;
+        const input: DecorItemInput = {
+          ...decorItemToInput(decorItem),
+          house: houseId,
+          room: roomId,
+          room_code: roomId,
+        };
+        return updateDecorItem(itemId, input);
       });
 
       await Promise.all(updatePromises);
