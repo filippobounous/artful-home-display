@@ -47,8 +47,6 @@ export function Dashboard({ items }: DashboardProps) {
       count: counts.houses[house.id] ?? 0,
     }));
 
-  const totalItems = items.length;
-
   const getCategoryIcon = (categoryId: string) => {
     switch (categoryId) {
       case 'art':
@@ -64,21 +62,6 @@ export function Dashboard({ items }: DashboardProps) {
     <div className="space-y-8">
       {/* Enhanced Overview Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Basic Total Items Card */}
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Total Items</p>
-                <p className="text-2xl font-bold text-foreground">
-                  {formatNumber(totalItems)}
-                </p>
-              </div>
-              <Package className="w-8 h-8 text-dashboard-blue" />
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Collection Overview */}
         <CollectionOverview items={items} />
 
