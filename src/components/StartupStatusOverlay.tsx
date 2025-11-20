@@ -32,19 +32,20 @@ export function StartupStatusOverlay() {
   }, [status, setUseTestData, useTestData]);
 
   useEffect(() => {
+    if (status.isChecking) return;
+
     const timeout = setTimeout(() => {
       const currentStatus = statusRef.current;
-      if (currentStatus.isChecking) {
-        checkHealth();
-      }
+
       if (!currentStatus.isHealthy) {
         setUseTestData(true);
       }
+
       setVisible(false);
     }, AUTO_DISMISS_MS);
 
     return () => clearTimeout(timeout);
-  }, [checkHealth, setUseTestData]);
+  }, [status, setUseTestData]);
 
   const message = useMemo(() => {
     if (status.isChecking) return 'Checking API health...';
@@ -54,7 +55,7 @@ export function StartupStatusOverlay() {
 
   const handleDismiss = () => {
     const currentStatus = statusRef.current;
-    if (!currentStatus.isHealthy) {
+    if (!currentStatus.isChecking && !currentStatus.isHealthy) {
       setUseTestData(true);
     }
     setVisible(false);
