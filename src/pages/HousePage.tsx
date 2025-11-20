@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { InventoryHeader } from '@/components/InventoryHeader';
-import { fetchDecorItems } from '@/lib/api/items';
+import { getItemsFetcher, itemsQueryKey } from '@/lib/api/items';
 import { SearchFilters } from '@/components/SearchFilters';
 import { ItemsGrid } from '@/components/ItemsGrid';
 import { ItemsList } from '@/components/ItemsList';
@@ -10,6 +10,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { useSettingsState } from '@/hooks/useSettingsState';
 import { SidebarLayout } from '@/components/SidebarLayout';
 import { useInventoryFilters } from '@/hooks/useInventoryFilters';
+import { useCollection } from '@/context/CollectionProvider';
 
 export default function HousePage() {
   const { houseId } = useParams<{ houseId: string }>();
@@ -17,10 +18,11 @@ export default function HousePage() {
   const { houses, categories } = useSettingsState();
   const decodedHouseId = houseId ? decodeURIComponent(houseId) : '';
   const house = houses.find((h) => h.id === decodedHouseId);
+  const { collection } = useCollection();
 
   const { data: items = [], isLoading } = useQuery({
-    queryKey: ['decor-items'],
-    queryFn: fetchDecorItems,
+    queryKey: itemsQueryKey(collection),
+    queryFn: getItemsFetcher(collection),
   });
 
   const filters = useInventoryFilters({

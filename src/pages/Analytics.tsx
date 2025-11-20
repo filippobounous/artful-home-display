@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 import { InventoryHeader } from '@/components/InventoryHeader';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,12 +15,13 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-import { fetchDecorItems } from '@/lib/api';
+import { getItemsFetcher, itemsQueryKey } from '@/lib/api';
 import { DecorItem } from '@/types/inventory';
 import { StatisticsTable } from '@/components/analytics/StatisticsTable';
 import { formatCurrency, formatNumber } from '@/lib/currencyUtils';
 import { AnalyticsFilters } from '@/components/analytics/AnalyticsFilters';
 import { SidebarLayout } from '@/components/SidebarLayout';
+import { useCollection } from '@/context/CollectionProvider';
 
 interface TooltipProps {
   active?: boolean;
@@ -36,6 +38,12 @@ const Analytics = () => {
   const [selectedHouses, setSelectedHouses] = useState<string[]>([]);
   const [selectedCurrencies, setSelectedCurrencies] = useState<string[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
+  const { collection } = useCollection();
+
+  const { data: itemData = [] } = useQuery({
+    queryKey: itemsQueryKey(collection),
+    queryFn: getItemsFetcher(collection),
+  });
 
   useEffect(() => {
     const categoriesParam = searchParams.get('categories');
@@ -55,17 +63,10 @@ const Analytics = () => {
   }, []);
 
   useEffect(() => {
-    fetchDecorItems()
-      .then((data) => {
-        const activeItems = data.filter((item) => !item.deleted);
-        setItems(activeItems);
-        setFilteredItems(activeItems);
-      })
-      .catch(() => {
-        setItems([]);
-        setFilteredItems([]);
-      });
-  }, []);
+    const activeItems = itemData.filter((item) => !item.deleted);
+    setItems(activeItems);
+    setFilteredItems(activeItems);
+  }, [itemData]);
 
   // Apply filters
   useEffect(() => {

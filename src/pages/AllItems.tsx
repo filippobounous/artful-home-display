@@ -10,8 +10,10 @@ import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
-  fetchDecorItems,
-  fetchDecorItem,
+  getItemFetcher,
+  getItemsFetcher,
+  itemsQueryKey,
+  itemQueryKey,
   updateDecorItem,
   decorItemToInput,
 } from '@/lib/api';
@@ -23,20 +25,25 @@ import { useToast } from '@/hooks/use-toast';
 import { formatNumber } from '@/lib/currencyUtils';
 import { SidebarLayout } from '@/components/SidebarLayout';
 import { useInventoryFilters } from '@/hooks/useInventoryFilters';
+import { useCollection } from '@/context/CollectionProvider';
 
 const AllItems = () => {
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [showBatchDialog, setShowBatchDialog] = useState(false);
   const navigate = useNavigate();
   const { itemId } = useParams<{ itemId?: string }>();
+  const { collection } = useCollection();
+
+  const itemsFetcher = getItemsFetcher(collection);
+  const itemFetcher = getItemFetcher(collection);
 
   const {
     data: selectedItem,
     isLoading: itemLoading,
     error: itemError,
   } = useQuery({
-    queryKey: ['decor-item', itemId],
-    queryFn: () => (itemId ? fetchDecorItem(itemId) : Promise.resolve(null)),
+    queryKey: itemQueryKey(collection, itemId),
+    queryFn: () => (itemId ? itemFetcher(itemId) : Promise.resolve(null)),
     enabled: !!itemId,
   });
 
@@ -49,8 +56,8 @@ const AllItems = () => {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ['decor-items'],
-    queryFn: fetchDecorItems,
+    queryKey: itemsQueryKey(collection),
+    queryFn: itemsFetcher,
   });
 
   const filters = useInventoryFilters({
@@ -103,7 +110,7 @@ const AllItems = () => {
       });
 
       await Promise.all(updatePromises);
-      queryClient.invalidateQueries({ queryKey: ['decor-items'] });
+      queryClient.invalidateQueries({ queryKey: itemsQueryKey(collection) });
       setSelectedItems([]);
       setShowBatchDialog(false);
 

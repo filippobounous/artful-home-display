@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Copy, Download, AlertTriangle } from 'lucide-react';
 import { SidebarLayout } from '@/components/SidebarLayout';
 import { useToast } from '@/hooks/use-toast';
-import { fetchDecorItems } from '@/lib/api/items';
+import { getItemsFetcher, itemsQueryKey } from '@/lib/api/items';
 import { DecorItem, ViewMode } from '@/types/inventory';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { SearchFilters } from '@/components/SearchFilters';
@@ -16,6 +16,7 @@ import { ItemsTable } from '@/components/ItemsTable';
 import { EmptyState } from '@/components/EmptyState';
 import { useSettingsState } from '@/hooks/useSettingsState';
 import { sortInventoryItems } from '@/lib/sortUtils';
+import { useCollection } from '@/context/CollectionProvider';
 
 interface WarningItem extends DecorItem {
   missingFields: string[];
@@ -38,6 +39,7 @@ const Warnings = () => {
   const [viewMode, setViewMode] = useState<ViewMode>('table');
   const [searchParams, setSearchParams] = useSearchParams();
   const { houses, categories } = useSettingsState();
+  const { collection } = useCollection();
   type SortField =
     | 'title'
     | 'artist'
@@ -49,8 +51,8 @@ const Warnings = () => {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   const { data: items = [], isLoading } = useQuery({
-    queryKey: ['decor-items-warnings'],
-    queryFn: fetchDecorItems,
+    queryKey: itemsQueryKey(collection),
+    queryFn: getItemsFetcher(collection),
   });
 
   const getWarningItems = (items: DecorItem[]): WarningItem[] => {

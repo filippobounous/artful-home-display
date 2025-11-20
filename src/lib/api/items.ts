@@ -5,6 +5,7 @@ import {
   MusicItem,
   DecorItemInput,
 } from '@/types/inventory';
+import { CollectionType } from '@/context/CollectionProvider';
 import { testDecorItems } from '@/data/testData';
 import { testBooks } from '@/data/booksTestData';
 import { testMusic } from '@/data/musicTestData';
@@ -152,6 +153,31 @@ export async function fetchDecorItem(
   }
 }
 
+export async function fetchBookItem(
+  id: number | string,
+): Promise<BookItem | null> {
+  const testDataEnabled = getTestDataState();
+
+  if (testDataEnabled) {
+    return Promise.resolve(testBooks.find((i) => i.id === Number(id)) || null);
+  }
+
+  if (!isApiConfigured()) {
+    return Promise.resolve(null);
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/books/${id}`, {
+      headers: withAuthHeaders({ 'Content-Type': 'application/json' }),
+    });
+    if (!response.ok) throw new Error('Failed to fetch book');
+    return await response.json();
+  } catch (error) {
+    console.error('Failed to fetch book item:', error);
+    return null;
+  }
+}
+
 export async function fetchBookItems(): Promise<BookItem[]> {
   const testDataEnabled = getTestDataState();
   
@@ -195,6 +221,68 @@ export async function fetchMusicItems(): Promise<MusicItem[]> {
   } catch (error) {
     console.error('Failed to fetch music items:', error);
     return [];
+  }
+}
+
+export async function fetchMusicItem(
+  id: number | string,
+): Promise<MusicItem | null> {
+  const testDataEnabled = getTestDataState();
+
+  if (testDataEnabled) {
+    return Promise.resolve(testMusic.find((i) => i.id === Number(id)) || null);
+  }
+
+  if (!isApiConfigured()) {
+    return Promise.resolve(null);
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/music/${id}`, {
+      headers: withAuthHeaders({ 'Content-Type': 'application/json' }),
+    });
+    if (!response.ok) throw new Error('Failed to fetch music');
+    return await response.json();
+  } catch (error) {
+    console.error('Failed to fetch music item:', error);
+    return null;
+  }
+}
+
+export function itemsQueryKey(collection: CollectionType) {
+  return ['items', collection];
+}
+
+export function itemQueryKey(
+  collection: CollectionType,
+  id?: number | string,
+) {
+  return ['item', collection, id];
+}
+
+export function getItemsFetcher(collection: CollectionType) {
+  switch (collection) {
+    case 'books':
+      return fetchBookItems as unknown as () => Promise<DecorItem[]>;
+    case 'music':
+      return fetchMusicItems as unknown as () => Promise<DecorItem[]>;
+    default:
+      return fetchDecorItems;
+  }
+}
+
+export function getItemFetcher(collection: CollectionType) {
+  switch (collection) {
+    case 'books':
+      return fetchBookItem as unknown as (
+        id: number | string,
+      ) => Promise<DecorItem | null>;
+    case 'music':
+      return fetchMusicItem as unknown as (
+        id: number | string,
+      ) => Promise<DecorItem | null>;
+    default:
+      return fetchDecorItem;
   }
 }
 

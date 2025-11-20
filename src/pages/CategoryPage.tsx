@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { InventoryHeader } from '@/components/InventoryHeader';
-import { fetchDecorItems } from '@/lib/api/items';
+import { getItemsFetcher, itemsQueryKey } from '@/lib/api/items';
 import { SearchFilters } from '@/components/SearchFilters';
 import { ItemsGrid } from '@/components/ItemsGrid';
 import { ItemsList } from '@/components/ItemsList';
@@ -10,6 +10,7 @@ import { EmptyState } from '@/components/EmptyState';
 import { useSettingsState } from '@/hooks/useSettingsState';
 import { SidebarLayout } from '@/components/SidebarLayout';
 import { useInventoryFilters } from '@/hooks/useInventoryFilters';
+import { useCollection } from '@/context/CollectionProvider';
 
 export default function CategoryPage() {
   const { categoryId } = useParams<{ categoryId: string }>();
@@ -17,10 +18,11 @@ export default function CategoryPage() {
   const { categories, houses } = useSettingsState();
   const decodedCategoryId = categoryId ? decodeURIComponent(categoryId) : '';
   const category = categories.find((c) => c.id === decodedCategoryId);
+  const { collection } = useCollection();
 
   const { data: items = [], isLoading } = useQuery({
-    queryKey: ['decor-items'],
-    queryFn: fetchDecorItems,
+    queryKey: itemsQueryKey(collection),
+    queryFn: getItemsFetcher(collection),
   });
 
   const filters = useInventoryFilters({

@@ -1,13 +1,15 @@
 import { InventoryHeader } from '@/components/InventoryHeader';
 import { Dashboard } from '@/components/Dashboard';
 import { useQuery } from '@tanstack/react-query';
-import { fetchDecorItems } from '@/lib/api/items';
+import { getItemsFetcher, itemsQueryKey } from '@/lib/api/items';
 import { SidebarLayout } from '@/components/SidebarLayout';
+import { useCollection } from '@/context/CollectionProvider';
 
 const Index = () => {
+  const { collection } = useCollection();
   const { data: items = [] } = useQuery({
-    queryKey: ['decor-items'],
-    queryFn: fetchDecorItems,
+    queryKey: itemsQueryKey(collection),
+    queryFn: getItemsFetcher(collection),
   });
 
   const activeItems = items.filter((item) => !item.deleted);
