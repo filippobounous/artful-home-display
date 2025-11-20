@@ -39,19 +39,14 @@ export function CollectionOverview({ items }: CollectionOverviewProps) {
     return acc;
   }, {} as Record<string, { total: number; count: number }>);
 
-  // Highest valued items (top 3)
-  const highestValuedItems = valuedItems
-    .sort((a, b) => (b.valuation || 0) - (a.valuation || 0))
-    .slice(0, 3);
-
   return (
     <Card>
       <CardHeader>
         <CardTitle>Collection Overview</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4">
         {/* Basic Stats */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3">
           <div>
             <p className="text-sm text-muted-foreground">Total Items</p>
             <p className="text-2xl font-bold">{formatNumber(items.length)} items</p>
@@ -97,26 +92,6 @@ export function CollectionOverview({ items }: CollectionOverviewProps) {
                 <div key={currency} className="flex justify-between text-sm">
                   <span>{currency}:</span>
                   <span>{formatCurrency(data.total / data.count, currency)}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Highest Valued Items */}
-        {highestValuedItems.length > 0 && (
-          <div>
-            <p className="text-sm font-medium mb-2">Highest Valued Items</p>
-            <div className="space-y-1">
-              {highestValuedItems.map(item => (
-                <div key={item.id} className="flex justify-between text-sm">
-                  <span className="truncate flex-1 mr-2">{item.title}</span>
-                  <span className="font-medium">
-                    {item.valuation && item.valuationCurrency 
-                      ? formatCurrency(item.valuation, item.valuationCurrency)
-                      : '—'
-                    }
-                  </span>
                 </div>
               ))}
             </div>
