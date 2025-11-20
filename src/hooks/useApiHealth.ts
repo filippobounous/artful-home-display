@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useTestDataToggle } from './useTestDataToggle';
-import { API_URL } from '@/lib/api/common';
+import { API_CONFIGURED, API_URL } from '@/lib/api/common';
 
 export interface ApiHealthStatus {
   isHealthy: boolean;
@@ -30,7 +30,7 @@ export function useApiHealth(enablePolling = false, intervalMs = 30000) {
     }
 
     // If no API URL configured, mark as unhealthy
-    if (!API_URL) {
+    if (!API_CONFIGURED) {
       setStatus({
         isHealthy: false,
         isChecking: false,

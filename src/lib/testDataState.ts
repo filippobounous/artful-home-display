@@ -1,4 +1,4 @@
-let testDataEnabled = true;
+let testDataEnabled = false;
 
 export function setTestDataState(enabled: boolean) {
   testDataEnabled = enabled;

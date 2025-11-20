@@ -9,11 +9,9 @@ import { testDecorItems } from '@/data/testData';
 import { testBooks } from '@/data/booksTestData';
 import { testMusic } from '@/data/musicTestData';
 import { getTestDataState } from '@/lib/testDataState';
-import { API_URL, withAuthHeaders } from './common';
+import { API_CONFIGURED, API_URL, withAuthHeaders } from './common';
 
-const isApiConfigured = () => {
-  return !!API_URL;
-};
+const isApiConfigured = () => API_CONFIGURED;
 
 function getLocalItems(): DecorItem[] {
   const stored = localStorage.getItem('inventoryData');
@@ -104,13 +102,10 @@ export function decorItemToInput(item: DecorItem): DecorItemInput {
 
 export async function fetchDecorItems(): Promise<DecorItem[]> {
   const testDataEnabled = getTestDataState();
-  
-  if (testDataEnabled) {
+  const apiAvailable = isApiConfigured();
+
+  if (testDataEnabled || !apiAvailable) {
     return Promise.resolve(testDecorItems);
-  }
-  
-  if (!isApiConfigured()) {
-    return Promise.resolve([]);
   }
   
   try {
@@ -129,15 +124,12 @@ export async function fetchDecorItem(
   id: number | string,
 ): Promise<DecorItem | null> {
   const testDataEnabled = getTestDataState();
-  
-  if (testDataEnabled) {
+  const apiAvailable = isApiConfigured();
+
+  if (testDataEnabled || !apiAvailable) {
     return Promise.resolve(
       testDecorItems.find((i) => i.id === Number(id)) || null,
     );
-  }
-  
-  if (!isApiConfigured()) {
-    return Promise.resolve(null);
   }
   
   try {
@@ -154,13 +146,10 @@ export async function fetchDecorItem(
 
 export async function fetchBookItems(): Promise<BookItem[]> {
   const testDataEnabled = getTestDataState();
-  
-  if (testDataEnabled) {
+  const apiAvailable = isApiConfigured();
+
+  if (testDataEnabled || !apiAvailable) {
     return Promise.resolve(testBooks);
-  }
-  
-  if (!isApiConfigured()) {
-    return Promise.resolve([]);
   }
   
   try {
@@ -177,13 +166,10 @@ export async function fetchBookItems(): Promise<BookItem[]> {
 
 export async function fetchMusicItems(): Promise<MusicItem[]> {
   const testDataEnabled = getTestDataState();
-  
-  if (testDataEnabled) {
+  const apiAvailable = isApiConfigured();
+
+  if (testDataEnabled || !apiAvailable) {
     return Promise.resolve(testMusic);
-  }
-  
-  if (!isApiConfigured()) {
-    return Promise.resolve([]);
   }
   
   try {
