@@ -4,6 +4,7 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { Toaster } from '@/components/ui/toaster';
 import { TestDataProvider } from '@/context/TestDataProvider';
+import { StartupStatusOverlay } from '@/components/StartupStatusOverlay';
 
 // Pages
 import Index from '@/pages/Index';
@@ -31,6 +32,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TestDataProvider>
         <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+          <StartupStatusOverlay />
           <BrowserRouter>
             <SidebarProvider>
               <Routes>
