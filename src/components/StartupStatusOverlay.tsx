@@ -13,9 +13,14 @@ export function StartupStatusOverlay() {
   const { useTestData, setUseTestData } = useTestDataToggle();
   const [visible, setVisible] = useState(true);
   const [timerComplete, setTimerComplete] = useState(false);
+  const [countdownRemaining, setCountdownRemaining] = useState(TIMER_SECONDS);
+  const [postDismissRemaining, setPostDismissRemaining] = useState(
+    POST_TIMER_DISMISS_MS / 1000
+  );
   const statusRef = useRef(status);
   const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const postTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const postCountdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     statusRef.current = status;
@@ -42,6 +47,11 @@ export function StartupStatusOverlay() {
       countdownRef.current = null;
     }
 
+    if (postCountdownRef.current) {
+      clearInterval(postCountdownRef.current);
+      postCountdownRef.current = null;
+    }
+
     if (postTimerRef.current) {
       clearTimeout(postTimerRef.current);
       postTimerRef.current = null;
@@ -52,11 +62,13 @@ export function StartupStatusOverlay() {
     clearTimers();
     setVisible(true);
     setTimerComplete(false);
+    setCountdownRemaining(TIMER_SECONDS);
 
     let secondsRemaining = TIMER_SECONDS;
 
     countdownRef.current = setInterval(() => {
       secondsRemaining -= 1;
+      setCountdownRemaining(Math.max(secondsRemaining, 0));
 
       if (secondsRemaining <= 0) {
         if (countdownRef.current) {
@@ -80,6 +92,19 @@ export function StartupStatusOverlay() {
 
     if (!timerComplete) return;
 
+    setPostDismissRemaining(POST_TIMER_DISMISS_MS / 1000);
+    let postSecondsRemaining = POST_TIMER_DISMISS_MS / 1000;
+
+    postCountdownRef.current = setInterval(() => {
+      postSecondsRemaining -= 1;
+      setPostDismissRemaining(Math.max(postSecondsRemaining, 0));
+
+      if (postSecondsRemaining <= 0 && postCountdownRef.current) {
+        clearInterval(postCountdownRef.current);
+        postCountdownRef.current = null;
+      }
+    }, 1000);
+
     postTimerRef.current = setTimeout(() => {
       const currentStatus = statusRef.current;
 
@@ -94,6 +119,11 @@ export function StartupStatusOverlay() {
       if (postTimerRef.current) {
         clearTimeout(postTimerRef.current);
         postTimerRef.current = null;
+      }
+
+      if (postCountdownRef.current) {
+        clearInterval(postCountdownRef.current);
+        postCountdownRef.current = null;
       }
     };
   }, [setUseTestData, timerComplete, status.isHealthy]);
@@ -124,9 +154,10 @@ export function StartupStatusOverlay() {
 
   const detailMessage = useMemo(() => {
     if (status.isHealthy) return 'API connection established';
-    if (!timerComplete) return 'Waiting for API...';
-    return 'Auto-dismiss in 2 seconds';
-  }, [status.isHealthy, timerComplete]);
+    if (!timerComplete)
+      return `Waiting for API... (${Math.max(countdownRemaining, 0)}s)`;
+    return `Auto-dismiss in ${Math.max(postDismissRemaining, 0)} seconds`;
+  }, [countdownRemaining, postDismissRemaining, status.isHealthy, timerComplete]);
 
   const handleDismiss = () => {
     const currentStatus = statusRef.current;
