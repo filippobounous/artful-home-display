@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { InventoryHeader } from '@/components/InventoryHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Trash2, Edit, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { SidebarLayout } from '@/components/SidebarLayout';
@@ -54,10 +55,15 @@ const Drafts = () => {
   return (
     <SidebarLayout>
       <InventoryHeader />
-      <main className="flex-1 p-6">
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold text-foreground mb-2">Drafts</h2>
-          <p className="text-muted-foreground">Your saved draft items</p>
+      <main className="flex-1 space-y-6 p-4 md:p-8 pt-6">
+        <div className="flex items-center gap-2">
+          <FileText className="w-5 h-5 text-primary" />
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+            Drafts
+          </h1>
+          <Badge variant="secondary" className="ml-2">
+            {drafts.length}
+          </Badge>
         </div>
 
         {drafts.length === 0 ? (

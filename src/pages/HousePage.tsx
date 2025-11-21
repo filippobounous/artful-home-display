@@ -10,6 +10,8 @@ import { EmptyState } from '@/components/EmptyState';
 import { useSettingsState } from '@/hooks/useSettingsState';
 import { SidebarLayout } from '@/components/SidebarLayout';
 import { useInventoryFilters } from '@/hooks/useInventoryFilters';
+import { Badge } from '@/components/ui/badge';
+import { Home } from 'lucide-react';
 
 export default function HousePage() {
   const { houseId } = useParams<{ houseId: string }>();
@@ -66,10 +68,14 @@ export default function HousePage() {
     <SidebarLayout>
       <InventoryHeader />
       <main className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-        <div>
+        <div className="flex items-center gap-2">
+          <Home className="w-5 h-5 text-primary" />
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
             {house.name}
           </h1>
+          <Badge variant="secondary" className="ml-2">
+            {filteredItems.length}
+          </Badge>
         </div>
 
         <SearchFilters
