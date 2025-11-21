@@ -271,7 +271,7 @@ export function AppliedFilters({
 
     filterGroups.push({
       id: 'currency',
-      labelPrefix: 'Currency',
+      labelPrefix: 'Valuation currency',
       selectedIds: selectedCurrency,
       options: currencyOptions,
       onRemove: (id) => clearFilter('currency', id),

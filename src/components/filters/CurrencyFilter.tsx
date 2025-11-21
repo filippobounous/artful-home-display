@@ -20,10 +20,10 @@ export function CurrencyFilter({
   return (
     <div>
       <Label className="block text-sm font-medium text-muted-foreground mb-2">
-        Currency
+        Valuation currency
       </Label>
       <MultiSelectFilter
-        placeholder="Select currency"
+        placeholder="Select valuation currency"
         options={options}
         selectedValues={selectedCurrency}
         onSelectionChange={setSelectedCurrency}
