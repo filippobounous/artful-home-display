@@ -20,6 +20,7 @@ import { format } from 'date-fns';
 import { HierarchicalHouseRoomSelector } from '@/components/HierarchicalHouseRoomSelector';
 import { HierarchicalCategorySelector } from '@/components/HierarchicalCategorySelector';
 import { currencyOptions } from '@/data/currencies';
+import { normalizeNumberInput } from '@/lib/numberInput';
 
 import type { DecorItemFormData } from '@/types/forms';
 
@@ -70,7 +71,7 @@ function ValuationSection({
             type="number"
             placeholder="0.00"
             value={value}
-            onChange={(e) => onValueChange(e.target.value)}
+            onChange={(e) => onValueChange(normalizeNumberInput(e.target.value))}
           />
         </div>
         <div>
