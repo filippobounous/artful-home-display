@@ -11,7 +11,7 @@ import { useSettingsState } from '@/hooks/useSettingsState';
 import { SidebarLayout } from '@/components/SidebarLayout';
 import { useInventoryFilters } from '@/hooks/useInventoryFilters';
 import { Badge } from '@/components/ui/badge';
-import { Tag } from 'lucide-react';
+import { getIconComponent } from '@/lib/iconRegistry';
 
 export default function CategoryPage() {
   const { categoryId } = useParams<{ categoryId: string }>();
@@ -19,6 +19,7 @@ export default function CategoryPage() {
   const { categories, houses } = useSettingsState();
   const decodedCategoryId = categoryId ? decodeURIComponent(categoryId) : '';
   const category = categories.find((c) => c.id === decodedCategoryId);
+  const CategoryIcon = getIconComponent(category?.icon);
 
   const { data: items = [], isLoading } = useQuery({
     queryKey: ['decor-items'],
@@ -69,7 +70,7 @@ export default function CategoryPage() {
       <InventoryHeader />
       <main className="flex-1 space-y-4 p-4 md:p-8 pt-6">
         <div className="flex items-center gap-2">
-          <Tag className="w-5 h-5 text-primary" />
+          <CategoryIcon className="w-5 h-5 text-primary" />
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
             {category.name}
           </h1>

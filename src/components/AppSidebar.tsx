@@ -1,16 +1,11 @@
 import {
   Home,
-  Package,
   BarChart3,
   Settings,
-  Palette,
-  Sofa,
-  MapPin,
   FileText,
-  Lamp,
-  Shapes,
-  House,
   AlertTriangle,
+  Boxes,
+  Package,
 } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -28,6 +23,7 @@ import {
 } from '@/components/ui/sidebar';
 import { useSettingsState } from '@/hooks/useSettingsState';
 import { SidebarStatus } from '@/components/SidebarStatus';
+import { getIconComponent } from '@/lib/iconRegistry';
 
 const MAIN_MENU_ORDER = [
   'Dashboard',
@@ -40,29 +36,12 @@ const MAIN_MENU_ORDER = [
 const mainItems = [
   { title: 'Dashboard', url: '/', icon: Home },
   { title: 'Analytics', url: '/analytics', icon: BarChart3 },
-  { title: 'All Items', url: '/inventory', icon: Package },
+  { title: 'All Items', url: '/inventory', icon: Boxes },
   { title: 'Drafts', url: '/drafts', icon: FileText },
   { title: 'Warnings', url: '/warnings', icon: AlertTriangle },
 ].sort(
   (a, b) => MAIN_MENU_ORDER.indexOf(a.title) - MAIN_MENU_ORDER.indexOf(b.title),
 );
-
-const getIconComponent = (iconName: string) => {
-  switch (iconName) {
-    case 'palette':
-      return Palette;
-    case 'sofa':
-      return Sofa;
-    case 'lamp':
-      return Lamp;
-    case 'house':
-      return House;
-    case 'map-pin':
-      return MapPin;
-    default:
-      return Shapes;
-  }
-};
 
 export function AppSidebar() {
   const { state, setOpen } = useSidebar();

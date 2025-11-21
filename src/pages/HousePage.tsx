@@ -11,7 +11,7 @@ import { useSettingsState } from '@/hooks/useSettingsState';
 import { SidebarLayout } from '@/components/SidebarLayout';
 import { useInventoryFilters } from '@/hooks/useInventoryFilters';
 import { Badge } from '@/components/ui/badge';
-import { Home } from 'lucide-react';
+import { getIconComponent } from '@/lib/iconRegistry';
 
 export default function HousePage() {
   const { houseId } = useParams<{ houseId: string }>();
@@ -19,6 +19,7 @@ export default function HousePage() {
   const { houses, categories } = useSettingsState();
   const decodedHouseId = houseId ? decodeURIComponent(houseId) : '';
   const house = houses.find((h) => h.id === decodedHouseId);
+  const HouseIcon = getIconComponent(house?.icon);
 
   const { data: items = [], isLoading } = useQuery({
     queryKey: ['decor-items'],
@@ -69,7 +70,7 @@ export default function HousePage() {
       <InventoryHeader />
       <main className="flex-1 space-y-4 p-4 md:p-8 pt-6">
         <div className="flex items-center gap-2">
-          <Home className="w-5 h-5 text-primary" />
+          <HouseIcon className="w-5 h-5 text-primary" />
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
             {house.name}
           </h1>
