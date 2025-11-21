@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { normalizeNumberInput } from '@/lib/numberInput';
 
 import type { DecorItemFormData } from '@/types/forms';
 
@@ -95,11 +96,21 @@ export function AddItemBasicInfo({
       label: 'Quantity *',
       placeholder: 'Enter quantity',
       inputProps: {
-        type: 'number',
-        min: 1,
+        type: 'text',
+        inputMode: 'numeric',
       },
     },
   ];
+
+  const handleFieldChange = (field: FieldKey, value: string) => {
+    const nextValue =
+      field === 'quantity' ? normalizeNumberInput(value) : value;
+
+    setFormData((prev) => ({
+      ...prev,
+      [field]: nextValue,
+    }));
+  };
 
   return (
     <div className="space-y-4">
@@ -118,12 +129,7 @@ export function AddItemBasicInfo({
           {...field}
           value={formData[field.id]}
           error={errors[field.id]}
-          onChange={(value) =>
-            setFormData((prev) => ({
-              ...prev,
-              [field.id]: value,
-            }))
-          }
+          onChange={(value) => handleFieldChange(field.id, value)}
         />
       ))}
 
@@ -136,12 +142,15 @@ export function AddItemBasicInfo({
             <Label htmlFor="height">Height (cm)</Label>
             <Input
               id="height"
-              type="number"
-              step="0.01"
+              type="text"
+              inputMode="decimal"
               placeholder="Height in cm"
               value={formData.height_cm}
               onChange={(e) =>
-                setFormData({ ...formData, height_cm: e.target.value })
+                setFormData((prev) => ({
+                  ...prev,
+                  height_cm: normalizeNumberInput(e.target.value),
+                }))
               }
             />
           </div>
@@ -149,12 +158,15 @@ export function AddItemBasicInfo({
             <Label htmlFor="width">Width (cm)</Label>
             <Input
               id="width"
-              type="number"
-              step="0.01"
+              type="text"
+              inputMode="decimal"
               placeholder="Width in cm"
               value={formData.width_cm}
               onChange={(e) =>
-                setFormData({ ...formData, width_cm: e.target.value })
+                setFormData((prev) => ({
+                  ...prev,
+                  width_cm: normalizeNumberInput(e.target.value),
+                }))
               }
             />
           </div>
@@ -162,12 +174,15 @@ export function AddItemBasicInfo({
             <Label htmlFor="depth">Depth (cm)</Label>
             <Input
               id="depth"
-              type="number"
-              step="0.01"
+              type="text"
+              inputMode="decimal"
               placeholder="Depth in cm"
               value={formData.depth_cm}
               onChange={(e) =>
-                setFormData({ ...formData, depth_cm: e.target.value })
+                setFormData((prev) => ({
+                  ...prev,
+                  depth_cm: normalizeNumberInput(e.target.value),
+                }))
               }
             />
           </div>
@@ -178,12 +193,15 @@ export function AddItemBasicInfo({
             <Label htmlFor="weight_kg">Mass (kg)</Label>
             <Input
               id="weight_kg"
-              type="number"
-              step="0.01"
+              type="text"
+              inputMode="decimal"
               placeholder="Mass in kg"
               value={formData.weight_kg}
               onChange={(e) =>
-                setFormData({ ...formData, weight_kg: e.target.value })
+                setFormData((prev) => ({
+                  ...prev,
+                  weight_kg: normalizeNumberInput(e.target.value),
+                }))
               }
             />
           </div>

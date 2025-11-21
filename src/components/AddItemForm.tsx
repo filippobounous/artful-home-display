@@ -16,6 +16,7 @@ import {
 } from '@/lib/api';
 import type { DecorItem, DecorItemInput } from '@/types/inventory';
 import type { DecorItemFormData } from '@/types/forms';
+import { normalizeNumberInput } from '@/lib/numberInput';
 
 function validateRequiredFields(data: DecorItemFormData) {
   const errs: Record<string, string> = {};
@@ -27,7 +28,8 @@ function validateRequiredFields(data: DecorItemFormData) {
     errs.date_period = 'Date period is required';
   if (!data.category.trim()) errs.category = 'Category is required';
   if (!data.subcategory.trim()) errs.subcategory = 'Subcategory is required';
-  if (!data.quantity || Number(data.quantity) <= 0)
+  const normalizedQuantity = normalizeNumberInput(data.quantity || '');
+  if (!normalizedQuantity || Number(normalizedQuantity) <= 0)
     errs.quantity = 'Quantity must be greater than 0';
 
   return errs;
@@ -236,6 +238,14 @@ export function AddItemForm() {
     }
     setErrors({});
 
+    const height = normalizeNumberInput(formData.height_cm);
+    const width = normalizeNumberInput(formData.width_cm);
+    const depth = normalizeNumberInput(formData.depth_cm);
+    const weight = normalizeNumberInput(formData.weight_kg);
+    const quantity = normalizeNumberInput(formData.quantity);
+    const acquisitionValue = normalizeNumberInput(formData.acquisition_value);
+    const appraisalValue = normalizeNumberInput(formData.appraisal_value);
+
     const decorItem = {
       code: formData.code || undefined,
       name: formData.name,
@@ -246,26 +256,26 @@ export function AddItemForm() {
       origin_region: formData.origin_region,
       date_period: formData.date_period,
       material: formData.material || undefined,
-      height_cm: formData.height_cm ? Number(formData.height_cm) : undefined,
-      width_cm: formData.width_cm ? Number(formData.width_cm) : undefined,
-      depth_cm: formData.depth_cm ? Number(formData.depth_cm) : undefined,
-      weight_kg: formData.weight_kg ? Number(formData.weight_kg) : undefined,
+      height_cm: height ? Number(height) : undefined,
+      width_cm: width ? Number(width) : undefined,
+      depth_cm: depth ? Number(depth) : undefined,
+      weight_kg: weight ? Number(weight) : undefined,
       provenance: formData.provenance || undefined,
       category: formData.category,
       subcategory: formData.subcategory,
-      quantity: formData.quantity ? Number(formData.quantity) : 1,
+      quantity: quantity ? Number(quantity) : 1,
       acquisition_date: formData.acquisition_date
         ? formData.acquisition_date.toISOString().split('T')[0]
         : undefined,
-      acquisition_value: formData.acquisition_value
-        ? Number(formData.acquisition_value)
+      acquisition_value: acquisitionValue
+        ? Number(acquisitionValue)
         : undefined,
       acquisition_currency: formData.acquisition_currency || undefined,
       appraisal_date: formData.appraisal_date
         ? formData.appraisal_date.toISOString().split('T')[0]
         : undefined,
-      appraisal_value: formData.appraisal_value
-        ? Number(formData.appraisal_value)
+      appraisal_value: appraisalValue
+        ? Number(appraisalValue)
         : undefined,
       appraisal_currency: formData.appraisal_currency || undefined,
       appraisal_entity: formData.appraisal_entity || undefined,
