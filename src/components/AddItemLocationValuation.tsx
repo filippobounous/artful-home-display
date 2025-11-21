@@ -20,6 +20,7 @@ import { format } from 'date-fns';
 import { HierarchicalHouseRoomSelector } from '@/components/HierarchicalHouseRoomSelector';
 import { HierarchicalCategorySelector } from '@/components/HierarchicalCategorySelector';
 import { currencyOptions } from '@/data/currencies';
+import { normalizeNumberInput } from '@/lib/numberInput';
 
 import type { DecorItemFormData } from '@/types/forms';
 
@@ -67,10 +68,11 @@ function ValuationSection({
           <Label htmlFor={`${prefix}_value`}>Value</Label>
           <Input
             id={`${prefix}_value`}
-            type="number"
+            type="text"
+            inputMode="decimal"
             placeholder="0.00"
             value={value}
-            onChange={(e) => onValueChange(e.target.value)}
+            onChange={(e) => onValueChange(normalizeNumberInput(e.target.value))}
           />
         </div>
         <div>
@@ -174,13 +176,13 @@ export function AddItemLocationValuation({
         currency={formData.acquisition_currency}
         date={formData.acquisition_date}
         onValueChange={(value) =>
-          setFormData({ ...formData, acquisition_value: value })
+          setFormData((prev) => ({ ...prev, acquisition_value: value }))
         }
         onCurrencyChange={(value) =>
-          setFormData({ ...formData, acquisition_currency: value })
+          setFormData((prev) => ({ ...prev, acquisition_currency: value }))
         }
         onDateChange={(date) =>
-          setFormData({ ...formData, acquisition_date: date })
+          setFormData((prev) => ({ ...prev, acquisition_date: date }))
         }
         error={errors.acquisition}
       />
@@ -192,13 +194,13 @@ export function AddItemLocationValuation({
         currency={formData.appraisal_currency}
         date={formData.appraisal_date}
         onValueChange={(value) =>
-          setFormData({ ...formData, appraisal_value: value })
+          setFormData((prev) => ({ ...prev, appraisal_value: value }))
         }
         onCurrencyChange={(value) =>
-          setFormData({ ...formData, appraisal_currency: value })
+          setFormData((prev) => ({ ...prev, appraisal_currency: value }))
         }
         onDateChange={(date) =>
-          setFormData({ ...formData, appraisal_date: date })
+          setFormData((prev) => ({ ...prev, appraisal_date: date }))
         }
         error={errors.appraisal}
         errorPlacement="afterSection"
