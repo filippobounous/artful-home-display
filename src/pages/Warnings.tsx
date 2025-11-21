@@ -31,6 +31,7 @@ const Warnings = () => {
   const [selectedRoom, setSelectedRoom] = useState<string[]>([]);
   const [selectedYear, setSelectedYear] = useState<string[]>([]);
   const [selectedArtist, setSelectedArtist] = useState<string[]>([]);
+  const [selectedCondition, setSelectedCondition] = useState<string[]>([]);
   const [valuationRange, setValuationRange] = useState<{
     min?: number;
     max?: number;
@@ -95,6 +96,14 @@ const Warnings = () => {
     return Array.from(artists);
   }, [items]);
 
+  const conditionOptions = useMemo(() => {
+    const conditions = new Set<string>();
+    items.forEach((item) => {
+      if (item.condition) conditions.add(item.condition);
+    });
+    return Array.from(conditions);
+  }, [items]);
+
   useEffect(() => {
     setSearchTerm(searchParams.get('search') || '');
     setSelectedCategory(searchParams.getAll('category'));
@@ -102,6 +111,7 @@ const Warnings = () => {
     setSelectedHouse(searchParams.getAll('house'));
     setSelectedRoom(searchParams.getAll('room'));
     setSelectedYear(searchParams.getAll('year'));
+    setSelectedCondition(searchParams.getAll('condition'));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -113,6 +123,9 @@ const Warnings = () => {
     selectedHouse.forEach((h) => params.append('house', h));
     selectedRoom.forEach((r) => params.append('room', r));
     selectedYear.forEach((y) => params.append('year', y));
+    selectedCondition.forEach((condition) =>
+      params.append('condition', condition),
+    );
     setSearchParams(params, { replace: true });
   }, [
     searchTerm,
@@ -121,6 +134,7 @@ const Warnings = () => {
     selectedHouse,
     selectedRoom,
     selectedYear,
+    selectedCondition,
     setSearchParams,
   ]);
 
@@ -173,6 +187,8 @@ const Warnings = () => {
         matchesRoom &&
         matchesYear &&
         matchesArtist &&
+        (selectedCondition.length === 0 ||
+          (item.condition && selectedCondition.includes(item.condition))) &&
         matchesValuation
       );
     });
@@ -185,6 +201,7 @@ const Warnings = () => {
     selectedRoom,
     selectedYear,
     selectedArtist,
+    selectedCondition,
     valuationRange,
   ]);
 
@@ -316,6 +333,9 @@ const Warnings = () => {
           artistOptions={artistOptions}
           selectedArtist={selectedArtist}
           setSelectedArtist={setSelectedArtist}
+          conditionOptions={conditionOptions}
+          selectedCondition={selectedCondition}
+          setSelectedCondition={setSelectedCondition}
           valuationRange={valuationRange}
           setValuationRange={setValuationRange}
           viewMode={viewMode}

@@ -20,6 +20,8 @@ interface AppliedFiltersProps {
   setSelectedYear: (years: string[]) => void;
   selectedArtist: string[];
   setSelectedArtist: (artists: string[]) => void;
+  selectedCondition: string[];
+  setSelectedCondition: (conditions: string[]) => void;
   valuationRange: { min?: number; max?: number };
   setValuationRange: (range: { min?: number; max?: number }) => void;
   permanentCategory?: string;
@@ -41,6 +43,8 @@ export function AppliedFilters({
   setSelectedYear,
   selectedArtist,
   setSelectedArtist,
+  selectedCondition,
+  setSelectedCondition,
   valuationRange,
   setValuationRange,
   permanentCategory,
@@ -72,6 +76,11 @@ export function AppliedFilters({
       case 'artist':
         setSelectedArtist(selectedArtist.filter((a) => a !== value));
         break;
+      case 'condition':
+        setSelectedCondition(
+          selectedCondition.filter((condition) => condition !== value),
+        );
+        break;
     }
   };
 
@@ -86,6 +95,7 @@ export function AppliedFilters({
     setSelectedRoom([]);
     setSelectedYear([]);
     setSelectedArtist([]);
+    setSelectedCondition([]);
     setValuationRange({});
     setSearchTerm('');
   };
@@ -97,6 +107,7 @@ export function AppliedFilters({
     selectedRoom.length > 0 ||
     selectedYear.length > 0 ||
     selectedArtist.length > 0 ||
+    selectedCondition.length > 0 ||
     valuationRange.min !== undefined ||
     valuationRange.max !== undefined ||
     searchTerm.length > 0;
@@ -249,6 +260,29 @@ export function AppliedFilters({
       selectedIds: selectedArtist,
       options: artistOptions,
       onRemove: (id) => clearFilter('artist', id),
+      variant: 'secondary',
+    });
+  }
+
+  if (selectedCondition.length > 0) {
+    const conditionOptions: AppliedFilterBadgeGroup['options'] = {};
+
+    const formatCondition = (condition: string) =>
+      condition
+        .split(' ')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+
+    selectedCondition.forEach((condition) => {
+      conditionOptions[condition] = { label: formatCondition(condition) };
+    });
+
+    filterGroups.push({
+      id: 'condition',
+      labelPrefix: 'Condition',
+      selectedIds: selectedCondition,
+      options: conditionOptions,
+      onRemove: (id) => clearFilter('condition', id),
       variant: 'secondary',
     });
   }

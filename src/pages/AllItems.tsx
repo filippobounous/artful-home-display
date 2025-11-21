@@ -74,6 +74,8 @@ const AllItems = () => {
     setSelectedYear,
     selectedArtist,
     setSelectedArtist,
+    selectedCondition,
+    setSelectedCondition,
     valuationRange,
     setValuationRange,
     viewMode,
@@ -83,6 +85,7 @@ const AllItems = () => {
     handleSort,
     yearOptions,
     artistOptions,
+    conditionOptions,
     filteredItems,
     sortedItems,
   } = filters;
@@ -197,6 +200,9 @@ const AllItems = () => {
           artistOptions={artistOptions}
           selectedArtist={selectedArtist}
           setSelectedArtist={setSelectedArtist}
+          conditionOptions={conditionOptions}
+          selectedCondition={selectedCondition}
+          setSelectedCondition={setSelectedCondition}
           valuationRange={valuationRange}
           setValuationRange={setValuationRange}
           viewMode={viewMode}
