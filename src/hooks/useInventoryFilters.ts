@@ -48,6 +48,7 @@ export function useInventoryFilters({
   const [selectedRoom, setSelectedRoom] = useState<string[]>([]);
   const [selectedYear, setSelectedYear] = useState<string[]>([]);
   const [selectedArtist, setSelectedArtist] = useState<string[]>([]);
+  const [selectedCondition, setSelectedCondition] = useState<string[]>([]);
   const [valuationRange, setValuationRange] = useState<ValuationRange>({});
   const [viewMode, setViewMode] = useState<ViewMode>(initialViewMode);
   const [sortField, setSortField] =
@@ -73,6 +74,16 @@ export function useInventoryFilters({
       }
     });
     return Array.from(artists);
+  }, [items]);
+
+  const conditionOptions = useMemo(() => {
+    const conditions = new Set<string>();
+    items.forEach((item) => {
+      if (item.condition) {
+        conditions.add(item.condition);
+      }
+    });
+    return Array.from(conditions);
   }, [items]);
 
   const filteredItems = useMemo(() => {
@@ -131,6 +142,12 @@ export function useInventoryFilters({
 
       if (!matchesArtist) return false;
 
+      const matchesCondition =
+        selectedCondition.length === 0 ||
+        (item.condition && selectedCondition.includes(item.condition));
+
+      if (!matchesCondition) return false;
+
       const matchesValuation =
         (!valuationRange.min ||
           (item.valuation && item.valuation >= valuationRange.min)) &&
@@ -148,6 +165,7 @@ export function useInventoryFilters({
     selectedRoom,
     selectedYear,
     selectedArtist,
+    selectedCondition,
     valuationRange,
     permanentCategoryId,
     permanentHouseId,
@@ -186,6 +204,8 @@ export function useInventoryFilters({
     setSelectedYear,
     selectedArtist,
     setSelectedArtist,
+    selectedCondition,
+    setSelectedCondition,
     valuationRange,
     setValuationRange,
     viewMode,
@@ -197,6 +217,7 @@ export function useInventoryFilters({
     handleSort,
     yearOptions,
     artistOptions,
+    conditionOptions,
     filteredItems,
     sortedItems,
   };
