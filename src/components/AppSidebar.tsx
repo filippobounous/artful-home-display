@@ -25,16 +25,10 @@ import { useSettingsState } from '@/hooks/useSettingsState';
 import { SidebarStatus } from '@/components/SidebarStatus';
 import { getIconComponent } from '@/lib/iconRegistry';
 
-const MAIN_MENU_ORDER = [
-  'Dashboard',
-  'Analytics',
-  'All Items',
-  'Drafts',
-  'Warnings',
-];
+const MAIN_MENU_ORDER = ['Overview', 'Analytics', 'All Items', 'Drafts', 'Warnings'];
 
 const mainItems = [
-  { title: 'Dashboard', url: '/', icon: Home },
+  { title: 'Overview', url: '/', icon: Home },
   { title: 'Analytics', url: '/analytics', icon: BarChart3 },
   { title: 'All Items', url: '/inventory', icon: Boxes },
   { title: 'Drafts', url: '/drafts', icon: FileText },
