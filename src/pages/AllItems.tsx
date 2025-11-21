@@ -76,6 +76,8 @@ const AllItems = () => {
     setSelectedArtist,
     selectedCondition,
     setSelectedCondition,
+    selectedCurrency,
+    setSelectedCurrency,
     valuationRange,
     setValuationRange,
     viewMode,
@@ -86,6 +88,7 @@ const AllItems = () => {
     yearOptions,
     artistOptions,
     conditionOptions,
+    currencyOptions,
     filteredItems,
     sortedItems,
   } = filters;
@@ -203,6 +206,9 @@ const AllItems = () => {
           conditionOptions={conditionOptions}
           selectedCondition={selectedCondition}
           setSelectedCondition={setSelectedCondition}
+          currencyOptions={currencyOptions}
+          selectedCurrency={selectedCurrency}
+          setSelectedCurrency={setSelectedCurrency}
           valuationRange={valuationRange}
           setValuationRange={setValuationRange}
           viewMode={viewMode}

@@ -22,6 +22,8 @@ interface AppliedFiltersProps {
   setSelectedArtist: (artists: string[]) => void;
   selectedCondition: string[];
   setSelectedCondition: (conditions: string[]) => void;
+  selectedCurrency: string[];
+  setSelectedCurrency: (currencies: string[]) => void;
   valuationRange: { min?: number; max?: number };
   setValuationRange: (range: { min?: number; max?: number }) => void;
   permanentCategory?: string;
@@ -45,6 +47,8 @@ export function AppliedFilters({
   setSelectedArtist,
   selectedCondition,
   setSelectedCondition,
+  selectedCurrency,
+  setSelectedCurrency,
   valuationRange,
   setValuationRange,
   permanentCategory,
@@ -81,6 +85,9 @@ export function AppliedFilters({
           selectedCondition.filter((condition) => condition !== value),
         );
         break;
+      case 'currency':
+        setSelectedCurrency(selectedCurrency.filter((c) => c !== value));
+        break;
     }
   };
 
@@ -96,6 +103,7 @@ export function AppliedFilters({
     setSelectedYear([]);
     setSelectedArtist([]);
     setSelectedCondition([]);
+    setSelectedCurrency([]);
     setValuationRange({});
     setSearchTerm('');
   };
@@ -108,6 +116,7 @@ export function AppliedFilters({
     selectedYear.length > 0 ||
     selectedArtist.length > 0 ||
     selectedCondition.length > 0 ||
+    selectedCurrency.length > 0 ||
     valuationRange.min !== undefined ||
     valuationRange.max !== undefined ||
     searchTerm.length > 0;
@@ -283,6 +292,23 @@ export function AppliedFilters({
       selectedIds: selectedCondition,
       options: conditionOptions,
       onRemove: (id) => clearFilter('condition', id),
+      variant: 'secondary',
+    });
+  }
+
+  if (selectedCurrency.length > 0) {
+    const currencyOptions: AppliedFilterBadgeGroup['options'] = {};
+
+    selectedCurrency.forEach((currency) => {
+      currencyOptions[currency] = { label: currency };
+    });
+
+    filterGroups.push({
+      id: 'currency',
+      labelPrefix: 'Valuation currency',
+      selectedIds: selectedCurrency,
+      options: currencyOptions,
+      onRemove: (id) => clearFilter('currency', id),
       variant: 'secondary',
     });
   }

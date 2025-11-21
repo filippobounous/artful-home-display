@@ -49,6 +49,7 @@ export function useInventoryFilters({
   const [selectedYear, setSelectedYear] = useState<string[]>([]);
   const [selectedArtist, setSelectedArtist] = useState<string[]>([]);
   const [selectedCondition, setSelectedCondition] = useState<string[]>([]);
+  const [selectedCurrency, setSelectedCurrency] = useState<string[]>([]);
   const [valuationRange, setValuationRange] = useState<ValuationRange>({});
   const [viewMode, setViewMode] = useState<ViewMode>(initialViewMode);
   const [sortField, setSortField] =
@@ -84,6 +85,16 @@ export function useInventoryFilters({
       }
     });
     return Array.from(conditions);
+  }, [items]);
+
+  const currencyOptions = useMemo(() => {
+    const currencies = new Set<string>();
+    items.forEach((item) => {
+      if (item.valuationCurrency) {
+        currencies.add(item.valuationCurrency);
+      }
+    });
+    return Array.from(currencies);
   }, [items]);
 
   const filteredItems = useMemo(() => {
@@ -148,6 +159,13 @@ export function useInventoryFilters({
 
       if (!matchesCondition) return false;
 
+      const matchesCurrency =
+        selectedCurrency.length === 0 ||
+        (item.valuationCurrency &&
+          selectedCurrency.includes(item.valuationCurrency));
+
+      if (!matchesCurrency) return false;
+
       const matchesValuation =
         (!valuationRange.min ||
           (item.valuation && item.valuation >= valuationRange.min)) &&
@@ -166,6 +184,7 @@ export function useInventoryFilters({
     selectedYear,
     selectedArtist,
     selectedCondition,
+    selectedCurrency,
     valuationRange,
     permanentCategoryId,
     permanentHouseId,
@@ -206,6 +225,8 @@ export function useInventoryFilters({
     setSelectedArtist,
     selectedCondition,
     setSelectedCondition,
+    selectedCurrency,
+    setSelectedCurrency,
     valuationRange,
     setValuationRange,
     viewMode,
@@ -218,6 +239,7 @@ export function useInventoryFilters({
     yearOptions,
     artistOptions,
     conditionOptions,
+    currencyOptions,
     filteredItems,
     sortedItems,
   };
