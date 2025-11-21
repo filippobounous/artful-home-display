@@ -74,6 +74,8 @@ const AllItems = () => {
     setSelectedYear,
     selectedArtist,
     setSelectedArtist,
+    selectedCurrency,
+    setSelectedCurrency,
     valuationRange,
     setValuationRange,
     viewMode,
@@ -83,6 +85,7 @@ const AllItems = () => {
     handleSort,
     yearOptions,
     artistOptions,
+    currencyOptions,
     filteredItems,
     sortedItems,
   } = filters;
@@ -196,6 +199,9 @@ const AllItems = () => {
           artistOptions={artistOptions}
           selectedArtist={selectedArtist}
           setSelectedArtist={setSelectedArtist}
+          currencyOptions={currencyOptions}
+          selectedCurrency={selectedCurrency}
+          setSelectedCurrency={setSelectedCurrency}
           valuationRange={valuationRange}
           setValuationRange={setValuationRange}
           viewMode={viewMode}

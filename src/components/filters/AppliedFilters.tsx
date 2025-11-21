@@ -20,6 +20,8 @@ interface AppliedFiltersProps {
   setSelectedYear: (years: string[]) => void;
   selectedArtist: string[];
   setSelectedArtist: (artists: string[]) => void;
+  selectedCurrency: string[];
+  setSelectedCurrency: (currencies: string[]) => void;
   valuationRange: { min?: number; max?: number };
   setValuationRange: (range: { min?: number; max?: number }) => void;
   permanentCategory?: string;
@@ -41,6 +43,8 @@ export function AppliedFilters({
   setSelectedYear,
   selectedArtist,
   setSelectedArtist,
+  selectedCurrency,
+  setSelectedCurrency,
   valuationRange,
   setValuationRange,
   permanentCategory,
@@ -72,6 +76,9 @@ export function AppliedFilters({
       case 'artist':
         setSelectedArtist(selectedArtist.filter((a) => a !== value));
         break;
+      case 'currency':
+        setSelectedCurrency(selectedCurrency.filter((c) => c !== value));
+        break;
     }
   };
 
@@ -86,6 +93,7 @@ export function AppliedFilters({
     setSelectedRoom([]);
     setSelectedYear([]);
     setSelectedArtist([]);
+    setSelectedCurrency([]);
     setValuationRange({});
     setSearchTerm('');
   };
@@ -97,6 +105,7 @@ export function AppliedFilters({
     selectedRoom.length > 0 ||
     selectedYear.length > 0 ||
     selectedArtist.length > 0 ||
+    selectedCurrency.length > 0 ||
     valuationRange.min !== undefined ||
     valuationRange.max !== undefined ||
     searchTerm.length > 0;
@@ -249,6 +258,23 @@ export function AppliedFilters({
       selectedIds: selectedArtist,
       options: artistOptions,
       onRemove: (id) => clearFilter('artist', id),
+      variant: 'secondary',
+    });
+  }
+
+  if (selectedCurrency.length > 0) {
+    const currencyOptions: AppliedFilterBadgeGroup['options'] = {};
+
+    selectedCurrency.forEach((currency) => {
+      currencyOptions[currency] = { label: currency };
+    });
+
+    filterGroups.push({
+      id: 'currency',
+      labelPrefix: 'Currency',
+      selectedIds: selectedCurrency,
+      options: currencyOptions,
+      onRemove: (id) => clearFilter('currency', id),
       variant: 'secondary',
     });
   }

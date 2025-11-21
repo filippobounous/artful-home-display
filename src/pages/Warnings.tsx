@@ -31,6 +31,7 @@ const Warnings = () => {
   const [selectedRoom, setSelectedRoom] = useState<string[]>([]);
   const [selectedYear, setSelectedYear] = useState<string[]>([]);
   const [selectedArtist, setSelectedArtist] = useState<string[]>([]);
+  const [selectedCurrency, setSelectedCurrency] = useState<string[]>([]);
   const [valuationRange, setValuationRange] = useState<{
     min?: number;
     max?: number;
@@ -95,6 +96,14 @@ const Warnings = () => {
     return Array.from(artists);
   }, [items]);
 
+  const currencyOptions = useMemo(() => {
+    const currencies = new Set<string>();
+    items.forEach((item) => {
+      if (item.valuationCurrency) currencies.add(item.valuationCurrency);
+    });
+    return Array.from(currencies);
+  }, [items]);
+
   useEffect(() => {
     setSearchTerm(searchParams.get('search') || '');
     setSelectedCategory(searchParams.getAll('category'));
@@ -102,6 +111,7 @@ const Warnings = () => {
     setSelectedHouse(searchParams.getAll('house'));
     setSelectedRoom(searchParams.getAll('room'));
     setSelectedYear(searchParams.getAll('year'));
+    setSelectedCurrency(searchParams.getAll('currency'));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -113,6 +123,7 @@ const Warnings = () => {
     selectedHouse.forEach((h) => params.append('house', h));
     selectedRoom.forEach((r) => params.append('room', r));
     selectedYear.forEach((y) => params.append('year', y));
+    selectedCurrency.forEach((currency) => params.append('currency', currency));
     setSearchParams(params, { replace: true });
   }, [
     searchTerm,
@@ -121,6 +132,7 @@ const Warnings = () => {
     selectedHouse,
     selectedRoom,
     selectedYear,
+    selectedCurrency,
     setSearchParams,
   ]);
 
@@ -165,6 +177,11 @@ const Warnings = () => {
         (!valuationRange.max ||
           (item.valuation && item.valuation <= valuationRange.max));
 
+      const matchesCurrency =
+        selectedCurrency.length === 0 ||
+        (item.valuationCurrency &&
+          selectedCurrency.includes(item.valuationCurrency));
+
       return (
         matchesSearch &&
         matchesCategory &&
@@ -173,7 +190,8 @@ const Warnings = () => {
         matchesRoom &&
         matchesYear &&
         matchesArtist &&
-        matchesValuation
+        matchesValuation &&
+        matchesCurrency
       );
     });
   }, [
@@ -185,6 +203,7 @@ const Warnings = () => {
     selectedRoom,
     selectedYear,
     selectedArtist,
+    selectedCurrency,
     valuationRange,
   ]);
 
@@ -316,6 +335,9 @@ const Warnings = () => {
           artistOptions={artistOptions}
           selectedArtist={selectedArtist}
           setSelectedArtist={setSelectedArtist}
+          currencyOptions={currencyOptions}
+          selectedCurrency={selectedCurrency}
+          setSelectedCurrency={setSelectedCurrency}
           valuationRange={valuationRange}
           setValuationRange={setValuationRange}
           viewMode={viewMode}

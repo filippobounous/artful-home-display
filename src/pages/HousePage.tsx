@@ -45,6 +45,8 @@ export default function HousePage() {
     setSelectedYear,
     selectedArtist,
     setSelectedArtist,
+    selectedCurrency,
+    setSelectedCurrency,
     valuationRange,
     setValuationRange,
     viewMode,
@@ -54,6 +56,7 @@ export default function HousePage() {
     handleSort,
     yearOptions,
     artistOptions,
+    currencyOptions,
     filteredItems,
     sortedItems,
   } = filters;
@@ -89,6 +92,9 @@ export default function HousePage() {
           artistOptions={artistOptions}
           selectedArtist={selectedArtist}
           setSelectedArtist={setSelectedArtist}
+          currencyOptions={currencyOptions}
+          selectedCurrency={selectedCurrency}
+          setSelectedCurrency={setSelectedCurrency}
           valuationRange={valuationRange}
           setValuationRange={setValuationRange}
           viewMode={viewMode}

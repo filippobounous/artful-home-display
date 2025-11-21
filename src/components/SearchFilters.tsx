@@ -5,6 +5,7 @@ import { CombinedCategoryFilter } from '@/components/filters/CombinedCategoryFil
 import { CombinedLocationFilter } from '@/components/filters/CombinedLocationFilter';
 import { YearFilter } from '@/components/filters/YearFilter';
 import { ArtistFilter } from '@/components/filters/ArtistFilter';
+import { CurrencyFilter } from '@/components/filters/CurrencyFilter';
 import { ValuationRangeFilter } from '@/components/filters/ValuationRangeFilter';
 import { AppliedFilters } from '@/components/filters/AppliedFilters';
 import { cn } from '@/lib/utils';
@@ -26,6 +27,9 @@ interface SearchFiltersProps {
   artistOptions: string[];
   selectedArtist: string[];
   setSelectedArtist: (artists: string[]) => void;
+  currencyOptions: string[];
+  selectedCurrency: string[];
+  setSelectedCurrency: (currencies: string[]) => void;
   valuationRange: { min?: number; max?: number };
   setValuationRange: (range: { min?: number; max?: number }) => void;
   viewMode: ViewMode;
@@ -54,6 +58,9 @@ export function SearchFilters({
   artistOptions,
   selectedArtist,
   setSelectedArtist,
+  currencyOptions,
+  selectedCurrency,
+  setSelectedCurrency,
   valuationRange,
   setValuationRange,
   viewMode,
@@ -72,6 +79,7 @@ export function SearchFilters({
     selectedRoom.length +
     selectedYear.length +
     selectedArtist.length +
+    selectedCurrency.length +
     (valuationRange.min ? 1 : 0) +
     (valuationRange.max ? 1 : 0);
   return (
@@ -136,6 +144,14 @@ export function SearchFilters({
           </div>
 
           <div className="md:col-span-2">
+            <CurrencyFilter
+              currencyOptions={currencyOptions}
+              selectedCurrency={selectedCurrency}
+              setSelectedCurrency={setSelectedCurrency}
+            />
+          </div>
+
+          <div className="md:col-span-2">
             <ValuationRangeFilter
               range={valuationRange}
               setRange={setValuationRange}
@@ -160,6 +176,8 @@ export function SearchFilters({
         setSelectedYear={setSelectedYear}
         selectedArtist={selectedArtist}
         setSelectedArtist={setSelectedArtist}
+        selectedCurrency={selectedCurrency}
+        setSelectedCurrency={setSelectedCurrency}
         valuationRange={valuationRange}
         setValuationRange={setValuationRange}
         permanentCategory={permanentCategory}
