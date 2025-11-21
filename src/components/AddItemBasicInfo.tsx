@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { normalizeNumberInput } from '@/lib/numberInput';
 
 import type { DecorItemFormData } from '@/types/forms';
 
@@ -52,7 +53,13 @@ function BasicInfoField({
         id={id}
         placeholder={placeholder}
         value={value}
-        onChange={(event) => onChange(event.target.value)}
+        onChange={(event) =>
+          onChange(
+            inputProps?.type === 'number'
+              ? normalizeNumberInput(event.target.value)
+              : event.target.value,
+          )
+        }
         {...inputProps}
         className={cn(
           error && 'border-destructive focus-visible:ring-destructive',
@@ -134,59 +141,71 @@ export function AddItemBasicInfo({
         <div className="grid grid-cols-3 gap-4">
           <div>
             <Label htmlFor="height">Height (cm)</Label>
-            <Input
-              id="height"
-              type="number"
-              step="0.01"
-              placeholder="Height in cm"
-              value={formData.height_cm}
-              onChange={(e) =>
-                setFormData({ ...formData, height_cm: e.target.value })
-              }
-            />
-          </div>
-          <div>
+          <Input
+            id="height"
+            type="number"
+            step="0.01"
+            placeholder="Height in cm"
+            value={formData.height_cm}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                height_cm: normalizeNumberInput(e.target.value),
+              })
+            }
+          />
+        </div>
+        <div>
             <Label htmlFor="width">Width (cm)</Label>
             <Input
               id="width"
-              type="number"
-              step="0.01"
-              placeholder="Width in cm"
-              value={formData.width_cm}
-              onChange={(e) =>
-                setFormData({ ...formData, width_cm: e.target.value })
-              }
-            />
-          </div>
-          <div>
+            type="number"
+            step="0.01"
+            placeholder="Width in cm"
+            value={formData.width_cm}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                width_cm: normalizeNumberInput(e.target.value),
+              })
+            }
+          />
+        </div>
+        <div>
             <Label htmlFor="depth">Depth (cm)</Label>
             <Input
               id="depth"
-              type="number"
-              step="0.01"
-              placeholder="Depth in cm"
-              value={formData.depth_cm}
-              onChange={(e) =>
-                setFormData({ ...formData, depth_cm: e.target.value })
-              }
-            />
-          </div>
+            type="number"
+            step="0.01"
+            placeholder="Depth in cm"
+            value={formData.depth_cm}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                depth_cm: normalizeNumberInput(e.target.value),
+              })
+            }
+          />
         </div>
+      </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label htmlFor="weight_kg">Mass (kg)</Label>
             <Input
               id="weight_kg"
-              type="number"
-              step="0.01"
-              placeholder="Mass in kg"
-              value={formData.weight_kg}
-              onChange={(e) =>
-                setFormData({ ...formData, weight_kg: e.target.value })
-              }
-            />
-          </div>
+            type="number"
+            step="0.01"
+            placeholder="Mass in kg"
+            value={formData.weight_kg}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                weight_kg: normalizeNumberInput(e.target.value),
+              })
+            }
+          />
+        </div>
           <div>
             <Label htmlFor="material">Material</Label>
             <Input

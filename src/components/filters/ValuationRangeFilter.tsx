@@ -1,5 +1,6 @@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { normalizeNumberInput } from '@/lib/numberInput';
 
 interface ValuationRange {
   min?: number;
@@ -28,7 +29,9 @@ export function ValuationRangeFilter({
           onChange={(e) =>
             setRange({
               ...range,
-              min: e.target.value ? Number(e.target.value) : undefined,
+              min: e.target.value
+                ? Number(normalizeNumberInput(e.target.value))
+                : undefined,
             })
           }
         />
@@ -39,7 +42,9 @@ export function ValuationRangeFilter({
           onChange={(e) =>
             setRange({
               ...range,
-              max: e.target.value ? Number(e.target.value) : undefined,
+              max: e.target.value
+                ? Number(normalizeNumberInput(e.target.value))
+                : undefined,
             })
           }
         />

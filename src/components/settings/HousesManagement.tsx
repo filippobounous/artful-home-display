@@ -38,6 +38,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { IconSelector } from '@/components/IconSelector';
 import { countries } from '@/lib/countries';
+import { normalizeNumberInput } from '@/lib/numberInput';
 import {
   Plus,
   Edit,
@@ -444,7 +445,7 @@ export function HousesManagement({
                     setNewHouse({
                       ...newHouse,
                       latitude: e.target.value
-                        ? parseFloat(e.target.value)
+                        ? parseFloat(normalizeNumberInput(e.target.value))
                         : undefined,
                     })
                   }
@@ -462,7 +463,7 @@ export function HousesManagement({
                     setNewHouse({
                       ...newHouse,
                       longitude: e.target.value
-                        ? parseFloat(e.target.value)
+                        ? parseFloat(normalizeNumberInput(e.target.value))
                         : undefined,
                     })
                   }
@@ -793,7 +794,7 @@ export function HousesManagement({
                       setEditingHouse({
                         ...editingHouse,
                         latitude: e.target.value
-                          ? parseFloat(e.target.value)
+                          ? parseFloat(normalizeNumberInput(e.target.value))
                           : undefined,
                       })
                     }
@@ -811,7 +812,7 @@ export function HousesManagement({
                       setEditingHouse({
                         ...editingHouse,
                         longitude: e.target.value
-                          ? parseFloat(e.target.value)
+                          ? parseFloat(normalizeNumberInput(e.target.value))
                           : undefined,
                       })
                     }
@@ -914,7 +915,10 @@ export function HousesManagement({
                 type="number"
                 value={newRoom.floor}
                 onChange={(e) =>
-                  setNewRoom({ ...newRoom, floor: parseInt(e.target.value) })
+                  setNewRoom({
+                    ...newRoom,
+                    floor: parseInt(normalizeNumberInput(e.target.value)),
+                  })
                 }
                 placeholder="e.g., 1"
               />
@@ -956,7 +960,7 @@ export function HousesManagement({
                   setNewRoom({
                     ...newRoom,
                     area_sqm: e.target.value
-                      ? parseFloat(e.target.value)
+                      ? parseFloat(normalizeNumberInput(e.target.value))
                       : undefined,
                   })
                 }
@@ -973,7 +977,7 @@ export function HousesManagement({
                   setNewRoom({
                     ...newRoom,
                     windows: e.target.value
-                      ? parseInt(e.target.value)
+                      ? parseInt(normalizeNumberInput(e.target.value))
                       : undefined,
                   })
                 }
@@ -990,7 +994,7 @@ export function HousesManagement({
                   setNewRoom({
                     ...newRoom,
                     doors: e.target.value
-                      ? parseInt(e.target.value)
+                      ? parseInt(normalizeNumberInput(e.target.value))
                       : undefined,
                   })
                 }
@@ -1085,7 +1089,7 @@ export function HousesManagement({
                         ...editingRoom,
                         room: {
                           ...editingRoom.room,
-                          floor: parseInt(e.target.value),
+                          floor: parseInt(normalizeNumberInput(e.target.value)),
                         },
                       })
                     }
@@ -1135,7 +1139,7 @@ export function HousesManagement({
                         room: {
                           ...editingRoom.room,
                           area_sqm: e.target.value
-                            ? parseFloat(e.target.value)
+                            ? parseFloat(normalizeNumberInput(e.target.value))
                             : undefined,
                         },
                       })
@@ -1155,7 +1159,7 @@ export function HousesManagement({
                         room: {
                           ...editingRoom.room,
                           windows: e.target.value
-                            ? parseInt(e.target.value)
+                            ? parseInt(normalizeNumberInput(e.target.value))
                             : undefined,
                         },
                       })
@@ -1175,7 +1179,7 @@ export function HousesManagement({
                         room: {
                           ...editingRoom.room,
                           doors: e.target.value
-                            ? parseInt(e.target.value)
+                            ? parseInt(normalizeNumberInput(e.target.value))
                             : undefined,
                         },
                       })
