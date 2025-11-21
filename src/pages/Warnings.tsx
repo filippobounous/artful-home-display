@@ -31,6 +31,7 @@ const Warnings = () => {
   const [selectedRoom, setSelectedRoom] = useState<string[]>([]);
   const [selectedYear, setSelectedYear] = useState<string[]>([]);
   const [selectedArtist, setSelectedArtist] = useState<string[]>([]);
+  const [selectedCondition, setSelectedCondition] = useState<string[]>([]);
   const [selectedCurrency, setSelectedCurrency] = useState<string[]>([]);
   const [valuationRange, setValuationRange] = useState<{
     min?: number;
@@ -96,6 +97,14 @@ const Warnings = () => {
     return Array.from(artists);
   }, [items]);
 
+  const conditionOptions = useMemo(() => {
+    const conditions = new Set<string>();
+    items.forEach((item) => {
+      if (item.condition) conditions.add(item.condition);
+    });
+    return Array.from(conditions);
+  }, [items]);
+
   const currencyOptions = useMemo(() => {
     const currencies = new Set<string>();
     items.forEach((item) => {
@@ -111,6 +120,7 @@ const Warnings = () => {
     setSelectedHouse(searchParams.getAll('house'));
     setSelectedRoom(searchParams.getAll('room'));
     setSelectedYear(searchParams.getAll('year'));
+    setSelectedCondition(searchParams.getAll('condition'));
     setSelectedCurrency(searchParams.getAll('currency'));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -123,6 +133,7 @@ const Warnings = () => {
     selectedHouse.forEach((h) => params.append('house', h));
     selectedRoom.forEach((r) => params.append('room', r));
     selectedYear.forEach((y) => params.append('year', y));
+    selectedCondition.forEach((condition) => params.append('condition', condition));
     selectedCurrency.forEach((currency) => params.append('currency', currency));
     setSearchParams(params, { replace: true });
   }, [
@@ -132,6 +143,7 @@ const Warnings = () => {
     selectedHouse,
     selectedRoom,
     selectedYear,
+    selectedCondition,
     selectedCurrency,
     setSearchParams,
   ]);
@@ -170,17 +182,21 @@ const Warnings = () => {
       const matchesArtist =
         selectedArtist.length === 0 ||
         (item.artist && selectedArtist.includes(item.artist));
+      
+      const matchesCondition =
+        selectedCondition.length === 0 ||
+        (item.condition && selectedCondition.includes(item.condition));
+      
+      const matchesCurrency =
+        selectedCurrency.length === 0 ||
+        (item.valuationCurrency &&
+          selectedCurrency.includes(item.valuationCurrency));
 
       const matchesValuation =
         (!valuationRange.min ||
           (item.valuation && item.valuation >= valuationRange.min)) &&
         (!valuationRange.max ||
           (item.valuation && item.valuation <= valuationRange.max));
-
-      const matchesCurrency =
-        selectedCurrency.length === 0 ||
-        (item.valuationCurrency &&
-          selectedCurrency.includes(item.valuationCurrency));
 
       return (
         matchesSearch &&
@@ -190,6 +206,7 @@ const Warnings = () => {
         matchesRoom &&
         matchesYear &&
         matchesArtist &&
+        matchesCondition &&
         matchesValuation &&
         matchesCurrency
       );
@@ -203,6 +220,7 @@ const Warnings = () => {
     selectedRoom,
     selectedYear,
     selectedArtist,
+    selectedCondition,
     selectedCurrency,
     valuationRange,
   ]);
@@ -335,6 +353,9 @@ const Warnings = () => {
           artistOptions={artistOptions}
           selectedArtist={selectedArtist}
           setSelectedArtist={setSelectedArtist}
+          conditionOptions={conditionOptions}
+          selectedCondition={selectedCondition}
+          setSelectedCondition={setSelectedCondition}
           currencyOptions={currencyOptions}
           selectedCurrency={selectedCurrency}
           setSelectedCurrency={setSelectedCurrency}

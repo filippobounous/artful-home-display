@@ -48,6 +48,7 @@ export function useInventoryFilters({
   const [selectedRoom, setSelectedRoom] = useState<string[]>([]);
   const [selectedYear, setSelectedYear] = useState<string[]>([]);
   const [selectedArtist, setSelectedArtist] = useState<string[]>([]);
+  const [selectedCondition, setSelectedCondition] = useState<string[]>([]);
   const [selectedCurrency, setSelectedCurrency] = useState<string[]>([]);
   const [valuationRange, setValuationRange] = useState<ValuationRange>({});
   const [viewMode, setViewMode] = useState<ViewMode>(initialViewMode);
@@ -74,6 +75,16 @@ export function useInventoryFilters({
       }
     });
     return Array.from(artists);
+  }, [items]);
+
+  const conditionOptions = useMemo(() => {
+    const conditions = new Set<string>();
+    items.forEach((item) => {
+      if (item.condition) {
+        conditions.add(item.condition);
+      }
+    });
+    return Array.from(conditions);
   }, [items]);
 
   const currencyOptions = useMemo(() => {
@@ -142,6 +153,12 @@ export function useInventoryFilters({
 
       if (!matchesArtist) return false;
 
+      const matchesCondition =
+        selectedCondition.length === 0 ||
+        (item.condition && selectedCondition.includes(item.condition));
+
+      if (!matchesCondition) return false;
+
       const matchesCurrency =
         selectedCurrency.length === 0 ||
         (item.valuationCurrency &&
@@ -166,6 +183,7 @@ export function useInventoryFilters({
     selectedRoom,
     selectedYear,
     selectedArtist,
+    selectedCondition,
     selectedCurrency,
     valuationRange,
     permanentCategoryId,
@@ -205,6 +223,8 @@ export function useInventoryFilters({
     setSelectedYear,
     selectedArtist,
     setSelectedArtist,
+    selectedCondition,
+    setSelectedCondition,
     selectedCurrency,
     setSelectedCurrency,
     valuationRange,
@@ -218,6 +238,7 @@ export function useInventoryFilters({
     handleSort,
     yearOptions,
     artistOptions,
+    conditionOptions,
     currencyOptions,
     filteredItems,
     sortedItems,

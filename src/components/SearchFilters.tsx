@@ -7,6 +7,7 @@ import { YearFilter } from '@/components/filters/YearFilter';
 import { ArtistFilter } from '@/components/filters/ArtistFilter';
 import { CurrencyFilter } from '@/components/filters/CurrencyFilter';
 import { ValuationRangeFilter } from '@/components/filters/ValuationRangeFilter';
+import { ConditionFilter } from '@/components/filters/ConditionFilter';
 import { AppliedFilters } from '@/components/filters/AppliedFilters';
 import { cn } from '@/lib/utils';
 
@@ -27,6 +28,9 @@ interface SearchFiltersProps {
   artistOptions: string[];
   selectedArtist: string[];
   setSelectedArtist: (artists: string[]) => void;
+  conditionOptions: string[];
+  selectedCondition: string[];
+  setSelectedCondition: (conditions: string[]) => void;
   currencyOptions: string[];
   selectedCurrency: string[];
   setSelectedCurrency: (currencies: string[]) => void;
@@ -58,6 +62,9 @@ export function SearchFilters({
   artistOptions,
   selectedArtist,
   setSelectedArtist,
+  conditionOptions,
+  selectedCondition,
+  setSelectedCondition,
   currencyOptions,
   selectedCurrency,
   setSelectedCurrency,
@@ -79,6 +86,7 @@ export function SearchFilters({
     selectedRoom.length +
     selectedYear.length +
     selectedArtist.length +
+    selectedCondition.length +
     selectedCurrency.length +
     (valuationRange.min ? 1 : 0) +
     (valuationRange.max ? 1 : 0);
@@ -144,6 +152,14 @@ export function SearchFilters({
           </div>
 
           <div className="md:col-span-2">
+            <ConditionFilter
+              conditionOptions={conditionOptions}
+              selectedCondition={selectedCondition}
+              setSelectedCondition={setSelectedCondition}
+            />
+          </div>
+              
+          <div className="md:col-span-2">
             <CurrencyFilter
               currencyOptions={currencyOptions}
               selectedCurrency={selectedCurrency}
@@ -176,6 +192,8 @@ export function SearchFilters({
         setSelectedYear={setSelectedYear}
         selectedArtist={selectedArtist}
         setSelectedArtist={setSelectedArtist}
+        selectedCondition={selectedCondition}
+        setSelectedCondition={setSelectedCondition}
         selectedCurrency={selectedCurrency}
         setSelectedCurrency={setSelectedCurrency}
         valuationRange={valuationRange}
