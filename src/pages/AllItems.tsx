@@ -7,7 +7,8 @@ import { ItemsTable } from '@/components/ItemsTable';
 import { SearchFilters } from '@/components/SearchFilters';
 import { EmptyState } from '@/components/EmptyState';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Boxes, Plus } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   fetchDecorItems,
@@ -20,7 +21,6 @@ import type { DecorItemInput } from '@/types/inventory';
 import { useSettingsState } from '@/hooks/useSettingsState';
 import { BatchLocationDialog } from '@/components/BatchLocationDialog';
 import { useToast } from '@/hooks/use-toast';
-import { formatNumber } from '@/lib/currencyUtils';
 import { SidebarLayout } from '@/components/SidebarLayout';
 import { useInventoryFilters } from '@/hooks/useInventoryFilters';
 
@@ -152,13 +152,14 @@ const AllItems = () => {
       <InventoryHeader />
       <main className="flex-1 space-y-4 p-4 md:p-8 pt-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
+          <div className="flex items-center gap-2">
+            <Boxes className="w-5 h-5 text-primary" />
             <h1 className="text-3xl font-bold tracking-tight text-foreground">
               All Items
             </h1>
-            <p className="text-muted-foreground">
-              {formatNumber(filteredItems.length)} items in your collection
-            </p>
+            <Badge variant="secondary" className="ml-2">
+              {filteredItems.length}
+            </Badge>
           </div>
           <div className="flex flex-wrap gap-2">
             {selectedItems.length > 0 && (
